@@ -16,3 +16,10 @@ def quik_loader(raw_file):
     df['hour'] = df['datetime'].apply(change_dt)
     df = df.drop(['index','datetime','open','close'],axis=1)
     return df
+
+raw_file = 'DataForTests\DataFromQuik\SPBFUT.MMU4_T1.txt'
+
+
+df = quik_loader(raw_file)
+
+print(df.sample(5))
