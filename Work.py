@@ -5,7 +5,8 @@ import numpy.typing as npt
 from Loader.QuikLoader import quik_loader
 from utils.draw_utils import draw_lite_chart,draw_chart_channel
 from ForBots.Indicators.classic_indicators import add_donchan_channel
-raw_file = 'DataForTests\DataFromQuik\SPBFUT.MMU4_T1.txt'
+# raw_file = 'DataForTests\DataFromQuik\SPBFUT.MMU4_T1.txt'
+raw_file = 'DataForTests\DataFromQuik\SPBFUT.MMH5_M5.txt'
 # raw_file = 'DataForTests\DataFromQuik\SPBFUT.CRU4_T1.txt'
 
 df = quik_loader(raw_file)
@@ -86,10 +87,10 @@ shorts = np.array(shorts)
 closes = np.array(closes)
 equity = np.array(equity)
 
-# draw_lite_chart(df)
-# draw_chart_channel(df)
-# plt.scatter(longs[:,0],longs[:,1],marker='^')
-# plt.scatter(shorts[:,0],shorts[:,1],marker='v')
-# plt.scatter(closes[:,0],closes[:,1],marker='x')
-plt.plot(equity)
+draw_lite_chart(df)
+draw_chart_channel(df)
+plt.scatter(longs[:,0],longs[:,1],marker='^')
+plt.scatter(shorts[:,0],shorts[:,1],marker='v')
+plt.scatter(closes[:,0],closes[:,1],marker='x')
+# plt.plot(equity)
 plt.show()

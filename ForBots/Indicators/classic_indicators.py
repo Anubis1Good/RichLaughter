@@ -20,3 +20,8 @@ def add_donchan_channel(df:pd.DataFrame,period=20,delay=0):
     df_slice['min_hb'] = pd.Series(points[:,1])
     df_slice['avarege'] = pd.Series(points[:,2])
     return df_slice
+
+def add_vangerchik(df:pd.DataFrame):
+    df['max_vg'] = df.apply(lambda row: row['max_hb'] - (row['max_hb']-row['min_hb'])/10,axis=1)
+    df['min_vg'] = df.apply(lambda row: row['min_hb'] + (row['max_hb']-row['min_hb'])/10,axis=1)
+    return df
