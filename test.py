@@ -2,13 +2,14 @@ import requests
 import hmac
 import base64
 from time import time, sleep
-from request_functions.get_bitget import get_history_candles
+from request_functions.get_bitget import get_history_candles,get_candles
 from request_functions.download_bitget import save_df
 import ccxt
 from utils.settings import settings
 from Traders.BitgetTrader import BitgetTrader
-save_df(symbol="DOGEUSDT",n_parts=50)
-
+# save_df(symbol="DOGEUSDT",n_parts=50,granularity='1m')
+# res = get_candles(limit=1000)
+# print(len(res))
 
 # symbol = 'DOGEUSDT'
 # bg_trader = BitgetTrader()

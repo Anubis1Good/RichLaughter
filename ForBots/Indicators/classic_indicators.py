@@ -6,7 +6,7 @@ def get_donchan_channel(row,df:pd.DataFrame,period=20,delay=0):
     df_short = df.iloc[x-period:x+1]
     max_hb = df_short['high'].max()
     min_hb = df_short['low'].min()
-    avarage = (min_hb + max_hb)//2
+    avarage = (min_hb + max_hb)/2
 
     return np.array([max_hb,min_hb,avarage])
 

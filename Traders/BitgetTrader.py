@@ -21,12 +21,13 @@ class BitgetTrader:
             print('error')
         return symbols
     
-    def fetch_firts_orders(self,symbol):
+    def fetch_firts_orders(self,symbol,index=0):
+        '''bbid,bask'''
         bbid,bask = None,None
         try:
             ob = self._exchange.fetch_order_book(symbol)
-            bbid = ob['bids'][0]
-            bask = ob['asks'][0]
+            bbid = ob['bids'][index][0]
+            bask = ob['asks'][index][0]
         except Exception as e:
             print(e)
         return bbid,bask
@@ -43,9 +44,14 @@ class BitgetTrader:
         '''
         side: buy / sell
         '''
+        # self._exchange.set_position_mode(False, symbol)
+        # self._exchange.set_margin_mode( 'isolated', symbol)
         order = None
         order_id = str(time() * 1000000)
-        params = {'newClientOrderId':"{}_limit_{}".format(order_id,side),"timeInForceValue":"normal",'hedged':True}
+        # hold_side = "short" if side == 'sell' else "long"
+        # params = {'newClientOrderId':"{}_limit_{}".format(order_id,side),"timeInForceValue":"normal",'hedged':True}
+        # params = {'newClientOrderId':"{}_limit_{}".format(order_id,side),"timeInForceValue":"normal",'oneWayMode':True, 'holdSide':hold_side}
+        params = {'newClientOrderId':"{}_limit_{}".format(order_id,side),"timeInForceValue":"normal",'oneWayMode':True}
         if sl is not None:
             params['presetStopLossPrice'] = sl
         if target is not None:
@@ -72,6 +78,16 @@ class BitgetTrader:
             print(e)
         return order
     
+    def clear_orders(self,symbol):
+        orders = None
+        try:
+            orders = self._exchange.fetch_open_orders(symbol)
+            if len(orders) > 0:
+                for order in orders:
+                    self.cancel_order(symbol,order['info']['orderId'])
+        except Exception as e:
+            print(e)
+    
     def balance(self):
         balance = None
         try:
@@ -79,3 +95,56 @@ class BitgetTrader:
         except:
             print('error')
         return balance['total']['USDT'],balance['free']['USDT'], balance['used']['USDT']
+    
+    def check_position(self,symbol):
+        '''side, amount'''
+        side, amount = None, None
+        try:
+            pos = self._exchange.fetch_position(symbol)
+            amount = pos['info']['total']
+            side = pos['side']
+        except:
+            pass
+        return side, amount
+
+    def open_long(self,symbol,amount,step):
+        bbid,bask = self.fetch_firts_orders(symbol,step)
+        side, am = self.check_position(symbol)
+        if side != 'long':
+            self.clear_orders(symbol)
+            self.limit_order('buy',bbid,amount,symbol)
+        if side == 'short':
+            self.clear_orders(symbol)
+            self.limit_order('buy',bbid,amount+am,symbol)
+
+    def open_short(self,symbol,amount,step):
+        bbid,bask = self.fetch_firts_orders(symbol,step)
+        side, am = self.check_position(symbol)
+        if side != 'short':
+            self.clear_orders(symbol)
+            self.limit_order('sell',bask,amount,symbol)
+        if side == 'long':
+            self.clear_orders(symbol)
+            self.limit_order('sell',bask,amount+am,symbol)
+
+
+    def close_long(self,symbol,step):
+        side, amount = self.check_position(symbol)
+        if side == 'long':
+            self.clear_orders(symbol)
+            self.open_short(symbol,amount,step)
+
+    def close_short(self,symbol,step):
+        side, amount = self.check_position(symbol)
+        if side == 'short':
+            self.clear_orders(symbol)
+            self.open_long(symbol,amount,step)
+
+    def close_all(self,symbol,step):
+        side, amount = self.check_position(symbol)
+        if side == 'short':
+            self.clear_orders(symbol)
+            self.open_long(symbol,amount,step)
+        if side == 'short':
+            self.clear_orders(symbol)
+            self.open_long(symbol,amount,step)
