@@ -1,4 +1,4 @@
-from time import time
+from time import time,sleep
 import ccxt
 from utils.settings import settings
 
@@ -112,32 +112,34 @@ class BitgetTrader:
         side, am = self.check_position(symbol)
         if side != 'long':
             self.clear_orders(symbol)
+            sleep(0.5) # TODO
             self.limit_order('buy',bbid,amount,symbol)
         if side == 'short':
             self.clear_orders(symbol)
-            self.limit_order('buy',bbid,amount+am,symbol)
+            sleep(0.5) # TODO
+            self.limit_order('buy',bbid,amount,symbol)
 
     def open_short(self,symbol,amount,step):
         bbid,bask = self.fetch_firts_orders(symbol,step)
         side, am = self.check_position(symbol)
         if side != 'short':
             self.clear_orders(symbol)
+            sleep(0.5) # TODO
             self.limit_order('sell',bask,amount,symbol)
         if side == 'long':
             self.clear_orders(symbol)
-            self.limit_order('sell',bask,amount+am,symbol)
+            sleep(0.5) # TODO
+            self.limit_order('sell',bask,amount,symbol)
 
 
     def close_long(self,symbol,step):
         side, amount = self.check_position(symbol)
         if side == 'long':
-            self.clear_orders(symbol)
             self.open_short(symbol,amount,step)
 
     def close_short(self,symbol,step):
         side, amount = self.check_position(symbol)
         if side == 'short':
-            self.clear_orders(symbol)
             self.open_long(symbol,amount,step)
 
     def close_all(self,symbol,step):

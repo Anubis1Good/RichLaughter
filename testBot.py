@@ -11,4 +11,4 @@ bot = RL1("DOGEUSDT",trader,strategy,25,5)
 while True:
     # print(strategy())
     bot.run()
-    sleep(5)
+    sleep(10)
