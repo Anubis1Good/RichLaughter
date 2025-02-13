@@ -1,3 +1,4 @@
+import math
 import pandas as pd
 import numpy as np
 
@@ -91,5 +92,15 @@ def add_attached_bb(df:pd.DataFrame):
     df['attached_change'] = df.apply(lambda row: get_change_attached_bb(row,df),axis=1)
     return df
 
-def add_big_volume(df:pd.DataFrame,period=20,multiplier=2):
-    pass
+def add_big_volume(df:pd.DataFrame,period=20,multiplier=1):
+    df['sma_volume'] = df.apply(lambda row: get_sma(row,df,period,'volume'),axis=1)
+    df['is_big'] = df.apply(lambda row: row['volume']*multiplier > row['sma_volume'],axis=1)
+    return df
+
+def add_dynamics_ma(df:pd.DataFrame,period=20,kind='sma'):
+    diff = df[kind].diff()
+    df[kind+'_slope'] = diff * (1/diff.mean())
+    df['dynamics_ma'] = np.degrees(np.arctan(df[kind+'_slope']))
+    df['dynamics_ma'] = df['dynamics_ma'].rolling(period).mean()
+    df = df.drop(kind+'_slope',axis=1)
+    return df

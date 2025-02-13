@@ -28,6 +28,7 @@ def create_df(df):
         else:
             df[c] = df[c].apply(float)
     df['direction'] = df.apply(lambda row: 1 if row['open'] < row['close'] else -1, axis=1)
+    df['middle'] = df.apply(lambda row: (row['high']+row['low'])/2,axis=1)
     df = df.reset_index()
     df['x'] = df.index
     df = df.drop(['index'],axis=1)
