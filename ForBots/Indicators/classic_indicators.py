@@ -68,11 +68,11 @@ def get_attached_bb(row,df:pd.DataFrame):
     bbu_attached = False
     bbd_attached = False
     if row.name > 1:
-        prev = df.iloc[row.name-1]
+        prev = df.loc[row.name-1]
         if row['high'] > row['bbu'] or prev['high'] > prev['bbu']:
             bbu_attached = True
         if row['low'] < row['bbd'] or prev['low'] < prev['bbd']:
-            bbu_attached = True
+            bbd_attached = True
     return np.array([bbu_attached,bbd_attached])
 
 def get_change_attached_bb(row,df:pd.DataFrame):

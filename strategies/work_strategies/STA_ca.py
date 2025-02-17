@@ -18,7 +18,7 @@ class STA1e:
         df = add_big_volume(df,self.period)
         df = add_over_bb(df)
         df = add_attached_bb(df)
-        df = add_dynamics_ma(df,period=self.period)
+        df = add_dynamics_ma(df,period=self.period//2)
         df = add_slice_df(df,period=self.period)
         return df
     
@@ -40,13 +40,13 @@ class STA1e:
                 return 'close_short'
         self.bbu_attached = row['bbu_attached']
         self.bbd_attached = row['bbd_attached']
+        if row['dynamics_ma'] > 5:
+            if row['low'] < row['sma']:
+                return 'long'
+        if row['dynamics_ma'] < -5:
+            if row['high'] > row['sma']:
+                return 'short'
         if row['is_big']:
-            if row['dynamics_ma'] > 5:
-                if row['low'] < row['sma']:
-                    return 'long'
-            if row['dynamics_ma'] < -5:
-                if row['high'] > row['sma']:
-                    return 'short'
             if row['bbu_attached']:
                 return 'close_long'
             if row['bbd_attached']:

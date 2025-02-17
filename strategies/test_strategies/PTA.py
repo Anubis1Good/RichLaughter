@@ -1,5 +1,6 @@
-def get_action_PTA2_DDC(row,trades,shorts,longs,closes,equity):
-    if row['high'] == row['max_hb']:
+def get_action_PTA2_DDC(row,trades,shorts,longs,closes,equity,work_strategy):
+    action = work_strategy(row)
+    if action == 'short':
         if trades['pos'] == 0:
             trades['pos'] = -1
             shorts.append((row.name,row['high']))
@@ -11,7 +12,7 @@ def get_action_PTA2_DDC(row,trades,shorts,longs,closes,equity):
             closes.append((row.name,row['high']))
             trades['open_price'] = row['high']
             trades['count'] += 1
-    elif row['low'] == row['min_hb']:
+    elif action == 'long':
         if trades['pos'] == 0:
             trades['pos'] = 1
             longs.append((row.name,row['low']))
@@ -24,13 +25,13 @@ def get_action_PTA2_DDC(row,trades,shorts,longs,closes,equity):
             trades['count'] += 1
             trades['open_price'] = row['low']
     else:
-        if row['low'] <= row['avarege']:
+        if action == 'close_short':
             if trades['pos'] == -1:
                 trades['pos'] = 0
                 trades['total'] += row['low'] - trades['open_price']
                 closes.append((row.name,row['low']))
                 trades['count'] += 1
-        if row['high'] >= row['avarege']:
+        if action == 'close_long':
             if trades['pos'] == 1:
                 trades['pos'] = 0
                 trades['total'] += trades['open_price'] - row['high']
@@ -39,8 +40,9 @@ def get_action_PTA2_DDC(row,trades,shorts,longs,closes,equity):
 
     equity.append(trades['total'])
 
-def get_action_PTA2_BDDC(row,trades,shorts,longs,closes,equity):
-    if row['high'] == row['max_hb']:
+def get_action_PTA2_BDDC(row,trades,shorts,longs,closes,equity,work_strategy):
+    action = work_strategy(row)
+    if action == 'long':
         if trades['pos'] == 0:
             trades['pos'] = 1
             longs.append((row.name,row['high']))
@@ -52,7 +54,7 @@ def get_action_PTA2_BDDC(row,trades,shorts,longs,closes,equity):
             closes.append((row.name,row['high']))
             trades['count'] += 1
             trades['open_price'] = row['high']
-    elif row['low'] == row['min_hb']:
+    elif action == 'short':
         if trades['pos'] == 0:
             trades['pos'] = -1
             shorts.append((row.name,row['low']))
@@ -64,24 +66,27 @@ def get_action_PTA2_BDDC(row,trades,shorts,longs,closes,equity):
             closes.append((row.name,row['low']))
             trades['open_price'] = row['low']
             trades['count'] += 1
+    elif action == 'close_long':
+        if trades['pos'] == 1:
+            trades['pos'] = 0
+            trades['total'] += trades['open_price'] - row['low']
+            closes.append((row.name,row['low']))
+            trades['count'] += 1
+    elif action == 'close_short':
+        if trades['pos'] == -1:
+            trades['pos'] = 0
+            trades['total'] += row['high'] - trades['open_price']
+            closes.append((row.name,row['high']))
+            trades['count'] += 1
+    elif action == 'close_all':
+        pass
     else:
-        if row['low'] <= row['avarege']:
-            if trades['pos'] == 1:
-                trades['pos'] = 0
-                trades['total'] += trades['open_price'] - row['low']
-                closes.append((row.name,row['low']))
-                trades['count'] += 1
-        if row['high'] >= row['avarege']:
-            if trades['pos'] == -1:
-                trades['pos'] = 0
-                trades['total'] += row['high'] - trades['open_price']
-                closes.append((row.name,row['high']))
-                trades['count'] += 1
-
+        pass
     equity.append(trades['total'])
 
-def get_action_PTA2_BVGC(row,trades,shorts,longs,closes,equity):
-    if row['high'] >= row['max_vg']:
+def get_action_PTA2_BVGC(row,trades,shorts,longs,closes,equity,work_strategy):
+    action = work_strategy(row)
+    if action == 'long':
         if trades['pos'] == 0:
             trades['pos'] = 1
             longs.append((row.name,row['high']))
@@ -93,7 +98,7 @@ def get_action_PTA2_BVGC(row,trades,shorts,longs,closes,equity):
             closes.append((row.name,row['high']))
             trades['count'] += 1
             trades['open_price'] = row['high']
-    elif row['low'] <= row['min_vg']:
+    elif action == 'short':
         if trades['pos'] == 0:
             trades['pos'] = -1
             shorts.append((row.name,row['low']))
@@ -105,19 +110,22 @@ def get_action_PTA2_BVGC(row,trades,shorts,longs,closes,equity):
             closes.append((row.name,row['low']))
             trades['open_price'] = row['low']
             trades['count'] += 1
+    elif action == 'close_long':
+        if trades['pos'] == 1:
+            trades['pos'] = 0
+            trades['total'] += trades['open_price'] - row['low']
+            closes.append((row.name,row['low']))
+            trades['count'] += 1
+    elif action == 'close_short':
+        if trades['pos'] == -1:
+            trades['pos'] = 0
+            trades['total'] += row['high'] - trades['open_price']
+            closes.append((row.name,row['high']))
+            trades['count'] += 1
+    elif action == 'close_all':
+        pass
     else:
-        if row['low'] <= row['avarege']:
-            if trades['pos'] == 1:
-                trades['pos'] = 0
-                trades['total'] += trades['open_price'] - row['low']
-                closes.append((row.name,row['low']))
-                trades['count'] += 1
-        if row['high'] >= row['avarege']:
-            if trades['pos'] == -1:
-                trades['pos'] = 0
-                trades['total'] += row['high'] - trades['open_price']
-                closes.append((row.name,row['high']))
-                trades['count'] += 1
+        pass
 
     equity.append(trades['total'])
 
