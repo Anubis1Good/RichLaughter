@@ -4,7 +4,7 @@ from strategies.work_strategies.PTA import PTA2_BDDC
 from time import sleep
 
 trader = BitgetTrader()
-strategy = PTA2_BDDC(10,"DOGEUSDT","1m")
+strategy = PTA2_BDDC("DOGEUSDT","1m",period=65)
 bot = RL1("DOGEUSDT",trader,strategy,25,5)
 
 

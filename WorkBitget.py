@@ -10,7 +10,7 @@ from strategies.work_strategies.PTA import PTA2_BDDC
 from strategies.test_strategies.PTA import get_action_PTA2_BDDC,get_action_PTA2_BVGC
 from strategies.work_strategies.STA_ca import STA1e
 from strategies.test_strategies.STA_ca import get_action_STA1e
-raw_file = 'DataForTests\DataFromBitget\DOGEUSDT1738854997.csv'
+raw_file = 'DataForTests\DataFromBitget\DOGEUSDT_1m_1739819667.csv'
 # raw_file = 'DataForTests\DataFromBitget\DOGEUSDT_5m_1738928707.csv'
 # raw_file = 'DataForTests\DataFromBitget\DOGEUSDT_15m_1738929100.csv'
 # raw_file = 'DataForTests\DataFromBitget\DOGEUSDT_30m_1738929225.csv'

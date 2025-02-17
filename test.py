@@ -10,11 +10,7 @@ from Traders.BitgetTrader import BitgetTrader
 import numpy as np
 import matplotlib.pyplot as plt
 
-hb = [100,120]
-    
-plt.vlines(10,80,100)
-plt.show()
-# save_df(symbol="DOGEUSDT",n_parts=50,granularity='1m')
+save_df(symbol="DOGEUSDT",n_parts=50,granularity='1m')
 # res = get_candles(limit=1000)
 # print(len(res))
 
