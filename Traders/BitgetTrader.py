@@ -152,20 +152,26 @@ class BitgetTrader:
         side, amount = self.check_position(symbol)
         if side == 'long':
             self.open_short(symbol,amount,step)
+        else:
+            self.clear_orders(symbol)
 
     def close_short(self,symbol,step):
         side, amount = self.check_position(symbol)
         if side == 'short':
             self.open_long(symbol,amount,step)
+        else:
+            self.clear_orders(symbol)
 
     def close_all(self,symbol,step):
         side, amount = self.check_position(symbol)
         if side == 'short':
             self.clear_orders(symbol)
             self.open_long(symbol,amount,step)
-        if side == 'short':
+        elif side == 'short':
             self.clear_orders(symbol)
             self.open_long(symbol,amount,step)
+        else:
+            self.clear_orders(symbol)
 
     # middle_price
     def open_long_m(self,symbol,amount,price):
@@ -188,8 +194,15 @@ class BitgetTrader:
         side, amount = self.check_position(symbol)
         if side == 'long':
             self.open_short_m(symbol,amount,price)
+        else:
+            self.clear_orders(symbol)
 
     def close_short_m(self,symbol,price):
         side, amount = self.check_position(symbol)
         if side == 'short':
             self.open_long_m(symbol,amount,price)
+        else:
+            self.clear_orders(symbol)
+    
+    def none_action(self,symbol):
+        self.clear_orders(symbol)

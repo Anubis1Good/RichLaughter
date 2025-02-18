@@ -28,6 +28,8 @@ class RL1:
         self.trader.close_short_m(self.symbol,self.middle_price)
     def close_all(self):
         self.trader.close_all(self.symbol,self.step_glass)
+    def none_action(self):
+        self.trader.none_action(self.symbol)
 
     def run(self):
         row = self.strategy.get_row()
@@ -53,4 +55,4 @@ class RL1:
         elif action == 'close_all':
             self.close_all()
         else:
-            pass
+            self.none_action()

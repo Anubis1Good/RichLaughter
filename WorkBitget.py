@@ -6,7 +6,7 @@ from Loader.BitgetLoader import bitget_loader
 from utils.draw_utils import draw_lite_chart,draw_chart_channel,draw_hb_chart,draw_bollinger
 from ForBots.Indicators.classic_indicators import add_donchan_channel,add_vangerchik,add_sma, add_slice_df,add_bollinger,add_over_bb,add_attached_bb,add_big_volume,add_dynamics_ma
 from strategies.test_strategies.check import check_strategy
-from strategies.work_strategies.PTA import PTA2_DDCr as WS
+from strategies.work_strategies.PTA import PTA2_UDC as WS
 from strategies.test_strategies.PTA import get_action_PTA2_BDDC,get_action_PTA2_DDC
 from strategies.work_strategies.STA_ca import STA1e
 from strategies.test_strategies.STA_ca import get_action_STA1e
