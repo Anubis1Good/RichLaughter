@@ -32,6 +32,22 @@ class BitgetTrader:
             print(e)
         return bbid,bask
     
+    def fetch_condition_orders(self,symbol,price):
+        bbid,bask = None,None
+        try:
+            ob = self._exchange.fetch_order_book(symbol)
+            for bid in ob['bids']:
+                if bid[0] <= price:
+                    bbid  =bid[0]
+                    break
+            for ask in ob['asks']:
+                if ask[0] >= price:
+                    bask  = ask[0]
+                    break
+        except Exception as e:
+            print(e)
+        return bbid,bask
+    
     def open_orders(self):
         orders = None
         try:
@@ -150,3 +166,30 @@ class BitgetTrader:
         if side == 'short':
             self.clear_orders(symbol)
             self.open_long(symbol,amount,step)
+
+    # middle_price
+    def open_long_m(self,symbol,amount,price):
+        bbid,bask = self.fetch_condition_orders(symbol,price)
+        side, am = self.check_position(symbol)
+        if side != 'long':
+            self.clear_orders(symbol)
+            sleep(0.5) # TODO
+            self.limit_order('buy',bbid,amount,symbol)
+
+    def open_short_m(self,symbol,amount,price):
+        bbid,bask = self.fetch_condition_orders(symbol,price)
+        side, am = self.check_position(symbol)
+        if side != 'short':
+            self.clear_orders(symbol)
+            sleep(0.5) # TODO
+            self.limit_order('sell',bask,amount,symbol)
+
+    def close_long_m(self,symbol,price):
+        side, amount = self.check_position(symbol)
+        if side == 'long':
+            self.open_short_m(symbol,amount,price)
+
+    def close_short_m(self,symbol,price):
+        side, amount = self.check_position(symbol)
+        if side == 'short':
+            self.open_long_m(symbol,amount,price)

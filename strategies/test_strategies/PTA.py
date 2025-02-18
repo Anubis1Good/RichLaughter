@@ -69,13 +69,13 @@ def get_action_PTA2_BDDC(row,trades,shorts,longs,closes,equity,work_strategy):
     elif action == 'close_long':
         if trades['pos'] == 1:
             trades['pos'] = 0
-            trades['total'] += trades['open_price'] - row['low']
+            trades['total'] += row['high'] - trades['open_price']
             closes.append((row.name,row['low']))
             trades['count'] += 1
     elif action == 'close_short':
         if trades['pos'] == -1:
             trades['pos'] = 0
-            trades['total'] += row['high'] - trades['open_price']
+            trades['total'] += trades['open_price'] - row['low']
             closes.append((row.name,row['high']))
             trades['count'] += 1
     elif action == 'close_all':

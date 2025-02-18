@@ -22,5 +22,8 @@ class BaseTABitget:
         df = self.preprocessing(df)
         return df.iloc[-1]
     
+    def get_middle_price(self,row):
+        return row['middle']
+    
     def __call__(self,row, *args, **kwds):
         return None

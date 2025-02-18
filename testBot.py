@@ -1,6 +1,6 @@
 from Traders.BitgetTrader import BitgetTrader
 from Bots.RL1 import RL1
-from strategies.work_strategies.PTA import PTA2_BDDC as WS
+from strategies.work_strategies.PTA import PTA2_BDDCm as WS
 from time import sleep
 
 trader = BitgetTrader()
