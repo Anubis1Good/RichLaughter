@@ -2,7 +2,7 @@ from request_functions.download_bitget import get_df
 from ForBots.Indicators.classic_indicators import add_bollinger,add_big_volume,add_attached_bb,add_over_bb,add_dynamics_ma,add_slice_df
 
 class STA1e:
-    def __init__(self,symbol="BTCUSDT",granularity="1m",productType="usdt-futures",n_parts=1,period=20,multiplier=2,slope=5,):
+    def __init__(self,symbol="BTCUSDT",granularity="1m",productType="usdt-futures",n_parts=1,period=20,multiplier=2,slope=5):
         self.period = period
         self.multiplier = multiplier
         self.symbol = symbol
@@ -40,10 +40,10 @@ class STA1e:
                 return 'close_short'
         self.bbu_attached = row['bbu_attached']
         self.bbd_attached = row['bbd_attached']
-        if row['dynamics_ma'] > 5:
+        if row['dynamics_ma'] > self.slope:
             if row['low'] < row['sma']:
                 return 'long'
-        if row['dynamics_ma'] < -5:
+        if row['dynamics_ma'] < -self.slope:
             if row['high'] > row['sma']:
                 return 'short'
         if row['is_big']:

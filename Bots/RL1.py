@@ -21,7 +21,8 @@ class RL1:
         self.trader.close_all(self.symbol,self.step_glass)
 
     def run(self):
-        action = self.strategy()
+        row = self.strategy.get_row()
+        action = self.strategy(row)
         if action == 'long':
             self.open_long()
         elif action == 'short':
