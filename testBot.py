@@ -1,10 +1,10 @@
 from Traders.BitgetTrader import BitgetTrader
 from Bots.RL1 import RL1
-from strategies.work_strategies.PTA import PTA2_BDDC
+from strategies.work_strategies.PTA import PTA2_DDCdeDaddyNotShort as WS
 from time import sleep
 
 trader = BitgetTrader()
-strategy = PTA2_BDDC("DOGEUSDT","1m",period=65)
+strategy = WS("DOGEUSDT","3m",period=10)
 bot = RL1("DOGEUSDT",trader,strategy,25,5)
 
 

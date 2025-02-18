@@ -5,13 +5,25 @@ from request_functions.get_bitget import get_history_candles,get_candles
 import matplotlib.pyplot as plt
 from tqdm import tqdm
 
+def get_multiplier(granularity:str):
+    multiplier = None
+    if 'm' in granularity:
+        multiplier = int(granularity.replace('m',''))
+        return multiplier
+    elif 'H' in granularity:
+        multiplier = int(granularity.replace('H',''))*60
+    elif 'D' in granularity:
+        multiplier = int(granularity.replace('H',''))*60*24
+    return multiplier
+
 def download_bitget(symbol="BTCUSDT",granularity="1m",productType="usdt-futures",n_parts=10,limit="200"):
     step = 200
     t = int(time())*1000
     r = range(1,n_parts+1)
+    multiplier = get_multiplier(granularity)
     for i in reversed(r):
-        startTime = t - step*60*1000*i
-        endTime = t - step*60*1000*(i-1)
+        startTime = t - step*60*1000*i*multiplier
+        endTime = t - step*60*1000*(i-1)*multiplier
         if i == r[-1]:
             res = get_history_candles(symbol=symbol,granularity=granularity,productType=productType, startTime=startTime,endTime=endTime,limit=limit)
         else:

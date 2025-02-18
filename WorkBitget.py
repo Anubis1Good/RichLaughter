@@ -6,11 +6,11 @@ from Loader.BitgetLoader import bitget_loader
 from utils.draw_utils import draw_lite_chart,draw_chart_channel,draw_hb_chart,draw_bollinger
 from ForBots.Indicators.classic_indicators import add_donchan_channel,add_vangerchik,add_sma, add_slice_df,add_bollinger,add_over_bb,add_attached_bb,add_big_volume,add_dynamics_ma
 from strategies.test_strategies.check import check_strategy
-from strategies.work_strategies.PTA import PTA2_BDDC
-from strategies.test_strategies.PTA import get_action_PTA2_BDDC,get_action_PTA2_BVGC
+from strategies.work_strategies.PTA import PTA2_DDCdeDaddyNotShort as WS
+from strategies.test_strategies.PTA import get_action_PTA2_BDDC,get_action_PTA2_DDC
 from strategies.work_strategies.STA_ca import STA1e
 from strategies.test_strategies.STA_ca import get_action_STA1e
-raw_file = 'DataForTests\DataFromBitget\DOGEUSDT_1m_1739819667.csv'
+raw_file = 'DataForTests\DataFromBitget\DOGEUSDT_1m_1739873922.csv'
 # raw_file = 'DataForTests\DataFromBitget\DOGEUSDT_5m_1738928707.csv'
 # raw_file = 'DataForTests\DataFromBitget\DOGEUSDT_15m_1738929100.csv'
 # raw_file = 'DataForTests\DataFromBitget\DOGEUSDT_30m_1738929225.csv'
@@ -20,7 +20,7 @@ raw_file = 'DataForTests\DataFromBitget\DOGEUSDT_1m_1739819667.csv'
 
 df = bitget_loader(raw_file)
 # df = df.iloc[0:200]
-period = 10
+period = 15
 multiplier = 2
 symbol = "DOGEUSDT"
 granularity = "1m"
@@ -35,7 +35,7 @@ slope = 4
 # df = add_slice_df(df,period)
 # bot = STA1e(symbol,granularity,period=period,multiplier=multiplier,slope=slope)
 # df = bot.get_test_df(df)
-bot = PTA2_BDDC(symbol,granularity,period=period)
+bot = WS(symbol,granularity,period=period)
 df = bot.get_test_df(df)
 # df.info()
 # print(df.head())
@@ -69,6 +69,7 @@ shorts = np.array(shorts)
 closes = np.array(closes)
 equity = np.array(equity)
 
+print(shorts.shape)
 # draw_lite_chart(df)
 df.apply(draw_hb_chart,axis=1)
 # draw_bollinger(df)
@@ -79,7 +80,10 @@ df.apply(draw_hb_chart,axis=1)
 
 draw_chart_channel(df)
 df.to_csv('test.csv')
-plt.scatter(longs[:,0],longs[:,1],marker='^')
-plt.scatter(shorts[:,0],shorts[:,1],marker='v')
-plt.scatter(closes[:,0],closes[:,1],marker='x')
+if len(longs.shape) > 1:
+    plt.scatter(longs[:,0],longs[:,1],marker='^')
+if len(shorts.shape) > 1:
+    plt.scatter(shorts[:,0],shorts[:,1],marker='v')
+if len(closes.shape) > 1:
+    plt.scatter(closes[:,0],closes[:,1],marker='x')
 plt.show()

@@ -4,7 +4,7 @@ trader = BitgetTrader()
 
 # trader.open_long("DOGEUSDT",50,10)
 # trader.close_long("DOGEUSDT",5)
-# trader.close_short("DOGEUSDT",5)
+trader.close_short("DOGEUSDT",5)
 # pprint(trader.check_position("DOGEUSDT"))
 # trader.clear_order("DOGEUSDT")
 # print(trader.fetch_firts_orders("DOGEUSDT",10))
