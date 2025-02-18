@@ -6,11 +6,12 @@ from Loader.BitgetLoader import bitget_loader
 from utils.draw_utils import draw_lite_chart,draw_chart_channel,draw_hb_chart,draw_bollinger
 from ForBots.Indicators.classic_indicators import add_donchan_channel,add_vangerchik,add_sma, add_slice_df,add_bollinger,add_over_bb,add_attached_bb,add_big_volume,add_dynamics_ma
 from strategies.test_strategies.check import check_strategy
-from strategies.work_strategies.PTA import PTA2_DDCdeDaddyNotShort as WS
+from strategies.work_strategies.PTA import PTA2_DDCde as WS
 from strategies.test_strategies.PTA import get_action_PTA2_BDDC,get_action_PTA2_DDC
 from strategies.work_strategies.STA_ca import STA1e
 from strategies.test_strategies.STA_ca import get_action_STA1e
-raw_file = 'DataForTests\DataFromBitget\DOGEUSDT_1m_1739873922.csv'
+# raw_file = 'DataForTests\DataFromBitget\DOGEUSDT_1m_1739873922.csv'
+raw_file = 'DataForTests\DataFromBitget\DOGEUSDT_3m_1739873329.csv'
 # raw_file = 'DataForTests\DataFromBitget\DOGEUSDT_5m_1738928707.csv'
 # raw_file = 'DataForTests\DataFromBitget\DOGEUSDT_15m_1738929100.csv'
 # raw_file = 'DataForTests\DataFromBitget\DOGEUSDT_30m_1738929225.csv'
@@ -20,7 +21,7 @@ raw_file = 'DataForTests\DataFromBitget\DOGEUSDT_1m_1739873922.csv'
 
 df = bitget_loader(raw_file)
 # df = df.iloc[0:200]
-period = 15
+period = 10
 multiplier = 2
 symbol = "DOGEUSDT"
 granularity = "1m"
@@ -69,7 +70,6 @@ shorts = np.array(shorts)
 closes = np.array(closes)
 equity = np.array(equity)
 
-print(shorts.shape)
 # draw_lite_chart(df)
 df.apply(draw_hb_chart,axis=1)
 # draw_bollinger(df)

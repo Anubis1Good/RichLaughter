@@ -114,10 +114,10 @@ class BitgetTrader:
             self.clear_orders(symbol)
             sleep(0.5) # TODO
             self.limit_order('buy',bbid,amount,symbol)
-        if side == 'short':
-            self.clear_orders(symbol)
-            sleep(0.5) # TODO
-            self.limit_order('buy',bbid,amount,symbol)
+        # if side == 'short':
+        #     self.clear_orders(symbol)
+        #     sleep(0.5) # TODO
+        #     self.limit_order('buy',bbid,amount,symbol)
 
     def open_short(self,symbol,amount,step):
         bbid,bask = self.fetch_firts_orders(symbol,step)
@@ -126,10 +126,10 @@ class BitgetTrader:
             self.clear_orders(symbol)
             sleep(0.5) # TODO
             self.limit_order('sell',bask,amount,symbol)
-        if side == 'long':
-            self.clear_orders(symbol)
-            sleep(0.5) # TODO
-            self.limit_order('sell',bask,amount,symbol)
+        # if side == 'long':
+        #     self.clear_orders(symbol)
+        #     sleep(0.5) # TODO
+        #     self.limit_order('sell',bask,amount,symbol)
 
 
     def close_long(self,symbol,step):
