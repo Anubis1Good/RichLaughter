@@ -34,13 +34,13 @@ class RL1:
         self.middle_price = self.strategy.get_middle_price(row)
         action = self.strategy(row)
         # print(action)
-        if action == 'long':
+        if action == 'long' or action == 'long_r':
             self.open_long()
-        elif action == 'short':
+        elif action == 'short' or action == 'short_r':
             self.open_short()
-        elif action == 'close_long':
+        elif action == 'close_long' or action == 'close_long_r':
             self.close_long()
-        elif action == 'close_short':
+        elif action == 'close_short' or action == 'close_short_r':
             self.close_short()
         elif action == 'long_m':
             self.open_long_m()

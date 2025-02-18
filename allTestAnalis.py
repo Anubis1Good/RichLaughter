@@ -28,9 +28,16 @@ for folder in folders:
             df_work['variant'] = variant
             df_main = pd.concat([df_main,df_work],axis=0)
 df_main['minute_eq'] = df_main.apply(get_minute_eq,axis=1)
+df_main['month_eq'] = df_main['minute_eq']*4
 df_main = df_main.sort_values(by='minute_eq',axis=0,ascending=False)
 df_main = df_main.reset_index(drop=True)
 path_df_main = os.path.join(folder_name,'Total.xlsx')
-with pd.ExcelWriter(path_df_main) as writer:  
-    df_main.to_excel(writer,sheet_name='total') 
+with pd.ExcelWriter(path_df_main, engine='xlsxwriter') as writer:  
+    df_main.to_excel(writer,sheet_name='total')
+    workbook = writer.book
+    worksheet = writer.sheets['total']
+    for i, col in enumerate(df_main.columns):
+        width = max(df_main[col].apply(lambda x: len(str(x))).max(), len(col))
+        worksheet.set_column(i, i, width)
+    writer._save()
 
