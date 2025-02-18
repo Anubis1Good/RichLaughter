@@ -1,8 +1,8 @@
 import os
 import traceback
 from Optimiztion.Optimizator1 import Optimizator1
-from strategies.work_strategies.PTA import PTA2_DDCShort as ws
-from strategies.test_strategies.PTA import get_action_PTA2_BDDC as ts
+from strategies.work_strategies.PTA import PTA2_DDCr as ws
+from strategies.test_strategies.universal import universal_test_strategy as ts
 # from strategies.work_strategies.STA_ca import STA1e as ws
 # from strategies.test_strategies.STA_ca import get_action_STA1e as ts 
 

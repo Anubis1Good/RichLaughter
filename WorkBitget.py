@@ -6,13 +6,14 @@ from Loader.BitgetLoader import bitget_loader
 from utils.draw_utils import draw_lite_chart,draw_chart_channel,draw_hb_chart,draw_bollinger
 from ForBots.Indicators.classic_indicators import add_donchan_channel,add_vangerchik,add_sma, add_slice_df,add_bollinger,add_over_bb,add_attached_bb,add_big_volume,add_dynamics_ma
 from strategies.test_strategies.check import check_strategy
-from strategies.work_strategies.PTA import PTA2_DDCde as WS
+from strategies.work_strategies.PTA import PTA2_BDDC as WS
 from strategies.test_strategies.PTA import get_action_PTA2_BDDC,get_action_PTA2_DDC
 from strategies.work_strategies.STA_ca import STA1e
 from strategies.test_strategies.STA_ca import get_action_STA1e
+from strategies.test_strategies.universal import universal_test_strategy as TS
 # raw_file = 'DataForTests\DataFromBitget\DOGEUSDT_1m_1739873922.csv'
-raw_file = 'DataForTests\DataFromBitget\DOGEUSDT_3m_1739873329.csv'
-# raw_file = 'DataForTests\DataFromBitget\DOGEUSDT_5m_1738928707.csv'
+# raw_file = 'DataForTests\DataFromBitget\DOGEUSDT_3m_1739873329.csv'
+raw_file = 'DataForTests\DataFromBitget\DOGEUSDT_5m_1739873413.csv'
 # raw_file = 'DataForTests\DataFromBitget\DOGEUSDT_15m_1738929100.csv'
 # raw_file = 'DataForTests\DataFromBitget\DOGEUSDT_30m_1738929225.csv'
 # raw_file = 'DataForTests\DataFromBitget\DOGEUSDT_1H_1738929320.csv'
@@ -21,7 +22,7 @@ raw_file = 'DataForTests\DataFromBitget\DOGEUSDT_3m_1739873329.csv'
 
 df = bitget_loader(raw_file)
 # df = df.iloc[0:200]
-period = 10
+period = 5
 multiplier = 2
 symbol = "DOGEUSDT"
 granularity = "1m"
@@ -49,7 +50,7 @@ df = bot.get_test_df(df)
 # fee_base = 0.0004
 fee_base = 0.0012
 # trades,longs,shorts,closes,equity = check_strategy(df,get_action_STA1e,bot)
-trades,longs,shorts,closes,equity = check_strategy(df,get_action_PTA2_BDDC,bot)
+trades,longs,shorts,closes,equity = check_strategy(df,TS,bot)
 print(trades)
 fee = trades['count']*trades['open_price']*fee_base
 print(fee, (fee/trades['open_price'])*100)
