@@ -1,5 +1,6 @@
 from request_functions.download_bitget import get_df
-from ForBots.Indicators.classic_indicators import add_donchan_channel,add_slice_df,add_big_volume,add_dynamics_ma,add_bollinger,add_over_bb
+from ForBots.Indicators.classic_indicators import add_donchan_channel,add_slice_df,add_big_volume,add_dynamics_ma,add_bollinger,add_over_bb,add_enter_price
+from ForBots.Indicators.price_funcs import get_price_dbb,get_price_reverse_dbb,get_price_bb,get_price_reverse_bb
 from utils.help_trades import reverse_action
 from strategies.work_strategies.BaseTA import BaseTABitget
 
@@ -173,11 +174,35 @@ class PTA2_UDC(BaseTABitget):
                     return "close_long_r"
                 else:
                     return "close_short_m"
-                
+
+# conter-trend      
 class PTA8_DOBBY(BaseTABitget):
     def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=20,multiplier=2):
         super().__init__(symbol, granularity, productType, n_parts, period)
         self.multiplier = multiplier
+    def preprocessing(self, df):
+        df = add_bollinger(df,self.period,multiplier=self.multiplier)
+        df = add_over_bb(df)
+        df = add_big_volume(df,self.period)
+        df = add_enter_price(df,get_price_dbb)
+        df = add_slice_df(df,period=self.period)
+        return df
+
+    def __call__(self, row, *args, **kwds):
+        if row['high'] > row['bbu']:
+            if row['is_big'] or row['over_bbu']:
+                return 'short_p'
+        if row['low'] < row['bbd']:
+            if row['is_big'] or row['over_bbd']:
+                return 'long_p'
+        if row['low'] < row['sma']:
+            if row['is_big']:
+                return 'close_short_p'
+        if row['high'] > row['sma']:
+            if row['is_big']:
+                return 'close_long_p'
+            
+class PTA8_ODOBBY(PTA8_DOBBY):
     def preprocessing(self, df):
         df = add_bollinger(df,self.period,multiplier=self.multiplier)
         df = add_over_bb(df)
@@ -187,37 +212,162 @@ class PTA8_DOBBY(BaseTABitget):
 
     def __call__(self, row, *args, **kwds):
         if row['high'] > row['bbu']:
-            if row['is_big'] or row['over_bbu']:
-                return 'short_r'
+            if row['over_bbu']:
+                return 'short_mt'
         if row['low'] < row['bbd']:
-            if row['is_big'] or row['over_bbd']:
-                return 'long_r'
+            if row['over_bbd']:
+                return 'long_mt'
         if row['low'] < row['sma']:
             if row['is_big']:
-                return 'close_short_r'
+                return 'close_short_mt'
         if row['high'] > row['sma']:
             if row['is_big']:
-                return 'close_long_r'
+                return 'close_long_mt'
 
+
+class PTA8_ODOBBY_FREE(PTA8_ODOBBY):
+    def preprocessing(self, df):
+        df = add_bollinger(df,self.period,multiplier=self.multiplier)
+        df = add_over_bb(df)
+        df = add_slice_df(df,period=self.period)
+        return df
+
+    def __call__(self, row, *args, **kwds):
+        if row['high'] > row['bbu']:
+            if row['over_bbu']:
+                return 'short_mt'
+        if row['low'] < row['bbd']:
+            if row['over_bbd']:
+                return 'long_mt'
+        if row['low'] < row['sma']:
+                return 'close_short_mt'
+        if row['high'] > row['sma']:
+                return 'close_long_mt'
+        
+    
+class PTA8_ODOBBY_FREEr(PTA8_ODOBBY_FREE):
+    def __call__(self, row, *args, **kwds):
+        if row['high'] > row['bbu']:
+            if row['over_bbu']:
+                return 'short_mt'
+        if row['low'] < row['bbd']:
+            if row['over_bbd']:
+                return 'long_mt'
+        
+            
 class PTA8_DOBBY_FREE(PTA8_DOBBY):
     def preprocessing(self, df):
         df = add_bollinger(df,self.period,multiplier=self.multiplier)
+        df = add_enter_price(df,get_price_dbb)
         df = add_slice_df(df,period=self.period)
         return df
     def __call__(self, row, *args, **kwds):
         if row['high'] > row['bbu']:
-            return 'short_r'
+            return 'short_p'
         if row['low'] < row['bbd']:
-            return 'long_r'
+            return 'long_p'
         if row['low'] < row['sma']:
-            return 'close_short_r'
+            return 'close_short_p'
         if row['high'] > row['sma']:
-            return 'close_long_r'
+            return 'close_long_p'
         
 class PTA8_DOBBY_FREEr(PTA8_DOBBY_FREE):
+    def preprocessing(self, df):
+        df = add_bollinger(df,self.period,multiplier=self.multiplier)
+        df = add_enter_price(df,get_price_reverse_dbb)
+        df = add_slice_df(df,period=self.period)
+        return df
     def __call__(self, row, *args, **kwds):
         if row['high'] > row['bbu']:
-            return 'short_r'
+            return 'short_p'
         if row['low'] < row['bbd']:
-            return 'long_r'
+            return 'long_p'
+# trend
+class PTA8_OBBY(PTA8_DOBBY):
+    def preprocessing(self, df):
+        df = add_bollinger(df,self.period,multiplier=self.multiplier)
+        df = add_over_bb(df)
+        df = add_big_volume(df,self.period)
+        df = add_enter_price(df,get_price_bb)
+        df = add_slice_df(df,period=self.period)
+        return df
 
+    def __call__(self, row, *args, **kwds):
+        if row['high'] > row['bbu']:
+            if row['is_big'] or row['over_bbu']:
+                return 'long_p'
+        if row['low'] < row['bbd']:
+            if row['is_big'] or row['over_bbd']:
+                return 'short_p'
+        if row['low'] < row['sma']:
+            if row['is_big']:
+                return 'close_long_p'
+        if row['high'] > row['sma']:
+            if row['is_big']:
+                return 'close_short_p'
+            
+class PTA8_FOBBY(PTA8_DOBBY):
+    def preprocessing(self, df):
+        df = add_bollinger(df,self.period,multiplier=self.multiplier)
+        df = add_big_volume(df,self.period)
+        df = add_enter_price(df,get_price_bb)
+        df = add_slice_df(df,period=self.period)
+        return df
+
+    def __call__(self, row, *args, **kwds):
+        if row['high'] > row['bbu']:
+            if row['is_big']:
+                return 'long_p'
+        if row['low'] < row['bbd']:
+            if row['is_big']:
+                return 'short_p'
+        if row['low'] < row['sma']:
+            if row['is_big']:
+                return 'close_long_p'
+        if row['high'] > row['sma']:
+            if row['is_big']:
+                return 'close_short_p'
+
+class PTA8_OBBY_FREE(PTA8_OBBY):
+    def preprocessing(self, df):
+        df = add_bollinger(df,self.period,multiplier=self.multiplier)
+        df = add_enter_price(df,get_price_bb)
+        df = add_slice_df(df,period=self.period)
+        return df
+    def __call__(self, row, *args, **kwds):
+        if row['high'] > row['bbu']:
+            return 'long_p'
+        if row['low'] < row['bbd']:
+            return 'short_p'
+        if row['low'] < row['sma']:
+            return 'close_long_p'
+        if row['high'] > row['sma']:
+            return 'close_short_p'
+        
+class PTA8_OBBY_FREEr(PTA8_OBBY_FREE):
+    def preprocessing(self, df):
+        df = add_bollinger(df,self.period,multiplier=self.multiplier)
+        df = add_enter_price(df,get_price_reverse_bb)
+        df = add_slice_df(df,period=self.period)
+        return df
+    def __call__(self, row, *args, **kwds):
+        if row['high'] > row['bbu']:
+            return 'long_p'
+        if row['low'] < row['bbd']:
+            return 'short_p'
+        
+class PTA8_OOBBY(PTA8_ODOBBY):
+    def __call__(self, row, *args, **kwds):
+        action = super().__call__(row, *args, **kwds)
+        action = reverse_action(action)
+        return action
+class PTA8_OOBBY_FREE(PTA8_ODOBBY_FREE):
+    def __call__(self, row, *args, **kwds):
+        action = super().__call__(row, *args, **kwds)
+        action = reverse_action(action)
+        return action
+class PTA8_OOBBY_FREEr(PTA8_ODOBBY_FREEr):
+    def __call__(self, row, *args, **kwds):
+        action = super().__call__(row, *args, **kwds)
+        action = reverse_action(action)
+        return action

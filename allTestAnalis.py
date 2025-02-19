@@ -18,13 +18,17 @@ for folder in folders:
     print(folder)
     full_path_folder = os.path.join(folder_name,folder)
     folder = folder.replace('_o','')
+    if folder == 'archive':
+        continue
     if os.path.isdir(full_path_folder):
         variants = os.listdir(full_path_folder)
         for variant in variants:
             path_bot = os.path.join(full_path_folder,variant,data_folder,folder + '.xlsx')
             df_work = pd.read_excel(path_bot,'total')
             df_work = df_work.sort_values(by='total_average_fee_percent',axis=0,ascending=False)
-            df_work = df_work.head(3)
+            df_best = df_work.head(3)
+            df_worst = df_work.tail(3)
+            df_work = pd.concat([df_best,df_worst],axis=0)
             df_work = df_work.reindex(columns = ['name','total_per','total_min_fee_percent','total_max_fee_percent','total_average_fee_percent','count'])
             df_work['variant'] = variant
             df_main = pd.concat([df_main,df_work],axis=0)

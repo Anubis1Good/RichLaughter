@@ -3,13 +3,12 @@ import matplotlib.pyplot as plt
 import numpy as np
 import numpy.typing as npt
 from Loader.BitgetLoader import bitget_loader
-from utils.draw_utils import draw_lite_chart,draw_chart_channel,draw_hb_chart,draw_bollinger,draw_dynamics
-from ForBots.Indicators.classic_indicators import add_donchan_channel,add_vangerchik,add_sma, add_slice_df,add_bollinger,add_over_bb,add_attached_bb,add_big_volume,add_dynamics_ma
+from utils.draw_utils import draw_lite_chart,draw_chart_channel,draw_hb_chart,draw_bollinger,draw_dynamics,draw_rails
+# from ForBots.Indicators.classic_indicators import add_donchan_channel,add_vangerchik,add_sma, add_slice_df,add_bollinger,add_over_bb,add_attached_bb,add_big_volume,add_dynamics_ma
 from strategies.test_strategies.check import check_strategy
-from strategies.work_strategies.PTA import PTA8_DOBBY_FREEr as WS
-from strategies.test_strategies.PTA import get_action_PTA2_BDDC,get_action_PTA2_DDC
-from strategies.work_strategies.STA_ca import STA1e
-from strategies.test_strategies.STA_ca import get_action_STA1e
+from strategies.work_strategies.PTA import PTA8_OOBBY as WS
+from strategies.work_strategies.OGTA import OGTA1_Rails as WS
+
 from strategies.test_strategies.universal import universal_test_strategy as TS
 # raw_file = 'DataForTests\DataFromBitget\DOGEUSDT_1m_1739873922.csv'
 # raw_file = 'DataForTests\DataFromBitget\DOGEUSDT_3m_1739873329.csv'
@@ -37,16 +36,13 @@ slope = 4
 # df = add_slice_df(df,period)
 # bot = STA1e(symbol,granularity,period=period,multiplier=multiplier,slope=slope)
 # df = bot.get_test_df(df)
-bot = WS(symbol,granularity,period=period,multiplier=multiplier)
+bot = WS(symbol,granularity,period=period)
 df = bot.get_test_df(df)
 # df.info()
 # print(df.head())
 
 
-# df = add_donchan_channel(df,15)
-# df = add_donchan_channel(df,30)
-# df = add_donchan_channel(df,60)
-# df = add_vangerchik(df)
+
 # fee_base = 0.0004
 fee_base = 0.0012
 # trades,longs,shorts,closes,equity = check_strategy(df,get_action_STA1e,bot)
@@ -58,13 +54,7 @@ print('total_with_fee',trades['total'] - fee, ((trades['total'] - fee)/trades['o
 
 # plt.plot(equity,color='red')
 
-# trades,longs,shorts,closes,equity = check_strategy(df,get_action_PTA2_BDDC)
-# print(trades)
-# fee = trades['count']*trades['open_price']*fee_base
-# print(fee, (fee/trades['open_price'])*100)
-# print(trades['total'] - fee, ((trades['total'] - fee)/trades['open_price'])*100)
-# # print(equity)
-# plt.plot(equity,color='blue')
+
 
 longs = np.array(longs)
 shorts = np.array(shorts)
@@ -73,11 +63,16 @@ equity = np.array(equity)
 
 # draw_lite_chart(df)
 df.apply(draw_hb_chart,axis=1)
-draw_bollinger(df)
+draw_rails(df)
+plt.plot(df['long_price'],color='green')
+plt.plot(df['short_price'],color='blue')
+plt.plot(df['stop_long'],color='yellow')
+plt.plot(df['stop_short'],color='violet')
+# draw_bollinger(df)
 # plt.subplot(2,1,1)
 # plt.plot(df.iloc[:100]['sma'])
 # plt.subplot(2,1,2)
-# plt.plot(df.iloc[:100]['dynamics_ma'])
+# plt.plot(df.iloc[:100]['dynamics_ma']
 # draw_dynamics(df)
 # draw_chart_channel(df)
 df.to_csv('test.csv')

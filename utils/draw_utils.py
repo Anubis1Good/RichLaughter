@@ -36,3 +36,6 @@ def draw_bollinger(df,clr='blue'):
 
 def draw_dynamics(df,clr='red'):
     df.apply(lambda row: plt.text(row.name,row['low'],round(row['dynamics_ma'],1), fontsize=10,rotation='vertical'),axis=1)
+
+def draw_rails(df,clr='blue'):
+    df.apply(lambda row: plt.vlines(row.name,row['low'],row['high'],colors=clr) if row['rails'] else None,axis=1)

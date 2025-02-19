@@ -1,4 +1,3 @@
-import math
 import pandas as pd
 import numpy as np
 
@@ -6,6 +5,16 @@ def add_slice_df(df:pd.DataFrame,period=20):
     df_slice  = df.iloc[period:]
     df_slice = df_slice.reset_index(drop=True)
     return df_slice
+
+def add_enter_price(df:pd.DataFrame,func):
+    """add 'long_price','short_price','close_long_price','close_short_price'"""
+    points = df.apply(lambda row: func(row),axis=1)
+    points = np.stack(points.values)
+    df['long_price'] = pd.Series(points[:,0])
+    df['short_price'] = pd.Series(points[:,1])
+    df['close_long_price'] = pd.Series(points[:,2])
+    df['close_short_price'] = pd.Series(points[:,3])
+    return df
 
 def get_donchan_channel(row,df:pd.DataFrame,period=20):
     if row.name < period:
