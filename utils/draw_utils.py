@@ -33,3 +33,6 @@ def draw_bollinger(df,clr='blue'):
     plt.plot(df['bbu'],color=clr)
     plt.plot(df['bbd'],color=clr)
     plt.plot(df['sma'],color=clr)
+
+def draw_dynamics(df,clr='red'):
+    df.apply(lambda row: plt.text(row.name,row['low'],round(row['dynamics_ma'],1), fontsize=10,rotation='vertical'),axis=1)

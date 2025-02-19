@@ -6,6 +6,7 @@ from utils.settings import settings
 class BitgetTrader:
     def __init__(self):
         self._exchange = self.create_exchange()
+        self.need_reset = True
         print(self._exchange)
     def create_exchange(self):
         return ccxt.bitget({'apiKey':settings.apikey_bitget,'secret':settings.apisec_bitget,'password':settings.apiphrase_bitget,"options":{'defaultType':'swap','adjustForTimeDifferecnce':True}})
@@ -153,14 +154,16 @@ class BitgetTrader:
         if side == 'long':
             self.open_short(symbol,amount,step)
         else:
-            self.clear_orders(symbol)
+            if self.need_reset:
+                self.clear_orders(symbol)
 
     def close_short(self,symbol,step):
         side, amount = self.check_position(symbol)
         if side == 'short':
             self.open_long(symbol,amount,step)
         else:
-            self.clear_orders(symbol)
+            if self.need_reset:
+                self.clear_orders(symbol)
 
     def close_all(self,symbol,step):
         side, amount = self.check_position(symbol)
@@ -171,7 +174,8 @@ class BitgetTrader:
             self.clear_orders(symbol)
             self.open_long(symbol,amount,step)
         else:
-            self.clear_orders(symbol)
+            if self.need_reset:
+                self.clear_orders(symbol)
 
     # middle_price
     def open_long_m(self,symbol,amount,price):
@@ -195,14 +199,17 @@ class BitgetTrader:
         if side == 'long':
             self.open_short_m(symbol,amount,price)
         else:
-            self.clear_orders(symbol)
+            if self.need_reset:
+                self.clear_orders(symbol)
 
     def close_short_m(self,symbol,price):
         side, amount = self.check_position(symbol)
         if side == 'short':
             self.open_long_m(symbol,amount,price)
         else:
-            self.clear_orders(symbol)
+            if self.need_reset:
+                self.clear_orders(symbol)
     
     def none_action(self,symbol):
-        self.clear_orders(symbol)
+        if self.need_reset:
+            self.clear_orders(symbol)

@@ -1,5 +1,5 @@
 from request_functions.download_bitget import get_df
-from ForBots.Indicators.classic_indicators import add_donchan_channel,add_slice_df,add_big_volume,add_dynamics_ma
+from ForBots.Indicators.classic_indicators import add_donchan_channel,add_slice_df,add_big_volume,add_dynamics_ma,add_bollinger,add_over_bb
 from utils.help_trades import reverse_action
 from strategies.work_strategies.BaseTA import BaseTABitget
 
@@ -143,12 +143,12 @@ class PTA2_DDCShort(PTA2_BDDCde):
 # универсальный
 
 class PTA2_UDC(BaseTABitget):
-    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=20,slope=5):
+    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=20,slope=20):
         super().__init__(symbol, granularity, productType, n_parts, period)
         self.slope = slope
     def preprocessing(self, df):
         df = add_donchan_channel(df,self.period)
-        df = add_dynamics_ma(df,self.period,'avarege')
+        df = add_dynamics_ma(df,self.period//2,'avarege')
         df = add_slice_df(df,period=self.period)
         return df
     def __call__(self,row, *args, **kwds):
@@ -173,3 +173,51 @@ class PTA2_UDC(BaseTABitget):
                     return "close_long_r"
                 else:
                     return "close_short_m"
+                
+class PTA8_DOBBY(BaseTABitget):
+    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=20,multiplier=2):
+        super().__init__(symbol, granularity, productType, n_parts, period)
+        self.multiplier = multiplier
+    def preprocessing(self, df):
+        df = add_bollinger(df,self.period,multiplier=self.multiplier)
+        df = add_over_bb(df)
+        df = add_big_volume(df,self.period)
+        df = add_slice_df(df,period=self.period)
+        return df
+
+    def __call__(self, row, *args, **kwds):
+        if row['high'] > row['bbu']:
+            if row['is_big'] or row['over_bbu']:
+                return 'short_r'
+        if row['low'] < row['bbd']:
+            if row['is_big'] or row['over_bbd']:
+                return 'long_r'
+        if row['low'] < row['sma']:
+            if row['is_big']:
+                return 'close_short_r'
+        if row['high'] > row['sma']:
+            if row['is_big']:
+                return 'close_long_r'
+
+class PTA8_DOBBY_FREE(PTA8_DOBBY):
+    def preprocessing(self, df):
+        df = add_bollinger(df,self.period,multiplier=self.multiplier)
+        df = add_slice_df(df,period=self.period)
+        return df
+    def __call__(self, row, *args, **kwds):
+        if row['high'] > row['bbu']:
+            return 'short_r'
+        if row['low'] < row['bbd']:
+            return 'long_r'
+        if row['low'] < row['sma']:
+            return 'close_short_r'
+        if row['high'] > row['sma']:
+            return 'close_long_r'
+        
+class PTA8_DOBBY_FREEr(PTA8_DOBBY_FREE):
+    def __call__(self, row, *args, **kwds):
+        if row['high'] > row['bbu']:
+            return 'short_r'
+        if row['low'] < row['bbd']:
+            return 'long_r'
+

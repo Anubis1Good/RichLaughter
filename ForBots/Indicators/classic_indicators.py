@@ -18,6 +18,7 @@ def get_donchan_channel(row,df:pd.DataFrame,period=20):
     return np.array([max_hb,min_hb,avarage])
 
 def add_donchan_channel(df:pd.DataFrame,period=20):
+    '''add max_hb, min_hb, avarege'''
     points = df.apply(lambda row: get_donchan_channel(row,df,period),axis=1)
     points = np.stack(points.values)
     df['max_hb'] = pd.Series(points[:,0])
@@ -26,6 +27,7 @@ def add_donchan_channel(df:pd.DataFrame,period=20):
     return df
 
 def add_vangerchik(df:pd.DataFrame):
+    """add max_vg, min_hb"""
     df['max_vg'] = df.apply(lambda row: row['max_hb'] - (row['max_hb']-row['min_hb'])/10,axis=1)
     df['min_vg'] = df.apply(lambda row: row['min_hb'] + (row['max_hb']-row['min_hb'])/10,axis=1)
     return df
@@ -37,6 +39,7 @@ def get_sma(row,df:pd.DataFrame,period=20,kind='middle'):
     return df_short[kind].mean()
 
 def add_sma(df:pd.DataFrame,period=20,kind='middle'):
+    '''add sma'''
     df['sma'] = df.apply(lambda row: get_sma(row,df,period,kind),axis=1)
     return df
 
@@ -52,6 +55,7 @@ def get_bollinger(row,df:pd.DataFrame,period=20,kind='middle',multiplier=2):
     return np.array([bbu,bbd,sma])
 
 def add_bollinger(df:pd.DataFrame,period=20,kind='middle',multiplier=2):
+    '''add bbu, bbd, sma'''
     points = df.apply(lambda row: get_bollinger(row,df,period,kind,multiplier),axis=1)
     points = np.stack(points.values)
     df['bbu'] = pd.Series(points[:,0])
@@ -60,6 +64,7 @@ def add_bollinger(df:pd.DataFrame,period=20,kind='middle',multiplier=2):
     return df
 
 def add_over_bb(df:pd.DataFrame):
+    '''add over_bbu and over_bbd'''
     df['over_bbu'] = df.apply(lambda row: row['bbu'] < row['low'],axis=1)
     df['over_bbd'] = df.apply(lambda row: row['bbd'] > row['high'],axis=1)
     return df
@@ -85,6 +90,7 @@ def get_change_attached_bb(row,df:pd.DataFrame):
             attached_change = True
     return attached_change
 def add_attached_bb(df:pd.DataFrame):
+    """add bbu_attached, bbd_attached, attached_change"""
     points = df.apply(lambda row: get_attached_bb(row,df),axis=1)
     points = np.stack(points.values)
     df['bbu_attached'] = pd.Series(points[:,0])
@@ -93,11 +99,13 @@ def add_attached_bb(df:pd.DataFrame):
     return df
 
 def add_big_volume(df:pd.DataFrame,period=20,multiplier=1):
+    """add sma_volume, is_big """
     df['sma_volume'] = df.apply(lambda row: get_sma(row,df,period,'volume'),axis=1)
     df['is_big'] = df.apply(lambda row: row['volume']*multiplier > row['sma_volume'],axis=1)
     return df
 
 def add_dynamics_ma(df:pd.DataFrame,period=20,kind='sma'):
+    """add dynamics_ma"""
     diff = df[kind].diff()
     df[kind+'_slope'] = diff * (1/diff.mean())
     df['dynamics_ma'] = np.degrees(np.arctan(df[kind+'_slope']))

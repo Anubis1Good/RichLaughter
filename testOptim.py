@@ -1,7 +1,7 @@
 import os
 import traceback
 from Optimiztion.Optimizator1 import Optimizator1
-from strategies.work_strategies.PTA import PTA2_UDC as ws
+from strategies.work_strategies.PTA import PTA8_DOBBY as ws
 from strategies.test_strategies.universal import universal_test_strategy as ts
 # from strategies.work_strategies.STA_ca import STA1e as ws
 # from strategies.test_strategies.STA_ca import get_action_STA1e as ts 
@@ -13,8 +13,8 @@ list_dir = os.listdir(test_folder)
 #     range(5,121,5)
 # ]
 params = [
-    range(5,41,5),
-    range(5,31,2)
+    range(5,21,5),
+    (0.5,1)
 ]
 # params = [
 #     range(5,61,5),

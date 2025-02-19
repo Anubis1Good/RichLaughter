@@ -1,13 +1,13 @@
 import os
 import pandas as pd
 
-def get_minute_eq(row):
+def get_minute_eq(row,kind='total_average_fee_percent'):
     timer = row['variant'].split('_')[-1]
     if 'm' in timer:
         mult = int(timer.replace('m',''))
     elif 'H' in timer:
         mult = int(timer.replace('H',''))*60
-    return row['total_average_fee_percent']/mult
+    return row[kind]/mult
 
 
 folder_name = 'TestResults'
@@ -17,6 +17,7 @@ df_main = pd.DataFrame(columns=['name','total_per','total_min_fee_percent','tota
 for folder in folders:
     print(folder)
     full_path_folder = os.path.join(folder_name,folder)
+    folder = folder.replace('_o','')
     if os.path.isdir(full_path_folder):
         variants = os.listdir(full_path_folder)
         for variant in variants:
@@ -29,6 +30,8 @@ for folder in folders:
             df_main = pd.concat([df_main,df_work],axis=0)
 df_main['minute_eq'] = df_main.apply(get_minute_eq,axis=1)
 df_main['month_eq'] = df_main['minute_eq']*4
+df_main['month_eq_max'] = df_main.apply(lambda row: get_minute_eq(row,'total_min_fee_percent'),axis=1)*4
+df_main['month_eq_min'] = df_main.apply(lambda row: get_minute_eq(row,'total_max_fee_percent'),axis=1)*4
 df_main = df_main.sort_values(by='minute_eq',axis=0,ascending=False)
 df_main = df_main.reset_index(drop=True)
 path_df_main = os.path.join(folder_name,'Total.xlsx')
