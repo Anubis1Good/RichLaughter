@@ -2,12 +2,16 @@ import os
 import pandas as pd
 
 def get_minute_eq(row,kind='total_average_fee_percent'):
+
     timer = row['variant'].split('_')[-1]
     if 'm' in timer:
         mult = int(timer.replace('m',''))
     elif 'H' in timer:
         mult = int(timer.replace('H',''))*60
+    else:
+        mult = int(timer)
     return row[kind]/mult
+
 
 
 folder_name = 'TestResults'

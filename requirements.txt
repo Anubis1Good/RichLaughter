@@ -4,3 +4,4 @@ matplotlib
 ccxt
 tqdm
 python-dotenv
+apimoex
