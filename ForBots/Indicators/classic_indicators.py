@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 
 def add_slice_df(df:pd.DataFrame,period=20):
-    df_slice  = df.iloc[period:]
+    df_slice  = df.iloc[period+1:]
     df_slice = df_slice.reset_index(drop=True)
     return df_slice
 
@@ -33,6 +33,22 @@ def add_donchan_channel(df:pd.DataFrame,period=20):
     df['max_hb'] = pd.Series(points[:,0])
     df['min_hb'] = pd.Series(points[:,1])
     df['avarege'] = pd.Series(points[:,2])
+    return df
+
+def get_donchan_middle(row,df:pd.DataFrame):
+    middle_max,middle_min = -1,-1
+    if row.name > 1:
+        prev = df.loc[row.name-1]
+        middle_min = (row['min_hb'] + prev['min_hb'])/2
+        middle_max = (row['max_hb'] + prev['max_hb'])/2
+    return np.array([middle_max,middle_min])
+
+def add_donchan_middle(df:pd.DataFrame):
+    """add 'middle_max','middle_min'"""
+    points = df.apply(lambda row: get_donchan_middle(row,df),axis=1)
+    points = np.stack(points.values)
+    df['middle_max'] = pd.Series(points[:,0])
+    df['middle_min'] = pd.Series(points[:,1])
     return df
 
 def add_vangerchik(df:pd.DataFrame):
@@ -121,3 +137,4 @@ def add_dynamics_ma(df:pd.DataFrame,period=20,kind='sma'):
     df['dynamics_ma'] = df['dynamics_ma'].rolling(period).mean()
     df = df.drop(kind+'_slope',axis=1)
     return df
+
