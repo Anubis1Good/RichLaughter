@@ -127,40 +127,48 @@ class BitgetTrader:
     def open_long(self,symbol,amount,step):
         bbid,bask = self.fetch_firts_orders(symbol,step)
         side, am = self.check_position(symbol)
-        if side != 'long':
+        if side == 'short':
+            self.clear_orders(symbol)
+            sleep(0.5) # TODO
+            size = int(am) + int(amount)
+            self.limit_order('buy',bbid,size,symbol)
+        elif side != 'long':
             self.clear_orders(symbol)
             sleep(0.5) # TODO
             self.limit_order('buy',bbid,amount,symbol)
-        # if side == 'short':
-        #     self.clear_orders(symbol)
-        #     sleep(0.5) # TODO
-        #     self.limit_order('buy',bbid,amount,symbol)
 
     def open_short(self,symbol,amount,step):
         bbid,bask = self.fetch_firts_orders(symbol,step)
         side, am = self.check_position(symbol)
-        if side != 'short':
+        if side == 'long':
+            self.clear_orders(symbol)
+            sleep(0.5) # TODO
+            size = int(am) + int(amount)
+            self.limit_order('sell',bask,size,symbol)
+        elif side != 'short':
             self.clear_orders(symbol)
             sleep(0.5) # TODO
             self.limit_order('sell',bask,amount,symbol)
-        # if side == 'long':
-        #     self.clear_orders(symbol)
-        #     sleep(0.5) # TODO
-        #     self.limit_order('sell',bask,amount,symbol)
 
 
     def close_long(self,symbol,step):
         side, amount = self.check_position(symbol)
+        bbid,bask = self.fetch_firts_orders(symbol,step)
         if side == 'long':
-            self.open_short(symbol,amount,step)
+            self.clear_orders(symbol)
+            sleep(0.5) # TODO
+            self.limit_order('sell',bask,amount,symbol)
         else:
             if self.need_reset:
                 self.clear_orders(symbol)
 
     def close_short(self,symbol,step):
         side, amount = self.check_position(symbol)
+        bbid,bask = self.fetch_firts_orders(symbol,step)
         if side == 'short':
-            self.open_long(symbol,amount,step)
+            self.clear_orders(symbol)
+            sleep(0.5) # TODO
+            self.limit_order('buy',bbid,amount,symbol)
         else:
             if self.need_reset:
                 self.clear_orders(symbol)
@@ -181,7 +189,12 @@ class BitgetTrader:
     def open_long_pw(self,symbol,amount,price):
         bbid,bask = self.fetch_condition_orders(symbol,price)
         side, am = self.check_position(symbol)
-        if side != 'long':
+        if side == 'short':
+            self.clear_orders(symbol)
+            sleep(0.5) # TODO
+            size = int(am) + int(amount)
+            self.limit_order('buy',bbid,size,symbol)
+        elif side != 'long':
             self.clear_orders(symbol)
             sleep(0.5) # TODO
             self.limit_order('buy',bbid,amount,symbol)
@@ -189,23 +202,34 @@ class BitgetTrader:
     def open_short_pw(self,symbol,amount,price):
         bbid,bask = self.fetch_condition_orders(symbol,price)
         side, am = self.check_position(symbol)
-        if side != 'short':
+        if side == 'long':
+            self.clear_orders(symbol)
+            sleep(0.5) # TODO
+            size = int(am) + int(amount)
+            self.limit_order('sell',bask,size,symbol)
+        elif side != 'short':
             self.clear_orders(symbol)
             sleep(0.5) # TODO
             self.limit_order('sell',bask,amount,symbol)
 
     def close_long_pw(self,symbol,price):
         side, amount = self.check_position(symbol)
+        bbid,bask = self.fetch_condition_orders(symbol,price)
         if side == 'long':
-            self.open_short_m(symbol,amount,price)
+            self.clear_orders(symbol)
+            sleep(0.5) # TODO
+            self.limit_order('sell',bask,amount,symbol)
         else:
             if self.need_reset:
                 self.clear_orders(symbol)
 
     def close_short_pw(self,symbol,price):
         side, amount = self.check_position(symbol)
+        bbid,bask = self.fetch_condition_orders(symbol,price)
         if side == 'short':
-            self.open_long_m(symbol,amount,price)
+            self.clear_orders(symbol)
+            sleep(0.5) # TODO
+            self.limit_order('buy',bbid,amount,symbol)
         else:
             if self.need_reset:
                 self.clear_orders(symbol)

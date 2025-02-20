@@ -1,4 +1,4 @@
-
+import traceback
 
 
 class RL1:
@@ -54,35 +54,40 @@ class RL1:
         self.close_short_price = row['close_short_price']
 
     def run(self):
-        row = self.strategy.get_row()
-        self.get_price(row)
-        action = self.strategy(row)
-        # print(action)
-        if action in ('long','long_r','long_p','long_mt'):
-            self.open_long()
-        elif action in ('short','short_r','short_p','short_mt'):
-            self.open_short()
-        elif action in ('close_long','close_long_r','close_long_p','close_long_mt'):
-            self.close_long()
-        elif action in ('close_short','close_short_r','close_short_p','close_short_mt'):
-            self.close_short()
-        elif action == 'long_pw':
-            self.open_long_pw()
-        elif action == 'short_pw':
-            self.open_short_pw()
-        elif action == 'close_long_pw':
-            self.close_long_pw()
-        elif action == 'close_short_pw':
-            self.close_short_pw()
-        elif action == 'long_m':
-            self.open_long_m()
-        elif action == 'short_m':
-            self.open_short_m()
-        elif action == 'close_long_m':
-            self.close_long_m()
-        elif action == 'close_short_m':
-            self.close_short_m()
-        elif action == 'close_all':
-            self.close_all()
-        else:
-            self.none_action()
+        try:
+            row = self.strategy.get_row()
+            self.get_price(row)
+            action = self.strategy(row)
+            # print(action)
+            if action in ('long','long_r','long_p','long_mt'):
+                self.open_long()
+            elif action in ('short','short_r','short_p','short_mt'):
+                self.open_short()
+            elif action in ('close_long','close_long_r','close_long_p','close_long_mt'):
+                self.close_long()
+            elif action in ('close_short','close_short_r','close_short_p','close_short_mt'):
+                self.close_short()
+            elif action == 'long_pw':
+                self.open_long_pw()
+            elif action == 'short_pw':
+                self.open_short_pw()
+            elif action == 'close_long_pw':
+                self.close_long_pw()
+            elif action == 'close_short_pw':
+                self.close_short_pw()
+            elif action == 'long_m':
+                self.open_long_m()
+            elif action == 'short_m':
+                self.open_short_m()
+            elif action == 'close_long_m':
+                self.close_long_m()
+            elif action == 'close_short_m':
+                self.close_short_m()
+            elif action == 'close_all':
+                self.close_all()
+            else:
+                self.none_action()
+        except Exception as err:
+            traceback.print_exc()
+
+

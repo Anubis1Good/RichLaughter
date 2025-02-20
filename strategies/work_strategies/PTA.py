@@ -1,6 +1,6 @@
 from request_functions.download_bitget import get_df
 from ForBots.Indicators.classic_indicators import add_donchan_channel,add_slice_df,add_big_volume,add_dynamics_ma,add_bollinger,add_over_bb,add_enter_price,add_donchan_middle,add_donchan_prev,add_buffer_add,add_buffer_sub
-from ForBots.Indicators.price_funcs import get_price_dbb,get_price_reverse_dbb,get_price_bb,get_price_reverse_bb, get_price_bddc,get_price_ddc,get_price_rbddc,get_price_rddc,get_price_rddc_prev,get_price_ddc_prev,get_price_rddc_prev_ba
+from ForBots.Indicators.price_funcs import get_price_dbb,get_price_reverse_dbb,get_price_bb,get_price_reverse_bb, get_price_bddc,get_price_ddc,get_price_rbddc,get_price_rddc,get_price_rddc_prev,get_price_ddc_prev,get_price_rddc_prev_ba,get_price_bb_buff
 from utils.help_trades import reverse_action
 from strategies.work_strategies.BaseTA import BaseTABitget
 
@@ -343,6 +343,14 @@ class PTA8_OBBY_PF(PTA8_DOBBY):
             return 'close_short_p'
             
 class PTA8_LOBBY(PTA8_OBBY):
+    def preprocessing(self, df):
+        df = add_bollinger(df,self.period,multiplier=self.multiplier)
+        df = add_over_bb(df)
+        df = add_big_volume(df,self.period)
+        df = add_buffer_add(df,'bbu','bbd',5)
+        df = add_enter_price(df,get_price_bb_buff)
+        df = add_slice_df(df,period=self.period)
+        return df
     def __call__(self, row, *args, **kwds):
         if row['over_bbu']:
             return 'close_long'
@@ -350,16 +358,16 @@ class PTA8_LOBBY(PTA8_OBBY):
             return 'close_short'
         if row['high'] > row['bbu']:
             if row['is_big']:
-                return 'long_mt'
+                return 'long_pw'
         if row['low'] < row['bbd']:
             if row['is_big']:
-                return 'short_mt'
+                return 'short_pw'
         if row['low'] < row['sma']:
             if row['is_big']:
-                return 'close_long_p'
+                return 'close_long'
         if row['high'] > row['sma']:
             if row['is_big']:
-                return 'close_short_p'
+                return 'close_short'
             
 class PTA8_FOBBY(PTA8_DOBBY):
     def preprocessing(self, df):

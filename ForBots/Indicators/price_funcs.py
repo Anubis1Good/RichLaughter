@@ -41,6 +41,14 @@ def get_price_bb(row):
         close_price = row['sma']
     return np.array([long_price,short_price,close_price,close_price])
 
+def get_price_bb_buff(row):
+    long_price,short_price,close_price = -1,-1,-1
+    if row.name > 1:
+        long_price = row['top_buff']
+        short_price = row['bottom_buff']
+        close_price = row['sma']
+    return np.array([long_price,short_price,close_price,close_price])
+
 def get_price_ddc(row):
     long_price,short_price,close_price = -1,-1,-1
     if row.name > 1:
