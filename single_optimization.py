@@ -16,7 +16,7 @@ def optimization(ws,ts,params,test_folder,min_fee: float = 0.0004,
             print(rw,'not stocks')
 
 if __name__ == '__main__':
-    from strategies.work_strategies.PTA import PTA8_LOBBY as ws
+    from strategies.work_strategies.PTA import PTA8_LOBSTER as ws
     from strategies.test_strategies.universal import universal_test_strategy as ts
     # from strategies.work_strategies.OGTA import OGTA1_Rails as ws
     # from strategies.work_strategies.STA_ca import STA1e as ws
@@ -30,8 +30,8 @@ if __name__ == '__main__':
     # min_fee = 0.0002
     # max_fee = 0.0009
     params = [
-         [2,3,4,6]+list(range(5,11,5)),
-        (0.5,1,1.5,2)
+         [2,3,4,6]+list(range(5,21,5)),
+        (0.5,1,1.5)
     ]
     # params = [
     #     range(5,61,5),

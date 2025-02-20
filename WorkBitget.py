@@ -6,7 +6,7 @@ from Loader.BitgetLoader import bitget_loader
 from utils.draw_utils import draw_lite_chart,draw_chart_channel,draw_hb_chart,draw_bollinger,draw_dynamics,draw_rails
 # from ForBots.Indicators.classic_indicators import add_donchan_channel,add_vangerchik,add_sma, add_slice_df,add_bollinger,add_over_bb,add_attached_bb,add_big_volume,add_dynamics_ma
 from strategies.test_strategies.check import check_strategy
-from strategies.work_strategies.PTA import PTA8_LOBBY as WS
+from strategies.work_strategies.PTA import PTA8_LOBSTER as WS
 # from strategies.work_strategies.OGTA import OGTA1_Rails as WS
 
 from strategies.test_strategies.universal import universal_test_strategy as TS
@@ -21,7 +21,7 @@ raw_file = 'DataForTests\DataFromBitget\DOGEUSDT_5m_1739873413.csv'
 
 df = bitget_loader(raw_file)
 # df = df.iloc[0:200]
-period = 4
+period = 5
 multiplier = 0.5
 symbol = "DOGEUSDT"
 granularity = "1m"
@@ -75,8 +75,8 @@ df.apply(draw_hb_chart,axis=1)
 draw_bollinger(df)
 # draw_dynamics(df)
 # draw_rails(df)
-plt.plot(df['top_buff'],color='green')
-plt.plot(df['bottom_buff'],color='green')
+# plt.plot(df['top_buff'],color='green')
+# plt.plot(df['bottom_buff'],color='green')
 # draw_chart_channel(df)
 df.to_csv('test.csv')
 if len(longs.shape) > 1:

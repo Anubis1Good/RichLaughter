@@ -368,6 +368,26 @@ class PTA8_LOBBY(PTA8_OBBY):
         if row['high'] > row['sma']:
             if row['is_big']:
                 return 'close_short'
+
+class PTA8_LOBSTER(PTA8_LOBBY):
+    def __call__(self, row, *args, **kwds):
+        if row['over_bbu']:
+            return 'close_long'
+        if row['over_bbd']:
+            return 'close_short'
+        if not (row['high'] > row['bbu'] and row['low'] < row['bbd']):
+            if row['high'] > row['bbu']:
+                if row['is_big']:
+                    return 'long_pw'
+            if row['low'] < row['bbd']:
+                if row['is_big']:
+                    return 'short_pw'
+            if row['low'] < row['sma']:
+                if row['is_big']:
+                    return 'close_long'
+            if row['high'] > row['sma']:
+                if row['is_big']:
+                    return 'close_short' 
             
 class PTA8_FOBBY(PTA8_DOBBY):
     def preprocessing(self, df):

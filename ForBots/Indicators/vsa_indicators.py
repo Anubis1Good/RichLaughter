@@ -61,3 +61,9 @@ def add_rails_slice(df:pd.DataFrame):
     df_slice  = df.iloc[ps:]
     df_slice = df_slice.reset_index(drop=True)
     return df_slice
+
+def add_allowance_rails(df:pd.DataFrame):
+    """add 'allowance', 'sc'"""
+    df['sc'] = df.apply(lambda row: max(row['spred_channel_long'],row['spred_channel_short']),axis=1)
+    df['allowance'] = df['sc'] < df['delta_2v']
+    return df
