@@ -49,11 +49,26 @@ def get_price_ddc(row):
         close_price = row['avarege']
     return np.array([long_price,short_price,close_price,close_price])
 
+def get_price_ddc_prev(row):
+    long_price,short_price,close_price = -1,-1,-1
+    if row.name > 1:
+        long_price = row['prev_min']
+        short_price = row['prev_max']
+        close_price = row['avarege']
+    return np.array([long_price,short_price,close_price,close_price])
+
 def get_price_rddc(row):
     long_price,short_price = -1,-1
     if row.name > 1:
         long_price = row['middle_min']
         short_price = row['middle_max']
+    return np.array([long_price,short_price,short_price,long_price])
+
+def get_price_rddc_prev(row):
+    long_price,short_price = -1,-1
+    if row.name > 1:
+        long_price = row['prev_min']
+        short_price = row['prev_max']
     return np.array([long_price,short_price,short_price,long_price])
 
 def get_price_bddc(row):

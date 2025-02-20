@@ -50,6 +50,21 @@ def add_donchan_middle(df:pd.DataFrame):
     df['middle_max'] = pd.Series(points[:,0])
     df['middle_min'] = pd.Series(points[:,1])
     return df
+def get_donchan_prev(row,df:pd.DataFrame):
+    prev_max,prev_min = -1,-1
+    if row.name > 1:
+        prev = df.loc[row.name-1]
+        prev_min = prev['min_hb']
+        prev_max = prev['max_hb']
+    return np.array([prev_max,prev_min])
+
+def add_donchan_prev(df:pd.DataFrame):
+    """add 'prev_max','prev_min'"""
+    points = df.apply(lambda row: get_donchan_prev(row,df),axis=1)
+    points = np.stack(points.values)
+    df['prev_max'] = pd.Series(points[:,0])
+    df['prev_min'] = pd.Series(points[:,1])
+    return df
 
 def add_vangerchik(df:pd.DataFrame):
     """add max_vg, min_hb"""
