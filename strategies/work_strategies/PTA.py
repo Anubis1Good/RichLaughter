@@ -1,7 +1,7 @@
 from request_functions.download_bitget import get_df
-from ForBots.Indicators.classic_indicators import add_donchan_channel,add_slice_df,add_big_volume,add_dynamics_ma,add_bollinger,add_over_bb,add_enter_price,add_donchan_middle,add_donchan_prev,add_buffer_add,add_buffer_sub,add_vangerchik,add_simple_dynamics_ma
-from ForBots.Indicators.price_funcs import get_price_dbb,get_price_reverse_dbb,get_price_bb,get_price_reverse_bb, get_price_bddc,get_price_ddc,get_price_rbddc,get_price_rddc,get_price_rddc_prev,get_price_ddc_prev,get_price_rddc_prev_ba,get_price_bb_buff
-from utils.help_trades import reverse_action
+from ForBots.Indicators.classic_indicators import add_donchan_channel,add_slice_df,add_big_volume,add_dynamics_ma,add_bollinger,add_over_bb,add_enter_price,add_donchan_middle,add_donchan_prev,add_buffer_add,add_buffer_sub,add_vangerchik,add_simple_dynamics_ma,add_vodka_channel
+from ForBots.Indicators.price_funcs import get_price_dbb,get_price_reverse_dbb,get_price_bb,get_price_reverse_bb, get_price_bddc,get_price_ddc,get_price_rbddc,get_price_rddc,get_price_rddc_prev,get_price_ddc_prev,get_price_rddc_prev_ba,get_price_bb_buff,get_price_crab,get_price_rab,get_price_rddc_prev_ba_test,get_universal_r
+from utils.help_trades import reverse_action,chep
 from strategies.work_strategies.BaseTA import BaseTABitget
 
 # trand
@@ -95,8 +95,8 @@ class PTA2_DDCr(PTA2_BDDCr):
     def preprocessing(self, df):
         df = add_donchan_channel(df,self.period)
         df = add_donchan_prev(df)
-        df = add_buffer_sub(df)
-        df = add_enter_price(df,get_price_rddc_prev_ba)
+        df = add_buffer_sub(df,'prev_max','prev_min')
+        df = add_enter_price(df,get_price_rddc_prev_ba_test)
         df = add_slice_df(df,period=self.period)
         return df
     def __call__(self, row, *args, **kwds):
@@ -104,6 +104,81 @@ class PTA2_DDCr(PTA2_BDDCr):
         action = reverse_action(action)
         return action
     
+class PTA2_DDCrWork(PTA2_BDDCr):
+    def preprocessing(self, df):
+        df = add_donchan_channel(df,self.period)
+        df = add_donchan_prev(df)
+        df = add_buffer_sub(df)
+        df = add_enter_price(df,get_price_rddc_prev_ba)
+        df = add_slice_df(df,period=self.period)
+        return df
+    def __call__(self, row, *args, **kwds):
+        nearest_long = row['high'] - row['close'] > row['close'] - row['low'] 
+        if row['low'] == row['min_hb'] or row['low'] < row['long_price']:
+            if nearest_long:
+                return 'long_pw'
+        if row['high'] == row['max_hb'] or row['high'] > row['short_price']:
+            return 'short_pw'
+        
+class PTA2_DDCrVG(PTA2_BDDCr):
+    def preprocessing(self, df):
+        df = add_donchan_channel(df,self.period)
+        df = add_vangerchik(df)
+        df = add_donchan_prev(df,'max_vg','min_vg')
+        df = add_buffer_sub(df,'prev_max','prev_min')
+        df = add_enter_price(df,get_price_rddc_prev_ba_test)
+        df = add_slice_df(df,period=self.period)
+        return df
+    def __call__(self, row, *args, **kwds):
+        nearest_long = row['high'] - row['close'] > row['close'] - row['low'] 
+        if row['low'] == row['min_hb'] or row['low'] < row['long_price']:
+            if nearest_long:
+                return 'long_pw'
+        if row['high'] == row['max_hb'] or row['high'] > row['short_price']:
+            return 'short_pw'
+        
+class PTA2_DVCr(PTA2_BDDCr):
+    def preprocessing(self, df):
+        df = add_vodka_channel(df,self.period)
+        df = add_enter_price(df,lambda row: get_universal_r(row,'bottom_mean','top_mean'))
+        df = add_slice_df(df,period=self.period)
+        return df
+    def __call__(self, row, *args, **kwds):
+        nearest_long = row['high'] - row['close'] > row['close'] - row['low'] 
+        if row['low'] < row['bottom_mean']:
+            if nearest_long:
+                return 'long_pw'
+        if row['high'] > row['top_mean']:
+            return 'short_pw'
+        
+class PTA2_BDVCr(PTA2_BDDCr):
+    def preprocessing(self, df):
+        df = add_vodka_channel(df,self.period)
+        df = add_enter_price(df,lambda row: get_universal_r(row,'top_mean','bottom_mean'))
+        df = add_slice_df(df,period=self.period)
+        return df
+    def __call__(self, row, *args, **kwds):
+        nearest_long = row['high'] - row['close'] > row['close'] - row['low'] 
+        if row['low'] < row['bottom_mean']:
+            if nearest_long:
+                return 'short_pw'
+        if row['high'] > row['top_mean']:
+            return 'long_pw'
+        
+class PTA2_ALKASH(PTA2_BDDCr):
+    def preprocessing(self, df):
+        df = add_vodka_channel(df,self.period)
+        df = add_enter_price(df,lambda row: get_universal_r(row,'close','close'))
+        df = add_slice_df(df,period=self.period)
+        return df
+    def __call__(self, row, *args, **kwds):
+        nearest_long = row['high'] - row['close'] > row['close'] - row['low'] 
+        if row['low'] < row['bottom_mean']:
+            if nearest_long:
+                return 'short_pw'
+        if row['high'] > row['top_mean']:
+            return 'long_pw'
+        
 class PTA2_DDCde(PTA2_BDDCde):
     def preprocessing(self, df):
         df = add_donchan_channel(df,self.period)
@@ -472,10 +547,11 @@ class PTA8_OOBBY_FREEr(PTA8_ODOBBY_FREEr):
     
 # TODO
 class PTA9_CRAB(BaseTABitget):
-    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=5,multiplier=2,period_slow=20):
+    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=5,multiplier=2,period_slow=20,slope=0.5):
         super().__init__(symbol, granularity, productType, n_parts, period)
         self.multiplier = multiplier
         self.period_slow = period_slow
+        self.slope = slope
     def preprocessing(self, df):
         df = add_bollinger(df,self.period,multiplier=self.multiplier)
         df = add_over_bb(df)
@@ -483,22 +559,59 @@ class PTA9_CRAB(BaseTABitget):
         df = add_donchan_channel(df,self.period_slow)
         df = add_vangerchik(df)
         df = add_simple_dynamics_ma(df,self.period_slow,'avarege')
-        # df = add_enter_price(df,get_price_dbb)
-        df = add_slice_df(df,period=self.period)
+        df['slope'] = self.slope
+        df = add_enter_price(df,get_price_crab)
+        max_period = max(self.period,self.period_slow)
+        df = add_slice_df(df,period=max_period)
         return df
 
     def __call__(self, row, *args, **kwds):
-        pass
-        # if row['sdm']
-        # if row['high'] > row['bbu']:
-        #     if row['is_big'] or row['over_bbu']:
-        #         return 'short_p'
-        # if row['low'] < row['bbd']:
-        #     if row['is_big'] or row['over_bbd']:
-        #         return 'long_p'
-        # if row['low'] < row['sma']:
-        #     if row['is_big']:
-        #         return 'close_short_p'
-        # if row['high'] > row['sma']:
-        #     if row['is_big']:
-        #         return 'close_long_p'
+        if row['sdm'] >= self.slope and row['sma'] > row['avarege']:
+            if row['low'] <= row['sma'] and chep(row,row['long_price']):
+                return 'long_p'
+
+        if row['sdm'] <= -self.slope and row['sma'] < row['avarege']:
+            if row['high'] >= row['sma'] and chep(row,row['short_price']):
+                return 'short_p'
+
+        if -self.slope < row['sdm'] < self.slope:
+            if row['high'] > row['max_vg'] and chep(row,row['short_price']):
+                return 'short_p'
+            if row['low'] < row['min_vg'] and chep(row,row['long_price']):
+                return 'long_p'
+        if row['sdm'] >= self.slope and row['sma'] < row['avarege']:
+            return 'close_long_mt'
+        if row['sdm'] <= -self.slope and row['sma'] > row['avarege']:
+            return 'close_short_mt'
+        
+class PTA9_RAB(PTA9_CRAB):
+    def preprocessing(self, df):
+        df = add_bollinger(df,self.period,multiplier=self.multiplier)
+        df = add_over_bb(df)
+        df = add_big_volume(df,self.period)
+        df = add_donchan_channel(df,self.period_slow)
+        df = add_vangerchik(df)
+        df = add_simple_dynamics_ma(df,self.period_slow,'avarege')
+        df['slope'] = self.slope
+        df = add_enter_price(df,get_price_rab)
+        max_period = max(self.period,self.period_slow)
+        df = add_slice_df(df,period=max_period)
+        return df
+    def __call__(self, row, *args, **kwds):
+        if row['sdm'] >= self.slope and row['sma'] > row['avarege']:
+            if row['low'] <= row['sma'] and chep(row,row['short_price']):
+                return 'short_p'
+
+        if row['sdm'] <= -self.slope and row['sma'] < row['avarege']:
+            if row['high'] >= row['sma'] and chep(row,row['long_price']):
+                return 'long_p'
+
+        if -self.slope < row['sdm'] < self.slope:
+            if row['high'] > row['max_vg'] and chep(row,row['short_price']):
+                return 'long_p'
+            if row['low'] < row['min_vg'] and chep(row,row['long_price']):
+                return 'short_p'
+        if row['sdm'] >= self.slope and row['sma'] < row['avarege']:
+            return 'close_long_mt'
+        if row['sdm'] <= -self.slope and row['sma'] > row['avarege']:
+            return 'close_short_mt'

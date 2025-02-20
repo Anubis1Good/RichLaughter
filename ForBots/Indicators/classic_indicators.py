@@ -16,6 +16,26 @@ def add_enter_price(df:pd.DataFrame,func):
     df['close_short_price'] = pd.Series(points[:,3])
     return df
 
+
+def get_vodka_channel(row,df:pd.DataFrame,period=20):
+    if row.name < period:
+        return np.array([-1,-1,-1])
+    df_short = df.iloc[row.name-period:row.name+1]
+    max_hb = df_short['high'].median()
+    min_hb = df_short['low'].median()
+    avarage = (min_hb + max_hb)/2
+
+    return np.array([max_hb,min_hb,avarage])
+
+def add_vodka_channel(df:pd.DataFrame,period=20):
+    '''add top_mean, bottom_mean, avarege_mean'''
+    points = df.apply(lambda row: get_vodka_channel(row,df,period),axis=1)
+    points = np.stack(points.values)
+    df['top_mean'] = pd.Series(points[:,0])
+    df['bottom_mean'] = pd.Series(points[:,1])
+    df['avarege_mean'] = pd.Series(points[:,2])
+    return df
+
 def get_donchan_channel(row,df:pd.DataFrame,period=20):
     if row.name < period:
         return np.array([-1,-1,-1])
@@ -50,17 +70,17 @@ def add_donchan_middle(df:pd.DataFrame):
     df['middle_max'] = pd.Series(points[:,0])
     df['middle_min'] = pd.Series(points[:,1])
     return df
-def get_donchan_prev(row,df:pd.DataFrame):
+def get_donchan_prev(row,df:pd.DataFrame,top='max_hb',bottom='min_hb'):
     prev_max,prev_min = -1,-1
     if row.name > 1:
         prev = df.loc[row.name-1]
-        prev_min = prev['min_hb']
-        prev_max = prev['max_hb']
+        prev_min = prev[bottom]
+        prev_max = prev[top]
     return np.array([prev_max,prev_min])
 
-def add_donchan_prev(df:pd.DataFrame):
+def add_donchan_prev(df:pd.DataFrame,top='max_hb',bottom='min_hb'):
     """add 'prev_max','prev_min'"""
-    points = df.apply(lambda row: get_donchan_prev(row,df),axis=1)
+    points = df.apply(lambda row: get_donchan_prev(row,df,top,bottom),axis=1)
     points = np.stack(points.values)
     df['prev_max'] = pd.Series(points[:,0])
     df['prev_min'] = pd.Series(points[:,1])
@@ -174,10 +194,10 @@ def get_sdm_ma(row,df:pd.DataFrame,period=20,kind='sdiff'):
     df_short = df.iloc[row.name-period:row.name+1]
     return df_short[kind].mean()
 
-def add_simple_dynamics_ma(df:pd.DataFrame,period=20,kind='sma'):
+def add_simple_dynamics_ma(df:pd.DataFrame,period=20,kind='sma',divider_period=1):
     """add 'sdm'"""
     df = add_simple_diff_ma(df,kind)
-    df['sdm'] = df.apply(lambda row: get_sdm_ma(row,period),axis=1)
+    df['sdm'] = df.apply(lambda row: get_sdm_ma(row,df,period//divider_period),axis=1)
     return df
 
 def add_sc_and_buffer(df:pd.DataFrame,top='max_hb',bottom='min_hb',divider=10):

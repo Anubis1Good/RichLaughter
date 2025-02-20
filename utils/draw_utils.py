@@ -24,15 +24,17 @@ def draw_hbwv_chart(row):
     plt.vlines(row.name,0,row['volume'],colors='#6c6eff')
 
 
-def draw_chart_channel(df):
-    plt.plot(df['max_hb'])
-    plt.plot(df['min_hb'])
-    plt.plot(df['avarege'])
+def draw_chart_channel(df,top='max_hb',bottom='min_hb',median='avarege'):
+    plt.plot(df[top])
+    plt.plot(df[bottom])
+    plt.plot(df[median])
 
 def draw_bollinger(df,clr='blue'):
     plt.plot(df['bbu'],color=clr)
     plt.plot(df['bbd'],color=clr)
     plt.plot(df['sma'],color=clr)
+
+
 
 def draw_dynamics(df,clr='red'):
     df.apply(lambda row: plt.text(row.name,row['low'],round(row['dynamics_ma'],1), fontsize=10,rotation='vertical'),axis=1)

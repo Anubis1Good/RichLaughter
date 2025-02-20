@@ -5,3 +5,8 @@ def reverse_action(action:str):
         elif 'short' in action:
             action = action.replace('short','long')
     return action
+
+def chep(row,price):
+    '''check_enter_price'''
+    is_ok = row['low'] < price < row['high']
+    return is_ok
