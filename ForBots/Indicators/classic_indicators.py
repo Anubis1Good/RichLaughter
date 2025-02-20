@@ -94,13 +94,15 @@ def get_bollinger(row,df:pd.DataFrame,period=20,kind='middle',multiplier=2):
 
     return np.array([bbu,bbd,sma])
 
-def add_bollinger(df:pd.DataFrame,period=20,kind='middle',multiplier=2):
+def add_bollinger(df:pd.DataFrame,period=20,kind='close',multiplier=2):
     '''add bbu, bbd, sma'''
     points = df.apply(lambda row: get_bollinger(row,df,period,kind,multiplier),axis=1)
     points = np.stack(points.values)
     df['bbu'] = pd.Series(points[:,0])
     df['bbd'] = pd.Series(points[:,1])
     df['sma'] = pd.Series(points[:,2])
+    print(points[-5:])
+    print(df.tail())
     return df
 
 def add_over_bb(df:pd.DataFrame):
@@ -151,6 +153,33 @@ def add_dynamics_ma(df:pd.DataFrame,period=20,kind='sma'):
     df['dynamics_ma'] = np.degrees(np.arctan(df[kind+'_slope']))
     df['dynamics_ma'] = df['dynamics_ma'].rolling(period).mean()
     df = df.drop(kind+'_slope',axis=1)
+    return df
+
+def get_simple_diff_ma(row,df:pd.DataFrame,kind):
+    diff = 0
+    if row.name > 1:
+        prev = df.iloc[row.name-1]
+        if prev[kind] < row[kind]:
+            diff = 1
+        elif prev[kind] > row[kind]:
+            diff = -1
+    return diff
+
+def add_simple_diff_ma(df:pd.DataFrame, kind='sma'):
+    """add 'sdiff'"""
+    df['sdiff'] = df.apply(lambda row: get_simple_diff_ma(row,df,kind),axis=1)
+    return df
+
+def get_sdm_ma(row,df:pd.DataFrame,period=20,kind='sdiff'):
+    if row.name < period:
+        return -1
+    df_short = df.iloc[row.name-period:row.name+1]
+    return df_short[kind].mean()
+
+def add_simple_dynamics_ma(df:pd.DataFrame,period=20,kind='sma'):
+    """add 'sdm'"""
+    df = add_simple_diff_ma(df,kind)
+    df['sdm'] = df.apply(lambda row: get_sdm_ma(row,period),axis=1)
     return df
 
 def add_sc_and_buffer(df:pd.DataFrame,top='max_hb',bottom='min_hb',divider=10):

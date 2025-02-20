@@ -1,5 +1,5 @@
 from request_functions.download_bitget import get_df
-from ForBots.Indicators.classic_indicators import add_donchan_channel,add_slice_df,add_big_volume,add_dynamics_ma,add_bollinger,add_over_bb,add_enter_price,add_donchan_middle,add_donchan_prev,add_buffer_add,add_buffer_sub
+from ForBots.Indicators.classic_indicators import add_donchan_channel,add_slice_df,add_big_volume,add_dynamics_ma,add_bollinger,add_over_bb,add_enter_price,add_donchan_middle,add_donchan_prev,add_buffer_add,add_buffer_sub,add_vangerchik,add_simple_dynamics_ma
 from ForBots.Indicators.price_funcs import get_price_dbb,get_price_reverse_dbb,get_price_bb,get_price_reverse_bb, get_price_bddc,get_price_ddc,get_price_rbddc,get_price_rddc,get_price_rddc_prev,get_price_ddc_prev,get_price_rddc_prev_ba,get_price_bb_buff
 from utils.help_trades import reverse_action
 from strategies.work_strategies.BaseTA import BaseTABitget
@@ -388,7 +388,6 @@ class PTA8_LOBSTER(PTA8_LOBBY):
             if row['high'] > row['sma']:
                 if row['is_big']:
                     return 'close_short' 
-            
 class PTA8_FOBBY(PTA8_DOBBY):
     def preprocessing(self, df):
         df = add_bollinger(df,self.period,multiplier=self.multiplier)
@@ -470,3 +469,36 @@ class PTA8_OOBBY_FREEr(PTA8_ODOBBY_FREEr):
         action = super().__call__(row, *args, **kwds)
         action = reverse_action(action)
         return action
+    
+# TODO
+class PTA9_CRAB(BaseTABitget):
+    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=5,multiplier=2,period_slow=20):
+        super().__init__(symbol, granularity, productType, n_parts, period)
+        self.multiplier = multiplier
+        self.period_slow = period_slow
+    def preprocessing(self, df):
+        df = add_bollinger(df,self.period,multiplier=self.multiplier)
+        df = add_over_bb(df)
+        df = add_big_volume(df,self.period)
+        df = add_donchan_channel(df,self.period_slow)
+        df = add_vangerchik(df)
+        df = add_simple_dynamics_ma(df,self.period_slow,'avarege')
+        # df = add_enter_price(df,get_price_dbb)
+        df = add_slice_df(df,period=self.period)
+        return df
+
+    def __call__(self, row, *args, **kwds):
+        pass
+        # if row['sdm']
+        # if row['high'] > row['bbu']:
+        #     if row['is_big'] or row['over_bbu']:
+        #         return 'short_p'
+        # if row['low'] < row['bbd']:
+        #     if row['is_big'] or row['over_bbd']:
+        #         return 'long_p'
+        # if row['low'] < row['sma']:
+        #     if row['is_big']:
+        #         return 'close_short_p'
+        # if row['high'] > row['sma']:
+        #     if row['is_big']:
+        #         return 'close_long_p'
