@@ -94,15 +94,13 @@ def get_bollinger(row,df:pd.DataFrame,period=20,kind='middle',multiplier=2):
 
     return np.array([bbu,bbd,sma])
 
-def add_bollinger(df:pd.DataFrame,period=20,kind='close',multiplier=2):
+def add_bollinger(df:pd.DataFrame,period=20,kind='middle',multiplier=2):
     '''add bbu, bbd, sma'''
     points = df.apply(lambda row: get_bollinger(row,df,period,kind,multiplier),axis=1)
     points = np.stack(points.values)
     df['bbu'] = pd.Series(points[:,0])
     df['bbd'] = pd.Series(points[:,1])
     df['sma'] = pd.Series(points[:,2])
-    print(points[-5:])
-    print(df.tail())
     return df
 
 def add_over_bb(df:pd.DataFrame):

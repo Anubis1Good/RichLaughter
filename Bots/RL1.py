@@ -58,10 +58,10 @@ class RL1:
             row = self.strategy.get_row()
             self.get_price(row)
             action = self.strategy(row)
-            print("+++++++++++++++++")
-            print(row)
-            print(action)
-            print("+++++++++++++++++")
+            # print("+++++++++++++++++")
+            # print(row)
+            # print(action)
+            # print("+++++++++++++++++")
             if action in ('long','long_r','long_p','long_mt'):
                 self.open_long()
             elif action in ('short','short_r','short_p','short_mt'):
