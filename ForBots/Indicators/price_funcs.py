@@ -71,6 +71,13 @@ def get_price_rddc_prev(row):
         short_price = row['prev_max']
     return np.array([long_price,short_price,short_price,long_price])
 
+def get_price_rddc_prev_ba(row):
+    long_price,short_price = -1,-1
+    if row.name > 1:
+        long_price = row['bottom_buff']
+        short_price = row['top_buff']
+    return np.array([long_price,short_price,short_price,long_price])
+
 def get_price_bddc(row):
     long_price,short_price,close_price = -1,-1,-1
     if row.name > 1:

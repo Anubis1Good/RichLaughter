@@ -177,8 +177,8 @@ class BitgetTrader:
             if self.need_reset:
                 self.clear_orders(symbol)
 
-    # middle_price
-    def open_long_m(self,symbol,amount,price):
+    # price_work
+    def open_long_pw(self,symbol,amount,price):
         bbid,bask = self.fetch_condition_orders(symbol,price)
         side, am = self.check_position(symbol)
         if side != 'long':
@@ -186,7 +186,7 @@ class BitgetTrader:
             sleep(0.5) # TODO
             self.limit_order('buy',bbid,amount,symbol)
 
-    def open_short_m(self,symbol,amount,price):
+    def open_short_pw(self,symbol,amount,price):
         bbid,bask = self.fetch_condition_orders(symbol,price)
         side, am = self.check_position(symbol)
         if side != 'short':
@@ -194,7 +194,7 @@ class BitgetTrader:
             sleep(0.5) # TODO
             self.limit_order('sell',bask,amount,symbol)
 
-    def close_long_m(self,symbol,price):
+    def close_long_pw(self,symbol,price):
         side, amount = self.check_position(symbol)
         if side == 'long':
             self.open_short_m(symbol,amount,price)
@@ -202,7 +202,7 @@ class BitgetTrader:
             if self.need_reset:
                 self.clear_orders(symbol)
 
-    def close_short_m(self,symbol,price):
+    def close_short_pw(self,symbol,price):
         side, amount = self.check_position(symbol)
         if side == 'short':
             self.open_long_m(symbol,amount,price)

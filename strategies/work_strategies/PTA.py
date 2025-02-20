@@ -1,6 +1,6 @@
 from request_functions.download_bitget import get_df
-from ForBots.Indicators.classic_indicators import add_donchan_channel,add_slice_df,add_big_volume,add_dynamics_ma,add_bollinger,add_over_bb,add_enter_price,add_donchan_middle,add_donchan_prev
-from ForBots.Indicators.price_funcs import get_price_dbb,get_price_reverse_dbb,get_price_bb,get_price_reverse_bb, get_price_bddc,get_price_ddc,get_price_rbddc,get_price_rddc,get_price_rddc_prev,get_price_ddc_prev
+from ForBots.Indicators.classic_indicators import add_donchan_channel,add_slice_df,add_big_volume,add_dynamics_ma,add_bollinger,add_over_bb,add_enter_price,add_donchan_middle,add_donchan_prev,add_buffer_add,add_buffer_sub
+from ForBots.Indicators.price_funcs import get_price_dbb,get_price_reverse_dbb,get_price_bb,get_price_reverse_bb, get_price_bddc,get_price_ddc,get_price_rbddc,get_price_rddc,get_price_rddc_prev,get_price_ddc_prev,get_price_rddc_prev_ba
 from utils.help_trades import reverse_action
 from strategies.work_strategies.BaseTA import BaseTABitget
 
@@ -86,16 +86,17 @@ class PTA2_BDDCr(BaseTABitget):
         return df
     def __call__(self, row, *args, **kwds):
         if row['high'] == row['max_hb']:
-            return 'long_p'
+            return 'long_pw'
         elif row['low'] == row['min_hb']:
-            return 'short_p'
+            return 'short_pw'
 # conter-trend
         
 class PTA2_DDCr(PTA2_BDDCr):
     def preprocessing(self, df):
         df = add_donchan_channel(df,self.period)
         df = add_donchan_prev(df)
-        df = add_enter_price(df,get_price_rddc_prev)
+        df = add_buffer_sub(df)
+        df = add_enter_price(df,get_price_rddc_prev_ba)
         df = add_slice_df(df,period=self.period)
         return df
     def __call__(self, row, *args, **kwds):

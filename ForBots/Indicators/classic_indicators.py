@@ -153,3 +153,21 @@ def add_dynamics_ma(df:pd.DataFrame,period=20,kind='sma'):
     df = df.drop(kind+'_slope',axis=1)
     return df
 
+def add_sc_and_buffer(df:pd.DataFrame,top='max_hb',bottom='min_hb',divider=10):
+    df['spred_channel'] = df[top] - df[bottom]
+    df['buffer'] = df['spred_channel']/divider
+    return df
+
+def add_buffer_add(df:pd.DataFrame,top='max_hb',bottom='min_hb',divider=10):
+    '''add top_buff, bottom_buff'''
+    df = add_sc_and_buffer(df,top,bottom,divider)
+    df['top_buff'] = df[top]+df['buffer']
+    df['bottom_buff'] = df[bottom]-df['buffer']
+    return df
+
+def add_buffer_sub(df:pd.DataFrame,top='max_hb',bottom='min_hb',divider=10):
+    '''add top_buff, bottom_buff'''
+    df = add_sc_and_buffer(df,top,bottom,divider)
+    df['top_buff'] = df[top]-df['buffer']
+    df['bottom_buff'] = df[bottom]+df['buffer']
+    return df

@@ -6,7 +6,7 @@ from Loader.BitgetLoader import bitget_loader
 from utils.draw_utils import draw_lite_chart,draw_chart_channel,draw_hb_chart,draw_bollinger,draw_dynamics,draw_rails
 # from ForBots.Indicators.classic_indicators import add_donchan_channel,add_vangerchik,add_sma, add_slice_df,add_bollinger,add_over_bb,add_attached_bb,add_big_volume,add_dynamics_ma
 from strategies.test_strategies.check import check_strategy
-from strategies.work_strategies.PTA import PTA8_LOBBY as WS
+from strategies.work_strategies.PTA import PTA2_DDCr as WS
 # from strategies.work_strategies.OGTA import OGTA1_Rails as WS
 
 from strategies.test_strategies.universal import universal_test_strategy as TS
@@ -37,7 +37,7 @@ slope = 4
 # bot = STA1e(symbol,granularity,period=period,multiplier=multiplier,slope=slope)
 # df = bot.get_test_df(df)
 bot = WS(symbol,granularity,period=period)
-bot = WS(symbol,granularity,period=period,multiplier=multiplier)
+# bot = WS(symbol,granularity,period=period,multiplier=multiplier)
 df = bot.get_test_df(df)
 # df.info()
 # print(df.head())
@@ -72,10 +72,12 @@ df.apply(draw_hb_chart,axis=1)
 # plt.plot(df.iloc[:100]['sma'])
 # plt.subplot(2,1,2)
 # plt.plot(df.iloc[:100]['dynamics_ma']
-draw_bollinger(df)
+# draw_bollinger(df)
 # draw_dynamics(df)
 # draw_rails(df)
-# draw_chart_channel(df)
+plt.plot(df['top_buff'],color='green')
+plt.plot(df['bottom_buff'],color='green')
+draw_chart_channel(df)
 df.to_csv('test.csv')
 if len(longs.shape) > 1:
     plt.scatter(longs[:,0],longs[:,1],marker='^')
