@@ -6,8 +6,9 @@ from Loader.BitgetLoader import bitget_loader
 from utils.draw_utils import draw_lite_chart,draw_chart_channel,draw_hb_chart,draw_bollinger,draw_dynamics,draw_rails
 # from ForBots.Indicators.classic_indicators import add_donchan_channel,add_vangerchik,add_sma, add_slice_df,add_bollinger,add_over_bb,add_attached_bb,add_big_volume,add_dynamics_ma
 from strategies.test_strategies.check import check_strategy
-from strategies.work_strategies.PTA import PTA2_BDVCr as WS
-# from strategies.work_strategies.OGTA import OGTA1_Rails as WS
+# from strategies.work_strategies.PTA import PTA2_BDVCr as WS
+# from strategies.work_strategies.STA_ca import STA1_LITE as WS
+from strategies.work_strategies.OGTA import OGTA2_Rails as WS
 
 from strategies.test_strategies.universal import universal_test_strategy as TS
 # raw_file = 'DataForTests\DataFromBitget\DOGEUSDT_1m_1739873922.csv'
@@ -21,7 +22,7 @@ raw_file = 'DataForTests\DataFromBitget\DOGEUSDT_5m_1739873413.csv'
 
 df = bitget_loader(raw_file)
 # df = df.iloc[0:200]
-period = 2
+period = 20
 multiplier = 2
 symbol = "DOGEUSDT"
 granularity = "1m"
@@ -37,6 +38,7 @@ slope = 4
 # bot = STA1e(symbol,granularity,period=period,multiplier=multiplier,slope=slope)
 # df = bot.get_test_df(df)
 bot = WS(symbol,granularity,period=period)
+# bot = WS(symbol,granularity,period=period,slope=0.5)
 # bot = WS(symbol,granularity,period=period,multiplier=multiplier)
 # bot = WS(symbol,granularity,period=period,multiplier=multiplier,period_slow=5,slope=0.5)
 df = bot.get_test_df(df)
@@ -70,15 +72,15 @@ df.apply(draw_hb_chart,axis=1)
 # plt.plot(df['stop_long'],color='yellow')
 # plt.plot(df['stop_short'],color='violet')
 # plt.subplot(2,1,1)
-# plt.plot(df.iloc[:100]['sma'])
 # plt.subplot(2,1,2)
 # plt.plot(df.iloc[:100]['dynamics_ma']
 # draw_bollinger(df)
+# plt.plot(df['sma2'])
 # draw_dynamics(df)
 # draw_rails(df)
 # plt.plot(df['top_buff'],color='green')
 # plt.plot(df['bottom_buff'],color='green')
-draw_chart_channel(df,'top_mean', 'bottom_mean', 'avarege_mean')
+# draw_chart_channel(df,'top_mean', 'bottom_mean', 'avarege_mean')
 # df.info()
 # print(df.head())
 # draw_chart_channel(df)

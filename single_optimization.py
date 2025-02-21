@@ -16,14 +16,17 @@ def optimization(ws,ts,params,test_folder,min_fee: float = 0.0004,
             print(rw,'not stocks')
 
 if __name__ == '__main__':
-    from strategies.work_strategies.PTA import PTA2_ALKASH as ws
+    # from strategies.work_strategies.PTA import PTA2_ALKASH as ws
     from strategies.test_strategies.universal import universal_test_strategy as ts
-    # from strategies.work_strategies.OGTA import OGTA1_Rails as ws
+    from strategies.work_strategies.OGTA import OGTA2_Rails as ws
     # from strategies.work_strategies.STA_ca import STA1e as ws
     test_folder = 'DataForTests\DataFromBitget'
     # test_folder = 'DataForTests\DataFromMOEX'
+    # params = [
+    #     [2,3,4]+list(range(5,101,5))
+    # ]
     params = [
-        [2,3,4]+list(range(5,101,5))
+        (20,)
     ]
     min_fee = 0.0004
     max_fee = 0.0012

@@ -74,6 +74,14 @@ def universal_test_strategy(row,trades,shorts,longs,closes,equity,work_strategy)
         t_close_long(row,trades,closes,'high')
     elif action == 'close_short_r':
         t_close_short(row,trades,closes,'low')
+    elif action == 'long_ct':
+        t_long(row,trades,longs,closes,'close')
+    elif action == 'short_ct':
+        t_short(row,trades,shorts,closes,'close')
+    elif action == 'close_long_ct':
+        t_close_long(row,trades,closes,'close')
+    elif action == 'close_short_ct':
+        t_close_short(row,trades,closes,'close')
     elif action in ('long_p','long_pw'):
         t_long(row,trades,longs,closes,'long_price')
     elif action in ('short_p','short_pw'):

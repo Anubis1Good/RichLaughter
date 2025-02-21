@@ -1,7 +1,7 @@
 import os
 import pandas as pd
 from time import time, sleep
-from request_functions.get_bitget import get_history_candles,get_candles
+from request_functions.get_bitget import get_history_candles,get_candles,get_ticks
 import matplotlib.pyplot as plt
 from tqdm import tqdm
 
@@ -99,3 +99,34 @@ def save_df(symbol="BTCUSDT",granularity="1m",productType="usdt-futures",n_parts
     path = os.path.join('DataForTests/DataFromBitget',symbol+"_"+granularity+'_'+str(time()).split(".")[0]+'.csv')
     df.to_csv(path)
 
+# TICKS
+def download_bitget_ticks(symbol="BTCUSDT",productType="usdt-futures",limit="1000",step=100000,start=0,end=0):
+    r = range(start,end+1,step)
+    res = None
+    for i in tqdm(r):
+        startTime = i
+        endTime = i + step -1
+        if not res:
+            res = get_ticks(symbol=symbol,productType=productType, startTime=startTime,endTime=endTime,limit=limit)
+        else:
+            res += get_ticks(symbol=symbol,productType=productType, startTime=startTime,endTime=endTime,limit=limit)
+        if len(res) > 10000:
+            save_df_ticks(res,symbol)
+            with open('logs\logs_ticks.txt','w') as f:
+                f.write(str(startTime)+'_'+str(endTime))
+            res = None
+        sleep(0.1)
+    save_df_ticks(res,symbol)
+
+def create_df(res):
+    df = pd.DataFrame(res)
+    # df['size_volume'] = df['price'] * df['size']
+    df = df.drop_duplicates()
+    df = df.reset_index(drop=True)
+    df = df.drop(['tradeId','symbol'],axis=1)
+    return df
+
+def save_df_ticks(res,symbol="BTCUSDT"):
+    df = create_df(res)
+    path = os.path.join('DataForTests/TicksBitget',symbol+"_"'_'+str(time()).split(".")[0]+'.csv')
+    df.to_csv(path)

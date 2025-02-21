@@ -1,7 +1,7 @@
 from utils.help_trades import reverse_action
 from strategies.work_strategies.BaseTA import BaseTABitget
-from ForBots.Indicators.vsa_indicators import add_rails,add_rails_slice,add_allowance_rails
-from ForBots.Indicators.classic_indicators import add_big_volume,add_slice_df,add_enter_price,add_delta_2v,add_sc_and_buffer
+from ForBots.Indicators.vsa_indicators import add_rails,add_rails_slice,add_allowance_rails,add_spred,add_OGTA2_rails_info
+from ForBots.Indicators.classic_indicators import add_big_volume,add_slice_df,add_enter_price,add_delta_2v,add_sc_and_buffer,add_sma
 from ForBots.Indicators.price_funcs import get_price_reverse_rails
 
 class OGTA1_Rails(BaseTABitget):
@@ -36,3 +36,16 @@ class OGTA1_Rails(BaseTABitget):
         # if row['stop_long'] < row['low'] < row['long_price']:
         #     return 'long_pw'
         
+
+class OGTA2_Rails(BaseTABitget):
+    def preprocessing(self, df):
+        df = add_spred(df)
+        df['mean_spred'] = df['spred'].mean()
+        df = add_OGTA2_rails_info(df)
+        return df
+    
+    def __call__(self, row, *args, **kwds):
+        if row['info'] == 1:
+            return 'long_ct'
+        if row['info'] == -1:
+            return 'short_ct'

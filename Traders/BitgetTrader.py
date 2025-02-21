@@ -237,3 +237,6 @@ class BitgetTrader:
     def none_action(self,symbol):
         if self.need_reset:
             self.clear_orders(symbol)
+
+class BitgetTestTrader(BitgetTrader):
+    pass

@@ -67,3 +67,24 @@ def add_allowance_rails(df:pd.DataFrame):
     df['sc'] = df.apply(lambda row: max(row['spred_channel_long'],row['spred_channel_short']),axis=1)
     df['allowance'] = df['sc'] < df['delta_2v']
     return df
+
+def add_spred(df:pd.DataFrame):
+    'add "spred"'
+    df['spred'] = df['high'] - df['low']
+    return df
+
+def get_ogta2_info(row,df:pd.DataFrame):
+    info = 0
+    if row.name > 1:
+        prev = df.loc[row.name-1]
+        if prev['spred'] > prev['mean_spred']:
+            if prev['low'] > row['low']:
+                info -= 1
+            if prev['high'] < row['high']:
+                info += 1
+    return info
+    
+def add_OGTA2_rails_info(df:pd.DataFrame):
+    'add "info"'
+    df['info'] = df.apply(lambda row: get_ogta2_info(row,df),axis=1)
+    return df

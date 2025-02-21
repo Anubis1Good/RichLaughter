@@ -56,3 +56,11 @@ def get_candles(symbol="BTCUSDT",granularity="1m",productType="usdt-futures",lim
     res = requests.get(url_req).json()
     return res['data']
 
+def get_ticks(symbol="BTCUSDT",productType="usdt-futures",limit="1000",startTime="0",endTime="0"):
+    url_req = f"https://api.bitget.com/api/v2/mix/market/fills-history?symbol={symbol}&productType={productType}&limit={limit}"
+    if startTime != "0":
+        url_req += "&startTime="+str(startTime)
+    if endTime != "0":
+        url_req += "&endTime="+str(endTime)
+    res = requests.get(url_req).json()
+    return res['data']

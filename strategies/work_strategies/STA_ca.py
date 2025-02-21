@@ -1,5 +1,6 @@
 from request_functions.download_bitget import get_df
-from ForBots.Indicators.classic_indicators import add_bollinger,add_big_volume,add_attached_bb,add_over_bb,add_dynamics_ma,add_slice_df
+from ForBots.Indicators.classic_indicators import add_bollinger,add_big_volume,add_attached_bb,add_over_bb,add_dynamics_ma,add_slice_df,add_simple_dynamics_ma,add_sma
+from strategies.work_strategies.BaseTA import BaseTABitget
 
 class STA1e:
     def __init__(self,symbol="BTCUSDT",granularity="1m",productType="usdt-futures",n_parts=1,period=20,multiplier=2,slope=5):
@@ -55,3 +56,37 @@ class STA1e:
             return 'close_long'
         if row['over_bbd']:
             return 'close_short'
+
+class STA1_LITE(BaseTABitget):
+    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=20,multiplier=2,slope=0.5,period2=10):
+        super().__init__(symbol, granularity, productType, n_parts, period)
+        self.multiplier = multiplier
+        self.slope = slope
+        self.period2 = period2
+    def preprocessing(self, df):
+        df = add_sma(df,self.period2)
+        df= df.rename(columns={'sma':'sma2'})
+        df = add_bollinger(df,self.period,multiplier=self.multiplier)
+        df = add_big_volume(df,self.period)
+        df = add_over_bb(df)
+        df = add_simple_dynamics_ma(df,self.period2)
+        df = add_slice_df(df,self.period)
+        return df
+    
+    def __call__(self, row, *args, **kwds):
+        if row['sdm'] >= self.slope:
+            if row['high'] > row['bbu'] and row['is_big']:
+                return 'close_long_mt'
+            if row['over_bbu']:
+                return 'close_long_mt'
+            if row['low'] < row['sma'] and row['sma2'] > row['sma']:
+                return 'long_mt'
+        elif row['sdm'] <= -self.slope:
+            if row['high'] > row['sma'] and row['sma2'] < row['sma']:
+                return 'short_mt'
+            if row['low'] < row['bbd'] and row['is_big']:
+                return 'close_short_mt'
+            if row['over_bbd']:
+                return 'close_short_mt'
+        else:
+            pass

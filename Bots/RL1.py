@@ -62,13 +62,13 @@ class RL1:
             # print(row)
             # print(action)
             # print("+++++++++++++++++")
-            if action in ('long','long_r','long_p','long_mt'):
+            if action in ('long','long_r','long_p','long_mt','long_ct'):
                 self.open_long()
-            elif action in ('short','short_r','short_p','short_mt'):
+            elif action in ('short','short_r','short_p','short_mt','short_ct'):
                 self.open_short()
-            elif action in ('close_long','close_long_r','close_long_p','close_long_mt'):
+            elif action in ('close_long','close_long_r','close_long_p','close_long_mt','close_long_ct'):
                 self.close_long()
-            elif action in ('close_short','close_short_r','close_short_p','close_short_mt'):
+            elif action in ('close_short','close_short_r','close_short_p','close_short_mt','close_short_ct'):
                 self.close_short()
             elif action == 'long_pw':
                 self.open_long_pw()
