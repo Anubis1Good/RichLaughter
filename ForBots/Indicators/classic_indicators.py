@@ -61,11 +61,16 @@ def get_donchan_middle(row,df:pd.DataFrame):
         prev = df.loc[row.name-1]
         middle_min = (row['min_hb'] + prev['min_hb'])/2
         middle_max = (row['max_hb'] + prev['max_hb'])/2
+    # if 'shape' in dir(middle_max):
+    #     print(row['max_hb'])
+    #     print(prev['max_hb'])
     return np.array([middle_max,middle_min])
 
 def add_donchan_middle(df:pd.DataFrame):
     """add 'middle_max','middle_min'"""
     points = df.apply(lambda row: get_donchan_middle(row,df),axis=1)
+    # for p in points:
+    #     print(p.shape,p)
     points = np.stack(points.values)
     df['middle_max'] = pd.Series(points[:,0])
     df['middle_min'] = pd.Series(points[:,1])

@@ -16,6 +16,9 @@ class BaseTABitget:
         df = self.preprocessing(df)
         return df
     
+    def get_test_row(self):
+        pass
+    
     def get_row(self):
         limit = self.period*2
         df = get_df(self.symbol,self.granularity,self.productType,limit)
