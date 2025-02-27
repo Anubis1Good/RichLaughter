@@ -11,6 +11,15 @@ def get_price_reverse_rails(row):
             short_price = row['middle']
     return np.array([long_price,short_price,short_price,long_price])
 
+def get_universal(row,long_f,short_f,closeL_f,closeS_f):
+    long_price,short_price,close_priceL,close_priceS = -1,-1,-1,-1
+    if row.name > 1:
+        long_price = row[long_f]
+        short_price = row[short_f]
+        close_priceL = row[closeL_f]
+        close_priceS = row[closeS_f]
+    return np.array([long_price,short_price,close_priceL,close_priceS])
+
 def get_universal_r(row,long_f,short_f):
     long_price,short_price = -1,-1
     if row.name > 1:

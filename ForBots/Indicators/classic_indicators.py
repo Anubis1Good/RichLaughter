@@ -212,14 +212,18 @@ def add_sc_and_buffer(df:pd.DataFrame,top='max_hb',bottom='min_hb',divider=10):
     return df
 
 def add_buffer_add(df:pd.DataFrame,top='max_hb',bottom='min_hb',divider=10):
-    '''add top_buff, bottom_buff'''
+    '''add top_buff, bottom_buff\n
+    append outside butter
+    '''
     df = add_sc_and_buffer(df,top,bottom,divider)
     df['top_buff'] = df[top]+df['buffer']
     df['bottom_buff'] = df[bottom]-df['buffer']
     return df
 
 def add_buffer_sub(df:pd.DataFrame,top='max_hb',bottom='min_hb',divider=10):
-    '''add top_buff, bottom_buff'''
+    '''add top_buff, bottom_buff\n
+    'append inside butter'
+    '''
     df = add_sc_and_buffer(df,top,bottom,divider)
     df['top_buff'] = df[top]-df['buffer']
     df['bottom_buff'] = df[bottom]+df['buffer']
@@ -228,4 +232,99 @@ def add_buffer_sub(df:pd.DataFrame,top='max_hb',bottom='min_hb',divider=10):
 def add_delta_2v(df:pd.DataFrame,top='max_hb',bottom='min_hb'):
     """add 'delta_2v' """
     df['delta_2v'] = df[top] - df[bottom]
+    return df
+
+def add_fractals(df, period=5):
+    """
+    add 'fractal_up','fractal_down'\n
+    Добавляет фракталы Билла Вильямса в DataFrame с данными свечей.
+    
+    :param df: DataFrame с колонками 'High' и 'Low'
+    :param period: Количество свечей для поиска фракталов (по умолчанию 5)
+    :return: DataFrame с добавленными колонками 'Fractal_Up' и 'Fractal_Down'
+    """
+    # Вычисляем смещение для сравнения свечей
+    shift = (period - 1) // 2  # Для периода 5 это будет 2
+    
+    # Фрактал вверх (верхний фрактал)
+    fractal_up_condition = True
+    for i in range(1, shift + 1):
+        fractal_up_condition &= (df['high'] > df['high'].shift(i))
+        fractal_up_condition &= (df['high'] > df['high'].shift(-i))
+    df['fractal_up'] = fractal_up_condition
+    
+    # Фрактал вниз (нижний фрактал)
+    fractal_down_condition = True
+    for i in range(1, shift + 1):
+        fractal_down_condition &= (df['low'] < df['low'].shift(i))
+        fractal_down_condition &= (df['low'] < df['low'].shift(-i))
+    df['fractal_down'] = fractal_down_condition
+    
+    return df
+
+def add_rsi(df, period=14,kind='close'):
+    """
+    add 'rsi'\n
+    Вычисляет RSI для DataFrame с данными о ценах.
+    
+    :param data: DataFrame с колонкой 'Close' (цены закрытия)
+    :param period: Период RSI (по умолчанию 14)
+    :return: DataFrame с добавленной колонкой 'RSI'
+    """
+    # Вычисляем изменение цены
+    delta = df[kind].diff()
+    
+    # Разделяем на рост и падение
+    gain = (delta.where(delta > 0, 0)).rolling(window=period).mean()
+    loss = (-delta.where(delta < 0, 0)).rolling(window=period).mean()
+    
+    # Вычисляем относительную силу (RS)
+    rs = gain / loss
+    
+    # Вычисляем RSI
+    df['rsi'] = 100 - (100 / (1 + rs))
+    
+    return df
+
+def add_ema(df, period=20, kind='close'):
+    """
+    add 'ema'\n
+    Вычисляет EMA для DataFrame с данными о ценах.
+    
+    :param data: DataFrame с колонкой 'Close' (цены закрытия)
+    :param period: Период EMA (по умолчанию 20)
+    :param column: Название колонки с ценами (по умолчанию 'Close')
+    :return: DataFrame с добавленной колонкой 'EMA'
+    """
+    # Вычисляем коэффициент сглаживания
+    alpha = 2 / (period + 1)
+    
+    # Вычисляем SMA для первой точки
+    df['ema'] = df[kind].rolling(window=period).mean()
+    
+    # Вычисляем EMA для остальных точек
+    for i in range(period, len(df)):
+        df.loc[df.index[i], 'ema'] = (df[kind].iloc[i] * alpha) + (df['ema'].iloc[i - 1] * (1 - alpha))
+    
+    return df
+
+def add_stochastic(df, k_period=14, d_period=3,kind='close'):
+    """add 'lowest_so','highest_so','%k','%d' """
+    df['lowest_so'] = df[kind].rolling(window=k_period).min()
+    df['highest_so'] = df[kind].rolling(window=k_period).max()
+    df['%k'] = 100 * ((df[kind] - df['lowest_so']) / (df['highest_so'] - df['lowest_so']))
+    df['%d'] = df['%k'].rolling(window=d_period).mean()
+    return df
+
+def add_atr(df, period=5,kind='close'):
+    df['high_low'] = df['high'] - df['low']
+    df['high_close'] = np.abs(df['high'] - df[kind].shift(1))
+    df['low_close'] = np.abs(df['low'] - df[kind].shift(1))
+    df['tr'] = df[['high_low', 'high_close', 'low_close']].max(axis=1)
+    df['atr'] = df['tr'].rolling(window=period).mean()
+    return df
+
+def add_local_extrema(df, window=5):
+    df['local_max'] = df['close'].rolling(window=window).max()
+    df['local_min'] = df['close'].rolling(window=window).min()
     return df

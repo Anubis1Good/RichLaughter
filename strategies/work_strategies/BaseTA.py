@@ -20,7 +20,7 @@ class BaseTABitget:
         pass
     
     def get_row(self):
-        limit = self.period*2
+        limit = self.period*3
         df = get_df(self.symbol,self.granularity,self.productType,limit)
         df = self.preprocessing(df)
         return df.iloc[-1]

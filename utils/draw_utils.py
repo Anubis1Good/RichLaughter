@@ -41,3 +41,16 @@ def draw_dynamics(df,clr='red'):
 
 def draw_rails(df,clr='blue'):
     df.apply(lambda row: plt.vlines(row.name,row['low'],row['high'],colors=clr) if row['rails'] else None,axis=1)
+
+def draw_fractals_williams(df):
+    df.apply(lambda row: plt.scatter(row.name,row['high'],color='#d64040' ) if row['fractal_up'] else 1,axis=1)
+    df.apply(lambda row: plt.scatter(row.name,row['low'],color='#74992b' ) if row['fractal_down'] else 1,axis=1)
+
+def draw_rsi(df):
+    plt.plot(df['rsi'])
+    plt.axhline(70, color='gray', linestyle='--', label='Перекупленность (70)')
+    plt.axhline(30, color='gray', linestyle='--', label='Перепроданность (30)')
+
+def draw_stochastic(df):
+    plt.plot(df['%K'],color='blue')
+    plt.plot(df['%D'],color='green')
