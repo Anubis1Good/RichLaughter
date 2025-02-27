@@ -118,7 +118,7 @@ def download_bitget_ticks(symbol="BTCUSDT",productType="usdt-futures",limit="100
         sleep(0.1)
     save_df_ticks(res,symbol)
 
-def create_df(res):
+def create_df_ticks(res):
     df = pd.DataFrame(res)
     # df['size_volume'] = df['price'] * df['size']
     df = df.drop_duplicates()
@@ -127,6 +127,6 @@ def create_df(res):
     return df
 
 def save_df_ticks(res,symbol="BTCUSDT"):
-    df = create_df(res)
+    df = create_df_ticks(res)
     path = os.path.join('DataForTests/TicksBitget',symbol+"_"'_'+str(time()).split(".")[0]+'.csv')
     df.to_csv(path)

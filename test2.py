@@ -1,4 +1,5 @@
-a = (10,12,14)
+from strategies.work_strategies.PTA import PTA2_BDDC
 
-c = "_".join(list(map(str,a)))
-print(c)
+ws = PTA2_BDDC()
+name = str(ws).split(' ')[0].split('.')[-1]
+print(name)

@@ -18,21 +18,24 @@ with open('test.json') as f:
 longs = list(data[1])
 shorts = list(data[2])
 closes = list(data[3])
+longs = np.array(longs) - [period,0]
+shorts = np.array(shorts) - [period,0]
+closes = np.array(closes) - [period,0]
+# equity = np.array(equity)
+# def change_time(d):
+#     d_0 = -1
+#     try:
+#         cm = d[0]//(1000*60*multiplier)
+#         df_fast_slice = df_fast[df_fast['cm'] == cm]
+#         d_0 = df_fast_slice.iloc[0].name + period
+#     except:
+#         print(d)
+#         print(df_fast_slice)
+#     return np.array([d_0,d[1]])
 
-def change_time(d):
-    d_0 = -1
-    try:
-        cm = d[0]//(1000*60*multiplier)
-        df_fast_slice = df_fast[df_fast['cm'] == cm]
-        d_0 = df_fast_slice.iloc[0].name + period
-    except:
-        print(d)
-        print(df_fast_slice)
-    return np.array([d_0,d[1]])
-
-longs = np.array(list(map(change_time,longs)))
-shorts = np.array(list(map(change_time,shorts)))
-closes = np.array(list(map(change_time,closes)))
+# longs = np.array(list(map(change_time,longs)))
+# shorts = np.array(list(map(change_time,shorts)))
+# closes = np.array(list(map(change_time,closes)))
 print(longs)
 df_fast.apply(draw_hb_chart,axis=1)
 draw_chart_channel(df_fast)

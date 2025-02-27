@@ -55,27 +55,27 @@ closes = []
 equity = []
 # 'long_price','short_price','close_long_price','close_short_price'
 bid = (0,0)
-def trade_prev(row):
+def trade_prev(row,x):
     global bid
     cur_price = row['close']
     if bid[0] > 0:
         if cur_price < bid[1]:
             if trades['pos'] == -1:
                 trades['total'] += trades['open_price'] - bid[1]
-                closes.append((row['ms'],bid[1])) 
+                closes.append((x,bid[1])) 
             trades['pos'] += bid[0]
             if trades['pos'] == 1:
-                longs.append((row['ms'],bid[1]))
+                longs.append((x,bid[1]))
                 trades['open_price'] = bid[1]
                 trades['count'] += 1
     elif bid[0] < 0:
         if cur_price > bid[1]:
             if trades['pos'] == 1:
                 trades['total'] += bid[1] - trades['open_price'] 
-                closes.append((row['ms'],bid[1])) 
+                closes.append((x,bid[1])) 
             trades['pos'] += bid[0]
             if trades['pos'] == -1:
-                shorts.append((row['ms'],bid[1]))
+                shorts.append((x,bid[1]))
                 trades['open_price'] = bid[1]   
                 trades['count'] += 1
     
@@ -121,10 +121,11 @@ try:
             slice_fast = get_moment_df(df_slow.iloc[j],slice_fast)
             # print(slice_fast.tail())
             slice_fast_copy = slice_fast.copy()
+            x=slice_fast_copy.iloc[-2]['x']
             slice_fast_copy = ws.preprocessing(slice_fast_copy)
             # print(slice_fast_copy.tail())
             action = ws(slice_fast_copy.iloc[-1])
-            trade_prev(slice_fast_copy.iloc[-1])
+            trade_prev(slice_fast_copy.iloc[-1],x)
             trade_next(action,slice_fast_copy.iloc[-1])
             print(i,'/',len_df)
             print(trades)
@@ -141,7 +142,7 @@ if trades['pos'] != 0:
     elif trades['pos'] == -1:
         trades['total'] += trades['open_price'] - last_row['close']
     trades['pos'] = 0
-    closes.append((last_row['ms'],last_row['close'])) 
+    closes.append((last_row['x'],last_row['close'])) 
     equity.append(trades['total'])
 print(trades)
 plt.plot(equity,color='blue')
