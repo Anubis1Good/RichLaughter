@@ -37,7 +37,7 @@ class OGTA1_Rails(BaseTABitget):
         #     return 'long_pw'
         
 
-class OGTA2_Rails(BaseTABitget):
+# class OGTA2_Rails(BaseTABitget):
     def preprocessing(self, df):
         df = add_spred(df)
         df['mean_spred'] = df['spred'].mean()
@@ -57,8 +57,8 @@ class OGTA3_DS(BaseTABitget):
         df['spread'] = df['high'] - df['low']
 
         # Вычисление среднего объема и спреда
-        df['avg_volume'] = df['volume'].rolling(window=20).mean()
-        df['avg_spread'] = df['spread'].rolling(window=20).mean()
+        df['avg_volume'] = df['volume'].rolling(window=self.period).mean()
+        df['avg_spread'] = df['spread'].rolling(window=self.period).mean()
 
         # Генерация сигналов
         df['signal'] = 0  # 0 = нет сигнала, 1 = покупка, -1 = продажа

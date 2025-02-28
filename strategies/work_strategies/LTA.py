@@ -70,3 +70,27 @@ class LTA_TOMYAM(BaseTABitget):
             return 'long_pw'
         if row['signal'] == -1:
             return 'short_pw'
+# TODO
+class LTA_RAMEN(BaseTABitget):
+    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=20,multiplier=2):
+        super().__init__(symbol, granularity, productType, n_parts, period)
+        self.multiplier = multiplier
+    def preprocessing(self, df):
+        df = add_atr(df,self.period)
+        df['upper_range'] = df['middle'] + (df['atr'] * self.multiplier)
+        df['lower_range'] = df['middle'] - (df['atr'] * self.multiplier)
+        df['signal'] = 0  # 0 = нет сигнала, 1 = покупка, -1 = продажа
+        df = add_enter_price(df,lambda row: get_universal_r(row,'upper_range','lower_range'))
+        # Покупка: цена закрытия выше верхней границы и выше SMA
+        df.loc[(df['high'] > df['upper_range']), 'signal'] = 1
+        # Продажа: цена закрытия ниже нижней границы и ниже SMA
+        df.loc[(df['low'] < df['lower_range']), 'signal'] = -1
+        # mean_atr = df['atr'].mean()
+        # df.loc[df['atr'] < mean_atr, 'signal'] = 0
+        df = add_slice_df(df,self.period)
+        return df
+    def __call__(self, row, *args, **kwds):
+        if row['signal'] == 1:
+            return 'long_pw'
+        if row['signal'] == -1:
+            return 'short_pw'

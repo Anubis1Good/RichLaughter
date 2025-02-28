@@ -4,10 +4,10 @@ import json
 import os
 
 class TestBot1:
-    def __init__(self,symbol,strategy):
+    def __init__(self,symbol,strategy,conf):
         self.symbol = symbol
         self.strategy = strategy
-        self.name = symbol + '_' + str(self.strategy).split(' ')[0].split('.')[-1]
+        self.name = symbol + '_' + str(self.strategy).split(' ')[0].split('.')[-1] + "_" + "_".join(list(map(str,conf)))
         self.bid = (0,0)
         self.trades = [{
             'open_price':0,
