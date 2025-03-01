@@ -1,5 +1,5 @@
 from Bots.TestBot1 import TestBot1
-from strategies.work_strategies.PTA import PTA2_DDCde,PTA2_VOLCHARA,PTA2_LISICA,PTA8_LOBSTER,PTA2_BDVCr,PTA2_UDC,PTA2_AUDC,PTA9_CRAB,PTA2_DDCrWork,PTA8_DOBBY,PTA8_OBBY,PTA8_OBBY_PF,PTA8_DOBBY_FREE,PTA8_DOBBY_FREEr
+from strategies.work_strategies.PTA import PTA2_DDCde,PTA2_VOLCHARA,PTA2_LISICA,PTA8_LOBSTER,PTA2_BDVCr,PTA2_UDC,PTA2_AUDC,PTA9_CRAB,PTA2_DDCrWork,PTA8_DOBBY,PTA8_OBBY,PTA8_OBBY_PF,PTA8_DOBBY_FREE,PTA8_DOBBY_FREEr,PTA4_WDDCde,PTA4_WDDCr
 from strategies.work_strategies.STA_ml import STAML1_XGBR2,STAML1_XGBR3_User,STAML1_XGBR4,STAML1_XGBR5
 from strategies.work_strategies.STA_ca import STA1_LITE
 from strategies.work_strategies.LTA import LTA_LAKSA,LTA_LAKSAe
@@ -32,6 +32,8 @@ wss = [
     (STA1_LITE,(30,1,0.5,15)),
     (PTA9_CRAB,(10,0.5,5,0.5)),
     (PTA2_DDCrWork,(5,)),
+    (PTA4_WDDCr,(60,30)),
+    (PTA4_WDDCde,(20,40))
 ]
 # wss = [
 #     (STAML1_XGBR5,(60,5)),
