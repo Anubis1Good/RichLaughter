@@ -1,42 +1,42 @@
 from Bots.TestBot1 import TestBot1
-from strategies.work_strategies.PTA import PTA2_DDCde,PTA2_KOLOBOK,PTA2_ZAYAC,PTA8_LOBSTER,PTA8_LOBBY,PTA2_BDVCr,PTA8_FOBBY,PTA2_UDC,PTA9_CRAB,PTA2_DDCrWork,PTA9_RAB,PTA8_OBBY,PTA8_OBBY_VOR,PTA8_OBBY_PF,PTA8_OBBY_FREE,PTA8_OBBY_FREEr,PTA2_BDDCm,PTA8_OOBBY_FREE,PTA8_OOBBY,PTA8_OOBBY_FREEr,PTA2_ALKASH
-from strategies.work_strategies.STA_ml import STAML1_XGBR2
+from strategies.work_strategies.PTA import PTA2_DDCde,PTA2_VOLCHARA,PTA2_LISICA,PTA8_LOBSTER,PTA2_BDVCr,PTA2_UDC,PTA2_AUDC,PTA9_CRAB,PTA2_DDCrWork,PTA8_DOBBY,PTA8_OBBY,PTA8_OBBY_PF,PTA8_DOBBY_FREE,PTA8_DOBBY_FREEr
+from strategies.work_strategies.STA_ml import STAML1_XGBR2,STAML1_XGBR3_User,STAML1_XGBR4,STAML1_XGBR5
 from strategies.work_strategies.STA_ca import STA1_LITE
 from strategies.work_strategies.LTA import LTA_LAKSA,LTA_LAKSAe
-from strategies.work_strategies.OGTA import OGTA3_Rails
 from time import sleep
 
 bots = []
 wss = [
     (STAML1_XGBR2,(60,5)),
     (STAML1_XGBR2,(5,5)),
+    (STAML1_XGBR3_User,(60,5)),
+    (STAML1_XGBR3_User,(5,5)),
+    (STAML1_XGBR4,(60,5)),
+    (STAML1_XGBR4,(5,5)),
+    (STAML1_XGBR5,(60,5)),
+    (STAML1_XGBR5,(5,5)),
+    (PTA8_DOBBY,(5,0.5)),
     (PTA8_OBBY,(5,0.5)),
-    (PTA8_OBBY_VOR,(5,0.5)),
     (PTA8_LOBSTER,(4,0.5)),
     (PTA8_OBBY_PF,(5,0.5)),
-    (PTA8_FOBBY,(5,0.5)),
-    (PTA8_OBBY_FREEr,(4,0.5)),
-    (PTA8_OBBY_FREE,(4,0.5)),
-    (PTA8_LOBBY,(4,0.5)),
-    (PTA2_BDVCr,(2,)),
-    (PTA2_BDDCm,(5,)),
+    (PTA8_DOBBY_FREEr,(4,0.5)),
+    (PTA8_DOBBY_FREE,(4,0.5)),
+    (PTA2_BDVCr,(10,)),
     (PTA2_UDC,(3,5)),
-    (PTA2_ZAYAC,(3,2)),
-    (PTA2_KOLOBOK,(3,2)),
-    (PTA8_OOBBY_FREE,(5,0.5)),
+    (PTA2_AUDC,(3,5)),
+    (PTA2_VOLCHARA,(3,2)),
+    (PTA2_LISICA,(3,2)),
     (LTA_LAKSAe,(40,3)),
-    (LTA_LAKSA,(10,5)),
-    (PTA9_RAB,(5,2,10,0.5)),
-    (PTA8_OOBBY,(55,0.5)),
-    (PTA8_OOBBY_FREEr,(20,1)),
+    (LTA_LAKSA,(40,3)),
     (PTA2_DDCde,(5,)),
-    (OGTA3_Rails,(20,)),
-    (STA1_LITE,(5,1,0.5,15)),
-    (PTA2_ALKASH,(40,)),
+    (STA1_LITE,(30,1,0.5,15)),
     (PTA9_CRAB,(10,0.5,5,0.5)),
     (PTA2_DDCrWork,(5,)),
-
 ]
+# wss = [
+#     (STAML1_XGBR5,(60,5)),
+#     (STAML1_XGBR5,(5,5))
+# ]
 print(len(wss))
 for WS,conf in wss:
     strategy = WS("DOGEUSDT","5m","usdt-futures",1,*conf)

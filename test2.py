@@ -1,5 +1,3 @@
-from strategies.work_strategies.PTA import PTA2_BDDC
+import os
 
-ws = PTA2_BDDC()
-name = str(ws).split(' ')[0].split('.')[-1]
-print(name)
+print(os.path.exists('modelML\STAML1_XGBRs\DOGEUSDT_1m_50_10_XGBR34_high.model'))

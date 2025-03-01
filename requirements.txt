@@ -5,3 +5,4 @@ ccxt
 tqdm
 python-dotenv
 apimoex
+xgboost

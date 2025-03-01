@@ -10,12 +10,13 @@ from strategies.test_strategies.check import check_strategy
 # from strategies.work_strategies.STA_ca import STA1_LITE as WS
 # from strategies.work_strategies.OGTA import OGTA3_Rails as WS
 # from strategies.work_strategies.LTA import LTA_RAMEN as WS
-from strategies.work_strategies.STA_ml import STAML1_XGBR2 as WS
+from strategies.work_strategies.STA_ml import STAML1_XGBR3_Trainer as WS
 
 from strategies.test_strategies.universal import universal_test_strategy as TS
-raw_file = 'DataForTests\DataFromBitget\DOGEUSDT_1m_1739873922.csv'
+# raw_file = 'DataForTests\DataFromBitget\DOGEUSDT_1m_1739873922.csv'
+# raw_file = 'DataForTests\DataFromTicksBitget\DOGEUSDT_15m_from_ticks.csv'
 # raw_file = 'DataForTests\DataFromBitget\DOGEUSDT_3m_1739873329.csv'
-# raw_file = 'DataForTests\DataFromBitget\DOGEUSDT_5m_1739873413.csv'
+raw_file = 'DataForTests\DataFromBitget\DOGEUSDT_5m_1739873413.csv'
 # raw_file = 'DataForTests\DataFromBitget\DOGEUSDT_15m_1739873596.csv'
 # raw_file = 'DataForTests\DataFromBitget\DOGEUSDT_30m_1738929225.csv'
 # raw_file = 'DataForTests\DataFromBitget\DOGEUSDT_1H_1738929320.csv'
@@ -24,10 +25,10 @@ raw_file = 'DataForTests\DataFromBitget\DOGEUSDT_1m_1739873922.csv'
 
 df = bitget_loader(raw_file)
 # df = df.iloc[0:200]
-period = 50
+period = 60
 multiplier = 0.5
 symbol = "DOGEUSDT"
-granularity = "1m"
+granularity = "5m"
 slope = 4
 # df = add_sma(df,period)
 # df = add_donchan_channel(df,period)
@@ -43,7 +44,7 @@ slope = 4
 # bot = WS(symbol,granularity,period=period,k_period=8,d_period=3)
 # bot = WS(symbol,granularity,period=period,slope=0.5)
 # bot = WS(symbol,granularity,period=period,multiplier=multiplier)
-bot = WS(symbol,granularity,period=period,future_steps=10)
+bot = WS(symbol,granularity,period=period,future_steps=5)
 df = bot.get_test_df(df)
 # df.info()
 # print(df.head())
@@ -91,7 +92,7 @@ df.apply(draw_hb_chart,axis=1)
 # df.info()
 # print(df.head())
 # draw_chart_channel(df)
-plt.plot(df['predicted_high'], label='Предсказанные максимумы', color='green', linestyle='--')
+plt.plot(df['predicted_high'], label='Предсказанные максимумы', color='blue', linestyle='--')
 plt.plot(df['predicted_low'], label='Предсказанные минимумы', color='red', linestyle='--')
 df.to_csv('test.csv')
 if len(longs.shape) > 1:

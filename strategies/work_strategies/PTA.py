@@ -1,5 +1,5 @@
 from request_functions.download_bitget import get_df
-from ForBots.Indicators.classic_indicators import add_donchan_channel,add_slice_df,add_big_volume,add_dynamics_ma,add_bollinger,add_over_bb,add_enter_price,add_donchan_middle,add_donchan_prev,add_buffer_add,add_buffer_sub,add_vangerchik,add_simple_dynamics_ma,add_vodka_channel
+from ForBots.Indicators.classic_indicators import add_donchan_channel,add_slice_df,add_big_volume,add_dynamics_ma,add_bollinger,add_over_bb,add_enter_price,add_donchan_middle,add_donchan_prev,add_buffer_add,add_buffer_sub,add_vangerchik,add_simple_dynamics_ma,add_vodka_channel,add_rsi
 from ForBots.Indicators.price_funcs import get_price_dbb,get_price_reverse_dbb,get_price_bb,get_price_reverse_bb, get_price_bddc,get_price_ddc,get_price_rbddc,get_price_rddc,get_price_rddc_prev,get_price_ddc_prev,get_price_rddc_prev_ba,get_price_bb_buff,get_price_crab,get_price_rab,get_price_rddc_prev_ba_test,get_universal_r,get_universal
 from utils.help_trades import reverse_action,chep
 from strategies.work_strategies.BaseTA import BaseTABitget
@@ -121,7 +121,55 @@ class PTA2_DDCrWork(PTA2_BDDCr):
         if row['high'] == row['max_hb'] or row['high'] > row['short_price']:
             return 'short_pw'
         
-# class PTA2_DDCrVG(PTA2_BDDCr):
+class PTA4_WDDCr(BaseTABitget):
+    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=20,threshold=30):
+        super().__init__(symbol, granularity, productType, n_parts, period)
+        self.threshold = threshold
+    def preprocessing(self, df):
+        df = add_donchan_channel(df,self.period)
+        df = add_donchan_prev(df)
+        df = add_buffer_sub(df)
+        df = add_rsi(df,self.period)
+        df = add_enter_price(df,get_price_rddc_prev_ba)
+        df = add_slice_df(df,period=self.period)
+        return df
+    def __call__(self, row, *args, **kwds):
+        nearest_long = row['high'] - row['close'] > row['close'] - row['low'] 
+        if row['low'] == row['min_hb'] or row['low'] < row['long_price']:
+            if nearest_long:
+                if row['rsi'] < self.threshold:
+                    return 'long_pw'
+        if row['high'] == row['max_hb'] or row['high'] > row['short_price']:
+            if row['rsi'] > 100-self.threshold:
+                return 'short_pw'
+            
+class PTA4_WDDCde(BaseTABitget):
+    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=20,threshold=30):
+        super().__init__(symbol, granularity, productType, n_parts, period)
+        self.threshold = threshold
+    def preprocessing(self, df):
+        df = add_donchan_channel(df,self.period)
+        df = add_donchan_prev(df)
+        df = add_buffer_sub(df)
+        df = add_rsi(df,self.period)
+        df = add_enter_price(df,get_price_ddc_prev)
+        df = add_slice_df(df,period=self.period)
+        return df
+    def __call__(self, row, *args, **kwds):
+        nearest_long = row['high'] - row['close'] > row['close'] - row['low'] 
+        if row['low'] == row['min_hb'] or row['low'] < row['long_price']:
+            if nearest_long:
+                if row['rsi'] < self.threshold:
+                    return 'long_pw'
+        if row['high'] == row['max_hb'] or row['high'] > row['short_price']:
+            if row['rsi'] > 100-self.threshold:
+                return 'short_pw'
+        if row['high'] < row['avarege']:
+            return "close_long_pw"
+        if row['low'] > row['avarege']:
+            return "close_short_pw"
+        
+class PTA2_DDCrVG(PTA2_BDDCr):
     def preprocessing(self, df):
         df = add_donchan_channel(df,self.period)
         df = add_vangerchik(df)
@@ -138,7 +186,7 @@ class PTA2_DDCrWork(PTA2_BDDCr):
         if row['high'] == row['max_hb'] or row['high'] > row['short_price']:
             return 'short_pw'
         
-# class PTA2_DVCr(PTA2_BDDCr):
+class PTA2_DVCr(PTA2_BDDCr):
     def preprocessing(self, df):
         df = add_vodka_channel(df,self.period)
         df = add_enter_price(df,lambda row: get_universal_r(row,'bottom_mean','top_mean'))
@@ -283,15 +331,15 @@ class PTA2_DDCde(PTA2_BDDCde):
 #                 return None
 #         return action
 # class PTA2_DDCShort(PTA2_BDDCde):
-    '''Игнор лонга'''
-    def __call__(self, row, *args, **kwds):
-        action = super().__call__(row, *args, **kwds)
-        if action:
-            if 'long' in action:
-                action = action.replace('long','short')+'_r'
-            elif 'short' in action:
-                return None
-        return action
+    # '''Игнор лонга'''
+    # def __call__(self, row, *args, **kwds):
+    #     action = super().__call__(row, *args, **kwds)
+    #     if action:
+    #         if 'long' in action:
+    #             action = action.replace('long','short')+'_r'
+    #         elif 'short' in action:
+    #             return None
+    #     return action
     
 
 # универсальный
@@ -328,6 +376,38 @@ class PTA2_UDC(BaseTABitget):
                     return "close_long_pw"
                 else:
                     return "close_short_pw"
+class PTA2_AUDC(BaseTABitget):
+    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=20,slope=20):
+        super().__init__(symbol, granularity, productType, n_parts, period)
+        self.slope = slope
+    def preprocessing(self, df):
+        df = add_donchan_channel(df,self.period)
+        df = add_dynamics_ma(df,self.period//2,'avarege')
+        df = add_enter_price(df,lambda row:get_universal_r(row,'middle','middle'))
+        df = add_slice_df(df,period=self.period)
+        return df
+    def __call__(self,row, *args, **kwds):
+        if row['high'] == row['max_hb']:
+            if row['dynamics_ma'] > self.slope:
+                return 'short_pw'
+            else:
+                return 'long_pw'
+        elif row['low'] == row['min_hb']:
+            if row['dynamics_ma'] < -self.slope:
+                return 'long_pw' 
+            else:
+                return 'short_pw'
+        else:
+            if row['low'] < row['avarege']:
+                if row['dynamics_ma'] > self.slope:
+                    return "close_long_pw"
+                else:
+                    return 'close_short_pw'
+            if row['high'] > row['avarege']:
+                if row['dynamics_ma'] < -self.slope:
+                    return "close_short_pw"
+                else:
+                    return "close_long_pw"
 
 # conter-trend      
 class PTA8_DOBBY(BaseTABitget):
@@ -345,16 +425,16 @@ class PTA8_DOBBY(BaseTABitget):
     def __call__(self, row, *args, **kwds):
         if row['high'] > row['bbu']:
             if row['is_big'] or row['over_bbu']:
-                return 'short_p'
+                return 'short_pw'
         if row['low'] < row['bbd']:
             if row['is_big'] or row['over_bbd']:
-                return 'long_p'
+                return 'long_pw'
         if row['low'] < row['sma']:
             if row['is_big']:
-                return 'close_short_p'
+                return 'close_short_pw'
         if row['high'] > row['sma']:
             if row['is_big']:
-                return 'close_long_p'
+                return 'close_long_pw'
             
 class PTA8_ODOBBY(PTA8_DOBBY):
     def preprocessing(self, df):
@@ -411,33 +491,33 @@ class PTA8_ODOBBY_FREEr(PTA8_ODOBBY_FREE):
                 return 'long_pw'
         
             
-# class PTA8_DOBBY_FREE(PTA8_DOBBY):
-#     def preprocessing(self, df):
-#         df = add_bollinger(df,self.period,multiplier=self.multiplier)
-#         df = add_enter_price(df,get_price_dbb)
-#         df = add_slice_df(df,period=self.period)
-#         return df
-#     def __call__(self, row, *args, **kwds):
-#         if row['high'] > row['bbu']:
-#             return 'short_p'
-#         if row['low'] < row['bbd']:
-#             return 'long_p'
-#         if row['low'] < row['sma']:
-#             return 'close_short_p'
-#         if row['high'] > row['sma']:
-#             return 'close_long_p'
+class PTA8_DOBBY_FREE(PTA8_DOBBY):
+    def preprocessing(self, df):
+        df = add_bollinger(df,self.period,multiplier=self.multiplier)
+        df = add_enter_price(df,get_price_dbb)
+        df = add_slice_df(df,period=self.period)
+        return df
+    def __call__(self, row, *args, **kwds):
+        if row['high'] > row['bbu']:
+            return 'short_pw'
+        if row['low'] < row['bbd']:
+            return 'long_pw'
+        if row['low'] < row['sma']:
+            return 'close_short_pw'
+        if row['high'] > row['sma']:
+            return 'close_long_pw'
         
-# class PTA8_DOBBY_FREEr(PTA8_DOBBY_FREE):
-#     def preprocessing(self, df):
-#         df = add_bollinger(df,self.period,multiplier=self.multiplier)
-#         df = add_enter_price(df,get_price_reverse_dbb)
-#         df = add_slice_df(df,period=self.period)
-#         return df
-#     def __call__(self, row, *args, **kwds):
-#         if row['high'] > row['bbu']:
-#             return 'short_p'
-#         if row['low'] < row['bbd']:
-#             return 'long_p'
+class PTA8_DOBBY_FREEr(PTA8_DOBBY_FREE):
+    def preprocessing(self, df):
+        df = add_bollinger(df,self.period,multiplier=self.multiplier)
+        df = add_enter_price(df,get_price_reverse_dbb)
+        df = add_slice_df(df,period=self.period)
+        return df
+    def __call__(self, row, *args, **kwds):
+        if row['high'] > row['bbu']:
+            return 'short_pw'
+        if row['low'] < row['bbd']:
+            return 'long_pw'
 # trend
 class PTA8_OBBY(PTA8_DOBBY):
     def preprocessing(self, df):
