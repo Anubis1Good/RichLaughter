@@ -1,7 +1,7 @@
 from utils.help_trades import reverse_action
 from strategies.work_strategies.BaseTA import BaseTABitget
 from ForBots.Indicators.vsa_indicators import add_rails,add_rails_slice,add_allowance_rails,add_spred,add_OGTA2_rails_info
-from ForBots.Indicators.classic_indicators import add_big_volume,add_slice_df,add_enter_price,add_delta_2v,add_sc_and_buffer,add_sma
+from ForBots.Indicators.classic_indicators import add_big_volume,add_slice_df,add_enter_price,add_delta_2v,add_sc_and_buffer,add_sma,add_enter_price2close
 from ForBots.Indicators.price_funcs import get_price_reverse_rails,get_universal_r
 
 class OGTA1_Rails(BaseTABitget):
@@ -64,7 +64,7 @@ class OGTA3_DS(BaseTABitget):
         df['signal'] = 0  # 0 = нет сигнала, 1 = покупка, -1 = продажа
         df.loc[(df['volume'] > df['avg_volume']) & (df['spread'] < 1 * df['avg_spread']) & (df['close'] > df['open']), 'signal'] = 1  # Покупка
         df.loc[(df['volume'] > df['avg_volume']) & (df['spread'] < 1 * df['avg_spread']) & (df['close'] < df['open']), 'signal'] = -1  # Продажа
-        df = add_enter_price(df,lambda row: get_universal_r(row,'close','close'))
+        df = add_enter_price2close(df)
         df = add_slice_df(df,self.period)
         return df
     def __call__(self, row, *args, **kwds):
@@ -107,7 +107,7 @@ class OGTA3_Rails(BaseTABitget):
                 if df['close'].iloc[i] < df['low'].iloc[i - 1]:  # Пробой минимума
                     df.loc[df.index[i], 'signal'] = -1  # Продажа
 
-        df = add_enter_price(df,lambda row: get_universal_r(row,'close','close'))
+        df = add_enter_price2close(df)
         df = add_slice_df(df,self.period)
         return df
     def __call__(self, row, *args, **kwds):

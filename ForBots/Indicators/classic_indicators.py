@@ -16,6 +16,14 @@ def add_enter_price(df:pd.DataFrame,func):
     df['close_short_price'] = pd.Series(points[:,3])
     return df
 
+def add_enter_price2close(df:pd.DataFrame):
+    """add 'long_price','short_price','close_long_price','close_short_price'"""
+    df['long_price'] = df['close']
+    df['short_price'] = df['close']
+    df['close_long_price'] = df['close']
+    df['close_short_price'] = df['close']
+    return df
+
 
 def get_vodka_channel(row,df:pd.DataFrame,period=20):
     if row.name < period:
@@ -92,7 +100,7 @@ def add_donchan_prev(df:pd.DataFrame,top='max_hb',bottom='min_hb'):
     return df
 
 def add_vangerchik(df:pd.DataFrame):
-    """add max_vg, min_hb"""
+    """add max_vg, min_vg"""
     df['max_vg'] = df.apply(lambda row: row['max_hb'] - (row['max_hb']-row['min_hb'])/10,axis=1)
     df['min_vg'] = df.apply(lambda row: row['min_hb'] + (row['max_hb']-row['min_hb'])/10,axis=1)
     return df

@@ -1,5 +1,5 @@
 from request_functions.download_bitget import get_df
-from ForBots.Indicators.classic_indicators import add_bollinger,add_big_volume,add_attached_bb,add_over_bb,add_dynamics_ma,add_slice_df,add_simple_dynamics_ma,add_sma,add_enter_price
+from ForBots.Indicators.classic_indicators import add_bollinger,add_big_volume,add_attached_bb,add_over_bb,add_dynamics_ma,add_slice_df,add_simple_dynamics_ma,add_sma,add_enter_price,add_enter_price2close
 from ForBots.Indicators.price_funcs import get_universal_r,get_universal
 from strategies.work_strategies.BaseTA import BaseTABitget
 
@@ -71,7 +71,7 @@ class STA1_LITE(BaseTABitget):
         df = add_big_volume(df,self.period)
         df = add_over_bb(df)
         df = add_simple_dynamics_ma(df,self.period2)
-        df = add_enter_price(df,lambda row: get_universal_r(row,'middle','middle'))
+        df = add_enter_price2close(df)
         df = add_slice_df(df,self.period)
         return df
     

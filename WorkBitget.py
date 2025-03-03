@@ -10,7 +10,7 @@ from strategies.test_strategies.check import check_strategy
 # from strategies.work_strategies.STA_ca import STA1_LITE as WS
 # from strategies.work_strategies.OGTA import OGTA3_Rails as WS
 # from strategies.work_strategies.LTA import LTA_RAMEN as WS
-from strategies.work_strategies.STA_ml import STAML1_XGBR3_Trainer as WS
+from strategies.work_strategies.STA_ml import STAML1_XGBR2 as WS
 
 from strategies.test_strategies.universal import universal_test_strategy as TS
 # raw_file = 'DataForTests\DataFromBitget\DOGEUSDT_1m_1739873922.csv'
@@ -25,7 +25,7 @@ raw_file = 'DataForTests\DataFromBitget\DOGEUSDT_5m_1739873413.csv'
 
 df = bitget_loader(raw_file)
 # df = df.iloc[0:200]
-period = 60
+period = 5
 multiplier = 0.5
 symbol = "DOGEUSDT"
 granularity = "5m"
