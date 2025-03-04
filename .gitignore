@@ -1,4 +1,6 @@
 DataForTests/
+TestDeepTests/
 TestResults/
 logs/
+logsOffTest/
 .env

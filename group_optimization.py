@@ -1,13 +1,13 @@
 from single_optimization import optimization
 from strategies.test_strategies.universal import universal_test_strategy as ts
 
-from strategies.work_strategies.PTA import PTA4_WDDCr,PTA4_WDDCde
+from strategies.work_strategies.LTA import LTA_APHOBO,LTA_APHOGA
 # from strategies.work_strategies.PTA import PTA8_OBBY,PTA8_OBBY_VOR, PTA8_LOBBY,PTA8_OBBY_PF, PTA8_FOBBY,PTA8_OBBY_FREE,PTA8_OBBY_FREEr
 
 test_folder = 'DataForTests\DataFromBitget'
 params1 = [
-    [3,4] + list(range(5,56,5)),
-    (0.5,1,2)
+    [3,4] + list(range(5,26,5)),
+    (0.5,1,2,3)
 ]
 params2 = [
     (3,4,5,7,10,15,20,30,40,50,60,80,100)
@@ -21,8 +21,9 @@ params4 = [
     (10,20,30,40)
 ]
 group = (
-    (PTA4_WDDCde,params4),
-    (PTA4_WDDCr,params4),
+
+    (LTA_APHOBO,params1),
+    (LTA_APHOGA,params1),
 )
 # group = (
 #     (PTA2_BDDC,params),

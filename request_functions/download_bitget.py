@@ -28,7 +28,7 @@ def download_bitget(symbol="BTCUSDT",granularity="1m",productType="usdt-futures"
             res = get_history_candles(symbol=symbol,granularity=granularity,productType=productType, startTime=startTime,endTime=endTime,limit=limit)
         else:
             res += get_history_candles(symbol=symbol,granularity=granularity,productType=productType, startTime=startTime,endTime=endTime,limit=limit)
-        # sleep(0.1)
+        sleep(0.1)
     return res
 
 

@@ -336,3 +336,33 @@ def add_local_extrema(df, window=5):
     df['local_max'] = df['close'].rolling(window=window).max()
     df['local_min'] = df['close'].rolling(window=window).min()
     return df
+
+def add_supertrend(df, period=10, multiplier=3):
+    """
+    Рассчитывает индикатор SuperTrend.
+    """
+    # Вычисляем ATR (Average True Range)
+    df = add_atr(df,period)
+    
+    # Рассчитываем базовые линии (верхнюю и нижнюю)
+    df['upper_band'] = (df['high'] + df['low']) / 2 + multiplier * df['atr']
+    df['lower_band'] = (df['high'] + df['low']) / 2 - multiplier * df['atr']
+    
+    # Инициализируем колонку для SuperTrend
+    df['supertrend'] = 0.0
+    df['in_uptrend'] = True  # Флаг для определения текущего тренда
+    
+    # Расчет SuperTrend
+    for i in range(1, len(df)):
+        if df['close'].iloc[i] > df['upper_band'].iloc[i - 1]:
+            df.loc[df.index[i], 'in_uptrend'] = True
+        elif df['close'].iloc[i] < df['lower_band'].iloc[i - 1]:
+            df.loc[df.index[i], 'in_uptrend'] = False
+        
+        # Устанавливаем значение SuperTrend
+        if df['in_uptrend'].iloc[i]:
+            df.loc[df.index[i], 'supertrend'] = df['lower_band'].iloc[i]
+        else:
+            df.loc[df.index[i], 'supertrend'] = df['upper_band'].iloc[i]
+    
+    return df

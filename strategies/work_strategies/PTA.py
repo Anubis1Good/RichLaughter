@@ -579,12 +579,12 @@ class PTA9_CRAB(BaseTABitget):
         
 class PTA9_RAB(PTA9_CRAB):
     def preprocessing(self, df):
-        df = add_bollinger(df,self.period,multiplier=self.multiplier)
+        df = add_bollinger(df,self.period_slow,multiplier=self.multiplier)
         df = add_over_bb(df)
-        df = add_big_volume(df,self.period)
-        df = add_donchan_channel(df,self.period_slow)
+        df = add_big_volume(df,self.period_slow)
+        df = add_donchan_channel(df,self.period)
         df = add_vangerchik(df)
-        df = add_simple_dynamics_ma(df,self.period_slow,'avarege')
+        df = add_simple_dynamics_ma(df,self.period,'avarege')
         df['slope'] = self.slope
         df = add_enter_price2close(df)
         max_period = max(self.period,self.period_slow)

@@ -134,3 +134,37 @@ class TestBot1:
             traceback.print_exc()
 
 
+class TestBot1offline(TestBot1):
+    def __init__(self,symbol,strategy,conf):
+        self.symbol = symbol
+        self.strategy = strategy
+        self.name = symbol + '_' + str(self.strategy).split(' ')[0].split('.')[-1] + "_" + "_".join(list(map(str,conf)))
+        self.bid = (0,0)
+        self.trades = [{
+            'open_price':0,
+            'open_time':str(datetime.now()),
+            'count': 0,
+            'pos': 0,
+            'close_price':0,
+            'close_time':1,
+            'total':0,
+            'res':0
+            }
+        ]
+        self.len_trades = 0
+        self.json_path = f'logsOffTest\OT_{self.name}.json'
+        if not os.path.exists('logsOffTest'):
+            os.mkdir('logsOffTest')
+    def run(self,df):
+        try:
+            row = self.strategy.get_test_row(df)
+            action = self.strategy(row)
+            # print("+++++++++++++++++")
+            # print(row)
+            # print(action)
+            # print("+++++++++++++++++")
+            self.trade_prev(row['close'])
+            self.trade_next(action,row)
+            self.write_res()
+        except Exception as err:
+            traceback.print_exc()

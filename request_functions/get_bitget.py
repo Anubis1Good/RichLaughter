@@ -31,7 +31,9 @@ def get_history_candles(symbol="BTCUSDT",granularity="1m",productType="usdt-futu
     return res['data']
 
 def get_candles(symbol="BTCUSDT",granularity="1m",productType="usdt-futures",limit="200"):
-    """K-line particle size
+    """
+    Max limit 1000
+    K-line particle size
     - 1m(1 minute)
     - 3m(3 minutes)
     - 5m(5 minutes)
