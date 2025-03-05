@@ -1,5 +1,6 @@
 import os
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2' 
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
+from time import sleep 
 import gymnasium as gym
 from gymnasium import spaces
 import numpy as np
@@ -49,7 +50,12 @@ if __name__ == '__main__':
 
 
         # Обучаем модель
-        model.learn(total_timesteps=100000,callback=checkpoint_callback, tb_log_name="HELPGOD_60")
-
+        model.learn(total_timesteps=100000,callback=checkpoint_callback, tb_log_name="HELPGOD_60",reset_num_timesteps=False)
+        # Обновляем количество шагов
+        total_timesteps = model.num_timesteps  # Сохраняем текущее количество шагов
+        model.num_timesteps = total_timesteps  # Явно обновляем значение
         # Сохраняем модель
         model.save(model_path)
+        print(f"Модель уже обучена на {model.num_timesteps} шагах.")
+        print('--------------------Отдых!-------------------------')
+        sleep(60*10)

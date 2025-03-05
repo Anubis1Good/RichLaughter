@@ -1,5 +1,6 @@
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2' 
+import numpy as np
 from stable_baselines3 import PPO
 from strategies.work_strategies.BaseTA import BaseTABitget
 from ForBots.Indicators.classic_indicators import add_slice_df,add_enter_price,add_ema,add_stochastic,add_atr,add_local_extrema,add_enter_price2close,add_supertrend, add_rsi,add_bollinger
@@ -57,27 +58,46 @@ class STARL1_PPOPA(BaseTABitget):
 class STARL1_HELPGOD(BaseTABitget):
     def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=60):
         super().__init__(symbol, granularity, productType, n_parts, period)
-        self.model = PPO.load("modelML/RL_models/HELPGOD_60",device="cpu")  # Загружаем обученную модель
+        self.model = PPO.load("modelML/RL_models/HELPGOD_60",device="cpu")  
+        # self.model = PPO.load("modelML/RL_models/temp/HELPGOD_60_144_steps",device="cpu")  
+        print(f"Модель уже обучена на {self.model.num_timesteps} шагах.")# Загружаем обученную модель
 
     def get_rl_signal(self, df):
         """
         Генерация сигналов с использованием RL-модели.
         """
+        def normalize(series):
+            return (series - series.mean()) / (series.std() + 1e-8)  # Добавляем небольшое значение, чтобы избежать деления на ноль
+
         signals = []
         for i in range(len(df)):
             # Получаем текущее состояние (окно данных)
-            state = df.iloc[max(0, i - self.period):i][['open', 'high', 'low', 'close', 'volume','rsi','bbu','bbd','sma','ema','atr']].values
-            if len(state) < self.period:
+            window = df.iloc[max(0, i - self.period):i]
+            if len(window) < self.period:
                 # Если данных недостаточно, пропускаем
                 signals.append(0)
                 continue
             
+            # Нормализуем данные в окне
+            normalized_window = np.array([
+                normalize(window['open']),
+                normalize(window['high']),
+                normalize(window['low']),
+                normalize(window['close']),
+                normalize(window['volume']),
+                normalize(window['rsi']),
+                normalize(window['bbu']),
+                normalize(window['bbd']),
+                normalize(window['sma']),
+                normalize(window['ema']),
+                normalize(window['atr'])
+            ]).T  # Транспонируем, чтобы получить (window_size, 11)
+            
             # Предсказываем действие (0 - держать, 1 - покупать, 2 - продавать)
-            action, _ = self.model.predict(state,deterministic=True)
+            action, _ = self.model.predict(normalized_window, deterministic=True)
             signals.append(action)
         
         return signals
-
     def preprocessing(self, df):
         """
         Предобработка данных и генерация сигналов.
