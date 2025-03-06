@@ -168,3 +168,104 @@ class TestBot1offline(TestBot1):
             self.write_res()
         except Exception as err:
             traceback.print_exc()
+
+class TestMarketBot1(TestBot1):
+    def __init__(self,symbol,strategy,conf):
+        self.symbol = symbol
+        self.strategy = strategy
+        self.name = symbol + '_' + str(self.strategy).split(' ')[0].split('.')[-1] + "_" + "_".join(list(map(str,conf)))
+        self.trades = [{
+            'open_price':0,
+            'open_time':str(datetime.now()),
+            'count': 0,
+            'pos': 0,
+            'close_price':0,
+            'close_time':1,
+            'total':0,
+            'res':0
+            }
+        ]
+        self.len_trades = 0
+        self.json_path = f'logsMT\OT_{self.name}.json'
+        if not os.path.exists('logsMT'):
+            os.mkdir('logsMT')
+
+    def open_long(self,price):
+        self.trades.append({
+            'open_price':price,
+            'open_time':str(datetime.now()),
+            'count': self.len_trades,
+            'pos': 1,
+            'close_price':"",
+            'close_time':"",
+            'total':self.trades[-1]['total'],
+            'res':0
+        })
+
+    def open_short(self,price):
+        self.trades.append({
+            'open_price':price,
+            'open_time':str(datetime.now()),
+            'count': self.len_trades,
+            'pos': -1,
+            'close_price':"",
+            'close_time':"",
+            'total':self.trades[-1]['total'],
+            'res':0
+        })
+
+    def close_long(self,price):
+        self.trades[-1]['close_price'] = price
+        self.trades[-1]['res'] = self.trades[-1]['close_price'] -  self.trades[-1]['open_price'] 
+        self.trades[-1]['total'] += self.trades[-1]['res']
+        self.trades[-1]['close_time'] = str(datetime.now())
+
+    def close_short(self,price):
+        self.trades[-1]['close_price'] = price
+        self.trades[-1]['res'] = self.trades[-1]['open_price'] - self.trades[-1]['close_price']
+        self.trades[-1]['total'] += self.trades[-1]['res']
+        self.trades[-1]['close_time'] = str(datetime.now())
+
+    def trade_next(self,action,row):
+        clp = row['close_long_price']
+        csp = row['close_short_price']
+        lp = row['long_price']
+        sp = row['short_price']
+        if action:
+            if 'close_long' in action:
+                if self.trades[-1]['pos'] == 1 and not self.trades[-1]['close_time']:
+                    self.close_long(clp)
+            elif 'close_short' in action:
+                if self.trades[-1]['pos'] == -1 and not self.trades[-1]['close_time']:
+                    self.close_short(csp)
+            elif 'long' in action:
+                if self.trades[-1]['pos'] == 1 and not self.trades[-1]['close_time']:
+                    pass
+                elif self.trades[-1]['pos'] == -1 and not self.trades[-1]['close_time']:
+                    self.close_short(csp)
+                    self.open_long(lp)
+                else:
+                    self.open_long(lp)
+            elif 'short' in action:
+                if self.trades[-1]['pos'] == 1 and not self.trades[-1]['close_time']:
+                    self.close_long(clp)
+                    self.open_short(sp)
+                elif self.trades[-1]['pos'] == -1 and not self.trades[-1]['close_time']:
+                    pass
+                else:
+                    self.open_short(sp)
+    def trade_prev(self, cur_price):
+        pass
+    def run(self,df):
+        try:
+            row = self.strategy.get_test_row(df)
+            action = self.strategy(row)
+            # print("+++++++++++++++++")
+            # print(row)
+            # print(action)
+            # print("+++++++++++++++++")
+            self.trade_prev(row['close'])
+            self.trade_next(action,row)
+            self.write_res()
+        except Exception as err:
+            traceback.print_exc()

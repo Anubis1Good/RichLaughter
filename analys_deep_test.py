@@ -4,7 +4,8 @@ import matplotlib.pyplot as plt
 
 mult = 1
 
-raw_folder = 'logsOffTest'
+# raw_folder = 'logsOffTest'
+raw_folder = 'logsMT'
 
 raw_files = os.listdir(raw_folder)
 result_name = "_".join(raw_files[0].split('_')[1:4]) + "_" + str(mult) + 'm'

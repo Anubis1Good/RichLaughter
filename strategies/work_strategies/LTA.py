@@ -5,6 +5,7 @@ from ForBots.Indicators.classic_indicators import add_slice_df,add_enter_price,a
 from ForBots.Indicators.price_funcs import get_universal_r,get_universal
 from utils.help_trades import reverse_action
 
+#D Похоже на WDDCr
 class LTA_LAKSA(BaseTABitget):
     def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=20,period2=5):
         super().__init__(symbol, granularity, productType, n_parts, period)
@@ -27,7 +28,8 @@ class LTA_LAKSA(BaseTABitget):
             return 'long_pw'
         if row['signal'] == -1:
             return 'short_pw'
-
+        
+#D Похоже на WDDCr + work
 class LTA_LAKSAe(BaseTABitget):
     def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=20,period2=5):
         super().__init__(symbol, granularity, productType, n_parts, period)
@@ -51,6 +53,7 @@ class LTA_LAKSAe(BaseTABitget):
         if row['signal'] == -1:
             return 'short_pw'
 
+#D Выделение уровней поддержки и сопротивления с помощью кластеризации. 
 class LTA_TOMYAM(BaseTABitget):
     def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=20):
         super().__init__(symbol, granularity, productType, n_parts, period)
@@ -85,6 +88,7 @@ class LTA_TOMYAM(BaseTABitget):
         elif row['signal'] == -1:
             return 'short_pw'
 
+#D Выделение уровней поддержки и сопротивления с помощью кластеризации  за период. 
 class LTA_RAMEN(BaseTABitget):
     def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=50,n_clusters = 3):
         super().__init__(symbol, granularity, productType, n_parts, period)
@@ -146,7 +150,7 @@ class LTA_RAMEN(BaseTABitget):
             return 'long_pw'
         if row['signal'] == -1:
             return 'short_pw'
-    
+#BD Изменение супертренда
 class LTA_PHOBO(BaseTABitget):
     def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=10,multiplier=3):
         super().__init__(symbol, granularity, productType, n_parts, period)
@@ -169,13 +173,13 @@ class LTA_PHOBO(BaseTABitget):
             return 'long_pw'
         if row['signal'] == -1:
             return 'short_pw'
-        
+#D reverse PHOBO   
 class LTA_APHOBO(LTA_PHOBO):
     def __call__(self, row, *args, **kwds):
         action = super().__call__(row, *args, **kwds)
         action = reverse_action(action)
         return action
-        
+# BD PHOBO c фильтрацией по объему
 class LTA_PHOGA(BaseTABitget):
     def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=10,multiplier=3):
         super().__init__(symbol, granularity, productType, n_parts, period)
@@ -199,14 +203,14 @@ class LTA_PHOGA(BaseTABitget):
             return 'long_pw'
         if row['signal'] == -1:
             return 'short_pw'
-        
+#D reverse PHOGA          
 class LTA_APHOGA(LTA_PHOGA):
     def __call__(self, row, *args, **kwds):
         action = super().__call__(row, *args, **kwds)
         action = reverse_action(action)
         return action
     
-# По сути BDCC только с фильтрацией
+#BD По сути BDCC только с фильтрацией
 class LTA_BORSCH(BaseTABitget):
     def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=20,momentum_period=14):
         super().__init__(symbol, granularity, productType, n_parts, period)
@@ -244,7 +248,7 @@ class LTA_BORSCH(BaseTABitget):
             return 'long_pw'
         if row['signal'] == -1:
             return 'short_pw'
-        
+#BD Ишимоку  
 class LTA_MISO(BaseTABitget):
     def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=52,tenkan_period=9, kijun_period=26, senkou_span_b_period=52,rsi_period=14, macd_fast=12, macd_slow=26, macd_signal=9):
         super().__init__(symbol, granularity, productType, n_parts, period)

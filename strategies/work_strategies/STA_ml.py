@@ -294,6 +294,7 @@ class STAML1_XGBR3_User(BaseTABitget):
         if row['signal'] == -1:
             return 'short_pw'
         
+# Постоянная модель с дообучением и сохранением каждый шаг
 class STAML1_XGBR4(BaseTABitget):
     def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=20,future_steps=10):
         super().__init__(symbol, granularity, productType, n_parts, period)
@@ -370,6 +371,7 @@ class STAML1_XGBR4(BaseTABitget):
         if row['signal'] == -1:
             return 'short_pw'
 
+# Постоянная модель с дообучением на последних данных при первом старте и дообучением на каждом шаге
 class STAML1_XGBR5(BaseTABitget):
     def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=10, period=20,future_steps=10):
         super().__init__(symbol, granularity, productType, n_parts, period)
@@ -469,6 +471,7 @@ class STAML1_XGBR5(BaseTABitget):
         if row['signal'] == -1:
             return 'short_pw'
         
+# Постоянная модель с дообучением на последних данных при первом старте и дообучением на каждом шаге без сохранения    
 class STAML1_XGBR6(BaseTABitget):
     def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=10, period=20,future_steps=10):
         super().__init__(symbol, granularity, productType, n_parts, period)
@@ -569,6 +572,7 @@ class STAML1_XGBR6(BaseTABitget):
         if row['signal'] == -1:
             return 'short_pw'
         
+# Модель с обучением на последних данных при первом старте и без дообучения на каждом шаге        
 class STAML1_XGBR7(BaseTABitget):
     def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=10, period=20,future_steps=10):
         super().__init__(symbol, granularity, productType, n_parts, period)
@@ -668,6 +672,7 @@ class STAML1_XGBR7(BaseTABitget):
         if row['signal'] == -1:
             return 'short_pw'
         
+# Модель с обучением на последних данных при первом старте и без дообучения на каждом шаге. Обновляется каждый час            
 class STAML1_XGBR8(BaseTABitget):
     def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=10, period=20,future_steps=10):
         super().__init__(symbol, granularity, productType, n_parts, period)
@@ -878,7 +883,7 @@ class STAML1_ARIMAS1(BaseTABitget):
             return 'long_pw'
         elif row['signal'] == -1:
             return 'short_pw'
-
+# BD
 class STAML1_PROPHET1(BaseTABitget):
     def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=20, forecast_steps=10):
         super().__init__(symbol, granularity, productType, n_parts, period)

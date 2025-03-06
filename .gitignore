@@ -3,5 +3,6 @@ TestDeepTests/
 TestResults/
 logs/
 logsOffTest/
+logsMT/
 modelML/RL_models/temp/
 .env
