@@ -1,8 +1,10 @@
 from single_optimization import optimization
 from strategies.test_strategies.universal import universal_test_strategy as ts
 
-from strategies.work_strategies.LTA import LTA_APHOBO,LTA_APHOGA
-# from strategies.work_strategies.PTA import PTA8_OBBY,PTA8_OBBY_VOR, PTA8_LOBBY,PTA8_OBBY_PF, PTA8_FOBBY,PTA8_OBBY_FREE,PTA8_OBBY_FREEr
+from strategies.work_strategies.STA_ml import STAML1_PROPHET1s,STAML1_PROPHET2s,STAML1_PROPHET3s
+# from strategies.work_strategies.LTA import LTA_APHOBO,LTA_APHOGA
+from strategies.work_strategies.PTA import PTA10_MAGIC,PTA6_KAMA,PTA6_KAMA2,PTA6_KAMAZ2,PTA6_KAMA3,PTA6_KAMA4
+
 
 test_folder = 'DataForTests\DataFromBitget'
 params1 = [
@@ -22,9 +24,14 @@ params4 = [
 ]
 group = (
 
-    (LTA_APHOBO,params1),
-    (LTA_APHOGA,params1),
+    (STAML1_PROPHET3s,[
+        (20,),
+        (5,10),
+        (0.05,0.1,0.2,0.3)
+    ]),
+
 )
+
 # group = (
 #     (PTA2_BDDC,params),
 #     (PTA2_BDDCde,params),

@@ -366,3 +366,11 @@ def add_supertrend(df, period=10, multiplier=3):
             df.loc[df.index[i], 'supertrend'] = df['upper_band'].iloc[i]
     
     return df
+
+def add_macd(data, short_window=12, long_window=26, signal_window=9):
+    """add 'ema_1','ema_2','macd','signal_line'"""
+    data['ema_1'] = data['close'].ewm(span=short_window, adjust=False).mean()
+    data['ema_2'] = data['close'].ewm(span=long_window, adjust=False).mean()
+    data['macd'] = data['ema_1'] - data['ema_2']
+    data['signal_line'] = data['macd'].ewm(span=signal_window, adjust=False).mean()
+    return data

@@ -6,12 +6,12 @@ from Loader.BitgetLoader import bitget_loader
 from utils.draw_utils import draw_lite_chart,draw_chart_channel,draw_hb_chart,draw_bollinger,draw_dynamics,draw_rails
 # from ForBots.Indicators.classic_indicators import add_donchan_channel,add_vangerchik,add_sma, add_slice_df,add_bollinger,add_over_bb,add_attached_bb,add_big_volume,add_dynamics_ma
 from strategies.test_strategies.check import check_strategy
-# from strategies.work_strategies.PTA import PTA4_WDDCr as WS
+# from strategies.work_strategies.PTA import PTA6_KAMA5 as WS
 # from strategies.work_strategies.STA_ca import STA1_LITE as WS
 # from strategies.work_strategies.OGTA import OGTA3_Rails as WS
-# from strategies.work_strategies.LTA import LTA_MISO as WS
-# from strategies.work_strategies.STA_ml import STAML1_VARMAS1 as WS
-from strategies.work_strategies.STA_rl import STARL1_HELPGOD as WS
+# from strategies.work_strategies.LTA import LTA_TOMYAM as WS
+from strategies.work_strategies.STA_ml import STAML1_PROPHET3s as WS
+# from strategies.work_strategies.STA_rl import STARL1_HELPGOD as WS
 # from strategies.work_strategies.experiments import ExpStrategy as WS
 
 from strategies.test_strategies.universal import universal_test_strategy as TS
@@ -75,25 +75,37 @@ closes = np.array(closes)
 equity = np.array(equity)
 
 see_equity = True
-# see_equity = False
+see_equity = False
 if see_equity:
     plt.plot(equity,color='red')
 else:
     # draw_lite_chart(df)
+    # plt.subplot(2,1,1)
     df.apply(draw_hb_chart,axis=1)
+    if len(longs.shape) > 1:
+        plt.scatter(longs[:,0],longs[:,1],marker='^')
+    if len(shorts.shape) > 1:
+        plt.scatter(shorts[:,0],shorts[:,1],marker='v')
+    if len(closes.shape) > 1:
+        plt.scatter(closes[:,0],closes[:,1],marker='x')
+    # plt.subplot(2,1,2)
+    # plt.plot(df['macd'],color='b')
+    # plt.plot(df['signal_line'],color='red')
+    # plt.plot(df['predicted_high'],color='b')
+    # plt.plot(df['predicted_low'],color='violet')
+    # plt.plot(df['predicted_middle'],color='black')
     # plt.plot(df['support'], color='b', linestyle='--', label='Поддержка')
     # plt.plot(df['resistance'], color='b', linestyle='--', label='Сопротивление')
     # df['predicted_high_shifted'] = df['predicted_high'].shift(10)
     # df['predicted_low_shifted'] = df['predicted_low'].shift(10)
     # plt.plot(df['varma_forecast'], label='Предсказанные максимумы', color='blue', linestyle=':')
     # print(df['varma_forecast'])
-    # plt.plot(df['arima_forecast'], label='Предсказанные минимумы', color='blue', linestyle=':')
+    plt.plot(df['prophet_forecast_low'], label='Предсказанные минимумы', color='blue', linestyle=':')
+    plt.plot(df['prophet_forecast_high'], label='Предсказанные минимумы', color='violet', linestyle=':')
     # plt.plot(df['recent_min'],color='green')
     # plt.plot(df['recent_max'],color='blue')
     # plt.plot(df['stop_long'],color='yellow')
     # plt.plot(df['stop_short'],color='violet')
-    # plt.subplot(2,1,1)
-    # plt.subplot(2,1,2)
     # plt.plot(df.iloc[:100]['dynamics_ma']
     # draw_bollinger(df)
     # plt.plot(df['sma2'])
@@ -108,10 +120,4 @@ else:
     # plt.plot(df['predicted_high'], label='Предсказанные максимумы', color='blue', linestyle='--')
     # plt.plot(df['predicted_low'], label='Предсказанные минимумы', color='red', linestyle='--')
     df.to_csv('test.csv')
-    if len(longs.shape) > 1:
-        plt.scatter(longs[:,0],longs[:,1],marker='^')
-    if len(shorts.shape) > 1:
-        plt.scatter(shorts[:,0],shorts[:,1],marker='v')
-    if len(closes.shape) > 1:
-        plt.scatter(closes[:,0],closes[:,1],marker='x')
 plt.show()

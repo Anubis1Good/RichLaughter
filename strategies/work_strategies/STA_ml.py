@@ -16,11 +16,16 @@ from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import train_test_split
 from skimage.metrics import mean_squared_error
 
-from ForBots.Indicators.classic_indicators import add_slice_df,add_enter_price,add_enter_price2close
+from ForBots.Indicators.classic_indicators import add_slice_df,add_enter_price,add_enter_price2close, add_donchan_channel
 from ForBots.Indicators.price_funcs import get_universal_r,get_universal
 from strategies.work_strategies.BaseTA import BaseTABitget
 from request_functions.download_bitget import download_bitget,create_df
 
+import logging
+logger = logging.getLogger('cmdstanpy')
+logger.addHandler(logging.NullHandler())
+logger.propagate = False
+logger.setLevel(logging.CRITICAL)
 
 # TODO пофиксить ворнинги
 warnings.filterwarnings('ignore')
@@ -141,6 +146,316 @@ class STAML1_XGBR2(BaseTABitget):
         if row['signal'] == -1:
             return 'short_pw'
         
+class STAML1_XGBR2e(BaseTABitget):
+    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=20,future_steps=10):
+        super().__init__(symbol, granularity, productType, n_parts, period)
+        self.future_steps = future_steps
+    def preprocessing(self, df):
+        future_steps = self.future_steps  # Предсказание на 10 шагов вперёд
+        lags = self.period  # Количество лагов для признаков
+        df = add_enter_price2close(df)
+        # Создание признаков (фичей) — лаги цен (close, high, low)
+        for i in range(1, lags + 1):
+            df[f'close_lag_{i}'] = df['close'].shift(i)
+            df[f'high_lag_{i}'] = df['high'].shift(i)
+            df[f'low_lag_{i}'] = df['low'].shift(i)
+
+        # Целевые переменные — максимумы и минимумы на future_steps вперёд
+        df['target_high'] = df['high'].shift(-future_steps)
+        df['target_low'] = df['low'].shift(-future_steps)
+
+        # Убираем строки с NaN (из-за лагов и целевых переменных)
+        df_train = df.dropna()
+
+        # Признаки
+        X_pred = df[[f'close_lag_{i}' for i in range(1, lags + 1)] + 
+            [f'high_lag_{i}' for i in range(1, lags + 1)] + 
+            [f'low_lag_{i}' for i in range(1, lags + 1)]]
+        X = df_train[[f'close_lag_{i}' for i in range(1, lags + 1)] + 
+            [f'high_lag_{i}' for i in range(1, lags + 1)] + 
+            [f'low_lag_{i}' for i in range(1, lags + 1)]]
+        # Целевые переменные
+        y_high = df_train['target_high']
+        y_low = df_train['target_low']
+
+        # Обучение модели XGBoost для предсказания максимумов
+        model_high = XGBRegressor(n_estimators=100, learning_rate=0.1)
+        model_high.fit(X, y_high)
+
+        # Обучение модели XGBoost для предсказания минимумов
+        model_low = XGBRegressor(n_estimators=100, learning_rate=0.1)
+        model_low.fit(X, y_low)
+        # Генерация торговых сигналов
+        df['predicted_high'] = model_high.predict(X_pred) + df['high'].std()*0.05
+        df['predicted_low'] = model_low.predict(X_pred) - df['high'].std() * 0.05
+        df['signal'] = 0  # 0 = нет сигнала, 1 = покупка, -1 = продажа
+
+        # Покупка: цена закрытия пересекает предсказанный минимум снизу вверх
+        df.loc[df['close'] < df['predicted_low'], 'signal'] = 1
+
+        # Продажа: цена закрытия пересекает предсказанный максимум сверху вниз
+        df.loc[df['close'] > df['predicted_high'], 'signal'] = -1
+        # Предсказание максимумов и минимумов
+
+        df = add_slice_df(df,self.period)
+        return df
+    def __call__(self, row, *args, **kwds):
+        if row['signal'] == 1:
+            return 'long_pw'
+        if row['signal'] == -1:
+            return 'short_pw'
+class STAML1_XGBR2h(BaseTABitget):
+    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=20,future_steps=10):
+        super().__init__(symbol, granularity, productType, n_parts, period)
+        self.future_steps = future_steps
+    def preprocessing(self, df):
+        future_steps = self.future_steps  # Предсказание на 10 шагов вперёд
+        lags = self.period  # Количество лагов для признаков
+        df = add_enter_price2close(df)
+        # Создание признаков (фичей) — лаги цен (close, high, low)
+        for i in range(1, lags + 1):
+            df[f'close_lag_{i}'] = df['close'].shift(i)
+            df[f'high_lag_{i}'] = df['high'].shift(i)
+            df[f'low_lag_{i}'] = df['low'].shift(i)
+
+        # Целевые переменные — максимумы и минимумы на future_steps вперёд
+        df['target_high'] = df['high'].shift(-future_steps)
+        df['target_low'] = df['low'].shift(-future_steps)
+
+        # Убираем строки с NaN (из-за лагов и целевых переменных)
+        df_train = df.dropna()
+
+        # Признаки
+        X_pred = df[[f'close_lag_{i}' for i in range(1, lags + 1)] + 
+            [f'high_lag_{i}' for i in range(1, lags + 1)] + 
+            [f'low_lag_{i}' for i in range(1, lags + 1)]]
+        X = df_train[[f'close_lag_{i}' for i in range(1, lags + 1)] + 
+            [f'high_lag_{i}' for i in range(1, lags + 1)] + 
+            [f'low_lag_{i}' for i in range(1, lags + 1)]]
+        # Целевые переменные
+        y_high = df_train['target_high']
+        y_low = df_train['target_low']
+
+        # Обучение модели XGBoost для предсказания максимумов
+        model_high = XGBRegressor(n_estimators=100, learning_rate=0.1)
+        model_high.fit(X, y_high)
+
+        # Обучение модели XGBoost для предсказания минимумов
+        model_low = XGBRegressor(n_estimators=100, learning_rate=0.1)
+        model_low.fit(X, y_low)
+        # Генерация торговых сигналов
+        df['predicted_high'] = model_high.predict(X_pred)
+        df['predicted_low'] = model_low.predict(X_pred)
+        df['predicted_middle'] = (df['predicted_high'] + df['predicted_low']) /2
+        df['signal'] = 0  # 0 = нет сигнала, 1 = покупка, -1 = продажа
+
+        # Покупка: цена закрытия пересекает предсказанный минимум снизу вверх
+        df.loc[df['close'] < df['predicted_low'], 'signal'] = 1
+
+        # Продажа: цена закрытия пересекает предсказанный максимум сверху вниз
+        df.loc[df['close'] > df['predicted_high'], 'signal'] = -1
+        # Предсказание максимумов и минимумов
+
+        df = add_slice_df(df,self.period)
+        return df
+    def __call__(self, row, *args, **kwds):
+        if row['signal'] == 1:
+            return 'long_pw'
+        if row['signal'] == -1:
+            return 'short_pw'
+        if row['close'] < row['predicted_middle']:
+            return 'close_short_pw'
+        if row['close'] > row['predicted_middle']:
+            return 'close_long_pw'
+class STAML1_XGBR2he(BaseTABitget):
+    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=20,future_steps=10):
+        super().__init__(symbol, granularity, productType, n_parts, period)
+        self.future_steps = future_steps
+    def preprocessing(self, df):
+        future_steps = self.future_steps  # Предсказание на 10 шагов вперёд
+        lags = self.period  # Количество лагов для признаков
+        df = add_enter_price2close(df)
+        # Создание признаков (фичей) — лаги цен (close, high, low)
+        for i in range(1, lags + 1):
+            df[f'close_lag_{i}'] = df['close'].shift(i)
+            df[f'high_lag_{i}'] = df['high'].shift(i)
+            df[f'low_lag_{i}'] = df['low'].shift(i)
+
+        # Целевые переменные — максимумы и минимумы на future_steps вперёд
+        df['target_high'] = df['high'].shift(-future_steps)
+        df['target_low'] = df['low'].shift(-future_steps)
+
+        # Убираем строки с NaN (из-за лагов и целевых переменных)
+        df_train = df.dropna()
+
+        # Признаки
+        X_pred = df[[f'close_lag_{i}' for i in range(1, lags + 1)] + 
+            [f'high_lag_{i}' for i in range(1, lags + 1)] + 
+            [f'low_lag_{i}' for i in range(1, lags + 1)]]
+        X = df_train[[f'close_lag_{i}' for i in range(1, lags + 1)] + 
+            [f'high_lag_{i}' for i in range(1, lags + 1)] + 
+            [f'low_lag_{i}' for i in range(1, lags + 1)]]
+        # Целевые переменные
+        y_high = df_train['target_high']
+        y_low = df_train['target_low']
+
+        # Обучение модели XGBoost для предсказания максимумов
+        model_high = XGBRegressor(n_estimators=100, learning_rate=0.1)
+        model_high.fit(X, y_high)
+
+        # Обучение модели XGBoost для предсказания минимумов
+        model_low = XGBRegressor(n_estimators=100, learning_rate=0.1)
+        model_low.fit(X, y_low)
+        # Генерация торговых сигналов
+        df['predicted_high'] = model_high.predict(X_pred) + df['high'].std()*0.05
+        df['predicted_low'] = model_low.predict(X_pred) - df['high'].std() * 0.05
+        df['predicted_middle'] = (df['predicted_high'] + df['predicted_low']) /2
+        df['signal'] = 0  # 0 = нет сигнала, 1 = покупка, -1 = продажа
+
+        # Покупка: цена закрытия пересекает предсказанный минимум снизу вверх
+        df.loc[df['close'] < df['predicted_low'], 'signal'] = 1
+
+        # Продажа: цена закрытия пересекает предсказанный максимум сверху вниз
+        df.loc[df['close'] > df['predicted_high'], 'signal'] = -1
+        # Предсказание максимумов и минимумов
+
+        df = add_slice_df(df,self.period)
+        return df
+    def __call__(self, row, *args, **kwds):
+        if row['signal'] == 1:
+            return 'long_pw'
+        if row['signal'] == -1:
+            return 'short_pw'
+        if row['close'] < row['predicted_middle']:
+            return 'close_short_pw'
+        if row['close'] > row['predicted_middle']:
+            return 'close_long_pw'
+#D DC 
+class STAML1_XGBR2_DC(BaseTABitget):
+    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=20,future_steps=10):
+        super().__init__(symbol, granularity, productType, n_parts, period)
+        self.future_steps = future_steps
+    def preprocessing(self, df):
+        future_steps = self.future_steps  # Предсказание на 10 шагов вперёд
+        lags = self.period  # Количество лагов для признаков
+        df = add_enter_price2close(df)
+        df = add_donchan_channel(df,self.period)
+        df = add_slice_df(df,self.period)
+        # Создание признаков (фичей) — лаги цен (close, high, low)
+        for i in range(1, lags + 1):
+            df[f'close_lag_{i}'] = df['close'].shift(i)
+            df[f'high_lag_{i}'] = df['max_hb'].shift(i)
+            df[f'low_lag_{i}'] = df['min_hb'].shift(i)
+
+        # Целевые переменные — максимумы и минимумы на future_steps вперёд
+        df['target_high'] = df['max_hb'].shift(-future_steps)
+        df['target_low'] = df['min_hb'].shift(-future_steps)
+
+        # Убираем строки с NaN (из-за лагов и целевых переменных)
+        df_train = df.dropna()
+
+        # Признаки
+        X_pred = df[[f'close_lag_{i}' for i in range(1, lags + 1)] + 
+            [f'high_lag_{i}' for i in range(1, lags + 1)] + 
+            [f'low_lag_{i}' for i in range(1, lags + 1)]]
+        X = df_train[[f'close_lag_{i}' for i in range(1, lags + 1)] + 
+            [f'high_lag_{i}' for i in range(1, lags + 1)] + 
+            [f'low_lag_{i}' for i in range(1, lags + 1)]]
+        # Целевые переменные
+        y_high = df_train['target_high']
+        y_low = df_train['target_low']
+
+        # Обучение модели XGBoost для предсказания максимумов
+        model_high = XGBRegressor(n_estimators=100, learning_rate=0.1)
+        model_high.fit(X, y_high)
+
+        # Обучение модели XGBoost для предсказания минимумов
+        model_low = XGBRegressor(n_estimators=100, learning_rate=0.1)
+        model_low.fit(X, y_low)
+        # Генерация торговых сигналов
+        df['predicted_high'] = model_high.predict(X_pred)
+        df['predicted_low'] = model_low.predict(X_pred)
+        df['signal'] = 0  # 0 = нет сигнала, 1 = покупка, -1 = продажа
+
+        # Покупка: цена закрытия пересекает предсказанный минимум снизу вверх
+        df.loc[df['close'] < df['predicted_low'], 'signal'] = 1
+
+        # Продажа: цена закрытия пересекает предсказанный максимум сверху вниз
+        df.loc[df['close'] > df['predicted_high'], 'signal'] = -1
+        # Предсказание максимумов и минимумов
+
+        return df
+    def __call__(self, row, *args, **kwds):
+        if row['signal'] == 1:
+            return 'long_pw'
+        if row['signal'] == -1:
+            return 'short_pw'     
+         
+class STAML1_XGBR2_DCh(BaseTABitget):
+    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=20,future_steps=10):
+        super().__init__(symbol, granularity, productType, n_parts, period)
+        self.future_steps = future_steps
+    def preprocessing(self, df):
+        future_steps = self.future_steps  # Предсказание на 10 шагов вперёд
+        lags = self.period  # Количество лагов для признаков
+        df = add_enter_price2close(df)
+        df = add_donchan_channel(df,self.period)
+        df = add_slice_df(df,self.period)
+        # Создание признаков (фичей) — лаги цен (close, high, low)
+        for i in range(1, lags + 1):
+            df[f'close_lag_{i}'] = df['close'].shift(i)
+            df[f'high_lag_{i}'] = df['max_hb'].shift(i)
+            df[f'low_lag_{i}'] = df['min_hb'].shift(i)
+
+        # Целевые переменные — максимумы и минимумы на future_steps вперёд
+        df['target_high'] = df['max_hb'].shift(-future_steps)
+        df['target_low'] = df['min_hb'].shift(-future_steps)
+
+        # Убираем строки с NaN (из-за лагов и целевых переменных)
+        df_train = df.dropna()
+
+        # Признаки
+        X_pred = df[[f'close_lag_{i}' for i in range(1, lags + 1)] + 
+            [f'high_lag_{i}' for i in range(1, lags + 1)] + 
+            [f'low_lag_{i}' for i in range(1, lags + 1)]]
+        X = df_train[[f'close_lag_{i}' for i in range(1, lags + 1)] + 
+            [f'high_lag_{i}' for i in range(1, lags + 1)] + 
+            [f'low_lag_{i}' for i in range(1, lags + 1)]]
+        # Целевые переменные
+        y_high = df_train['target_high']
+        y_low = df_train['target_low']
+
+        # Обучение модели XGBoost для предсказания максимумов
+        model_high = XGBRegressor(n_estimators=100, learning_rate=0.1)
+        model_high.fit(X, y_high)
+
+        # Обучение модели XGBoost для предсказания минимумов
+        model_low = XGBRegressor(n_estimators=100, learning_rate=0.1)
+        model_low.fit(X, y_low)
+        # Генерация торговых сигналов
+        df['predicted_high'] = model_high.predict(X_pred)
+        df['predicted_low'] = model_low.predict(X_pred)
+        df['predicted_middle'] = (df['predicted_high'] + df['predicted_low']) /2
+        df['signal'] = 0  # 0 = нет сигнала, 1 = покупка, -1 = продажа
+
+        # Покупка: цена закрытия пересекает предсказанный минимум снизу вверх
+        df.loc[df['close'] < df['predicted_low'], 'signal'] = 1
+
+        # Продажа: цена закрытия пересекает предсказанный максимум сверху вниз
+        df.loc[df['close'] > df['predicted_high'], 'signal'] = -1
+        # Предсказание максимумов и минимумов
+
+        return df
+    def __call__(self, row, *args, **kwds):
+        if row['signal'] == 1:
+            return 'long_pw'
+        if row['signal'] == -1:
+            return 'short_pw'      
+        if row['close'] < row['predicted_middle']:
+            return 'close_short_pw'
+        if row['close'] > row['predicted_middle']:
+            return 'close_long_pw'
+# BD
 class STAML1_AXGBR2(BaseTABitget):
     def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=20,future_steps=10):
         super().__init__(symbol, granularity, productType, n_parts, period)
@@ -847,17 +1162,22 @@ class STAML1_XGBR8(BaseTABitget):
 #             return 'short_pw'
 
 # Предсказывает прямую линию...
+# D 
 class STAML1_ARIMAS1(BaseTABitget):
-    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=20, arima_order=(2, 1, 2), forecast_steps=10):
+    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=20, arima_order=(2, 1, 2), forecast_steps=10,n_percent=0.1):
         super().__init__(symbol, granularity, productType, n_parts, period)
         self.order = arima_order
         self.forecast_steps = forecast_steps
-        self.model = None
+        self.n_percent = n_percent
+        self.model_high = None
+        self.model_low = None
 
     def fit_model(self, data):
         try:
-            model_arima = ARIMA(data['close'], order=self.order)
-            self.model = model_arima.fit()
+            model_arima = ARIMA(data['high'], order=self.order)
+            self.model_high = model_arima.fit()
+            model_arima = ARIMA(data['low'], order=self.order)
+            self.model_low = model_arima.fit()
         except Exception as e:
             print(f"Error while fitting ARIMA model: {e}")
 
@@ -865,15 +1185,19 @@ class STAML1_ARIMAS1(BaseTABitget):
         # if self.model is None:
         self.fit_model(df)
 
-        forecast = self.model.forecast(steps=self.forecast_steps)
+        forecast = self.model_high.forecast(steps=self.forecast_steps)
         shift_index = forecast.index - self.forecast_steps
         forecast = pd.Series(forecast.values,index=shift_index)
-        df['arima_forecast'] = forecast
+        df['arima_forecast_high'] = forecast + df['high'].std() * self.n_percent
+        forecast = self.model_low.forecast(steps=self.forecast_steps)
+        shift_index = forecast.index - self.forecast_steps
+        forecast = pd.Series(forecast.values,index=shift_index)
+        df['arima_forecast_low'] = forecast - df['low'].std() * self.n_percent
         df['signal'] = 0
 
         # Простое правило: покупаем, если прогнозируемый close больше текущего open
-        df.loc[(df['arima_forecast'] > df['close']), 'signal'] = -1
-        df.loc[(df['arima_forecast'] < df['close']), 'signal'] = 1
+        df.loc[(df['arima_forecast_low'] > df['close']), 'signal'] = 1
+        df.loc[(df['arima_forecast_high'] < df['close']), 'signal'] = -1
         df = add_enter_price2close(df)
         df = add_slice_df(df,self.period)
         return df
@@ -883,7 +1207,8 @@ class STAML1_ARIMAS1(BaseTABitget):
             return 'long_pw'
         elif row['signal'] == -1:
             return 'short_pw'
-# BD
+# TODO period, low, high
+# BD 
 class STAML1_PROPHET1(BaseTABitget):
     def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=20, forecast_steps=10):
         super().__init__(symbol, granularity, productType, n_parts, period)
@@ -922,37 +1247,39 @@ class STAML1_PROPHET1(BaseTABitget):
             return 'long_pw'
         elif row['signal'] == -1:
             return 'short_pw'
-        
-class STAML1_SARIMAS1(BaseTABitget):
-    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=20, sarima_order=(1, 1, 1), seasonal_order=(0, 1, 1, 24), forecast_steps=10):
+class STAML1_PROPHET1s(BaseTABitget):
+    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=20, forecast_steps=10):
         super().__init__(symbol, granularity, productType, n_parts, period)
-        self.order = sarima_order
-        self.seasonal_order = seasonal_order
         self.forecast_steps = forecast_steps
         self.model = None
 
     def fit_model(self, data):
+        start_date = '2023-01-01'  # Произвольная начальная точка
+        data['ds'] = pd.date_range(start=start_date, periods=len(data), freq='D')
+        prophet_data = data.reset_index()
+        prophet_data.rename(columns={'close': 'y'}, inplace=True)
         try:
-            model_sarima = SARIMAX(data['close'], order=self.order, seasonal_order=self.seasonal_order)
-            self.model = model_sarima.fit(disp=False)
+            model_prophet = Prophet()
+            self.model = model_prophet.fit(prophet_data)
         except Exception as e:
-            print(f"Error while fitting SARIMA model: {e}")
+            print(f"Error while fitting Prophet model: {e}")
 
     def preprocessing(self, df):
         # if self.model is None:
         self.fit_model(df)
 
-        forecast = self.model.forecast(steps=self.forecast_steps)
-        shift_index = forecast.index - self.forecast_steps
-        forecast = pd.Series(forecast.values, index=shift_index)
-        df['sarima_forecast'] = forecast
+        future = self.model.make_future_dataframe(periods=self.forecast_steps, freq='h')
+        forecast = self.model.predict(future)
+        forecast = forecast.iloc[self.forecast_steps:]
+        forecast = forecast.reset_index(drop=True)
+        df['prophet_forecast'] = forecast['yhat']
         df['signal'] = 0
 
         # Простое правило: покупаем, если прогнозируемый close больше текущего open
-        df.loc[(df['sarima_forecast'] > df['close']), 'signal'] = -1
-        df.loc[(df['sarima_forecast'] < df['close']), 'signal'] = 1
+        df.loc[(df['prophet_forecast'] > df['close']), 'signal'] = 1
+        df.loc[(df['prophet_forecast'] < df['close']), 'signal'] = -1
         df = add_enter_price2close(df)
-        df = add_slice_df(df, self.period)
+        df = add_slice_df(df,self.period)
         return df
 
     def __call__(self, row, *args, **kwargs):
@@ -960,44 +1287,288 @@ class STAML1_SARIMAS1(BaseTABitget):
             return 'long_pw'
         elif row['signal'] == -1:
             return 'short_pw'
+
+#D Предсказание канала дончана   
+class STAML1_PROPHET2(BaseTABitget):
+    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=20, forecast_steps=10):
+        super().__init__(symbol, granularity, productType, n_parts, period)
+        self.forecast_steps = forecast_steps
+        self.model_high = None
+        self.model_low = None
+
+    def fit_model(self, data):
+        start_date = '2023-01-01'  # Произвольная начальная точка
+        data['ds'] = pd.date_range(start=start_date, periods=len(data), freq='D')
+        prophet_data_high = data.reset_index()
+        prophet_data_high.rename(columns={'max_hb': 'y'}, inplace=True)
+        prophet_data_low = data.reset_index()
+        prophet_data_low.rename(columns={'min_hb': 'y'}, inplace=True)
+        try:
+            model_prophet_high = Prophet()
+            self.model_high = model_prophet_high.fit(prophet_data_high)
+            model_prophet_low = Prophet()
+            self.model_low = model_prophet_low.fit(prophet_data_low)
+        except Exception as e:
+            print(f"Error while fitting Prophet model: {e}")
+
+    def preprocessing(self, df):
+        # if self.model is None:
+        df = add_donchan_channel(df,self.period)
+        df = add_enter_price2close(df)
+        df = add_slice_df(df,self.period)
+        self.fit_model(df)
+
+        future = self.model_high.make_future_dataframe(periods=self.forecast_steps, freq='h')
+        forecast = self.model_high.predict(future)
+        df['prophet_forecast_high'] = forecast['yhat']
+        future = self.model_low.make_future_dataframe(periods=self.forecast_steps, freq='h')
+        forecast = self.model_low.predict(future)
+        df['prophet_forecast_low'] = forecast['yhat']
+        df['signal'] = 0
+
+        # Простое правило: покупаем, если прогнозируемый close больше текущего open
+        df.loc[(df['prophet_forecast_low'] > df['close']), 'signal'] = 1
+        df.loc[(df['prophet_forecast_high'] < df['close']), 'signal'] = -1
+        return df
+
+    def __call__(self, row, *args, **kwargs):
+        if row['signal'] == 1:
+            return 'long_pw'
+        elif row['signal'] == -1:
+            return 'short_pw'
+        
+class STAML1_PROPHET2s(BaseTABitget):
+    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=20, forecast_steps=10):
+        super().__init__(symbol, granularity, productType, n_parts, period)
+        self.forecast_steps = forecast_steps
+        self.model_high = None
+        self.model_low = None
+
+    def fit_model(self, data):
+        start_date = '2023-01-01'  # Произвольная начальная точка
+        data['ds'] = pd.date_range(start=start_date, periods=len(data), freq='D')
+        prophet_data_high = data.reset_index()
+        prophet_data_high.rename(columns={'max_hb': 'y'}, inplace=True)
+        prophet_data_low = data.reset_index()
+        prophet_data_low.rename(columns={'min_hb': 'y'}, inplace=True)
+        try:
+            model_prophet_high = Prophet()
+            self.model_high = model_prophet_high.fit(prophet_data_high)
+            model_prophet_low = Prophet()
+            self.model_low = model_prophet_low.fit(prophet_data_low)
+        except Exception as e:
+            print(f"Error while fitting Prophet model: {e}")
+
+    def preprocessing(self, df):
+        # if self.model is None:
+        df = add_donchan_channel(df,self.period)
+        df = add_enter_price2close(df)
+        df = add_slice_df(df,self.period)
+        self.fit_model(df)
+
+        future = self.model_high.make_future_dataframe(periods=self.forecast_steps, freq='h')
+        forecast = self.model_high.predict(future)
+        forecast = forecast.iloc[self.forecast_steps:]
+        forecast = forecast.reset_index(drop=True)
+        df['prophet_forecast_high'] = forecast['yhat']
+        future = self.model_low.make_future_dataframe(periods=self.forecast_steps, freq='h')
+        forecast = self.model_low.predict(future)
+        forecast = forecast.iloc[self.forecast_steps:]
+        forecast = forecast.reset_index(drop=True)
+        df['prophet_forecast_low'] = forecast['yhat']
+        df['signal'] = 0
+
+        # Простое правило: покупаем, если прогнозируемый close больше текущего open
+        df.loc[(df['prophet_forecast_low'] > df['close']), 'signal'] = 1
+        df.loc[(df['prophet_forecast_high'] < df['close']), 'signal'] = -1
+        return df
+
+    def __call__(self, row, *args, **kwargs):
+        if row['signal'] == 1:
+            return 'long_pw'
+        elif row['signal'] == -1:
+            return 'short_pw'
+        
+# D по хаям и лоям с n-процента добавлением стандартного отклонения
+class STAML1_PROPHET3(BaseTABitget):
+    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=20, forecast_steps=10,n_percent=0.25):
+        super().__init__(symbol, granularity, productType, n_parts, period)
+        self.forecast_steps = forecast_steps
+        self.n_percent = n_percent
+        self.model_high = None
+        self.model_low = None
+
+    def fit_model(self, data):
+        start_date = '2023-01-01'  # Произвольная начальная точка
+        data['ds'] = pd.date_range(start=start_date, periods=len(data), freq='D')
+        prophet_data_high = data.reset_index()
+        prophet_data_high.rename(columns={'high': 'y'}, inplace=True)
+        prophet_data_low = data.reset_index()
+        prophet_data_low.rename(columns={'low': 'y'}, inplace=True)
+        try:
+            model_prophet_high = Prophet()
+            self.model_high = model_prophet_high.fit(prophet_data_high)
+            model_prophet_low = Prophet()
+            self.model_low = model_prophet_low.fit(prophet_data_low)
+        except Exception as e:
+            print(f"Error while fitting Prophet model: {e}")
+
+    def preprocessing(self, df):
+        df = add_enter_price2close(df)
+        df = add_slice_df(df,self.period)
+        self.fit_model(df)
+
+        future = self.model_high.make_future_dataframe(periods=self.forecast_steps, freq='h')
+        forecast = self.model_high.predict(future) 
+        df['prophet_forecast_high'] = forecast['yhat'] + df['high'].std() * self.n_percent
+        future = self.model_low.make_future_dataframe(periods=self.forecast_steps, freq='h')
+        forecast = self.model_low.predict(future) 
+        df['prophet_forecast_low'] = forecast['yhat'] - df['high'].std() * self.n_percent
+        df['signal'] = 0
+
+        # Простое правило: покупаем, если прогнозируемый close больше текущего open
+        df.loc[(df['prophet_forecast_low'] > df['close']), 'signal'] = 1
+        df.loc[(df['prophet_forecast_high'] < df['close']), 'signal'] = -1
+        return df
+
+    def __call__(self, row, *args, **kwargs):
+        if row['signal'] == 1:
+            return 'long_pw'
+        elif row['signal'] == -1:
+            return 'short_pw'
+class STAML1_PROPHET3s(BaseTABitget):
+    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=20, forecast_steps=10,n_percent=0.25):
+        super().__init__(symbol, granularity, productType, n_parts, period)
+        self.forecast_steps = forecast_steps
+        self.n_percent = n_percent
+        self.model_high = None
+        self.model_low = None
+
+    def fit_model(self, data):
+        start_date = '2023-01-01'  # Произвольная начальная точка
+        data['ds'] = pd.date_range(start=start_date, periods=len(data), freq='D')
+        prophet_data_high = data.reset_index()
+        prophet_data_high.rename(columns={'high': 'y'}, inplace=True)
+        prophet_data_low = data.reset_index()
+        prophet_data_low.rename(columns={'low': 'y'}, inplace=True)
+        try:
+            model_prophet_high = Prophet()
+            self.model_high = model_prophet_high.fit(prophet_data_high)
+            model_prophet_low = Prophet()
+            self.model_low = model_prophet_low.fit(prophet_data_low)
+        except Exception as e:
+            print(f"Error while fitting Prophet model: {e}")
+
+    def preprocessing(self, df):
+        df = add_enter_price2close(df)
+        df = add_slice_df(df,self.period)
+        self.fit_model(df)
+
+        future = self.model_high.make_future_dataframe(periods=self.forecast_steps, freq='h')
+        forecast = self.model_high.predict(future) 
+        forecast = forecast.iloc[self.forecast_steps:]
+        forecast = forecast.reset_index(drop=True)
+        df['prophet_forecast_high'] = forecast['yhat'] + df['high'].std() * self.n_percent
+        future = self.model_low.make_future_dataframe(periods=self.forecast_steps, freq='h')
+        forecast = self.model_low.predict(future) 
+        forecast = forecast.iloc[self.forecast_steps:]
+        forecast = forecast.reset_index(drop=True)
+        df['prophet_forecast_low'] = forecast['yhat'] - df['high'].std() * self.n_percent
+        df['signal'] = 0
+
+        # Простое правило: покупаем, если прогнозируемый close больше текущего open
+        df.loc[(df['prophet_forecast_low'] > df['close']), 'signal'] = 1
+        df.loc[(df['prophet_forecast_high'] < df['close']), 'signal'] = -1
+        return df
+
+    def __call__(self, row, *args, **kwargs):
+        if row['signal'] == 1:
+            return 'long_pw'
+        elif row['signal'] == -1:
+            return 'short_pw'
+#долго...   
+# class STAML1_SARIMAS1(BaseTABitget):
+#     def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=20, sarima_order=(1, 1, 1), seasonal_order=(0, 1, 1, 24), forecast_steps=10):
+#         super().__init__(symbol, granularity, productType, n_parts, period)
+#         self.order = sarima_order
+#         self.seasonal_order = seasonal_order
+#         self.forecast_steps = forecast_steps
+#         self.model_high = None
+#         self.model_low = None
+
+#     def fit_model(self, data):
+#         try:
+#             model_sarima = SARIMAX(data['high'], order=self.order, seasonal_order=self.seasonal_order)
+#             self.model_high = model_sarima.fit(disp=False)
+#             model_sarima = SARIMAX(data['low'], order=self.order, seasonal_order=self.seasonal_order)
+#             self.model_low = model_sarima.fit(disp=False)
+#         except Exception as e:
+#             print(f"Error while fitting SARIMA model: {e}")
+
+#     def preprocessing(self, df):
+#         # if self.model is None:
+#         self.fit_model(df)
+
+#         forecast = self.model_high.forecast(steps=self.forecast_steps)
+#         shift_index = forecast.index - self.forecast_steps
+#         forecast = pd.Series(forecast.values, index=shift_index)
+#         df['sarima_forecast_high'] = forecast
+#         forecast = self.model_low.forecast(steps=self.forecast_steps)
+#         shift_index = forecast.index - self.forecast_steps
+#         forecast = pd.Series(forecast.values, index=shift_index)
+#         df['sarima_forecast_low'] = forecast
+#         df['signal'] = 0
+
+#         # Простое правило: покупаем, если прогнозируемый close больше текущего open
+#         df.loc[(df['sarima_forecast_high'] < df['close']), 'signal'] = -1
+#         df.loc[(df['sarima_forecast_low'] > df['close']), 'signal'] = 1
+#         df = add_enter_price2close(df)
+#         df = add_slice_df(df, self.period)
+#         return df
+
+#     def __call__(self, row, *args, **kwargs):
+#         if row['signal'] == 1:
+#             return 'long_pw'
+#         elif row['signal'] == -1:
+#             return 'short_pw'
 
 
 # Предсказывает прямую линию...
-class STAML1_VARMAS1(BaseTABitget):
-    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=20, varma_order=(1, 0), forecast_steps=10):
-        super().__init__(symbol, granularity, productType, n_parts, period)
-        self.order = varma_order
-        self.forecast_steps = forecast_steps
-        self.model = None
+# class STAML1_VARMAS1(BaseTABitget):
+#     def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=20, varma_order=(1, 0), forecast_steps=10):
+#         super().__init__(symbol, granularity, productType, n_parts, period)
+#         self.order = varma_order
+#         self.forecast_steps = forecast_steps
+#         self.model = None
 
-    def fit_model(self, data):
-        subset_data = data.sample(frac=0.1)
-        try:
-            model_varma = VARMAX(subset_data[['close','volume']], order=self.order)
-            self.model = model_varma.fit(maxiter=10,disp=False)
-        except Exception as e:
-            print(f"Error while fitting VARMA model: {e}")
+#     def fit_model(self, data):
+#         subset_data = data.sample(frac=0.1)
+#         try:
+#             model_varma = VARMAX(subset_data[['close','volume']], order=self.order)
+#             self.model = model_varma.fit(maxiter=10,disp=False)
+#         except Exception as e:
+#             print(f"Error while fitting VARMA model: {e}")
 
-    def preprocessing(self, df):
-        # if self.model is None:
-        self.fit_model(df)
+#     def preprocessing(self, df):
+#         # if self.model is None:
+#         self.fit_model(df)
 
-        forecast = self.model.forecast(steps=self.forecast_steps)
+#         forecast = self.model.forecast(steps=self.forecast_steps)
 
-        forecast_close = pd.Series(forecast['close'].values, index=df.index[-self.forecast_steps:])
-        print(forecast_close)
-        df['varma_forecast'] = forecast_close
-        df['signal'] = 0
+#         forecast_close = pd.Series(forecast['close'].values, index=df.index[-self.forecast_steps:])
+#         print(forecast_close)
+#         df['varma_forecast'] = forecast_close
+#         df['signal'] = 0
 
-        # Простое правило: покупаем, если прогнозируемый close больше текущего open
-        df.loc[(df['varma_forecast'] > df['close']), 'signal'] = -1
-        df.loc[(df['varma_forecast'] < df['close']), 'signal'] = 1
-        df = add_enter_price2close(df)
-        df = add_slice_df(df, self.period)
-        return df
+#         # Простое правило: покупаем, если прогнозируемый close больше текущего open
+#         df.loc[(df['varma_forecast'] > df['close']), 'signal'] = -1
+#         df.loc[(df['varma_forecast'] < df['close']), 'signal'] = 1
+#         df = add_enter_price2close(df)
+#         df = add_slice_df(df, self.period)
+#         return df
 
-    def __call__(self, row, *args, **kwargs):
-        if row['signal'] == 1:
-            return 'long_pw'
-        elif row['signal'] == -1:
-            return 'short_pw'
+#     def __call__(self, row, *args, **kwargs):
+#         if row['signal'] == 1:
+#             return 'long_pw'
+#         elif row['signal'] == -1:
+#             return 'short_pw'

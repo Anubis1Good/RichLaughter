@@ -1,10 +1,10 @@
 import numpy as np
+import  matplotlib.pyplot as plt
 from sklearn.cluster import KMeans
 from strategies.work_strategies.BaseTA import BaseTABitget
 from ForBots.Indicators.classic_indicators import add_slice_df,add_enter_price,add_ema,add_stochastic,add_atr,add_local_extrema,add_enter_price2close,add_supertrend
 from ForBots.Indicators.price_funcs import get_universal_r,get_universal
 from utils.help_trades import reverse_action
-
 #D Похоже на WDDCr
 class LTA_LAKSA(BaseTABitget):
     def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=20,period2=5):
@@ -68,7 +68,6 @@ class LTA_TOMYAM(BaseTABitget):
             close = df.loc[i, 'close']
             # Проверка на покупку (цена вблизи поддержки и начинает расти)
             for level in support_levels:
-                if close < level:  # Порог 1 для "близости"
                     df.loc[i, 'signal'] = 1  # Покупка
             # Проверка на продажу (цена вблизи сопротивления и начинает падать)
             for level in resistance_levels:
