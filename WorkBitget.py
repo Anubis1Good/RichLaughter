@@ -10,7 +10,7 @@ from strategies.test_strategies.check import check_strategy
 # from strategies.work_strategies.STA_ca import STA1_LITE as WS
 # from strategies.work_strategies.OGTA import OGTA3_Rails as WS
 # from strategies.work_strategies.LTA import LTA_TOMYAM as WS
-from strategies.work_strategies.STA_ml import STAML1_PROPHET3s as WS
+from strategies.work_strategies.STA_ml import STAML1_XGBR2_DC as WS
 # from strategies.work_strategies.STA_rl import STARL1_HELPGOD as WS
 # from strategies.work_strategies.experiments import ExpStrategy as WS
 
@@ -91,8 +91,8 @@ else:
     # plt.subplot(2,1,2)
     # plt.plot(df['macd'],color='b')
     # plt.plot(df['signal_line'],color='red')
-    # plt.plot(df['predicted_high'],color='b')
-    # plt.plot(df['predicted_low'],color='violet')
+    plt.plot(df['predicted_high'],color='b')
+    plt.plot(df['predicted_low'],color='violet')
     # plt.plot(df['predicted_middle'],color='black')
     # plt.plot(df['support'], color='b', linestyle='--', label='Поддержка')
     # plt.plot(df['resistance'], color='b', linestyle='--', label='Сопротивление')
@@ -100,8 +100,8 @@ else:
     # df['predicted_low_shifted'] = df['predicted_low'].shift(10)
     # plt.plot(df['varma_forecast'], label='Предсказанные максимумы', color='blue', linestyle=':')
     # print(df['varma_forecast'])
-    plt.plot(df['prophet_forecast_low'], label='Предсказанные минимумы', color='blue', linestyle=':')
-    plt.plot(df['prophet_forecast_high'], label='Предсказанные минимумы', color='violet', linestyle=':')
+    # plt.plot(df['arima_forecast_low'], label='Предсказанные минимумы', color='blue', linestyle=':')
+    # plt.plot(df['arima_forecast_high'], label='Предсказанные минимумы', color='violet', linestyle=':')
     # plt.plot(df['recent_min'],color='green')
     # plt.plot(df['recent_max'],color='blue')
     # plt.plot(df['stop_long'],color='yellow')

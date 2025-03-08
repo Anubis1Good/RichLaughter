@@ -332,7 +332,7 @@ class STAML1_XGBR2he(BaseTABitget):
             return 'close_long_pw'
 #D DC 
 class STAML1_XGBR2_DC(BaseTABitget):
-    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=20,future_steps=10):
+    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=5,future_steps=5):
         super().__init__(symbol, granularity, productType, n_parts, period)
         self.future_steps = future_steps
     def preprocessing(self, df):
@@ -1164,7 +1164,7 @@ class STAML1_XGBR8(BaseTABitget):
 # Предсказывает прямую линию...
 # D 
 class STAML1_ARIMAS1(BaseTABitget):
-    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=20, arima_order=(2, 1, 2), forecast_steps=10,n_percent=0.1):
+    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=20, arima_order=(2, 1, 2), forecast_steps=1000,n_percent=0.01):
         super().__init__(symbol, granularity, productType, n_parts, period)
         self.order = arima_order
         self.forecast_steps = forecast_steps
