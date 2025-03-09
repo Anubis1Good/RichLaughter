@@ -170,10 +170,10 @@ class TestBot1offline(TestBot1):
             traceback.print_exc()
 
 class TestMarketBot1(TestBot1):
-    def __init__(self,symbol,strategy,conf):
+    def __init__(self,folder,symbol,strategy,conf):
         self.symbol = symbol
         self.strategy = strategy
-        self.name = symbol + '_' + str(self.strategy).split(' ')[0].split('.')[-1] + "_" + "_".join(list(map(str,conf)))
+        self.name = symbol + '_' + self.strategy.granularity + '_' + str(self.strategy).split(' ')[0].split('.')[-1] + "_" + "_".join(list(map(str,conf)))
         self.trades = [{
             'open_price':0,
             'open_time':str(datetime.now()),
@@ -186,9 +186,10 @@ class TestMarketBot1(TestBot1):
             }
         ]
         self.len_trades = 0
-        self.json_path = f'logsMT\OT_{self.name}.json'
-        if not os.path.exists('logsMT'):
-            os.mkdir('logsMT')
+        path_folder = os.path.join('logsMT',folder)
+        self.json_path = os.path.join(path_folder,f'OT_{self.name}.json')
+        if not os.path.exists(path_folder):
+            os.makedirs(path_folder)
 
     def open_long(self,price):
         self.trades.append({
@@ -256,6 +257,21 @@ class TestMarketBot1(TestBot1):
                     self.open_short(sp)
     def trade_prev(self, cur_price):
         pass
+
+    def cancel_trade(self,df):
+        try:
+            row = self.strategy.get_test_row(df)
+            price = row['close']
+            if not self.trades[-1]['close_time']:
+                if self.trades[-1]['pos'] == 1:
+                    self.close_long(price)
+                if self.trades[-1]['pos'] == -1:
+                    self.close_short(price)
+            with open(self.json_path,'w') as f:
+                json.dump(self.trades,f)
+        except Exception as err:
+            traceback.print_exc()
+
     def run(self,df):
         try:
             row = self.strategy.get_test_row(df)

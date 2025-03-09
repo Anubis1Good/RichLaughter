@@ -217,7 +217,7 @@ class LTA_BORSCH(BaseTABitget):
         self.lookback_period = period
     def preprocessing(self, df):
  # Расчёт момента (momentum)
-        df['momentum'] = df['close'].pct_change(periods=self.momentum_period) * 100
+        # df['momentum'] = df['close'].pct_change(periods=self.momentum_period) * 100
 
         # Добавление уровней недавних максимумов и минимумов
         df['recent_max'] = df['high'].rolling(window=self.lookback_period).max()
