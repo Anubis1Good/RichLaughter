@@ -5,6 +5,15 @@ import apimoex
 import pandas as pd
 
 def download_moex(ticker,interval,start,end=None,board: str = "TQBR",market:str="shares", engine:str = "stock"):
+    """K-line particle size
+        1 - 1 минута
+        10 - 10 минут
+        60 - 1 час
+        24 - 1 день
+        7 - 1 неделя
+        31 - 1 месяц
+        4 - 1 квартал
+    """
     with requests.Session() as session:
         data = apimoex.get_board_candles(session, ticker,interval,start,end,board=board,market=market,engine=engine)
         df = pd.DataFrame(data)

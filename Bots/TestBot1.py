@@ -173,7 +173,7 @@ class TestMarketBot1(TestBot1):
     def __init__(self,folder,symbol,strategy,conf):
         self.symbol = symbol
         self.strategy = strategy
-        self.name = symbol + '_' + self.strategy.granularity + '_' + str(self.strategy).split(' ')[0].split('.')[-1] + "_" + "_".join(list(map(str,conf)))
+        self.name = symbol + '_' + str(self.strategy.granularity) + '_' + str(self.strategy).split(' ')[0].split('.')[-1] + "_" + "_".join(list(map(str,conf)))
         self.trades = [{
             'open_price':0,
             'open_time':str(datetime.now()),
@@ -190,7 +190,8 @@ class TestMarketBot1(TestBot1):
         self.json_path = os.path.join(path_folder,f'OT_{self.name}.json')
         if not os.path.exists(path_folder):
             os.makedirs(path_folder)
-
+    def __repr__(self):
+        return f"TestMarkerBot1_{self.name}"
     def open_long(self,price):
         self.trades.append({
             'open_price':price,

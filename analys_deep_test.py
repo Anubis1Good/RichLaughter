@@ -13,8 +13,10 @@ for raw_folder in raws_folder:
     date = ".".join(reversed(str(datetime.now()).split(' ')[0].replace('-','.').split('.')))
     result_name = "_".join(raw_files[0].split('_')[1:3])
 
-    min_fee: float = 0.0004
-    max_fee: float = 0.0012
+    # min_fee: float = 0.0004
+    # max_fee: float = 0.0012
+    min_fee = 0.0002
+    max_fee = 0.0009
     average_fee = (max_fee + min_fee)/2
     df_main = pd.DataFrame(columns=['name','total_abs','count','mean_price'])
     # df_main = pd.DataFrame(columns=['name','total_abs','total_per','total_min_fee_percent','total_max_fee_percent','total_average_fee_percent','count'])
