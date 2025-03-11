@@ -23,34 +23,31 @@ wss1 = [
 
     # (STA1_LITE,(20,2,0.5,10)),
     (PTA4_WDVCr,(11,)),
+    (PTA4_WDDCr,(6,30)), #C
     (PTA4_WDDCr,(11,30)), #C
     (PTA4_WDDCrE,(11,30)), #C
     (PTA4_WDDCrVG,(11,30)),
+    (PTA4_WDDCde,(15,30)), #S
+    (PTA4_WDDCde,(30,30)), #S
+    (PTA4_WDDCde,(60,30)), #S
+    (PTA4_WLISICA,(7,2,30)),
 
     (PTA8_WDOBBY_FREEr,(11,0.5,30)),
+    (STAML1_XGBR2,(6,6)), #S
 
 ]
 
 wss10 = [
-    # (LTA_BORSCH,(3,3)),
-    # (LTA_APHOGA,(10,1)),
-    # (LTA_TOMYAM,(50,)),
 
-    (PTA2_DVCr,(10,)),
-    (PTA2_DDCde,(20,)),
-    (PTA2_DDCrVG,(10,)),
-    (PTA2_LISICA,(7,2)),
-    (PTA2_DDCrWork,(5,)),
-
-    (PTA4_WDVCr,(10,)),
-    (PTA4_WDDCr,(10,30)), #C
-    (PTA4_WDDCrE,(10,30)), #C
-    (PTA4_WLISICA,(7,2,30)),
-    (PTA4_WDDCde,(20,30)), #S
+    (PTA4_WDVCr,(5,)),
+    (PTA4_WDDCr,(5,30)), #C
+    (PTA4_WDDCrE,(5,30)), #C
+    (PTA4_WDDCde,(10,30)), #S
 
     (PTA8_WDOBBY_FREEr,(8,0.5,30)),
 
     (STAML1_XGBR2,(5,5)), #S
+    (STAML1_PROPHET1,(60,20)), #fee problem
     (STAML1_PROPHET2,(5,20)),
     (STAML1_PROPHET3,(20,20,0.03)),
 

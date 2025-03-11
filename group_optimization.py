@@ -3,10 +3,15 @@ from strategies.test_strategies.universal import universal_test_strategy as ts
 
 from strategies.work_strategies.STA_ml import STAML1_PROPHET1s,STAML1_PROPHET2s,STAML1_PROPHET3s
 # from strategies.work_strategies.LTA import LTA_APHOBO,LTA_APHOGA
-from strategies.work_strategies.PTA import PTA10_MAGIC,PTA6_KAMA,PTA6_KAMA2,PTA6_KAMAZ2,PTA6_KAMA3,PTA6_KAMA4
+from strategies.work_strategies.PTA import PTA4_WDDCde,PTA4_WDDCr,PTA4_WDDCrE,PTA4_WDDCrVG,PTA4_WDVCr,PTA4_WLISICA,PTA8_WDOBBY_FREEr
 
 
-test_folder = 'DataForTests\DataFromBitget'
+# test_folder = 'DataForTests\DataFromBitget'
+test_folder = 'DataForTests\DataFromMOEX'
+# min_fee: float = 0.0004
+# max_fee: float = 0.0012
+min_fee = 0.0002
+max_fee = 0.0009
 params1 = [
     [3,4] + list(range(5,26,5)),
     (0.5,1,2,3)
@@ -24,10 +29,35 @@ params4 = [
 ]
 group = (
 
-    (STAML1_PROPHET3s,[
-        (20,),
-        (5,10),
-        (0.05,0.1,0.2,0.3)
+    (PTA4_WDDCde,[
+        range(5,66,5),
+        (30,),
+    ]),
+    (PTA4_WDDCr,[
+        range(5,66,5),
+        (30,),
+    ]),
+    (PTA4_WDDCrE,[
+        range(5,66,5),
+        (30,),
+    ]),
+    (PTA4_WDDCrVG,[
+        range(5,66,5),
+        (30,),
+    ]),
+    (PTA4_WDVCr,[
+        range(5,66,5),
+        (30,),
+    ]),
+    (PTA4_WLISICA,[
+        range(5,66,5),
+        (2,),
+        (30,),
+    ]),
+    (PTA8_WDOBBY_FREEr,[
+        range(5,66,5),
+        (0.5,1,1.5,2),
+        (30,),
     ]),
 
 )
@@ -42,4 +72,4 @@ group = (
 
 for part in group:
     print(part[0])
-    optimization(part[0],ts,part[1],test_folder)
+    optimization(part[0],ts,part[1],test_folder,min_fee,max_fee)

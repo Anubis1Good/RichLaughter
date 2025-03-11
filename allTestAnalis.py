@@ -47,8 +47,8 @@ with pd.ExcelWriter(path_df_main, engine='xlsxwriter') as writer:
     df_main.to_excel(writer,sheet_name='total')
     workbook = writer.book
     worksheet = writer.sheets['total']
-    for i, col in enumerate(df_main.columns):
+    for i, col in enumerate(df_main.columns,start=1):
         width = max(df_main[col].apply(lambda x: len(str(x))).max(), len(col))
         worksheet.set_column(i, i, width)
-    writer._save()
+    # writer._save()
 

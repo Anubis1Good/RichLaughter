@@ -11,12 +11,17 @@ for raw_folder in raws_folder:
     raw_folder_path = os.path.join(logs_folder,raw_folder)
     raw_files = os.listdir(raw_folder_path)
     date = ".".join(reversed(str(datetime.now()).split(' ')[0].replace('-','.').split('.')))
-    result_name = "_".join(raw_files[0].split('_')[1:3])
-
-    # min_fee: float = 0.0004
-    # max_fee: float = 0.0012
-    min_fee = 0.0002
-    max_fee = 0.0009
+    # result_name = "_".join(raw_files[0].split('_')[1:3])
+    result_name = raw_folder + date
+    print(raw_folder)
+    min_fee: float = 0.0004
+    max_fee: float = 0.0012
+    if raw_folder == 'bitget':
+        min_fee: float = 0.0004
+        max_fee: float = 0.0012
+    if raw_folder == 'MOEX':
+        min_fee = 0.0002
+        max_fee = 0.0009
     average_fee = (max_fee + min_fee)/2
     df_main = pd.DataFrame(columns=['name','total_abs','count','mean_price'])
     # df_main = pd.DataFrame(columns=['name','total_abs','total_per','total_min_fee_percent','total_max_fee_percent','total_average_fee_percent','count'])
@@ -81,4 +86,4 @@ for raw_folder in raws_folder:
                 'max_color': '#00B0F0'
             })
         # Форматируем колонку, начиная со второй строки (первая строка - заголовок)
-        writer._save()
+        # writer._save()

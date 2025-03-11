@@ -206,6 +206,8 @@ while True:
         #     bot.cancel_trade(df_c)
         print('Position closed!')
         sys.exit(0)
+    except:
+        print('Some Error')
     # print('Time:',time()-start)
         # df.info()
         # sleep(3)
