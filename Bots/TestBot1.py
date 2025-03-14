@@ -1,7 +1,19 @@
 import traceback
+import numpy as np
 from datetime import datetime
 import json
 import os
+
+class NumpyEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, np.integer):
+            return int(obj)
+        elif isinstance(obj, np.floating):
+            return float(obj)
+        elif isinstance(obj, np.ndarray):
+            return obj.tolist()
+        else:
+            return super().default(obj)
 
 class TestBot1:
     def __init__(self,symbol,strategy,conf):
@@ -118,7 +130,7 @@ class TestBot1:
         if self.len_trades != len_trades:
             self.len_trades = len_trades
             with open(self.json_path,'w') as f:
-                json.dump(self.trades,f)
+                json.dump(self.trades,f,cls=NumpyEncoder)
     def run(self):
         try:
             row = self.strategy.get_row()
@@ -269,7 +281,7 @@ class TestMarketBot1(TestBot1):
                 if self.trades[-1]['pos'] == -1:
                     self.close_short(price)
             with open(self.json_path,'w') as f:
-                json.dump(self.trades,f)
+                json.dump(self.trades,f,cls=NumpyEncoder)
         except Exception as err:
             traceback.print_exc()
 

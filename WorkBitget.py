@@ -10,9 +10,9 @@ from strategies.test_strategies.check import check_strategy
 # from strategies.work_strategies.STA_ca import STA1_LITE as WS
 # from strategies.work_strategies.OGTA import OGTA3_Rails as WS
 # from strategies.work_strategies.LTA import LTA_TOMYAM as WS
-from strategies.work_strategies.STA_ml import STAML1_XGBR2_DC as WS
+# from strategies.work_strategies.STA_ml import STAML1_XGBR2_DC as WS
 # from strategies.work_strategies.STA_rl import STARL1_HELPGOD as WS
-# from strategies.work_strategies.experiments import ExpStrategy as WS
+from strategies.work_strategies.experiments import ExpBot as WS
 
 from strategies.test_strategies.universal import universal_test_strategy as TS
 raw_file = 'DataForTests\DataFromBitget\DOGEUSDT_1m_1739873922.csv'
@@ -91,8 +91,8 @@ else:
     # plt.subplot(2,1,2)
     # plt.plot(df['macd'],color='b')
     # plt.plot(df['signal_line'],color='red')
-    plt.plot(df['predicted_high'],color='b')
-    plt.plot(df['predicted_low'],color='violet')
+    # plt.plot(df['predicted_high'],color='b')
+    # plt.plot(df['predicted_low'],color='violet')
     # plt.plot(df['predicted_middle'],color='black')
     # plt.plot(df['support'], color='b', linestyle='--', label='Поддержка')
     # plt.plot(df['resistance'], color='b', linestyle='--', label='Сопротивление')

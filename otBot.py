@@ -21,6 +21,7 @@ wss1 = [
     (LTA_BORSCH,(10,3)),
 
     (STA1_LITE,(20,2,0.5,20)),
+    (PTA4_WDDCr,(30,30)), #C
 
 ]
 
@@ -40,8 +41,8 @@ wss5 = [
 
     (PTA8_WDOBBY_FREEr,(8,0.5,30)),
 
-    (STAML1_XGBR2_DC,(5,5)), #S
-    (STAML1_XGBR2_DCh,(5,5)), #S
+    # (STAML1_XGBR2_DC,(5,5)), #S
+    # (STAML1_XGBR2_DCh,(5,5)), #S
 
 ]
 wss15 = [
@@ -66,19 +67,19 @@ wss15 = [
     (PTA9_RAB,(10,2,5,0.5)),
 
 
-    (STAML1_PROPHET2,(5,20)),
-    (STAML1_PROPHET2s,(5,20)),
-    (STAML1_PROPHET3,(20,20,0.03)),
-    (STAML1_PROPHET3s,(20,20,0.03)),
-    (STAML1_XGBR2,(60,5)), #S
-    (STAML1_XGBR2,(5,5)), #S
-    (STAML1_XGBR2e,(5,5)), #S
-    (STAML1_XGBR2he,(5,5)), #S
-    (STAML1_XGBR4,(60,5)),
-    (STAML1_XGBR5,(60,5)),
-    (STAML1_XGBR6,(60,5)),
-    (STAML1_XGBR7,(60,5)),
-    (STAML1_XGBR8,(60,5)),
+    # (STAML1_PROPHET2,(5,20)),
+    # (STAML1_PROPHET2s,(5,20)),
+    # (STAML1_PROPHET3,(20,20,0.03)),
+    # (STAML1_PROPHET3s,(20,20,0.03)),
+    # (STAML1_XGBR2,(60,5)), #S
+    # (STAML1_XGBR2,(5,5)), #S
+    # (STAML1_XGBR2e,(5,5)), #S
+    # (STAML1_XGBR2he,(5,5)), #S
+    # (STAML1_XGBR4,(60,5)),
+    # (STAML1_XGBR5,(60,5)),
+    # (STAML1_XGBR6,(60,5)),
+    # (STAML1_XGBR7,(60,5)),
+    # (STAML1_XGBR8,(60,5)),
 
 ]
 wss30 = [
@@ -95,9 +96,9 @@ wss30 = [
 
     (PTA10_MAGIC,(95,20,4)),
 
-    (STAML1_XGBR2h,(5,5)), #S
-    (STAML1_PROPHET1,(60,20)), #fee problem
-    (STAML1_PROPHET1s,(60,20)), #fee problem
+    # (STAML1_XGBR2h,(5,5)), #S
+    # (STAML1_PROPHET1,(60,20)), #fee problem
+    # (STAML1_PROPHET1s,(60,20)), #fee problem
 
 ]
 # wss = [

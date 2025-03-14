@@ -19,12 +19,13 @@ wss_sleep = [
 
 ]
 wss1 = [
-    # (LTA_BORSCH,(10,3)),
+    (LTA_BORSCH,(10,3)),
 
     # (STA1_LITE,(20,2,0.5,10)),
     (PTA4_WDVCr,(11,)),
     (PTA4_WDDCr,(6,30)), #C
     (PTA4_WDDCr,(11,30)), #C
+    (PTA4_WDDCr,(21,30)), #C
     (PTA4_WDDCrE,(11,30)), #C
     (PTA4_WDDCrVG,(11,30)),
     (PTA4_WDDCde,(15,30)), #S
@@ -33,27 +34,26 @@ wss1 = [
     (PTA4_WLISICA,(7,2,30)),
 
     (PTA8_WDOBBY_FREEr,(11,0.5,30)),
-    (STAML1_XGBR2,(6,6)), #S
 
 ]
 
-wss10 = [
+# wss10 = [
 
-    (PTA4_WDVCr,(5,)),
-    (PTA4_WDDCr,(5,30)), #C
-    (PTA4_WDDCrE,(5,30)), #C
-    (PTA4_WDDCde,(10,30)), #S
+#     (PTA4_WDVCr,(5,)),
+#     (PTA4_WDDCr,(5,30)), #C
+#     (PTA4_WDDCrE,(5,30)), #C
+#     (PTA4_WDDCde,(10,30)), #S
 
-    (PTA8_WDOBBY_FREEr,(8,0.5,30)),
+#     (PTA8_WDOBBY_FREEr,(8,0.5,30)),
 
-    (STAML1_XGBR2,(5,5)), #S
-    (STAML1_PROPHET1,(60,20)), #fee problem
-    (STAML1_PROPHET2,(5,20)),
-    (STAML1_PROPHET3,(20,20,0.03)),
+#     # (STAML1_XGBR2,(5,5)), #S
+#     # (STAML1_PROPHET1,(60,20)), #fee problem
+#     # (STAML1_PROPHET2,(5,20)),
+#     # (STAML1_PROPHET3,(20,20,0.03)),
 
-    (STAML1_XGBR2_DC,(5,5)), #S
-    (STAML1_XGBR2_DCh,(5,5)), #S
-]
+#     # (STAML1_XGBR2_DC,(5,5)), #S
+#     # (STAML1_XGBR2_DCh,(5,5)), #S
+# ]
 
 # wss60 = [
 #     (LTA_RAMEN,(50,3)),
@@ -104,15 +104,9 @@ wss10 = [
 # ]
 
 max_period1 = (max(list(map(lambda x: x[1][0],wss1)))+1)*3
-max_period10 = (max(list(map(lambda x: x[1][0],wss10)))+1)*3
+# max_period10 = (max(list(map(lambda x: x[1][0],wss10)))+1)*3
 # max_period15 = (max(list(map(lambda x: x[1][0],wss15)))+1)*3
 # max_period30 = (max(list(map(lambda x: x[1][0],wss30)))+1)*3
-print('Ботов 1:',len(wss1))
-print('Ботов 10:',len(wss10))
-# print('Ботов 15:',len(wss15))
-# print('Ботов 30:',len(wss30))
-print('Max period 1:',max_period1)
-print('Max period 10:',max_period10)
 # print('Max period 15:',max_period15)
 # print('Max period 30:',max_period30)
 # symbol = "DOGEUSDT"
@@ -129,17 +123,36 @@ yesterday = str(today - timedelta(days=3))
 tickers = (
     ('CRH5',True),
     ('MMH5',True),
+    ('GZH5',True),
+    ('SRH5',True),
     ('SBER',False),
     ('GAZP',False),
     ('VTBR',False),
     ('LKOH',False),
     ('MTLR',False),
     ('TATN',False),
-    ('ROSN',False)
+    ('ROSN',False),
+    ('AFKS',False),
+    ('ALRS',False),
+    ('GMKN',False),
+    ('MAGN',False),
+    ('MOEX',False),
+    ('NLMK',False),
+    ('NVTK',False),
+    ('RUAL',False),
+    ('CHMF',False),
+    ('SELG',False),
+    ('YDEX',False),
+
 )
+print('Ботов 1:',len(wss1))
+# print('Ботов 10:',len(wss10))
+print('Всего ботов:',len(wss1)*len(tickers))
+print('Max period 1:',max_period1)
+# print('Max period 10:',max_period10)
 # ticker = 'MMH5'
 # ticker = 'SNGSP'
-def trade_bots(granularity,max_period,bots,func):
+def trade_bots(granularity,bots,func):
     for ticker,fut in tickers:
         if fut:
             board = "RFUD"
@@ -151,6 +164,7 @@ def trade_bots(granularity,max_period,bots,func):
             engine: str = "stock"
         df = download_moex(ticker,granularity,yesterday,board=board,market=market,engine=engine)
         df = create_df(df)
+        # df.info()
         # print(len(df.index),max_period)
         # period = min(max_period,len(df.index)-1)
         # df = df.iloc[-period:]
@@ -169,20 +183,20 @@ def prepare_bots(folder,wss,granularity):
             bots[ticker].append(bot)
     return bots
 bots1 = prepare_bots('MOEX',wss1,1)
-bots10 = prepare_bots('MOEX',wss10,10)
+# bots10 = prepare_bots('MOEX',wss10,10)
 # print(bots1)
 
 while True:
     # start = time()
     try:
-        trade_bots(1,max_period1,bots1,lambda bot,df:bot.run(df))
-        trade_bots(10,max_period10,bots10,lambda bot,df:bot.run(df))
+        trade_bots(1,bots1,lambda bot,df:bot.run(df))
+        # trade_bots(10,bots10,lambda bot,df:bot.run(df))
 
 
     except KeyboardInterrupt:
         print('Close all position...')
-        trade_bots(1,max_period1,bots1,lambda bot,df:bot.cancel_trade(df))
-        trade_bots(10,max_period10,bots10,lambda bot,df:bot.cancel_trade(df))
+        trade_bots(1,bots1,lambda bot,df:bot.cancel_trade(df))
+        # trade_bots(10,bots10,lambda bot,df:bot.cancel_trade(df))
         print('Position closed!')
         sys.exit(0)
     except:
