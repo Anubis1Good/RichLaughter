@@ -2,7 +2,7 @@ import numpy as np
 import  matplotlib.pyplot as plt
 from sklearn.cluster import KMeans
 from strategies.work_strategies.BaseTA import BaseTABitget
-from ForBots.Indicators.classic_indicators import add_slice_df,add_enter_price,add_ema,add_stochastic,add_atr,add_local_extrema,add_enter_price2close,add_supertrend
+from ForBots.Indicators.classic_indicators import add_slice_df,add_enter_price,add_ema,add_stochastic,add_atr,add_local_extrema,add_enter_price2close,add_supertrend,add_rsi,add_chop
 from ForBots.Indicators.price_funcs import get_universal_r,get_universal
 from utils.help_trades import reverse_action
 #D Похоже на WDDCr
@@ -178,6 +178,35 @@ class LTA_APHOBO(LTA_PHOBO):
         action = super().__call__(row, *args, **kwds)
         action = reverse_action(action)
         return action
+# TODO
+class LTA_WAPHOBO(BaseTABitget):
+    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=100,multiplier=1):
+        super().__init__(symbol, granularity, productType, n_parts, period)
+        self.multiplier = multiplier
+    def preprocessing(self, df):
+        df = add_supertrend(df,self.period,self.multiplier)
+        df = add_rsi(df,self.period)
+        df = add_enter_price2close(df)
+        df['signal'] = 0
+        # Генерация сигналов
+        for i in range(1, len(df)):
+            if df['in_uptrend'].iloc[i] and not df['in_uptrend'].iloc[i - 1]:
+                df.loc[df.index[i], 'signal'] = 1  # Покупать
+            elif not df['in_uptrend'].iloc[i] and df['in_uptrend'].iloc[i - 1]:
+                df.loc[df.index[i], 'signal'] = -1  # Продавать
+        df = add_slice_df(df,self.period)
+        plt.plot(df['supertrend'])
+        return df
+    
+    def __call__(self, row, *args, **kwds):
+        if row['in_uptrend'] and row['rsi'] < 30:
+            return 'long_pw'
+        if not row['in_uptrend'] and row['rsi'] > 70:
+            return 'short_pw'
+        if row['rsi'] < 30:
+            return 'close_short_pw'
+        if row['rsi'] > 70:
+            return 'close_long_pw'
 # BD PHOBO c фильтрацией по объему
 class LTA_PHOGA(BaseTABitget):
     def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=10,multiplier=3):
@@ -314,3 +343,49 @@ class LTA_MISO(BaseTABitget):
         if row['signal'] == -1:
             return 'short_pw'
 
+class LTA_OKROSHKA(BaseTABitget):
+    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=15,period_chop=10):
+        super().__init__(symbol, granularity, productType, n_parts, period)
+        self.period_chop = period_chop
+    def preprocessing(self, df):
+        df = add_rsi(df,self.period)
+        df = add_chop(df,self.period_chop)
+        df = add_enter_price2close(df)  
+        period = max(self.period,self.period_chop)
+        df = add_slice_df(df, period) 
+        # df['signal'] = add_signal(df) # поиск какого-то сигнала
+        return df
+
+    def __call__(self, row, *args, **kwds):
+        threshold = 30
+        if 60 > row['chop'] > 45:
+            threshold = 30
+        elif row['chop'] > 60:
+            threshold = 25
+        elif 45 > row['chop'] > 30:
+            threshold = 20
+        else:
+            threshold = 10
+        if row['rsi'] < threshold:  
+            return 'long_pw'
+        if row['rsi'] > 100-threshold:  
+            return 'short_pw'
+        
+class LTA_KROSH(BaseTABitget):
+    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=15,threshold=30):
+        super().__init__(symbol, granularity, productType, n_parts, period)
+        self.threshold = threshold
+    def preprocessing(self, df):
+        df = add_rsi(df,self.period)
+
+        df = add_enter_price2close(df)  
+
+        df = add_slice_df(df, self.period) 
+        # df['signal'] = add_signal(df) # поиск какого-то сигнала
+        return df
+
+    def __call__(self, row, *args, **kwds):
+        if row['rsi'] < self.threshold:  
+            return 'long_pw'
+        if row['rsi'] > 100-self.threshold:  
+            return 'short_pw'

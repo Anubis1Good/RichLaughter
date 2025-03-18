@@ -1,7 +1,7 @@
 from utils.help_trades import reverse_action
 from strategies.work_strategies.BaseTA import BaseTABitget
-from ForBots.Indicators.vsa_indicators import add_rails,add_rails_slice,add_allowance_rails,add_spred,add_OGTA2_rails_info
-from ForBots.Indicators.classic_indicators import add_big_volume,add_slice_df,add_enter_price,add_delta_2v,add_sc_and_buffer,add_sma,add_enter_price2close
+from ForBots.Indicators.vsa_indicators import add_rails,add_rails_slice,add_allowance_rails,add_spred,add_OGTA2_rails_info,add_CDV
+from ForBots.Indicators.classic_indicators import add_big_volume,add_slice_df,add_enter_price,add_delta_2v,add_sc_and_buffer,add_sma,add_enter_price2close,add_rsi
 from ForBots.Indicators.price_funcs import get_price_reverse_rails,get_universal_r
 
 class OGTA1_Rails(BaseTABitget):
@@ -114,4 +114,22 @@ class OGTA3_Rails(BaseTABitget):
         if row['signal'] == 1:
             return 'long_pw'
         if row['signal'] == -1:
+            return 'short_pw'
+        
+class OGTA4_DOG(BaseTABitget):
+    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=14,threshold=30):
+        super().__init__(symbol, granularity, productType, n_parts, period)
+        self.threshold = threshold
+    def preprocessing(self, df):
+        df = add_CDV(df)
+        df = add_rsi(df,self.period,'cdv')
+        df = add_enter_price2close(df)  
+        df = add_slice_df(df, self.period) 
+        # df['signal'] = add_signal(df) # поиск какого-то сигнала
+        return df
+
+    def __call__(self, row, *args, **kwds):
+        if row['rsi'] < self.threshold:  
+            return 'long_pw'
+        if row['rsi'] > 100-self.threshold:  
             return 'short_pw'

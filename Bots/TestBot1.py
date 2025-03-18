@@ -293,7 +293,7 @@ class TestMarketBot1(TestBot1):
             # print(row)
             # print(action)
             # print("+++++++++++++++++")
-            self.trade_prev(row['close'])
+            # self.trade_prev(row['close'])
             self.trade_next(action,row)
             self.write_res()
         except Exception as err:

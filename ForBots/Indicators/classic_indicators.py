@@ -336,7 +336,7 @@ def add_local_extrema(df, window=5):
     df['local_max'] = df['close'].rolling(window=window).max()
     df['local_min'] = df['close'].rolling(window=window).min()
     return df
-
+# что-то не то
 def add_supertrend(df, period=10, multiplier=3):
     """
     Рассчитывает индикатор SuperTrend.
@@ -374,3 +374,95 @@ def add_macd(data, short_window=12, long_window=26, signal_window=9):
     data['macd'] = data['ema_1'] - data['ema_2']
     data['signal_line'] = data['macd'].ewm(span=signal_window, adjust=False).mean()
     return data
+
+def add_adx(df,adx_period=14):
+    """
+    Расчет индикатора ADX (Average Directional Index).
+    :param df: DataFrame с данными
+    :return: DataFrame с добавленным столбцом ADX
+    """
+    # Расчет True Range (TR)
+    df['tr'] = np.maximum(
+        df['high'] - df['low'],
+        np.maximum(
+            abs(df['high'] - df['close'].shift(1)),
+            abs(df['low'] - df['close'].shift(1))
+        )
+    )
+
+    # Расчет Positive Directional Movement (+DM) и Negative Directional Movement (-DM)
+    df['plus_dm'] = np.where(
+        (df['high'] - df['high'].shift(1)) > (df['low'].shift(1) - df['low']),
+        np.maximum(df['high'] - df['high'].shift(1), 0),
+        0
+    )
+    df['minus_dm'] = np.where(
+        (df['low'].shift(1) - df['low']) > (df['high'] - df['high'].shift(1)),
+        np.maximum(df['low'].shift(1) - df['low'], 0),
+        0
+    )
+
+    # Сглаживание TR, +DM, -DM
+    df['tr_smooth'] = df['tr'].rolling(window=adx_period, min_periods=adx_period).sum()
+    df['plus_dm_smooth'] = df['plus_dm'].rolling(window=adx_period, min_periods=adx_period).sum()
+    df['minus_dm_smooth'] = df['minus_dm'].rolling(window=adx_period, min_periods=adx_period).sum()
+
+    # Расчет +DI и -DI
+    df['plus_di'] = (df['plus_dm_smooth'] / df['tr_smooth']) * 100
+    df['minus_di'] = (df['minus_dm_smooth'] / df['tr_smooth']) * 100
+
+    # Расчет ADX
+    df['dx'] = (abs(df['plus_di'] - df['minus_di']) / (df['plus_di'] + df['minus_di'])) * 100
+    df['adx'] = df['dx'].rolling(window=adx_period, min_periods=adx_period).mean()
+
+    return df
+
+def add_kama(df, period=30,fast_ema=2,slow_ema=30):
+    """
+    Расчет индикатора KAMA (Kaufman Adaptive Moving Average).
+    :param df: DataFrame с данными
+    :param period: Период для расчета KAMA
+    :return: DataFrame с добавленным столбцом KAMA
+    """
+    change = abs(df['close'] - df['close'].shift(period))
+    volatility = df['close'].diff().abs().rolling(window=period).sum()
+    efficiency_ratio = change / volatility
+
+    fast_sc = 2 / (fast_ema + 1)
+    slow_sc = 2 / (slow_ema + 1)
+    smooth_constant = (efficiency_ratio * (fast_sc - slow_sc) + slow_sc) ** 2
+
+    df[f'kama_{period}'] = 0.0
+    for i in range(period, len(df)):
+        df.loc[df.index[i], f'kama_{period}'] = (
+            df.loc[df.index[i - 1], f'kama_{period}'] +
+            smooth_constant[i] * (df.loc[df.index[i], 'close'] - df.loc[df.index[i - 1], f'kama_{period}'])
+        )
+    return df
+
+def add_chop(df,chop_period=14):
+    """
+    'chop'
+    Расчет индикатора CHOP (Choppiness Index).
+    :param df: DataFrame с данными
+    :return: DataFrame с добавленным столбцом CHOP
+    """
+    # Расчет True Range (TR)
+    df['tr'] = np.maximum(
+        df['high'] - df['low'],
+        np.maximum(
+            abs(df['high'] - df['close'].shift(1)),
+            abs(df['low'] - df['close'].shift(1))
+        )
+    )
+
+    # Сумма TR за период
+    df['tr_sum'] = df['tr'].rolling(window=chop_period).sum()
+
+    # Максимальная и минимальная цена за период
+    df['high_max'] = df['high'].rolling(window=chop_period).max()
+    df['low_min'] = df['low'].rolling(window=chop_period).min()
+
+    # Расчет CHOP
+    df['chop'] = 100 * np.log10(df['tr_sum'] / (df['high_max'] - df['low_min'])) / np.log10(chop_period)
+    return df

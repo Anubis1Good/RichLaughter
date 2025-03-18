@@ -88,3 +88,16 @@ def add_OGTA2_rails_info(df:pd.DataFrame):
     'add "info"'
     df['info'] = df.apply(lambda row: get_ogta2_info(row,df),axis=1)
     return df
+
+def help_delta(row):
+    if row['close'] > row['open']:  # Бычья свеча
+        return row['volume']
+    elif row['close'] < row['open']:  # Медвежья свеча
+        return -row['volume']
+    return 0
+
+def add_CDV(df:pd.DataFrame):
+    'add "cdv"'
+    df['delta'] = df.apply(help_delta,axis=1)
+    df['cdv'] = df['delta'].cumsum()  # Кумулятивная сумма
+    return df

@@ -2,7 +2,8 @@ from single_optimization import optimization
 from strategies.test_strategies.universal import universal_test_strategy as ts
 
 from strategies.work_strategies.STA_ml import STAML1_PROPHET1s,STAML1_PROPHET2s,STAML1_PROPHET3s
-# from strategies.work_strategies.LTA import LTA_APHOBO,LTA_APHOGA
+from strategies.work_strategies.LTA import LTA_OKROSHKA,LTA_KROSH
+from strategies.work_strategies.OGTA import OGTA4_DOG
 from strategies.work_strategies.PTA import PTA4_WDDCde,PTA4_WDDCr,PTA4_WDDCrE,PTA4_WDDCrVG,PTA4_WDVCr,PTA4_WLISICA,PTA8_WDOBBY_FREEr
 
 
@@ -12,53 +13,36 @@ test_folder = 'DataForTests\DataFromMOEX'
 # max_fee: float = 0.0012
 min_fee = 0.0002
 max_fee = 0.0009
-params1 = [
-    [3,4] + list(range(5,26,5)),
-    (0.5,1,2,3)
-]
-params2 = [
-    (3,4,5,7,10,15,20,30,40,50,60,80,100)
-]
-params3 = [
-    (3,4,5,6,7,8,9,10,15,20,30,40,50,60,80,100),
-    (3,4,5,6,7,8,9,10,15,20,30,40,50,60,80,100)
-]
-params4 = [
-    (3,4,5,10,15,20,30,60,100),
-    (10,20,30,40)
-]
+# params1 = [
+#     [3,4] + list(range(5,26,5)),
+#     (0.5,1,2,3)
+# ]
+# params2 = [
+#     (3,4,5,7,10,15,20,30,40,50,60,80,100)
+# ]
+# params3 = [
+#     (3,4,5,6,7,8,9,10,15,20,30,40,50,60,80,100),
+#     (3,4,5,6,7,8,9,10,15,20,30,40,50,60,80,100)
+# ]
+# params4 = [
+#     (3,4,5,10,15,20,30,60,100),
+#     (10,20,30,40)
+# ]
 group = (
 
-    (PTA4_WDDCde,[
+    (LTA_KROSH,[
         range(5,66,5),
-        (30,),
+        range(5,41,5),
     ]),
-    (PTA4_WDDCr,[
+    (LTA_OKROSHKA,[
         range(5,66,5),
-        (30,),
-    ]),
-    (PTA4_WDDCrE,[
         range(5,66,5),
-        (30,),
     ]),
-    (PTA4_WDDCrVG,[
+    (OGTA4_DOG,[
         range(5,66,5),
-        (30,),
+        range(5,41,5),
     ]),
-    (PTA4_WDVCr,[
-        range(5,66,5),
-        (30,),
-    ]),
-    (PTA4_WLISICA,[
-        range(5,66,5),
-        (2,),
-        (30,),
-    ]),
-    (PTA8_WDOBBY_FREEr,[
-        range(5,66,5),
-        (0.5,1,1.5,2),
-        (30,),
-    ]),
+
 
 )
 

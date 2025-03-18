@@ -5,7 +5,8 @@ from request_functions.download_bitget import get_df
 from strategies.work_strategies.PTA import PTA2_DDCde,PTA2_LISICA,PTA8_LOBSTER,PTA9_CRAB,PTA2_DDCrWork,PTA8_DOBBY,PTA8_OBBY,PTA8_DOBBY_FREEr,PTA4_WDDCde,PTA4_WDDCr,PTA2_DDCrVG,PTA2_DVCr,PTA8_OBBY_FREEr,PTA9_RAB,PTA4_WDDCrE,PTA4_WDDCrVG,PTA4_WDVCr,PTA4_WLISICA,PTA8_WDOBBY_FREEr,PTA10_MAGIC,PTA6_KAMA,PTA6_KAMA2,PTA6_KAMAZ2
 from strategies.work_strategies.STA_ml import STAML1_XGBR2,STAML1_XGBR4,STAML1_XGBR5,STAML1_XGBR6,STAML1_XGBR7,STAML1_XGBR8,STAML1_PROPHET1,STAML1_XGBR2_DC,STAML1_XGBR2_DCh,STAML1_XGBR2e,STAML1_XGBR2h,STAML1_XGBR2he,STAML1_ARIMAS1,STAML1_PROPHET2s,STAML1_PROPHET3s,STAML1_PROPHET1s,STAML1_PROPHET2,STAML1_PROPHET3
 from strategies.work_strategies.STA_ca import STA1_LITE
-from strategies.work_strategies.LTA import LTA_APHOBO,LTA_APHOGA,LTA_BORSCH,LTA_MISO,LTA_RAMEN,LTA_TOMYAM
+from strategies.work_strategies.OGTA import OGTA4_DOG
+from strategies.work_strategies.LTA import LTA_APHOBO,LTA_APHOGA,LTA_BORSCH,LTA_KROSH,LTA_OKROSHKA
 
 # bots1 = []
 # bots5 = []
@@ -14,26 +15,34 @@ from strategies.work_strategies.LTA import LTA_APHOBO,LTA_APHOGA,LTA_BORSCH,LTA_
 
 wss_sleep = [
     # (STAML1_ARIMAS1,(20,(2, 1, 2),10,0.05)),
+    # (LTA_MISO,(52,9,26,52,14,12,26,9)),
 
 ]
 wss1 = [
-    (LTA_MISO,(52,9,26,52,14,12,26,9)),
     (LTA_BORSCH,(10,3)),
+    (LTA_KROSH,(45,35)),
+    (LTA_OKROSHKA,(15,10)),
+    (OGTA4_DOG,(45,25)),
 
     (STA1_LITE,(20,2,0.5,20)),
     (PTA4_WDDCr,(30,30)), #C
+    (PTA4_WDDCr,(9,20)), #C
+    (PTA4_WLISICA,(9,2,30)),
 
 ]
 
 wss5 = [
     (LTA_BORSCH,(3,3)),
     (LTA_APHOGA,(10,1)),
-    (LTA_TOMYAM,(50,)),
+    (LTA_KROSH,(20,30)),
+    (LTA_OKROSHKA,(20,65)),
+    (OGTA4_DOG,(10,15)),
 
     (PTA2_DVCr,(10,)),
     (PTA2_DDCde,(20,)),
     (PTA2_DDCrVG,(10,)),
 
+    (PTA4_WDDCr,(6,30)), #C
     (PTA4_WDVCr,(10,)),
     (PTA4_WDDCr,(10,30)), #C
     (PTA4_WDDCrE,(10,30)), #C
@@ -46,8 +55,11 @@ wss5 = [
 
 ]
 wss15 = [
-    (LTA_RAMEN,(50,3)),
     (LTA_APHOBO,(10,1)),
+    (LTA_KROSH,(10,35)),
+    (LTA_OKROSHKA,(5,60)),
+    (OGTA4_DOG,(5,20)),
+    (OGTA4_DOG,(15,30)),
 
     (PTA2_LISICA,(7,2)),
     (PTA2_DDCrWork,(5,)),
@@ -65,21 +77,6 @@ wss15 = [
 
     (PTA9_CRAB,(10,0.5,5,0.5)),
     (PTA9_RAB,(10,2,5,0.5)),
-
-
-    # (STAML1_PROPHET2,(5,20)),
-    # (STAML1_PROPHET2s,(5,20)),
-    # (STAML1_PROPHET3,(20,20,0.03)),
-    # (STAML1_PROPHET3s,(20,20,0.03)),
-    # (STAML1_XGBR2,(60,5)), #S
-    # (STAML1_XGBR2,(5,5)), #S
-    # (STAML1_XGBR2e,(5,5)), #S
-    # (STAML1_XGBR2he,(5,5)), #S
-    # (STAML1_XGBR4,(60,5)),
-    # (STAML1_XGBR5,(60,5)),
-    # (STAML1_XGBR6,(60,5)),
-    # (STAML1_XGBR7,(60,5)),
-    # (STAML1_XGBR8,(60,5)),
 
 ]
 wss30 = [
