@@ -134,7 +134,7 @@ bots5 = prepare_bots('MOEX',wss1,5)
 # print(bots1)
 
 while True:
-    start = time()
+    # start = time()
     try:
         trade_bots(1,bots1,bots5,lambda bot,df:bot.run(df))
         # trade_bots(10,bots10,lambda bot,df:bot.run(df))
@@ -149,6 +149,6 @@ while True:
     except:
         print('Ошибка')
 
-    print('Time:',time()-start)
+    # print('Time:',time()-start)
         # df.info()
         # sleep(3)

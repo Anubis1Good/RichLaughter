@@ -101,10 +101,10 @@ wss30 = [
 # wss = [
 #     (STAML1_LR1,(60,5)),
 # ]
-max_period1 = (max(list(map(lambda x: x[1][0],wss1)))+1)*3
-max_period5 = (max(list(map(lambda x: x[1][0],wss5)))+1)*3
-max_period15 = (max(list(map(lambda x: x[1][0],wss15)))+1)*3
-max_period30 = (max(list(map(lambda x: x[1][0],wss30)))+1)*3
+max_period1 = (max(list(map(lambda x: max(x[1]),wss1)))+1)*3
+max_period5 = (max(list(map(lambda x: max(x[1]),wss5)))+1)*3
+max_period15 = (max(list(map(lambda x: max(x[1]),wss15)))+1)*3
+max_period30 = (max(list(map(lambda x: max(x[1]),wss30)))+1)*3
 print('Ботов 1:',len(wss1))
 print('Ботов 5:',len(wss5))
 print('Ботов 15:',len(wss15))
