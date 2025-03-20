@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 from ForBots.Indicators.classic_indicators import *
 from ForBots.Indicators.vsa_indicators import *
+
 from strategies.work_strategies.BaseTA import BaseTABitget
 import matplotlib.pyplot as plt
 
@@ -29,19 +30,27 @@ class TemplateBot(BaseTABitget):
         # так же могут быть 'close_long_pw','close_short_pw'
 
 class ExpBot(BaseTABitget):
-    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=14,threshold=30):
+    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=20,threshold=30):
         super().__init__(symbol, granularity, productType, n_parts, period)
         self.threshold = threshold
     def preprocessing(self, df):
-        df = add_CDV(df)
-        df = add_rsi(df,self.period,'cdv')
+        # df = add_donchan_channel(df)
+        df = add_donchan_channel_old(df)
+        df = add_donchan_channel(df)
         df = add_enter_price2close(df)  
         df = add_slice_df(df, self.period) 
+        plt.plot(df['max_hb'],color='b')
+        plt.plot(df['max_hb2'],color='r')
+        plt.plot(df['min_hb'],color='b')
+        plt.plot(df['min_hb2'],color='r')
+        plt.plot(df['avarege'],color='b')
+        plt.plot(df['avarege2'],color='r')
         # df['signal'] = add_signal(df) # поиск какого-то сигнала
         return df
 
     def __call__(self, row, *args, **kwds):
-        if row['rsi'] < self.threshold:  
-            return 'long_pw'
-        if row['rsi'] > 100-self.threshold:  
-            return 'short_pw'
+        # if row['rsi'] < self.threshold:  
+        #     return 'long_pw'
+        # if row['rsi'] > 100-self.threshold:  
+        #     return 'short_pw'
+        pass

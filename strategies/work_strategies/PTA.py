@@ -1,6 +1,6 @@
 import numpy as np
 from request_functions.download_bitget import get_df
-from ForBots.Indicators.classic_indicators import add_donchan_channel,add_slice_df,add_big_volume,add_dynamics_ma,add_bollinger,add_over_bb,add_enter_price,add_donchan_middle,add_donchan_prev,add_buffer_add,add_buffer_sub,add_vangerchik,add_simple_dynamics_ma,add_vodka_channel,add_rsi,add_enter_price2close,add_macd
+from ForBots.Indicators.classic_indicators import add_donchan_channel,add_slice_df,add_big_volume,add_dynamics_ma,add_bollinger,add_over_bb,add_enter_price,add_donchan_middle,add_donchan_prev,add_buffer_add,add_buffer_sub,add_vangerchik,add_simple_dynamics_ma,add_vodka_channel,add_rsi,add_enter_price2close,add_macd,add_rsi_tw
 from ForBots.Indicators.price_funcs import get_price_dbb,get_price_reverse_dbb,get_price_bb,get_price_reverse_bb, get_price_bddc,get_price_ddc,get_price_rbddc,get_price_rddc,get_price_rddc_prev,get_price_ddc_prev,get_price_rddc_prev_ba,get_price_bb_buff,get_price_crab,get_price_rab,get_price_rddc_prev_ba_test,get_universal_r,get_universal
 from utils.help_trades import reverse_action,chep
 from strategies.work_strategies.BaseTA import BaseTABitget
@@ -102,6 +102,50 @@ class PTA4_WDDCr(BaseTABitget):
         if row['high'] == row['max_hb']:
             if row['rsi'] > 100-self.threshold:
                 return 'short_pw'
+            
+class PTA4_WDDCr2(BaseTABitget):
+    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=20,threshold=30):
+        super().__init__(symbol, granularity, productType, n_parts, period)
+        self.threshold = threshold
+    def preprocessing(self, df):
+        df = add_donchan_channel(df,self.period)
+        df = add_rsi_tw(df,self.period)
+        df = add_enter_price2close(df)
+        df = add_slice_df(df,period=self.period)
+        return df
+    def __call__(self, row, *args, **kwds):
+        nearest_long = row['high'] - row['close'] > row['close'] - row['low'] 
+        if row['low'] == row['min_hb']:
+            if nearest_long:
+                if row['rsi_tw'] < self.threshold:
+                    return 'long_pw'
+        if row['high'] == row['max_hb']:
+            if row['rsi_tw'] > 100-self.threshold:
+                return 'short_pw'
+#D         
+class PTA4_WDDCr2E(BaseTABitget):
+    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=20,threshold=30):
+        super().__init__(symbol, granularity, productType, n_parts, period)
+        self.threshold = threshold
+    def preprocessing(self, df):
+        df = add_donchan_channel(df,self.period)
+        df = add_rsi_tw(df,self.period)
+        df = add_enter_price2close(df)
+        df = add_slice_df(df,period=self.period)
+        return df
+    def __call__(self, row, *args, **kwds):
+        nearest_long = row['high'] - row['close'] > row['close'] - row['low'] 
+        if row['low'] == row['min_hb']:
+            if nearest_long:
+                if row['rsi_tw'] < self.threshold:
+                    return 'long_pw'
+                else:
+                    return 'close_short_pw'
+        if row['high'] == row['max_hb']:
+            if row['rsi_tw'] > 100-self.threshold:
+                return 'short_pw'
+            else:
+                return 'close_long_pw'
 #D         
 class PTA4_WDDCrE(BaseTABitget):
     def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=20,threshold=30):
@@ -1426,22 +1470,3 @@ class PTA9_RAB(PTA9_CRAB):
             return 'close_long_pw'
         if row['sdm'] <= -self.slope and row['sma'] > row['avarege']:
             return 'close_short_pw'
-# BD
-class PTA10_MAGIC(BaseTABitget):
-    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=26, period2=12, period3=9):
-        super().__init__(symbol, granularity, productType, n_parts, period)
-        self.period2 = period2
-        self.period3 = period3
-    def preprocessing(self, df):
-        df = add_macd(df,self.period2,self.period,self.period3)
-        df = add_enter_price2close(df)
-        df = add_slice_df(df,period=self.period)
-        df['signal'] = 0  # 0 = нет сигнала, 1 = покупка, -1 = продажа
-        df.loc[df['macd'] > df['signal_line'], 'signal'] = 1  # Покупка
-        df.loc[df['macd'] < df['signal_line'], 'signal'] = -1  # Продажа
-        return df
-    def __call__(self, row, *args, **kwds):
-        if row['signal'] == 1:
-            return 'long_pw'
-        if row['signal'] == -1:
-            return 'short_pw'

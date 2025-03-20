@@ -1,10 +1,11 @@
 from single_optimization import optimization
 from strategies.test_strategies.universal import universal_test_strategy as ts
 
-from strategies.work_strategies.STA_ml import STAML1_PROPHET1s,STAML1_PROPHET2s,STAML1_PROPHET3s
-from strategies.work_strategies.LTA import LTA_OKROSHKA,LTA_KROSH
-from strategies.work_strategies.OGTA import OGTA4_DOG
-from strategies.work_strategies.PTA import PTA4_WDDCde,PTA4_WDDCr,PTA4_WDDCrE,PTA4_WDDCrVG,PTA4_WDVCr,PTA4_WLISICA,PTA8_WDOBBY_FREEr
+# from strategies.work_strategies.STA_ml import STAML1_PROPHET1s,STAML1_PROPHET2s,STAML1_PROPHET3s
+from strategies.work_strategies.LTA import LTA_EJIK,LTA_KARYCH,LTA_SAVUNIA,LTA_NUSHA,LTA_KOPATYCH,LTA_LOSYASH,LTA_BARASH,LTA_PIN
+# from strategies.work_strategies.OGTA import OGTA4_DOG
+from strategies.work_strategies.PTA import PTA4_WDDCr2,PTA4_WDDCr2E
+from strategies.work_strategies.PTAX import PTA10_WIZARD
 
 
 # test_folder = 'DataForTests\DataFromBitget'
@@ -30,20 +31,57 @@ max_fee = 0.0009
 # ]
 group = (
 
-    (LTA_KROSH,[
-        range(5,66,5),
-        range(5,41,5),
+    (LTA_EJIK,[
+        range(10,66,5),
+        range(3,10,1),
+        range(5,31,5),
     ]),
-    (LTA_OKROSHKA,[
+    (PTA4_WDDCr2,[
         range(5,66,5),
-        range(5,66,5),
+        range(5,36,5),
     ]),
-    (OGTA4_DOG,[
+    (PTA4_WDDCr2E,[
         range(5,66,5),
-        range(5,41,5),
+        range(5,36,5),
+    ]),
+    (LTA_KARYCH,[
+        range(5,66,5),
+        range(5,36,5),
+    ]),
+    (LTA_SAVUNIA,[
+        range(5,66,5),
+        range(5,36,5),
+    ]),
+    (LTA_NUSHA,[
+        range(5,66,5),
+        range(5,36,5),
+    ]),
+    (LTA_KOPATYCH,[
+        range(5,66,5),
+        range(30,66,5),
+    ]),
+    (LTA_LOSYASH,[
+        range(5,66,5),
+        range(30,66,5),
+    ]),
+    (LTA_BARASH,[
+        range(5,66,5),
+        range(10,66,5),
+    ]),
+    (LTA_PIN,[
+        range(10,66,10),
+        range(3,10,2),
+        range(5,56,5),
+        range(3,8,2),
     ]),
 
-
+    (PTA10_WIZARD,[
+        range(10,61,10),
+        range(5,66,10),
+        range(3,13,3),
+        range(5,31,5),
+        range(10,41,10),
+    ]),
 )
 
 # group = (

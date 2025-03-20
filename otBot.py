@@ -2,11 +2,12 @@ import sys
 from time import sleep,time
 from Bots.TestBot1 import TestBot1,TestMarketBot1
 from request_functions.download_bitget import get_df
-from strategies.work_strategies.PTA import PTA2_DDCde,PTA2_LISICA,PTA8_LOBSTER,PTA9_CRAB,PTA2_DDCrWork,PTA8_DOBBY,PTA8_OBBY,PTA8_DOBBY_FREEr,PTA4_WDDCde,PTA4_WDDCr,PTA2_DDCrVG,PTA2_DVCr,PTA8_OBBY_FREEr,PTA9_RAB,PTA4_WDDCrE,PTA4_WDDCrVG,PTA4_WDVCr,PTA4_WLISICA,PTA8_WDOBBY_FREEr,PTA10_MAGIC,PTA6_KAMA,PTA6_KAMA2,PTA6_KAMAZ2
-from strategies.work_strategies.STA_ml import STAML1_XGBR2,STAML1_XGBR4,STAML1_XGBR5,STAML1_XGBR6,STAML1_XGBR7,STAML1_XGBR8,STAML1_PROPHET1,STAML1_XGBR2_DC,STAML1_XGBR2_DCh,STAML1_XGBR2e,STAML1_XGBR2h,STAML1_XGBR2he,STAML1_ARIMAS1,STAML1_PROPHET2s,STAML1_PROPHET3s,STAML1_PROPHET1s,STAML1_PROPHET2,STAML1_PROPHET3
-from strategies.work_strategies.STA_ca import STA1_LITE
+from strategies.work_strategies.PTA import PTA2_LISICA,PTA9_CRAB,PTA2_DDCrWork,PTA8_DOBBY,PTA8_OBBY,PTA8_DOBBY_FREEr,PTA4_WDDCr,PTA4_WDDCrE,PTA4_WDDCrVG,PTA4_WDVCr,PTA4_WLISICA,PTA8_WDOBBY_FREEr,PTA4_WDDCr2,PTA4_WDDCr2E
+from strategies.work_strategies.PTAX import PTA10_WIZARD
+# from strategies.work_strategies.STA_ml import STAML1_XGBR2,STAML1_XGBR4,STAML1_XGBR5,STAML1_XGBR6,STAML1_XGBR7,STAML1_XGBR8,STAML1_PROPHET1,STAML1_XGBR2_DC,STAML1_XGBR2_DCh,STAML1_XGBR2e,STAML1_XGBR2h,STAML1_XGBR2he,STAML1_ARIMAS1,STAML1_PROPHET2s,STAML1_PROPHET3s,STAML1_PROPHET1s,STAML1_PROPHET2,STAML1_PROPHET3
+# from strategies.work_strategies.STA_ca import STA1_LITE
 from strategies.work_strategies.OGTA import OGTA4_DOG
-from strategies.work_strategies.LTA import LTA_APHOBO,LTA_APHOGA,LTA_BORSCH,LTA_KROSH,LTA_OKROSHKA
+from strategies.work_strategies.LTA import LTA_APHOBO,LTA_KROSH,LTA_OKROSHKA,LTA_OKROSHKA2,LTA_PIN,LTA_KOPATYCH,LTA_LOSYASH,LTA_KARYCH,LTA_EJIK,LTA_BARASH,LTA_SAVUNIA,LTA_NUSHA
 
 # bots1 = []
 # bots5 = []
@@ -19,83 +20,81 @@ wss_sleep = [
 
 ]
 wss1 = [
-    (LTA_BORSCH,(10,3)),
-    (LTA_KROSH,(45,35)),
+    (LTA_PIN,(60,3,25,5)),
+    (LTA_KOPATYCH,(50,45)),
+    (LTA_LOSYASH,(25,55)),
+    (LTA_EJIK,(65,9,5)),
+    (LTA_KROSH,(45,20)),
     (LTA_OKROSHKA,(15,10)),
-    (OGTA4_DOG,(45,25)),
+    (LTA_OKROSHKA2,(15,10)),
+    (OGTA4_DOG,(45,15)),
+    (OGTA4_DOG,(35,20)),
 
-    (STA1_LITE,(20,2,0.5,20)),
     (PTA4_WDDCr,(30,30)), #C
-    (PTA4_WDDCr,(9,20)), #C
-    (PTA4_WLISICA,(9,2,30)),
+    (PTA4_WDDCr,(21,20)), #C
 
+    (PTA10_WIZARD,(30,35,12,10,40)), #S
 ]
 
 wss5 = [
-    (LTA_BORSCH,(3,3)),
-    (LTA_APHOGA,(10,1)),
+    (LTA_PIN,(20,7,5,1)),
     (LTA_KROSH,(20,30)),
+    (LTA_EJIK,(35,6,5)),
+    (LTA_EJIK,(20,6,5)),
+    (LTA_KARYCH,(30,35)),
     (LTA_OKROSHKA,(20,65)),
+    (LTA_OKROSHKA2,(20,65)),
     (OGTA4_DOG,(10,15)),
 
-    (PTA2_DVCr,(10,)),
-    (PTA2_DDCde,(20,)),
-    (PTA2_DDCrVG,(10,)),
 
-    (PTA4_WDDCr,(6,30)), #C
-    (PTA4_WDVCr,(10,)),
-    (PTA4_WDDCr,(10,30)), #C
-    (PTA4_WDDCrE,(10,30)), #C
-    (PTA4_WDDCrVG,(10,30)),
 
-    (PTA8_WDOBBY_FREEr,(8,0.5,30)),
+    (PTA4_WDDCr,(6,20)), #C
+    (PTA4_WDDCr,(10,20)), #C
+    (PTA4_WDDCr,(21,30)), #C
+    (PTA4_WDDCr2,(20,35)), #C
 
-    # (STAML1_XGBR2_DC,(5,5)), #S
-    # (STAML1_XGBR2_DCh,(5,5)), #S
+
 
 ]
 wss15 = [
     (LTA_APHOBO,(10,1)),
+    (LTA_KOPATYCH,(20,45)),
+    (LTA_EJIK,(25,7,10)),
     (LTA_KROSH,(10,35)),
-    (LTA_OKROSHKA,(5,60)),
+    (LTA_KARYCH,(5,15)),
+    (LTA_BARASH,(25,45)),
+    (LTA_NUSHA,(20,35)),
+    (LTA_SAVUNIA,(65,35)),
+    (LTA_OKROSHKA2,(5,60)),
     (OGTA4_DOG,(5,20)),
-    (OGTA4_DOG,(15,30)),
+    (OGTA4_DOG,(15,25)),
 
-    (PTA2_LISICA,(7,2)),
+    (PTA2_LISICA,(7,1)),
+    (PTA2_LISICA,(14,2)),
+    (PTA4_WLISICA,(7,2,20)),
     (PTA2_DDCrWork,(5,)),
 
-    (PTA4_WDDCde,(20,30)), #S
-    (PTA4_WLISICA,(7,2,30)),
-    (PTA4_WDDCr,(5,30)), #C
-    (PTA4_WDDCrVG,(9,30)),
-    (PTA4_WDVCr,(9,)),
 
+    (PTA4_WDDCr2,(5,15)), #C
+    (PTA4_WDDCr2E,(5,20)), #C
+    (PTA4_WDDCr,(3,40)), #C
+    (PTA4_WDDCr,(3,20)), #C
+    (PTA4_WDDCrE,(5,20)), #C
+    (PTA4_WDDCrVG,(9,20)),
+    (PTA4_WDVCr,(9,20)),
 
-    (PTA8_LOBSTER,(7,0.5)), #S
-    (PTA8_OBBY_FREEr,(7,0.5)), #S
     (PTA8_OBBY,(4,0.5)), #S
+    (PTA10_WIZARD,(30,35,6,10,20)), #S
 
-    (PTA9_CRAB,(10,0.5,5,0.5)),
-    (PTA9_RAB,(10,2,5,0.5)),
+
 
 ]
 wss30 = [
-    (PTA4_WDDCr,(4,30)), #C
-
-    (PTA6_KAMA,(5,20)),
-    (PTA6_KAMA2,(5,5,21,30)),
-    (PTA6_KAMAZ2,(5,20,21,30)),
-
-    (PTA8_LOBSTER,(3,0.5)), #S
-    (PTA8_WDOBBY_FREEr,(4,0.5,30)),
+    (PTA8_WDOBBY_FREEr,(4,2,20)),
+    (PTA8_WDOBBY_FREEr,(4,0.5,20)),
     (PTA8_DOBBY_FREEr,(4,0.5)),
     (PTA8_DOBBY,(4,0.5)),
-
-    (PTA10_MAGIC,(95,20,4)),
-
-    # (STAML1_XGBR2h,(5,5)), #S
-    # (STAML1_PROPHET1,(60,20)), #fee problem
-    # (STAML1_PROPHET1s,(60,20)), #fee problem
+    (PTA8_DOBBY,(8,2)),
 
 ]
 # wss = [

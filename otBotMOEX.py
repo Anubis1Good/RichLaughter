@@ -5,10 +5,11 @@ from collections import defaultdict
 from Bots.TestBot1 import TestMarketBot1
 from request_functions.download_moex import download_moex,create_df
 from utils.work_with_dataframe.convert_timeframe import convert_chart1to5
-from strategies.work_strategies.PTA import PTA2_DDCde,PTA2_LISICA,PTA8_LOBSTER,PTA9_CRAB,PTA2_DDCrWork,PTA8_DOBBY,PTA8_OBBY,PTA8_DOBBY_FREEr,PTA4_WDDCde,PTA4_WDDCr,PTA2_DDCrVG,PTA2_DVCr,PTA8_OBBY_FREEr,PTA9_RAB,PTA4_WDDCrE,PTA4_WDDCrVG,PTA4_WDVCr,PTA4_WLISICA,PTA8_WDOBBY_FREEr,PTA10_MAGIC,PTA6_KAMA,PTA6_KAMA2,PTA6_KAMAZ2
+from strategies.work_strategies.PTA import PTA4_WDDCr,PTA4_WDDCrE,PTA4_WDDCrVG,PTA4_WDVCr,PTA4_WLISICA,PTA8_WDOBBY_FREEr,PTA4_WDDCr2,PTA4_WDDCr2E
+from strategies.work_strategies.PTAX import PTA10_WIZARD
 # from strategies.work_strategies.STA_ml import STAML1_XGBR2,STAML1_XGBR4,STAML1_XGBR5,STAML1_XGBR6,STAML1_XGBR7,STAML1_XGBR8,STAML1_PROPHET1,STAML1_XGBR2_DC,STAML1_XGBR2_DCh,STAML1_XGBR2e,STAML1_XGBR2h,STAML1_XGBR2he,STAML1_ARIMAS1,STAML1_PROPHET2s,STAML1_PROPHET3s,STAML1_PROPHET1s,STAML1_PROPHET2,STAML1_PROPHET3
 # from strategies.work_strategies.STA_ca import STA1_LITE
-from strategies.work_strategies.LTA import LTA_APHOBO,LTA_BORSCH,LTA_KROSH,LTA_OKROSHKA
+from strategies.work_strategies.LTA import LTA_KROSH,LTA_OKROSHKA,LTA_BARASH,LTA_EJIK,LTA_KARYCH,LTA_KOPATYCH,LTA_LOSYASH,LTA_NUSHA,LTA_PIN,LTA_SAVUNIA
 from strategies.work_strategies.OGTA import OGTA4_DOG
 
 # bots1 = []
@@ -16,34 +17,47 @@ from strategies.work_strategies.OGTA import OGTA4_DOG
 # bots15 = []
 # bots30 = []
 
-wss_sleep = [
-    # (STAML1_ARIMAS1,(20,(2, 1, 2),10,0.05)),
 
-]
 wss1 = [
-    # (LTA_BORSCH,(10,3)),
-    # (LTA_APHOBO,(10,1)),
     (LTA_KROSH,(5,15)),
+    (LTA_KROSH,(10,20)),
+    (LTA_KARYCH,(5,20)),
+    (LTA_KOPATYCH,(10,40)),
+    (LTA_LOSYASH,(10,45)),
+    (LTA_BARASH,(35,35)),
+    (LTA_NUSHA,(10,20)),
+    (LTA_SAVUNIA,(30,25)),
+    (LTA_EJIK,(10,5,10)),
+    (LTA_PIN,(10,7,50,5)),
+    (LTA_PIN,(10,9,45,3)),
     (LTA_OKROSHKA,(10,15)),
+    (LTA_OKROSHKA,(10,30)),
+    
     (OGTA4_DOG,(25,30)),
-    (OGTA4_DOG,(15,30)),
-    (PTA4_WDVCr,(11,)),
-    (PTA4_WDDCr,(4,30)), #C
+    (OGTA4_DOG,(20,40)),
+
     (PTA4_WDDCr,(6,30)), #C
+    (PTA4_WDDCr2,(6,20)), #C
+    (PTA4_WDDCr2E,(6,20)), #C
     (PTA4_WDDCr,(11,30)), #C
-    # (PTA4_WDDCr,(12,25)), #C
+    (PTA4_WDDCr2,(11,30)), #C
+    (PTA4_WDDCr2E,(11,30)), #C
     (PTA4_WDDCr,(10,20)), #C
     (PTA4_WDDCr,(21,30)), #C
     (PTA4_WDDCrE,(11,30)), #C
-    # (PTA4_WDDCrE,(10,20)), #C
-    # (PTA4_WDDCrE,(6,30)), #C
+    (PTA4_WDDCrE,(10,20)), #C
+    (PTA4_WDDCrE,(6,30)), #C
     (PTA4_WDDCrVG,(11,30)),
-    (PTA4_WDDCde,(15,30)), #S
+    (PTA4_WDVCr,(11,30)),
     (PTA4_WLISICA,(7,2,30)),
-    (PTA2_LISICA,(7,2)),
 
+    (PTA8_WDOBBY_FREEr,(11,2,30)),
     (PTA8_WDOBBY_FREEr,(11,0.5,30)),
     (PTA8_WDOBBY_FREEr,(6,0.5,30)),
+
+    (PTA10_WIZARD,(50,55,12,10,30)),
+    (PTA10_WIZARD,(20,55,12,25,20)),
+    (PTA10_WIZARD,(30,55,3,15,20)),
 
 ]
 
@@ -66,29 +80,48 @@ today = date.today()
 yesterday = str(today - timedelta(days=3))
 
 tickers = (
-    ('CRH5',True),
-    ('MMH5',True),
-    ('GZH5',True),
-    ('SRH5',True),
+    ('CRM5',True),
+    ('MMM5',True),
+    ('GZM5',True),
+    ('SRM5',True),
+    ('RIM5',True),
     ('SBER',False),
     ('GAZP',False),
-    ('VTBR',False),
     ('LKOH',False),
-    ('MTLR',False),
-    ('TATN',False),
     ('ROSN',False),
-    ('AFKS',False),
-    ('ALRS',False),
-    ('GMKN',False),
-    ('MAGN',False),
-    ('MOEX',False),
-    ('NLMK',False),
+    ('MTLR',False),
+    ('MGNT',False),
     ('NVTK',False),
-    ('RUAL',False),
+    ('GMKN',False),
+    ('VTBR',False),
+    ('TATN',False),
+    ('TRNFP',False),
+    ('AFKS',False),
+    ('PIKK',False),
+    ('MOEX',False),
+    ('AFLT',False),
     ('CHMF',False),
+    ('NLMK',False),
+    ('SIBN',False),
+    ('SNGSP',False),
+    ('SNGS',False),
+    ('ALRS',False),
+    ('MAGN',False),
+    ('MTSS',False),
+    ('RUAL',False),
+    ('FESH',False),
+    ('IRAO',False),
+    ('RTKM',False),
+    ('UPRO',False),
+    ('FEES',False),
+    ('BANEP',False),
+    ('TRMK',False),
+    ('LSRG',False),
+    ('CBOM',False),
+    ('NMTP',False),
+    ('HYDR',False),
     ('SELG',False),
     ('YDEX',False),
-
 )
 print('Ботов 1:',len(wss1))
 print('Тикеров 1:',len(tickers))
@@ -98,6 +131,7 @@ print('Max period 1:',max_period1)
 # print('Max period 10:',max_period10)
 # ticker = 'MMH5'
 # ticker = 'SNGSP'
+
 def trade_bots(granularity,bots,bots2,func):
     for ticker,fut in tickers:
         if fut:
@@ -134,7 +168,7 @@ bots5 = prepare_bots('MOEX',wss1,5)
 # print(bots1)
 
 while True:
-    # start = time()
+    start = time()
     try:
         trade_bots(1,bots1,bots5,lambda bot,df:bot.run(df))
         # trade_bots(10,bots10,lambda bot,df:bot.run(df))
@@ -149,6 +183,6 @@ while True:
     except:
         print('Ошибка')
 
-    # print('Time:',time()-start)
+    print('Time:',time()-start)
         # df.info()
         # sleep(3)

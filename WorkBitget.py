@@ -2,6 +2,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 import numpy.typing as npt
+from time import time
 from Loader.BitgetLoader import bitget_loader
 from utils.draw_utils import draw_lite_chart,draw_chart_channel,draw_hb_chart,draw_bollinger,draw_dynamics,draw_rails
 # from ForBots.Indicators.classic_indicators import add_donchan_channel,add_vangerchik,add_sma, add_slice_df,add_bollinger,add_over_bb,add_attached_bb,add_big_volume,add_dynamics_ma
@@ -9,7 +10,7 @@ from strategies.test_strategies.check import check_strategy
 # from strategies.work_strategies.PTA import PTA4_WLISICA as WS
 # from strategies.work_strategies.STA_ca import STA1_LITE as WS
 # from strategies.work_strategies.OGTA import OGTA3_Rails as WS
-# from strategies.work_strategies.LTA import LTA_WAPHOBO as WS
+# from strategies.work_strategies.LTA import LTA_PIN as WS
 # from strategies.work_strategies.STA_ml import STAML1_XGBR2_DC as WS
 # from strategies.work_strategies.STA_rl import STARL1_HELPGOD as WS
 from strategies.work_strategies.experiments import ExpBot as WS
@@ -25,6 +26,7 @@ raw_file = 'DataForTests\DataFromBitget\DOGEUSDT_1m_1739873922.csv'
 # raw_file = 'DataForTests\oldBitget\DOGEUSDT_1H_1739872800.csv'
 # raw_file = 'DataForTests\oldBitget\DOGEUSDT_4H_1739873240.csv'
 
+start = time()
 
 df = bitget_loader(raw_file)
 # df = df.iloc[0:200]
@@ -75,9 +77,10 @@ closes = np.array(closes)
 equity = np.array(equity)
 
 see_equity = True
-see_equity = False
+# see_equity = False
 if see_equity:
-    plt.plot(equity,color='red')
+    # plt.plot(equity,color='red')
+    pass
 else:
     # draw_lite_chart(df)
     # plt.subplot(2,1,1)
@@ -122,4 +125,6 @@ else:
     # plt.plot(df['predicted_high'], label='Предсказанные максимумы', color='blue', linestyle='--')
     # plt.plot(df['predicted_low'], label='Предсказанные минимумы', color='red', linestyle='--')
     df.to_csv('test.csv')
+
+print(time() - start)
 plt.show()
