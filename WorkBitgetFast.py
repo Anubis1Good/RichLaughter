@@ -6,17 +6,16 @@ from time import time
 from Loader.BitgetLoader import bitget_loader
 from utils.draw_utils import draw_lite_chart,draw_chart_channel,draw_hb_chart,draw_bollinger,draw_dynamics,draw_rails
 # from ForBots.Indicators.classic_indicators import add_donchan_channel,add_vangerchik,add_sma, add_slice_df,add_bollinger,add_over_bb,add_attached_bb,add_big_volume,add_dynamics_ma
-from strategies.test_strategies.check import check_strategy
+from strategies.test_strategies.check import check_strategy_fast
 # from strategies.work_strategies.PTA import PTA4_WLISICA as WS
 # from strategies.work_strategies.STA_ca import STA1_LITE as WS
 # from strategies.work_strategies.OGTA import OGTA3_Rails as WS
-# from strategies.work_strategies.LTA import LTA_PIN as WS
-from strategies.work_strategies.MTA import MTA_LORD as WS
+from strategies.work_strategies.LTA import LTA_PIN as WS
 # from strategies.work_strategies.STA_ml import STAML1_XGBR2_DC as WS
 # from strategies.work_strategies.STA_rl import STARL1_HELPGOD as WS
 # from strategies.work_strategies.experiments import ExpBot as WS
 
-from strategies.test_strategies.universal import universal_test_strategy as TS
+from strategies.test_strategies.universal import universal_test_strategy_fast as TS
 raw_file = 'DataForTests\DataFromBitget\DOGEUSDT_1m_1739873922.csv'
 # raw_file = 'DataForTests\oldBitget\DOGEUSDT_1m_1741087742_big.csv'
 # raw_file = 'DataForTests\DataFromTicksBitget\DOGEUSDT_1m_from_ticks.csv'
@@ -46,33 +45,12 @@ slope = 4
 # df = add_slice_df(df,period)
 # bot = STA1e(symbol,granularity,period=period,multiplier=multiplier,slope=slope)
 # df = bot.get_test_df(df)
-from strategies.work_strategies.PTA import PTA2_LISICA,PTA9_CRAB,PTA2_DDCrWork,PTA8_DOBBY,PTA8_OBBY,PTA8_DOBBY_FREEr,PTA4_WDDCr,PTA4_WDDCrE,PTA4_WDDCrVG,PTA4_WDVCr,PTA4_WLISICA,PTA8_WDOBBY_FREEr,PTA4_WDDCr2,PTA4_WDDCr2E,PTA4_WDDC
-from strategies.work_strategies.PTAX import PTA10_WIZARD
-# from strategies.work_strategies.STA_ml import STAML1_XGBR2,STAML1_XGBR4,STAML1_XGBR5,STAML1_XGBR6,STAML1_XGBR7,STAML1_XGBR8,STAML1_PROPHET1,STAML1_XGBR2_DC,STAML1_XGBR2_DCh,STAML1_XGBR2e,STAML1_XGBR2h,STAML1_XGBR2he,STAML1_ARIMAS1,STAML1_PROPHET2s,STAML1_PROPHET3s,STAML1_PROPHET1s,STAML1_PROPHET2,STAML1_PROPHET3
-# from strategies.work_strategies.STA_ca import STA1_LITE
-from strategies.work_strategies.OGTA import OGTA4_DOG
-from strategies.work_strategies.LTA import LTA_APHOBO,LTA_KROSH,LTA_OKROSHKA,LTA_OKROSHKA2,LTA_PIN,LTA_KOPATYCH,LTA_LOSYASH,LTA_KARYCH,LTA_EJIK,LTA_BARASH,LTA_SAVUNIA,LTA_NUSHA
-wss1 = [
-    (LTA_PIN,(60,3,25,5)),
-    (LTA_KOPATYCH,(50,45)),
-    (LTA_LOSYASH,(25,55)),
-    (LTA_EJIK,(65,9,5)),
-    (LTA_KROSH,(45,20)),
-    (LTA_OKROSHKA,(15,10)),
-    (LTA_OKROSHKA2,(15,10)),
-    (OGTA4_DOG,(45,15)),
-    (OGTA4_DOG,(35,20)),
-
-    (PTA4_WDDC,(30,30)), #C
-    (PTA4_WDDC,(60,30)), #C
-    (PTA4_WDDCr,(30,30)), #C
-    (PTA4_WDDCr,(21,20)), #C
-
-    (PTA10_WIZARD,(30,35,12,10,40)), #S
-]
-# bot = WS(symbol,granularity)
-bot = WS(symbol,granularity,wss=wss1)
-
+bot = WS(symbol,granularity)
+# bot = WS(symbol,granularity,period=period)
+# bot = WS(symbol,granularity,period=period,k_period=8,d_period=3)
+# bot = WS(symbol,granularity,period=period,slope=0.5)
+# bot = WS(symbol,granularity,period=period,multiplier=multiplier)
+# bot = WS(symbol,granularity,period=period,future_steps=5)
 df = bot.get_test_df(df)
 # df.info()
 # print(df.head())
@@ -82,7 +60,7 @@ df = bot.get_test_df(df)
 # fee_base = 0.0004
 fee_base = 0.0012
 # trades,longs,shorts,closes,equity = check_strategy(df,get_action_STA1e,bot)
-trades,longs,shorts,closes,equity = check_strategy(df,TS,bot)
+trades = check_strategy_fast(df,TS,bot)
 print(trades)
 try:
     fee = trades['count']*trades['open_price']*fee_base
@@ -93,11 +71,6 @@ except:
 
 
 
-longs = np.array(longs)
-shorts = np.array(shorts)
-closes = np.array(closes)
-equity = np.array(equity)
-
 see_equity = True
 # see_equity = False
 if see_equity:
@@ -107,12 +80,7 @@ else:
     # draw_lite_chart(df)
     # plt.subplot(2,1,1)
     df.apply(draw_hb_chart,axis=1)
-    if len(longs.shape) > 1:
-        plt.scatter(longs[:,0],longs[:,1],marker='^',color='violet')
-    if len(shorts.shape) > 1:
-        plt.scatter(shorts[:,0],shorts[:,1],marker='v',color='violet')
-    if len(closes.shape) > 1:
-        plt.scatter(closes[:,0],closes[:,1],marker='x',color='violet')
+
 
 
     # plt.subplot(2,1,2)

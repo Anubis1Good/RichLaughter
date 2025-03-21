@@ -182,7 +182,7 @@ class TestBot1offline(TestBot1):
             traceback.print_exc()
 
 class TestMarketBot1(TestBot1):
-    def __init__(self,folder,symbol,strategy,conf):
+    def __init__(self,folder,symbol,strategy,conf,folder_main='logsMT'):
         self.symbol = symbol
         self.strategy = strategy
         self.name = symbol + '_' + str(self.strategy.granularity) + '_' + str(self.strategy).split(' ')[0].split('.')[-1] + "_" + "_".join(list(map(str,conf)))
@@ -198,7 +198,7 @@ class TestMarketBot1(TestBot1):
             }
         ]
         self.len_trades = 0
-        path_folder = os.path.join('logsMT',folder)
+        path_folder = os.path.join(folder_main,folder)
         self.json_path = os.path.join(path_folder,f'OT_{self.name}.json')
         if not os.path.exists(path_folder):
             os.makedirs(path_folder)

@@ -97,3 +97,52 @@ def universal_test_strategy(row,trades,shorts,longs,closes,equity,work_strategy)
         pass
 
     equity.append(trades['total'])
+
+def ft_long(row,trades):
+    if trades['pos'] == 0:
+        trades['pos'] = 1
+        trades['open_price'] = row['close']
+    elif trades['pos'] == -1:
+        trades['pos'] = 1
+        trades['total'] += trades['open_price'] - row['close']
+        trades['count'] += 1
+        trades['open_price'] = row['close']
+
+def ft_short(row,trades):
+    if trades['pos'] == 0:
+        trades['pos'] = -1
+        trades['open_price'] = row['close']
+    elif trades['pos'] == 1:
+        trades['pos'] = -1
+        trades['total'] += row['close'] - trades['open_price']
+        trades['open_price'] = row['close']
+        trades['count'] += 1
+
+def ft_close_long(row,trades):
+    if trades['pos'] == 1:
+        trades['pos'] = 0
+        trades['total'] += row['close'] - trades['open_price']
+        trades['count'] += 1  
+
+def ft_close_short(row,trades):
+    if trades['pos'] == -1:
+        trades['pos'] = 0
+        trades['total'] += trades['open_price'] - row['close']
+        trades['count'] += 1 
+
+def universal_test_strategy_fast(row,trades,work_strategy):
+    action = work_strategy(row)
+    trades['signal'] = action
+    if action:
+        if 'close_long' in action:
+            ft_close_long(row,trades)
+        elif 'close_short' in action:
+            ft_close_short(row,trades)
+        elif 'long' in action:
+            ft_long(row,trades)
+        elif 'short' in action:
+            ft_short(row,trades)
+        elif action == 'close_all':
+            ft_close_long(row,trades)
+            ft_close_short(row,trades)
+

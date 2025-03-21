@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from datetime import datetime
 mult = 1
 
-# raw_folder = 'logsOffTest'
+# logs_folder = 'logsOffTest'
 logs_folder = 'logsMT'
 raws_folder = os.listdir(logs_folder)
 for raw_folder in raws_folder:

@@ -1,13 +1,14 @@
 import sys
 from time import sleep,time
-from Bots.TestBot1 import TestBot1,TestMarketBot1
+from Bots.TestBot1 import TestMarketBot1
 from request_functions.download_bitget import get_df
-from strategies.work_strategies.PTA import PTA2_LISICA,PTA9_CRAB,PTA2_DDCrWork,PTA8_DOBBY,PTA8_OBBY,PTA8_DOBBY_FREEr,PTA4_WDDCr,PTA4_WDDCrE,PTA4_WDDCrVG,PTA4_WDVCr,PTA4_WLISICA,PTA8_WDOBBY_FREEr,PTA4_WDDCr2,PTA4_WDDCr2E
+from strategies.work_strategies.PTA import PTA2_LISICA,PTA2_DDCrWork,PTA8_DOBBY,PTA8_OBBY,PTA8_DOBBY_FREEr,PTA4_WDDCr,PTA4_WDDCrE,PTA4_WDDCrVG,PTA4_WDVCr,PTA4_WLISICA,PTA8_WDOBBY_FREEr,PTA4_WDDCr2,PTA4_WDDCr2E,PTA4_WDDC
 from strategies.work_strategies.PTAX import PTA10_WIZARD
 # from strategies.work_strategies.STA_ml import STAML1_XGBR2,STAML1_XGBR4,STAML1_XGBR5,STAML1_XGBR6,STAML1_XGBR7,STAML1_XGBR8,STAML1_PROPHET1,STAML1_XGBR2_DC,STAML1_XGBR2_DCh,STAML1_XGBR2e,STAML1_XGBR2h,STAML1_XGBR2he,STAML1_ARIMAS1,STAML1_PROPHET2s,STAML1_PROPHET3s,STAML1_PROPHET1s,STAML1_PROPHET2,STAML1_PROPHET3
 # from strategies.work_strategies.STA_ca import STA1_LITE
 from strategies.work_strategies.OGTA import OGTA4_DOG
 from strategies.work_strategies.LTA import LTA_APHOBO,LTA_KROSH,LTA_OKROSHKA,LTA_OKROSHKA2,LTA_PIN,LTA_KOPATYCH,LTA_LOSYASH,LTA_KARYCH,LTA_EJIK,LTA_BARASH,LTA_SAVUNIA,LTA_NUSHA
+from strategies.work_strategies.MTA import MTA_LORD
 
 # bots1 = []
 # bots5 = []
@@ -30,6 +31,8 @@ wss1 = [
     (OGTA4_DOG,(45,15)),
     (OGTA4_DOG,(35,20)),
 
+    (PTA4_WDDC,(30,30)), #C
+    (PTA4_WDDC,(60,30)), #C
     (PTA4_WDDCr,(30,30)), #C
     (PTA4_WDDCr,(21,20)), #C
 
@@ -48,6 +51,7 @@ wss5 = [
 
 
 
+    (PTA4_WDDC,(15,30)), #C
     (PTA4_WDDCr,(6,20)), #C
     (PTA4_WDDCr,(10,20)), #C
     (PTA4_WDDCr,(21,30)), #C
@@ -75,6 +79,7 @@ wss15 = [
     (PTA2_DDCrWork,(5,)),
 
 
+    (PTA4_WDDC,(10,30)), #C
     (PTA4_WDDCr2,(5,15)), #C
     (PTA4_WDDCr2E,(5,20)), #C
     (PTA4_WDDCr,(3,40)), #C
@@ -104,10 +109,6 @@ max_period1 = (max(list(map(lambda x: max(x[1]),wss1)))+1)*3
 max_period5 = (max(list(map(lambda x: max(x[1]),wss5)))+1)*3
 max_period15 = (max(list(map(lambda x: max(x[1]),wss15)))+1)*3
 max_period30 = (max(list(map(lambda x: max(x[1]),wss30)))+1)*3
-print('Ботов 1:',len(wss1))
-print('Ботов 5:',len(wss5))
-print('Ботов 15:',len(wss15))
-print('Ботов 30:',len(wss30))
 print('Max period 1:',max_period1)
 print('Max period 5:',max_period5)
 print('Max period 15:',max_period15)
@@ -130,10 +131,31 @@ def prepare_bots(folder,wss,granularity):
         bot = TestMarketBot1(folder,symbol,strategy,conf)
         bots.append(bot)
     return bots
+
+def append_mta_bot(folder,ws,bots,wss_str):
+    strategy = ws[0](symbol,granularity,productType,n_parts,*ws[1])
+    bot = TestMarketBot1(folder,symbol,strategy,(wss_str,))
+    bots.append(bot)
+
 bots1 = prepare_bots('bitget',wss1,"1m")
 bots5 = prepare_bots('bitget',wss5,"5m")
 bots15 = prepare_bots('bitget',wss15,"15m")
 bots30 = prepare_bots('bitget',wss30,"30m")
+fee = 0.0012
+granularity = "1m"
+append_mta_bot('bitget',(MTA_LORD,(100,wss1,fee)),bots1,'wss1')
+granularity = "5m"
+append_mta_bot('bitget',(MTA_LORD,(100,wss5,fee)),bots5,'wss5')
+granularity = "15m"
+append_mta_bot('bitget',(MTA_LORD,(100,wss15,fee)),bots15,'wss15')
+granularity = "30m"
+append_mta_bot('bitget',(MTA_LORD,(100,wss30,fee)),bots30,'wss30')
+
+print('Ботов 1:',len(bots1))
+print('Ботов 5:',len(bots5))
+print('Ботов 15:',len(bots15))
+print('Ботов 30:',len(bots30))
+
 # for WS,conf in wss1:
 #     strategy = WS(symbol,'1m',productType,n_parts,*conf)
 #     # bot = TestBot1("DOGEUSDT",strategy,conf)
@@ -156,55 +178,25 @@ bots30 = prepare_bots('bitget',wss30,"30m")
 #     bots30.append(bot)
 
 while True:
-    # start = time()
+    start = time()
     # print(strategy())
     try:
         trade_bots(symbol,'1m',max_period1,bots1,lambda bot,df:bot.run(df))
         trade_bots(symbol,'5m',max_period5,bots5,lambda bot,df:bot.run(df))
         trade_bots(symbol,'15m',max_period15,bots15,lambda bot,df:bot.run(df))
         trade_bots(symbol,'30m',max_period30,bots30,lambda bot,df:bot.run(df))
-        # df = get_df(symbol,'1m',productType,(max_period1+1)*3)
-        # for bot in bots1:
-        #     df_c = df.copy()
-        #     bot.run(df_c)
-        # df = get_df(symbol,'5m',productType,(max_period5+1)*3)
-        # for bot in bots5:
-        #     df_c = df.copy()
-        #     bot.run(df_c)
-        # df = get_df(symbol,'15m',productType,(max_period15+1)*3)
-        # for bot in bots15:
-        #     df_c = df.copy()
-        #     bot.run(df_c)
-        # df = get_df(symbol,'30m',productType,(max_period30+1)*3)
-        # for bot in bots30:
-        #     df_c = df.copy()
-        #     bot.run(df_c)
+
     except KeyboardInterrupt:
         print('Close all position...')
         trade_bots(symbol,'1m',max_period1,bots1,lambda bot,df:bot.cancel_trade(df))
         trade_bots(symbol,'5m',max_period5,bots5,lambda bot,df:bot.cancel_trade(df))
         trade_bots(symbol,'15m',max_period15,bots15,lambda bot,df:bot.cancel_trade(df))
         trade_bots(symbol,'30m',max_period30,bots30,lambda bot,df:bot.cancel_trade(df))
-        # df = get_df(symbol,'1m',productType,(max_period1+1)*3)
-        # for bot in bots1:
-        #     df_c = df.copy()
-        #     bot.cancel_trade(df_c)
-        # df = get_df(symbol,'5m',productType,(max_period5+1)*3)
-        # for bot in bots5:
-        #     df_c = df.copy()
-        #     bot.cancel_trade(df_c)
-        # df = get_df(symbol,'15m',productType,(max_period15+1)*3)
-        # for bot in bots15:
-        #     df_c = df.copy()
-        #     bot.cancel_trade(df_c)
-        # df = get_df(symbol,'30m',productType,(max_period30+1)*3)
-        # for bot in bots30:
-        #     df_c = df.copy()
-        #     bot.cancel_trade(df_c)
+
         print('Position closed!')
         sys.exit(0)
     except:
         print('Some Error')
-    # print('Time:',time()-start)
+    print('Time:',time()-start)
         # df.info()
         # sleep(3)

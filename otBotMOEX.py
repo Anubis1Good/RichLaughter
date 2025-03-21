@@ -5,8 +5,9 @@ from collections import defaultdict
 from Bots.TestBot1 import TestMarketBot1
 from request_functions.download_moex import download_moex,create_df
 from utils.work_with_dataframe.convert_timeframe import convert_chart1to5
-from strategies.work_strategies.PTA import PTA4_WDDCr,PTA4_WDDCrE,PTA4_WDDCrVG,PTA4_WDVCr,PTA4_WLISICA,PTA8_WDOBBY_FREEr,PTA4_WDDCr2,PTA4_WDDCr2E
+from strategies.work_strategies.PTA import PTA4_WDDCr,PTA4_WDDCrE,PTA4_WDDCrVG,PTA4_WDVCr,PTA4_WLISICA,PTA8_WDOBBY_FREEr,PTA4_WDDCr2,PTA4_WDDCr2E,PTA4_WDDC
 from strategies.work_strategies.PTAX import PTA10_WIZARD
+from strategies.work_strategies.MTA import MTA_LORD
 # from strategies.work_strategies.STA_ml import STAML1_XGBR2,STAML1_XGBR4,STAML1_XGBR5,STAML1_XGBR6,STAML1_XGBR7,STAML1_XGBR8,STAML1_PROPHET1,STAML1_XGBR2_DC,STAML1_XGBR2_DCh,STAML1_XGBR2e,STAML1_XGBR2h,STAML1_XGBR2he,STAML1_ARIMAS1,STAML1_PROPHET2s,STAML1_PROPHET3s,STAML1_PROPHET1s,STAML1_PROPHET2,STAML1_PROPHET3
 # from strategies.work_strategies.STA_ca import STA1_LITE
 from strategies.work_strategies.LTA import LTA_KROSH,LTA_OKROSHKA,LTA_BARASH,LTA_EJIK,LTA_KARYCH,LTA_KOPATYCH,LTA_LOSYASH,LTA_NUSHA,LTA_PIN,LTA_SAVUNIA
@@ -36,6 +37,9 @@ wss1 = [
     (OGTA4_DOG,(25,30)),
     (OGTA4_DOG,(20,40)),
 
+    (PTA4_WDDC,(15,30)), #C
+    (PTA4_WDDC,(30,30)),
+      #C
     (PTA4_WDDCr,(6,30)), #C
     (PTA4_WDDCr2,(6,20)), #C
     (PTA4_WDDCr2E,(6,20)), #C
@@ -153,6 +157,7 @@ def trade_bots(granularity,bots,bots2,func):
             df_c = df.copy()
             func(bot,df_c)
         sleep(0.1)
+
 def prepare_bots(folder,wss,granularity):
     bots = defaultdict(list)
     for ticker,fut in tickers:
@@ -162,13 +167,28 @@ def prepare_bots(folder,wss,granularity):
             bot = TestMarketBot1(folder,ticker,strategy,conf)
             bots[ticker].append(bot)
     return bots
+
+def append_mta_bot(folder,ws,bots,wss_str,granularity,wss_f):
+    for ticker,fut in tickers:
+        if fut:
+            fee=0.00001
+        else:
+            fee=0.0002
+        conf  = (100,wss_f,fee,4)
+        strategy = ws(ticker,granularity,fut,1,*conf)
+        bot = TestMarketBot1(folder,ticker,strategy,(wss_str,))
+        bots[ticker].append(bot)
+
 bots1 = prepare_bots('MOEX',wss1,1)
 bots5 = prepare_bots('MOEX',wss1,5)
+
+append_mta_bot('MOEX',MTA_LORD,bots1,'bots1',1,wss1)
+append_mta_bot('MOEX',MTA_LORD,bots5,'bots5',5,wss1)
 # bots10 = prepare_bots('MOEX',wss10,10)
 # print(bots1)
 
 while True:
-    start = time()
+    # start = time()
     try:
         trade_bots(1,bots1,bots5,lambda bot,df:bot.run(df))
         # trade_bots(10,bots10,lambda bot,df:bot.run(df))
@@ -183,6 +203,6 @@ while True:
     except:
         print('Ошибка')
 
-    print('Time:',time()-start)
+    # print('Time:',time()-start)
         # df.info()
         # sleep(3)
