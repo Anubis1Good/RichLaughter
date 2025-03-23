@@ -5,7 +5,8 @@ from collections import defaultdict
 from Bots.TestBot1 import TestMarketBot1
 from request_functions.download_moex import download_moex,create_df
 from utils.work_with_dataframe.convert_timeframe import convert_chart1to5
-from strategies.work_strategies.PTA import PTA4_WDDCr,PTA4_WDDCrE,PTA4_WDDCrVG,PTA4_WDVCr,PTA4_WLISICA,PTA8_WDOBBY_FREEr,PTA4_WDDCr2,PTA4_WDDCr2E,PTA4_WDDC
+from Optimiztion.Optimizator1 import generate_combinations
+from strategies.work_strategies.PTA import PTA4_WDDCr,PTA4_WDDCrE,PTA4_WDDCrVG,PTA4_WDVCr,PTA4_WLISICA,PTA8_WDOBBY_FREEr,PTA4_WDDCr2,PTA4_WDDCr2E,PTA4_WDDC,PTA4_UNIVERSAL
 from strategies.work_strategies.PTAX import PTA10_WIZARD
 from strategies.work_strategies.MTA import MTA_LORD
 # from strategies.work_strategies.STA_ml import STAML1_XGBR2,STAML1_XGBR4,STAML1_XGBR5,STAML1_XGBR6,STAML1_XGBR7,STAML1_XGBR8,STAML1_PROPHET1,STAML1_XGBR2_DC,STAML1_XGBR2_DCh,STAML1_XGBR2e,STAML1_XGBR2h,STAML1_XGBR2he,STAML1_ARIMAS1,STAML1_PROPHET2s,STAML1_PROPHET3s,STAML1_PROPHET1s,STAML1_PROPHET2,STAML1_PROPHET3
@@ -130,7 +131,6 @@ tickers = (
 print('Ботов 1:',len(wss1))
 print('Тикеров 1:',len(tickers))
 # print('Ботов 10:',len(wss10))
-print('Всего ботов:',len(wss1)*len(tickers))
 print('Max period 1:',max_period1)
 # print('Max period 10:',max_period10)
 # ticker = 'MMH5'
@@ -184,6 +184,25 @@ bots5 = prepare_bots('MOEX',wss1,5)
 
 append_mta_bot('MOEX',MTA_LORD,bots1,'bots1',1,wss1)
 append_mta_bot('MOEX',MTA_LORD,bots5,'bots5',5,wss1)
+
+wss_u = []
+configs = generate_combinations((
+    (5,10,20),
+    (5,10,20),
+    (30,50),
+    (30,50),
+    ('DC',),
+    ("rsi",),
+    (0,1),
+    (0,1)
+))
+for conf in configs:
+    wss_u.append((PTA4_UNIVERSAL,conf))
+append_mta_bot('MOEX',MTA_LORD,bots1,'u1',1,wss_u)
+append_mta_bot('MOEX',MTA_LORD,bots5,'u5',5,wss_u)
+
+
+print('Всего ботов:',len(bots1)*len(bots5))
 # bots10 = prepare_bots('MOEX',wss10,10)
 # print(bots1)
 
