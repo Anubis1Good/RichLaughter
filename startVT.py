@@ -202,7 +202,7 @@ class MainWindow(QWidget):
             self.draw_btn.setText('DrawWindow')
             self.overlay.close()
             self.overlay = None 
-            self.draw_btn.setStyleSheet('background-color: #006561;')
+            self.draw_btn.setStyleSheet(self.init_btn_style)
 
 if __name__ == '__main__':
     app = QApplication([])
