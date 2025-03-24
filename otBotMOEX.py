@@ -174,7 +174,7 @@ def append_mta_bot(folder,ws,bots,wss_str,granularity,wss_f):
             fee=0.00001
         else:
             fee=0.0002
-        conf  = (100,wss_f,fee,4)
+        conf  = (100,wss_f,fee,3)
         strategy = ws(ticker,granularity,fut,1,*conf)
         bot = TestMarketBot1(folder,ticker,strategy,(wss_str,))
         bots[ticker].append(bot)
@@ -187,8 +187,8 @@ append_mta_bot('MOEX',MTA_LORD,bots5,'bots5',5,wss1)
 
 wss_u = []
 configs = generate_combinations((
-    (5,10),
-    (5,10),
+    (6,11),
+    (6,11),
     (30,60),
     (30,60),
     ('DC',),
