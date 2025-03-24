@@ -145,8 +145,8 @@ bots15 = prepare_bots('bitget',wss15,"15m")
 bots30 = prepare_bots('bitget',wss30,"30m")
 wss_u = []
 configs = generate_combinations((
-    (5,10,20),
-    (5,10,20),
+    (5,10),
+    (5,10),
     (30,50),
     (30,50),
     ('DC',),

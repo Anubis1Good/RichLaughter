@@ -187,10 +187,10 @@ append_mta_bot('MOEX',MTA_LORD,bots5,'bots5',5,wss1)
 
 wss_u = []
 configs = generate_combinations((
-    (5,10,20),
-    (5,10,20),
-    (30,50),
-    (30,50),
+    (5,10),
+    (5,10),
+    (30,60),
+    (30,60),
     ('DC',),
     ("rsi",),
     (0,1),

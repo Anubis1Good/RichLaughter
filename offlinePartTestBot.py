@@ -76,8 +76,8 @@ max_period1 = (max(list(map(lambda x: x[1][0],wss1)))+1)*lenght_history
 
 wss = []
 configs = generate_combinations((
-    (5,10,20),
-    (5,10,20),
+    (5,10),
+    (5,10),
     (30,50),
     (30,50),
     ('DC',),
