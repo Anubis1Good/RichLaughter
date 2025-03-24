@@ -1,0 +1,30 @@
+stock_groups= { 
+    'LI':(
+        'MXI',
+        'ROSN',
+        'MAGN',
+        'CHMF',
+        'NVTK',
+        'ALRS',
+        'SELG',
+        'TATN',
+        'RUAL',
+        'MTLR',
+        'VTBR',
+        'GMKN'
+    ),
+    'TS': (
+        'CHMF',
+        'NVTK',
+        'SOFL',
+        'RENI',
+        'ALRS',
+        'MAGN',
+        'NLMK',
+        'ROSN',
+        'VTBR',
+        'WUSH',
+        'GMKN',
+        'MTLR'
+    )
+}

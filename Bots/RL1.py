@@ -2,12 +2,12 @@ import traceback
 
 
 class RL1:
-    def __init__(self,symbol,trader,strategy,work_amount,step_class):
+    def __init__(self,symbol,trader,strategy,work_amount,step_glass):
         self.symbol = symbol
         self.trader = trader
         self.strategy = strategy
         self.work_amount = work_amount
-        self.step_glass = step_class
+        self.step_glass = step_glass
         self.middle_price = None
         self.long_price = None
         self.short_price = None
