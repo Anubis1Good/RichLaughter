@@ -16,7 +16,7 @@ from strategies.work_strategies.OGTA import OGTA4_DOG
 from strategies.work_strategies.MTA import MTA_LORD as WS
 # raw_file = 'DataForTests\DataFromBitget\DOGEUSDT_1m_1739873922.csv'
 raw_file = 'DataForTests\DataFromBitget\DOGEUSDT_15m_1739873596.csv'
-# raw_file = 'DataForTests\DataFromMOEX\MMH5_1_1739993452.csv'
+raw_file = 'DataForTests\DataFromMOEX\MMH5_1_1739993452.csv'
 df = bitget_loader(raw_file)
 
 wss_f = (
@@ -76,8 +76,8 @@ max_period1 = (max(list(map(lambda x: x[1][0],wss1)))+1)*lenght_history
 
 wss = []
 configs = generate_combinations((
-    (5,10),
-    (5,10),
+    (7,),
+    (7,),
     (30,50),
     (30,50),
     ('DC',),
@@ -90,7 +90,7 @@ for conf in configs:
 print(len(wss))
 # sys.exit(0)
 tickers = (
-    ('DOGEUSDT_15m',False),
+    ('MXI',True),
 )
 print('Ботов 1:',len(wss1))
 print('Тикеров 1:',len(tickers))
@@ -117,7 +117,8 @@ def prepare_bots(folder,granularity):
             fee=0.0012
         conf  = (100,wss,fee,4)
         strategy = WS(ticker,granularity,fut,1,*conf)
-        bot = TestMarketBot1(folder,ticker,strategy,tuple(),'LogsOffTest')
+        print(strategy.period)
+        bot = TestMarketBot1(folder,ticker,strategy,('u1h4',),'LogsOffTest')
         bots[ticker].append(bot)
     return bots
 bots1 = prepare_bots('OPTB',1)

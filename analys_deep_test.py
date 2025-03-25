@@ -5,8 +5,9 @@ from datetime import datetime
 mult = 1
 
 need_equity_chart = False
-# logs_folder = 'logsOffTest'
-logs_folder = 'logsMT'
+need_equity_chart = True
+logs_folder = 'logsOffTest'
+# logs_folder = 'logsMT'
 raws_folder = os.listdir(logs_folder)
 for raw_folder in raws_folder:
     raw_folder_path = os.path.join(logs_folder,raw_folder)
