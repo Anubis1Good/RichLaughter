@@ -72,7 +72,7 @@ class TradeWorker(QThread):
                 self.requestInterruption()  # Устанавливаем флаг прерывания
                 return  # Выходим из цикла
                 # sys.exit(0)
-            pag.moveTo(wt.glass[0]+10,wt.glass[1]+10)
+            pag.moveTo(wt.glass_region[0]+10,wt.glass_region[1]+10)
             keyboard.send('tab') 
             if self.isInterruptionRequested():
                 return

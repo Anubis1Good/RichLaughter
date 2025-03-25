@@ -21,9 +21,9 @@ class VT5:
             name:str,
             ws:tuple=(BaseTABitget,(20,))
             ):
-        self.glass = glass
-        self.chart = chart
-        self.position = position
+        self.glass_region = glass
+        self.chart_region = chart
+        self.position_region = position
         self.name = name
         self.trader_name = 'VT5'
         conf = ws[1]
@@ -75,7 +75,7 @@ class VT5:
         self._send_open(rev_direction)
         pdi.press('z')
 
-    def _reverse_pos(self,img,direction):
+    def _reverse_pos(self,direction):
         pag.moveTo(self.glass_region[0]+11,self.glass_region[1]+11)
         pdi.press('f')
         if direction == 'long':
@@ -152,7 +152,7 @@ class VT5:
         return dir_hb
     
     def _get_df(self,img) -> pd.DataFrame:
-        chart = self._get_chart(img,self.chart)
+        chart = self._get_chart(img,self.chart_region)
         volume_mask = self._get_volume_mask(chart)
         volume_cords = self._get_cords_on_mask(volume_mask)
         dhb_long = self._get_help_df(chart,ColorsBtnBGR.candle_color_1,volume_cords,-1)
@@ -171,38 +171,38 @@ class VT5:
 
         return dir_df
     
-    def _work_action(self,action,pos,img):
+    def _work_action(self,action,pos):
         if 'close_long' in action:
             if pos == 1:
                 self.close_long = True
-                self._send_close(img,'long')
+                self._send_close('long')
             else:
                 self._reset_req()
         elif 'close_short' in action:
             if pos == -1:
                 self.close_short = True
-                self._send_close(img,'short')
+                self._send_close('short')
             else:
                 self._reset_req()
         elif 'long' in action:
             if pos == -1:
                 self.close_short = True
-                self._reverse_pos(img,'long')
+                self._reverse_pos('long')
             if pos == 0:
                 self._send_open('long')
         elif 'short' in action:
             if pos == 1:
                 self.close_long = True
-                self._reverse_pos(img,'short')
+                self._reverse_pos('short')
             if pos == 0:
                 self._send_open('short')
         elif 'close_all' in action:
             if pos == -1:
                 self.close_short = True
-                self._send_close(img,'short')
+                self._send_close('short')
             elif pos == 1:
                 self.close_long = True
-                self._send_close(img,'long')
+                self._send_close('long')
             else:
                 self._reset_req()
 
@@ -222,11 +222,11 @@ class VT5:
                 self.close_short = False
                 self.close_long = False
             if self.close_long:
-                self._send_close(img,'long')
+                self._send_close('long')
             elif self.close_short:
-                self._send_close(img,'short')
+                self._send_close('short')
             elif action:
-                self._work_action(action,pos,img)
+                self._work_action(action,pos)
             else:
                 self._reset_req()
 
