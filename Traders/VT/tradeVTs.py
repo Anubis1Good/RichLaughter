@@ -64,6 +64,7 @@ class TradeWorker(QThread):
             # pag.screenshot('Traders\VT\Screen.png')
             # img = cv2.imread('Traders\VT\Screen.png')
             img = np.array(pag.screenshot()) 
+            img = cv2.cvtColor(img,cv2.COLOR_RGB2BGR)
             # cv2.imwrite('test.png',img)
             wt.run(img)
             if keyboard.is_pressed('Esc'):
