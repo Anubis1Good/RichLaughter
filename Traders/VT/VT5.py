@@ -164,13 +164,20 @@ class VT5:
         dir_df['middle'] = dir_df.apply(lambda row: (row['high'] + row['low'])//2,axis=1)
         dir_df['spred'] = dir_df.apply(lambda row:row['low']-row['high'],axis=1)
         dir_df = dir_df.reset_index(drop=True)
-        offset = dir_df['volume'].max()+1
+        # dir_df['high'] = dir_df['high'] - 1
+        # dir_df['low'] = dir_df['low'] + 1
+        # dir_df['volume'] = dir_df['volume'] - 1
+        offset = dir_df['volume'].max() + 1
         for k in ('high','low','volume','middle'):
             dir_df[k] = -dir_df[k] + offset
         # Временное решение вопроса open и close
-        dir_df['open'] = dir_df['middle'].copy()
-        dir_df['close'] = dir_df['middle'].copy()
-
+        dir_df['open'] = dir_df.apply(lambda row: row['middle'] - 1 if row['direction'] > 0 else row['middle'] + 1,axis=1)
+        dir_df['close'] = dir_df.apply(lambda row: row['middle'] + 1 if row['direction'] > 0 else row['middle'] - 1,axis=1)
+        _,cur_price = self._get_current_price(chart)
+        cur_price = - cur_price +offset
+        dir_df.loc[dir_df.index[-1], 'close'] = (
+            cur_price + 1 if dir_df['direction'].iloc[-1] > 0 else cur_price - 1
+        )
         return dir_df
     
     def _work_action(self,action,pos):
