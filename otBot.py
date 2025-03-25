@@ -9,7 +9,7 @@ from strategies.work_strategies.PTAX import PTA10_WIZARD
 # from strategies.work_strategies.STA_ca import STA1_LITE
 from strategies.work_strategies.OGTA import OGTA4_DOG
 from strategies.work_strategies.LTA import LTA_APHOBO,LTA_KROSH,LTA_OKROSHKA,LTA_OKROSHKA2,LTA_PIN,LTA_KOPATYCH,LTA_LOSYASH,LTA_KARYCH,LTA_EJIK,LTA_BARASH,LTA_SAVUNIA,LTA_NUSHA
-from strategies.work_strategies.MTA import MTA_LORD
+from strategies.work_strategies.MTA import MTA_LORD,MTA_LORD2
 
 # bots1 = []
 # bots5 = []
@@ -139,6 +139,7 @@ def append_mta_bot(folder,ws,bots,wss_str):
     bot = TestMarketBot1(folder,symbol,strategy,(wss_str,))
     bots.append(bot)
 
+
 bots1 = prepare_bots('bitget',wss1,"1m")
 bots5 = prepare_bots('bitget',wss5,"5m")
 bots15 = prepare_bots('bitget',wss15,"15m")
@@ -161,18 +162,22 @@ granularity = "1m"
 append_mta_bot('bitget',(MTA_LORD,(100,wss1,fee)),bots1,'wss1')
 append_mta_bot('bitget',(MTA_LORD,(100,wss1,fee,2)),bots1,'wss1s')
 append_mta_bot('bitget',(MTA_LORD,(100,wss_u,fee)),bots1,'u1')
+append_mta_bot('bitget',(MTA_LORD2,(60,fee,wss_u)),bots1,'u1')
 granularity = "5m"
 append_mta_bot('bitget',(MTA_LORD,(100,wss5,fee)),bots5,'wss5')
 append_mta_bot('bitget',(MTA_LORD,(100,wss5,fee,2)),bots5,'wss5s')
 append_mta_bot('bitget',(MTA_LORD,(100,wss_u,fee)),bots5,'u5')
+append_mta_bot('bitget',(MTA_LORD2,(60,fee,wss_u)),bots5,'u5')
 granularity = "15m"
 append_mta_bot('bitget',(MTA_LORD,(100,wss15,fee)),bots15,'wss15')
 append_mta_bot('bitget',(MTA_LORD,(100,wss15,fee,2)),bots15,'wss15s')
 append_mta_bot('bitget',(MTA_LORD,(100,wss_u,fee)),bots15,'u15')
+append_mta_bot('bitget',(MTA_LORD2,(60,fee,wss_u)),bots15,'u15')
 granularity = "30m"
 append_mta_bot('bitget',(MTA_LORD,(100,wss30,fee)),bots30,'wss30')
 append_mta_bot('bitget',(MTA_LORD,(100,wss30,fee,2)),bots30,'wss30s')
 append_mta_bot('bitget',(MTA_LORD,(100,wss_u,fee)),bots30,'u30')
+append_mta_bot('bitget',(MTA_LORD2,(60,fee,wss_u)),bots30,'u30')
 
 
 
@@ -202,8 +207,12 @@ print('Ботов 30:',len(bots30))
 #     bot = TestMarketBot1("DOGEUSDT",strategy,conf)
 #     bots30.append(bot)
 
+check_time = True
+check_time = False
+
 while True:
-    # start = time()
+    if check_time:
+        start = time()
     # print(strategy())
     try:
         trade_bots(symbol,'1m',max_period1,bots1,lambda bot,df:bot.run(df))
@@ -222,6 +231,7 @@ while True:
         sys.exit(0)
     except:
         print('Some Error')
-    # print('Time:',time()-start)
+    if check_time:
+        print('Time:',time()-start)
         # df.info()
         # sleep(3)

@@ -112,7 +112,7 @@ class MTA_LORD(BaseTABitget):
     
 class MTA_LORD2(BaseTABitget):
     '''
-    period=100,wss=((BaseTABitget,(11,)),),fee=0.0002,need_log=True
+    period=100,fee=0.0002,wss=((BaseTABitget,(11,)),),need_log=True
     Анализирует на истории, как WorkBitget
     '''
     def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=60,fee=0.0002,wss=((BaseTABitget,(11,)),),need_log=True):
