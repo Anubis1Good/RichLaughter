@@ -13,7 +13,7 @@ from strategies.work_strategies.PTAX import PTA10_WIZARD
 # from strategies.work_strategies.STA_ca import STA1_LITE
 from strategies.work_strategies.LTA import LTA_KROSH,LTA_OKROSHKA,LTA_BARASH,LTA_EJIK,LTA_KARYCH,LTA_KOPATYCH,LTA_LOSYASH,LTA_NUSHA,LTA_PIN,LTA_SAVUNIA
 from strategies.work_strategies.OGTA import OGTA4_DOG
-from strategies.work_strategies.MTA import MTA_LORD as WS
+from strategies.work_strategies.MTA import MTA_LORD2 as WS
 # raw_file = 'DataForTests\DataFromBitget\DOGEUSDT_1m_1739873922.csv'
 raw_file = 'DataForTests\DataFromBitget\DOGEUSDT_15m_1739873596.csv'
 raw_file = 'DataForTests\DataFromMOEX\MMH5_1_1739993452.csv'
@@ -115,10 +115,10 @@ def prepare_bots(folder,granularity):
         else:
             # fee=0.0002
             fee=0.0012
-        conf  = (100,wss,fee,4)
+        conf  = (60,wss,fee)
         strategy = WS(ticker,granularity,fut,1,*conf)
         print(strategy.period)
-        bot = TestMarketBot1(folder,ticker,strategy,('u1h4',),'LogsOffTest')
+        bot = TestMarketBot1(folder,ticker,strategy,('2u1',),'LogsOffTest')
         bots[ticker].append(bot)
     return bots
 bots1 = prepare_bots('OPTB',1)

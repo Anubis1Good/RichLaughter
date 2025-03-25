@@ -110,6 +110,72 @@ class MTA_LORD(BaseTABitget):
     def __call__(self, row, *args, **kwds):
         return row['signal']
     
+class MTA_LORD2(BaseTABitget):
+    '''
+    period=100,wss=((BaseTABitget,(11,)),),fee=0.0002,need_log=True
+    Анализирует на истории, как WorkBitget
+    '''
+    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=60,fee=0.0002,wss=((BaseTABitget,(11,)),),need_log=True):
+        super().__init__(symbol, granularity, productType, n_parts, period)
+        self.fee = fee
+        self.tas = {}
+        self.prepare_bots(wss)
+        self.cur_strategy = ''
+        self.need_log = need_log
+        if self.need_log:
+            folder = 'logs/work_logs/'
+            if not os.path.exists(folder):
+                os.makedirs(folder)
+            filename = f'{self.symbol}_{self.granularity}_MTA_LORD2.txt' 
+            self.filename = os.path.join(folder,filename)
+
+    def prepare_bots(self,wss):
+        for WS,conf in wss:
+            strategy = WS(self.symbol,self.granularity,self.productType,1,*conf)
+            name = self.symbol + '_' + str(self.granularity) + '_' + str(strategy).split(' ')[0].split('.')[-1] + "_" + "_".join(list(map(str,conf)))
+            self.tas[name] = strategy
+
+    def write_log(self):
+        with open(self.filename,mode='a+') as f:
+            log = f'{datetime.now()} : {self.cur_strategy}\n'
+            f.write(log)
+            f.seek(0)  # Перемещаем указатель в начало файла
+            lines = f.readlines()
+        if len(lines) > 500:
+            lines = lines[-200:]
+            with open(self.filename,'w') as f:
+                f.writelines(lines)
+
+    def preprocessing(self, df:pd.DataFrame):
+        if len(df.index) > self.period:
+            df = df.iloc[-self.period:]
+        df = df.copy()
+        results = {}
+        for i,ta in self.tas.items():
+            df_c = df.copy()
+            df_c = ta.get_test_df(df_c)
+            trades = check_strategy_fast(df_c,TS,ta)
+            if trades['count'] > 0 and trades['total'] > 0:
+                trades['total'] -= trades['count'] * (trades['open_price'] * self.fee)
+                results[i] = (trades['total'],trades['signal'])
+
+        df['signal'] = ''
+        if results:
+            results = dict(sorted(results.items(), key=lambda item: item[1][0], reverse=True))
+            signal = tuple(results.values())[0][1]
+            if self.need_log:
+                cur_strategy = tuple(results.keys())[0]
+                if self.cur_strategy != cur_strategy:
+                    self.cur_strategy = cur_strategy
+                    self.write_log()
+            df['signal'] = signal
+
+        df = add_enter_price2close(df)
+        return df
+
+    def __call__(self, row, *args, **kwds):
+        return row['signal']
+    
 # class MTA_MAJESTY(BaseTABitget):
 #     '''
 #     period=100,wss=((BaseTABitget,(11,)),),fee=0.0002,lenth_history=3,need_log=True

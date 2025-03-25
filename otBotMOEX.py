@@ -8,7 +8,7 @@ from utils.work_with_dataframe.convert_timeframe import convert_chart1to5
 from Optimiztion.Optimizator1 import generate_combinations
 from strategies.work_strategies.PTA import PTA4_WDDCr,PTA4_WDDCrE,PTA4_WDDCrVG,PTA4_WDVCr,PTA4_WLISICA,PTA8_WDOBBY_FREEr,PTA4_WDDCr2,PTA4_WDDCr2E,PTA4_WDDC,PTA4_UNIVERSAL
 from strategies.work_strategies.PTAX import PTA10_WIZARD
-from strategies.work_strategies.MTA import MTA_LORD
+from strategies.work_strategies.MTA import MTA_LORD,MTA_LORD2
 # from strategies.work_strategies.STA_ml import STAML1_XGBR2,STAML1_XGBR4,STAML1_XGBR5,STAML1_XGBR6,STAML1_XGBR7,STAML1_XGBR8,STAML1_PROPHET1,STAML1_XGBR2_DC,STAML1_XGBR2_DCh,STAML1_XGBR2e,STAML1_XGBR2h,STAML1_XGBR2he,STAML1_ARIMAS1,STAML1_PROPHET2s,STAML1_PROPHET3s,STAML1_PROPHET1s,STAML1_PROPHET2,STAML1_PROPHET3
 # from strategies.work_strategies.STA_ca import STA1_LITE
 from strategies.work_strategies.LTA import LTA_KROSH,LTA_OKROSHKA,LTA_BARASH,LTA_EJIK,LTA_KARYCH,LTA_KOPATYCH,LTA_LOSYASH,LTA_NUSHA,LTA_PIN,LTA_SAVUNIA
@@ -179,6 +179,17 @@ def append_mta_bot(folder,ws,bots,wss_str,granularity,wss_f):
         bot = TestMarketBot1(folder,ticker,strategy,(wss_str,))
         bots[ticker].append(bot)
 
+def append_lord2_bot(folder,ws,bots,wss_str,granularity,wss,period):
+    for ticker,fut in tickers:
+        if fut:
+            fee=0.00001
+        else:
+            fee=0.0002
+        conf  = (period,fee)
+        strategy = ws(ticker,granularity,fut,1,*conf,wss)
+        bot = TestMarketBot1(folder,ticker,strategy,(conf[0],wss_str))
+        bots[ticker].append(bot)
+
 bots1 = prepare_bots('MOEX',wss1,1)
 bots5 = prepare_bots('MOEX',wss1,5)
 
@@ -196,18 +207,43 @@ configs = generate_combinations((
     (0,1),
     (0,1)
 ))
+print(len(configs))
 for conf in configs:
     wss_u.append((PTA4_UNIVERSAL,conf))
 append_mta_bot('MOEX',MTA_LORD,bots1,'u1',1,wss_u)
 append_mta_bot('MOEX',MTA_LORD,bots5,'u5',5,wss_u)
 
+wss_u2 = []
+configs2 = generate_combinations((
+    (10,),
+    (10,),
+    (20,60),
+    (20,60),
+    ('DC',),
+    ("rsi",),
+    (0,1),
+    (0,1)
+))
+print(len(configs2))
+for conf in configs2:
+    wss_u2.append((PTA4_UNIVERSAL,conf))
+append_mta_bot('MOEX',MTA_LORD,bots1,'u12',1,wss_u2)
+append_mta_bot('MOEX',MTA_LORD,bots5,'u52',5,wss_u2)
+append_lord2_bot('MOEX',MTA_LORD2,bots1,'wss_u2',1,wss_u2,60)
+append_lord2_bot('MOEX',MTA_LORD2,bots5,'wss_u2',2,wss_u2,60)
+append_lord2_bot('MOEX',MTA_LORD2,bots1,'wss_u2',1,wss_u2,30)
+append_lord2_bot('MOEX',MTA_LORD2,bots5,'wss_u2',2,wss_u2,30)
 
 print('Всего ботов:',len(bots1)*len(bots5))
 # bots10 = prepare_bots('MOEX',wss10,10)
 # print(bots1)
 
+check_time = True
+# check_time = False
+
 while True:
-    # start = time()
+    if check_time:
+        start = time()
     try:
         trade_bots(1,bots1,bots5,lambda bot,df:bot.run(df))
         # trade_bots(10,bots10,lambda bot,df:bot.run(df))
@@ -221,7 +257,7 @@ while True:
         sys.exit(0)
     except:
         print('Ошибка')
-
-    # print('Time:',time()-start)
+    if check_time:
+        print('Time:',time()-start)
         # df.info()
         # sleep(3)

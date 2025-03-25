@@ -5,9 +5,9 @@ from datetime import datetime
 mult = 1
 
 need_equity_chart = False
-need_equity_chart = True
+# need_equity_chart = True
 logs_folder = 'logsOffTest'
-# logs_folder = 'logsMT'
+logs_folder = 'logsMT'
 raws_folder = os.listdir(logs_folder)
 for raw_folder in raws_folder:
     raw_folder_path = os.path.join(logs_folder,raw_folder)
@@ -30,10 +30,10 @@ for raw_folder in raws_folder:
     res_name_folder = os.path.join('TestDeepTests',date,result_name)
     if not os.path.exists(res_name_folder):
         os.makedirs(res_name_folder)
-    if need_equity_chart:
-            path_imgs = os.path.join(res_name_folder,'equity_chart')
-            if not os.path.exists(path_imgs):
-                os.mkdir(path_imgs)
+    # if need_equity_chart:
+    path_imgs = os.path.join(res_name_folder,'equity_chart')
+    if not os.path.exists(path_imgs):
+        os.mkdir(path_imgs)
 
     for rw in raw_files:
         rw_path = os.path.join(raw_folder_path,rw)
@@ -51,7 +51,7 @@ for raw_folder in raws_folder:
                 'mean_price':[df['open_price'].mean()]
             })
             df_main = pd.concat([df_main,df_w],axis=0)
-            if need_equity_chart:
+            if need_equity_chart or 'MMM5' in name_bot:
                 plt.plot(df['total'],color='blue')
                 full_name_img = os.path.join(path_imgs,name_bot + '.png')
                 plt.savefig(full_name_img)
