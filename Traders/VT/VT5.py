@@ -32,6 +32,8 @@ class VT5:
         if not os.path.exists(folder_error):
             os.makedirs(folder_error)
         self.error_log = os.path.join(folder_error,self.trader_name + '_' + self.name + '.txt')
+        self.close_long = False
+        self.close_short = False
 
     def _color_search(self,img:npt.ArrayLike,color:tuple[int],region:tuple[int]=(None,None,None,None),reverse:bool=False):
         try:
