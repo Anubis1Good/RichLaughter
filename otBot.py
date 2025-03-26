@@ -3,7 +3,7 @@ from time import sleep,time
 from Bots.TestBot1 import TestMarketBot1
 from request_functions.download_bitget import get_df
 from Optimiztion.Optimizator1 import generate_combinations
-from strategies.work_strategies.PTA import PTA2_LISICA,PTA2_DDCrWork,PTA8_DOBBY,PTA8_OBBY,PTA8_DOBBY_FREEr,PTA4_WDDCr,PTA4_WDDCrE,PTA4_WDDCrVG,PTA4_WDVCr,PTA4_WLISICA,PTA8_WDOBBY_FREEr,PTA4_WDDCr2,PTA4_WDDCr2E,PTA4_WDDC,PTA4_UNIVERSAL
+from strategies.work_strategies.PTA import PTA2_LISICA,PTA2_DDCrWork,PTA8_DOBBY,PTA8_OBBY,PTA8_DOBBY_FREEr,PTA4_WDDCr,PTA4_WDDCrE,PTA4_WDDCrVG,PTA4_WDVCr,PTA4_WLISICA,PTA8_WDOBBY_FREEr,PTA4_WDDCr2,PTA4_WDDCr2E,PTA4_WDDC,PTA4_UNIVERSAL,PTA4_UNIVERSAL2
 from strategies.work_strategies.PTAX import PTA10_WIZARD
 # from strategies.work_strategies.STA_ml import STAML1_XGBR2,STAML1_XGBR4,STAML1_XGBR5,STAML1_XGBR6,STAML1_XGBR7,STAML1_XGBR8,STAML1_PROPHET1,STAML1_XGBR2_DC,STAML1_XGBR2_DCh,STAML1_XGBR2e,STAML1_XGBR2h,STAML1_XGBR2he,STAML1_ARIMAS1,STAML1_PROPHET2s,STAML1_PROPHET3s,STAML1_PROPHET1s,STAML1_PROPHET2,STAML1_PROPHET3
 # from strategies.work_strategies.STA_ca import STA1_LITE
@@ -144,7 +144,6 @@ bots1 = prepare_bots('bitget',wss1,"1m")
 bots5 = prepare_bots('bitget',wss5,"5m")
 bots15 = prepare_bots('bitget',wss15,"15m")
 bots30 = prepare_bots('bitget',wss30,"30m")
-wss_u = []
 configs = generate_combinations((
     (5,10),
     (5,10),
@@ -155,29 +154,38 @@ configs = generate_combinations((
     (0,1),
     (0,1)
 ))
+wss_u = []
 for conf in configs:
     wss_u.append((PTA4_UNIVERSAL,conf))
+
+wss_u2 = []
+for conf in configs:
+    wss_u2.append((PTA4_UNIVERSAL2,conf))
 fee = 0.0012
 granularity = "1m"
 append_mta_bot('bitget',(MTA_LORD,(100,wss1,fee)),bots1,'wss1')
 append_mta_bot('bitget',(MTA_LORD,(100,wss1,fee,2)),bots1,'wss1s')
 append_mta_bot('bitget',(MTA_LORD,(100,wss_u,fee)),bots1,'u1')
 append_mta_bot('bitget',(MTA_LORD2,(60,fee,wss_u)),bots1,'u1')
+append_mta_bot('bitget',(MTA_LORD2,(60,fee,wss_u2)),bots1,'u12')
 granularity = "5m"
 append_mta_bot('bitget',(MTA_LORD,(100,wss5,fee)),bots5,'wss5')
 append_mta_bot('bitget',(MTA_LORD,(100,wss5,fee,2)),bots5,'wss5s')
 append_mta_bot('bitget',(MTA_LORD,(100,wss_u,fee)),bots5,'u5')
 append_mta_bot('bitget',(MTA_LORD2,(60,fee,wss_u)),bots5,'u5')
+append_mta_bot('bitget',(MTA_LORD2,(60,fee,wss_u2)),bots5,'u52')
 granularity = "15m"
 append_mta_bot('bitget',(MTA_LORD,(100,wss15,fee)),bots15,'wss15')
 append_mta_bot('bitget',(MTA_LORD,(100,wss15,fee,2)),bots15,'wss15s')
 append_mta_bot('bitget',(MTA_LORD,(100,wss_u,fee)),bots15,'u15')
 append_mta_bot('bitget',(MTA_LORD2,(60,fee,wss_u)),bots15,'u15')
+append_mta_bot('bitget',(MTA_LORD2,(60,fee,wss_u2)),bots15,'u152')
 granularity = "30m"
 append_mta_bot('bitget',(MTA_LORD,(100,wss30,fee)),bots30,'wss30')
 append_mta_bot('bitget',(MTA_LORD,(100,wss30,fee,2)),bots30,'wss30s')
 append_mta_bot('bitget',(MTA_LORD,(100,wss_u,fee)),bots30,'u30')
 append_mta_bot('bitget',(MTA_LORD2,(60,fee,wss_u)),bots30,'u30')
+append_mta_bot('bitget',(MTA_LORD2,(60,fee,wss_u2)),bots30,'u302')
 
 
 

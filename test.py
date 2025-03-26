@@ -8,11 +8,16 @@ from ForBots.Indicators.classic_indicators import add_donchan_channel,add_vanger
 
 file = 'logs\work_logs\MMH5_1_MTA_LORD.txt'
 
-with open(file,'a+') as f:
-    f.write(f'{datetime.now()} : JOPPA\n')
-    f.seek(0)  # Перемещаем указатель в начало файла
-    lines = f.readlines()
-if len(lines) > 5:
-    lines = lines[-2:]
-    with open(file,'w') as f:
-        f.writelines(lines)
+def decor(func):
+    def wrapper(*args, **kwargs):
+        a = 10
+        res = func(a,*args, **kwargs)
+        return res
+    return wrapper
+
+@decor
+def test(a,b):
+    print(a+b)
+
+
+test(5)

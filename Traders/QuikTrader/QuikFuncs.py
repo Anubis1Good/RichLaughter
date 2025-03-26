@@ -1,0 +1,112 @@
+import pandas as pd
+from libs.QuikPy import QuikPy
+import itertools
+
+trans_id = itertools.count(1)
+# class_code = 'SPBFUT'  # Фьючерсы
+# security_codes = ('SiM5', 'RIM5')  
+
+def provider(func):
+    def wrapper(*args, **kwargs):
+        qp_provider = None
+        try:
+            qp_provider = QuikPy()
+            res = func(qp_provider,*args, **kwargs)
+            qp_provider.close_connection_and_thread() 
+            return res
+        except:
+            if qp_provider:
+                qp_provider.close_connection_and_thread()
+    return wrapper
+
+@provider
+def get_bars(qp_provider:QuikPy,sec_code,tf='M5',count=60,class_code='SPBFUT'):
+    time_frame, _ = qp_provider.timeframe_to_quik_timeframe(tf) 
+    history = qp_provider.get_candles_from_data_source(class_code, sec_code, time_frame,count=count)  # Получаем все бары из QUIK
+
+    pd_bars = pd.DataFrame()
+    if 'data' in history:
+        new_bars = history['data'] 
+        pd_bars = pd.json_normalize(new_bars)
+        pd_bars = pd_bars.rename(columns={'datetime.year': 'year', 'datetime.month': 'month', 'datetime.day': 'day',
+                            'datetime.hour': 'hour', 'datetime.min': 'minute', 'datetime.sec': 'second'})
+        pd_bars['ms'] = pd.to_datetime(pd_bars[['year', 'month', 'day', 'hour', 'minute', 'second']])
+        pd_bars = pd_bars[['ms', 'open', 'high', 'low', 'close', 'volume']]  
+        # pd_bars.index = pd_bars['ms']
+        pd_bars.volume = pd.to_numeric(pd_bars.volume, downcast='integer')  
+        pd_bars.drop_duplicates(keep='last', inplace=True)
+        pd_bars.reset_index(drop=True)
+        pd_bars['direction'] = pd_bars.apply(lambda row: 1 if row['open'] < row['close'] else -1, axis=1)
+        pd_bars['middle'] = pd_bars.apply(lambda row: (row['high']+row['low'])/2,axis=1)
+        pd_bars['x'] = pd_bars.index
+    return pd_bars
+
+
+@provider
+def send_transaction(qp_provider:QuikPy,sec_code,price,direction='B',quantity = 1,class_code='SPBFUT'):
+    account = next((account for account in qp_provider.accounts if class_code in account['class_codes']), None)
+
+    if account:
+        client_code = account['client_code'] if account['client_code'] else ''
+        trade_account_id = account['trade_account_id']
+        transaction = {  # Все значения должны передаваться в виде строк
+            'TRANS_ID': str(next(trans_id)),  # Следующий номер транзакции
+            'CLIENT_CODE': client_code,  # Код клиента
+            'ACCOUNT': trade_account_id,  # Счет
+            'ACTION': 'NEW_ORDER',  # Тип заявки: Новая лимитная/рыночная заявка
+            'CLASSCODE': class_code,  # Код режима торгов
+            'SECCODE': sec_code,  # Код тикера
+            'OPERATION': direction,  # B = покупка, S = продажа
+            'PRICE': str(price),  # Цена исполнения
+            'QUANTITY': str(quantity),  # Кол-во в лотах
+            'TYPE': 'L'
+        }
+        qp_provider.send_transaction(transaction)
+
+
+@provider
+def get_active_order(qp_provider:QuikPy,sec_code):
+    orders = qp_provider.get_all_orders()['data'] 
+    active_orders = []
+    for order in orders:
+        if order['sec_code'] == sec_code and order['flags'] % 2 == 1:
+            active_orders.append(order)
+    return active_orders
+
+@provider
+def help_close_active_order(qp_provider:QuikPy,active_orders,sec_code):
+    if active_orders:
+        for ao in active_orders:
+            transaction = {  # Все значения должны передаваться в виде строк
+                'TRANS_ID': str(next(trans_id)),  # Следующий номер транзакции
+                'ACTION': 'KILL_ORDER',  # Тип заявки: Удаление существующей заявки
+                'CLASSCODE': ao['class_code'],  # Код режима торгов
+                'SECCODE': sec_code,  # Код тикера
+                'ORDER_KEY': str(ao['order_num'])
+            }
+            qp_provider.send_transaction(transaction)
+
+
+def close_active_order(sec_code):
+    active_orders = get_active_order(sec_code)
+    help_close_active_order(active_orders,sec_code)
+
+@provider
+def get_pos_futures(qp_provider:QuikPy,sec_code):
+    active_futures_holdings = [futuresHolding for futuresHolding in qp_provider.get_futures_holdings()['data'] if futuresHolding['totalnet'] != 0]
+    for afh in active_futures_holdings:
+        if afh['sec_code'] == sec_code:
+            return afh['totalnet']
+    return 0
+
+@provider
+def get_glass(qp_provider:QuikPy,sec_code,class_code='SPBFUT'):
+    glass = qp_provider.get_quote_level2(class_code, sec_code)["data"]
+    return glass
+
+def get_best_glass(sec_code,class_code='SPBFUT'):
+    '''return bbid,bask'''
+    glass = get_glass(sec_code,class_code)
+    bbid = glass['bid'][-1]['price']
+    bask = glass['offer'][0]['price']
+    return bbid,bask

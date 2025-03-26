@@ -17,3 +17,5 @@ scikit-learn
 scikit-image
 statsmodels
 prophet
+pytz
+gymnasium
