@@ -13,3 +13,7 @@ keyboard
 PyDirectInput
 openpyxl
 xlsxwriter
+scikit-learn
+scikit-image
+statsmodels
+prophet

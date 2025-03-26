@@ -16,15 +16,15 @@ stock_groups= {
     'TS': (
         'CHMF',
         'NVTK',
-        'SOFL',
-        'RENI',
-        'ALRS',
+        'CBOM',
+        'LSRG',
+        'FESH',
         'MAGN',
         'NLMK',
-        'ROSN',
+        'HYDR',
         'VTBR',
-        'WUSH',
-        'GMKN',
+        'IRAO',
+        'PIKK',
         'MTLR'
     )
 }

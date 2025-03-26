@@ -239,7 +239,7 @@ print('Всего ботов:',len(bots1)*len(bots5))
 # print(bots1)
 
 check_time = True
-# check_time = False
+check_time = False
 
 while True:
     if check_time:
