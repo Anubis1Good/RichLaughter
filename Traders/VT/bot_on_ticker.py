@@ -50,7 +50,7 @@ bot_on_ticker = (
     ((PTA10_WIZARD,(30,55,3,15,20)),
      ('BANEP',)),
     ((PTA10_WIZARD,(20,55,12,25,20)),
-     ('MXI','GMKN','ALRS','MGNT')),
+     ('GMKN','ALRS','MGNT')),
     ((PTA10_WIZARD,(50,55,12,10,30)),
      ('MTLR','SIBN','CHMF5',)),
     ((OGTA4_DOG,(25,30)),
@@ -76,7 +76,7 @@ bot_on_ticker = (
     ((MTA_LORD,(100,wss_u,0.0002,4)),
      ('SBER','SBRF',)),
     ((MTA_LORD,(100,wss_u,0.00001,3)),
-     ('RTS',)),
+     ('MXI','RTS',)),
 )
 
 def init_trader(ticker):
