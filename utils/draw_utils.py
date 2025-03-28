@@ -15,6 +15,14 @@ def draw_hb_chart(row):
     clr = '#b7ea00' if row['direction'] == 1 else '#ff0013'
     plt.vlines(row.name,row['low'],row['high'],colors=clr)
 
+def draw_hb_chart_fast(df):
+    # Разделяем данные по направлениям
+    longs = df[df['direction'] == 1]
+    shorts = df[df['direction'] != 1]
+    
+    # Рисуем все линии за один вызов для каждого направления
+    plt.vlines(longs.index, longs['low'], longs['high'], colors='#b7ea00')
+    plt.vlines(shorts.index, shorts['low'], shorts['high'], colors='#ff0013')
 
 def draw_hbwv_chart(row):
     clr = '#b7ea00' if row['direction'] == 1 else '#ff0013'

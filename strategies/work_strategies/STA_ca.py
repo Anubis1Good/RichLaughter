@@ -1,5 +1,5 @@
 from request_functions.download_bitget import get_df
-from ForBots.Indicators.classic_indicators import add_bollinger,add_big_volume,add_attached_bb,add_over_bb,add_dynamics_ma,add_slice_df,add_simple_dynamics_ma,add_sma,add_enter_price,add_enter_price2close
+from ForBots.Indicators.classic_indicators import add_bollinger,add_big_volume,add_attached_bb,add_over_bb,add_dynamics_ma,add_slice_df,add_simple_dynamics_ma,add_sma,add_enter_price,add_enter_price2close,add_awesome_oscillator,add_rsi,add_ema,add_adx
 from ForBots.Indicators.price_funcs import get_universal_r,get_universal
 from strategies.work_strategies.BaseTA import BaseTABitget
 
@@ -92,3 +92,39 @@ class STA1_LITE(BaseTABitget):
                 return 'short_pw'
         else:
             pass
+
+class STA2(BaseTABitget):
+    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=30,multiplier=2,slope=0.5,period2=10):
+        super().__init__(symbol, granularity, productType, n_parts, period)
+        self.multiplier = multiplier
+        self.slope = slope
+        self.period2 = period2
+    def preprocessing(self, df):
+        df = add_bollinger(df,self.period,multiplier=self.multiplier)
+        df = add_big_volume(df,self.period)
+        df = add_over_bb(df)
+        df = add_adx(df,self.period2)
+        df = add_rsi(df,self.period2)
+        df = add_ema(df,self.period2)
+        df = add_enter_price2close(df)
+        df = add_slice_df(df,self.period)
+        return df
+    
+    def __call__(self, row, *args, **kwds):
+        pass
+        # if row['sdm'] >= self.slope:
+        #     if row['high'] > row['bbu'] and row['is_big']:
+        #         return 'close_long_pw'
+        #     if row['over_bbu']:
+        #         return 'close_long_pw'
+        #     if row['low'] < row['sma'] and row['sma2'] > row['sma']:
+        #         return 'long_pw'
+        # elif row['sdm'] <= -self.slope:
+        #     if row['over_bbd']:
+        #         return 'close_short_pw'
+        #     if row['low'] < row['bbd'] and row['is_big']:
+        #         return 'close_short_pw'
+        #     if row['high'] > row['sma'] and row['sma2'] < row['sma']:
+        #         return 'short_pw'
+        # else:
+        #     pass

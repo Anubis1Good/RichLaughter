@@ -1,3 +1,4 @@
+import pandas as pd
 def t_long(row,trades,longs,closes,price):
     if trades['pos'] == 0:
         trades['pos'] = 1
@@ -50,51 +51,52 @@ def t_close_short(row,trades,closes,price):
         
 def universal_test_strategy(row,trades,shorts,longs,closes,equity,work_strategy):
     action = work_strategy(row)
-    if action in ('long_m','long_mt'):
-        t_long(row,trades,longs,closes,'middle')
-    elif action in ('short_m','short_mt'):
-        t_short(row,trades,shorts,closes,'middle')
-    elif action in ('close_long_m','close_long_mt'):
-        t_close_long(row,trades,closes,'middle')
-    elif action in ('close_short_m','close_short_mt'):
-        t_close_short(row,trades,closes,'middle')
-    elif action == 'long':
-        t_long(row,trades,longs,closes,'high')
-    elif action == 'short':
-        t_short(row,trades,shorts,closes,'low')
-    elif action == 'close_long':
-        t_close_long(row,trades,closes,'low')
-    elif action == 'close_short':
-        t_close_short(row,trades,closes,'high')
-    elif action == 'long_r':
-        t_long(row,trades,longs,closes,'low')
-    elif action == 'short_r':
-        t_short(row,trades,shorts,closes,'high')
-    elif action == 'close_long_r':
-        t_close_long(row,trades,closes,'high')
-    elif action == 'close_short_r':
-        t_close_short(row,trades,closes,'low')
-    elif action == 'long_ct':
-        t_long(row,trades,longs,closes,'close')
-    elif action == 'short_ct':
-        t_short(row,trades,shorts,closes,'close')
-    elif action == 'close_long_ct':
-        t_close_long(row,trades,closes,'close')
-    elif action == 'close_short_ct':
-        t_close_short(row,trades,closes,'close')
-    elif action in ('long_p','long_pw'):
-        t_long(row,trades,longs,closes,'long_price')
-    elif action in ('short_p','short_pw'):
-        t_short(row,trades,shorts,closes,'short_price')
-    elif action in ('close_long_p','close_long_pw'):
-        t_close_long(row,trades,closes,'close_long_price')
-    elif action in ('close_short_p','close_short_pw'):
-        t_close_short(row,trades,closes,'close_short_price')
-    elif action == 'close_all':
-        t_close_long(row,trades,closes,'middle')
-        t_close_short(row,trades,closes,'middle')
-    else:
-        pass
+    if action:
+        if action in ('long_m','long_mt'):
+            t_long(row,trades,longs,closes,'middle')
+        elif action in ('short_m','short_mt'):
+            t_short(row,trades,shorts,closes,'middle')
+        elif action in ('close_long_m','close_long_mt'):
+            t_close_long(row,trades,closes,'middle')
+        elif action in ('close_short_m','close_short_mt'):
+            t_close_short(row,trades,closes,'middle')
+        elif action == 'long':
+            t_long(row,trades,longs,closes,'high')
+        elif action == 'short':
+            t_short(row,trades,shorts,closes,'low')
+        elif action == 'close_long':
+            t_close_long(row,trades,closes,'low')
+        elif action == 'close_short':
+            t_close_short(row,trades,closes,'high')
+        elif action == 'long_r':
+            t_long(row,trades,longs,closes,'low')
+        elif action == 'short_r':
+            t_short(row,trades,shorts,closes,'high')
+        elif action == 'close_long_r':
+            t_close_long(row,trades,closes,'high')
+        elif action == 'close_short_r':
+            t_close_short(row,trades,closes,'low')
+        elif action == 'long_ct':
+            t_long(row,trades,longs,closes,'close')
+        elif action == 'short_ct':
+            t_short(row,trades,shorts,closes,'close')
+        elif action == 'close_long_ct':
+            t_close_long(row,trades,closes,'close')
+        elif action == 'close_short_ct':
+            t_close_short(row,trades,closes,'close')
+        elif action in ('long_p','long_pw'):
+            t_long(row,trades,longs,closes,'long_price')
+        elif action in ('short_p','short_pw'):
+            t_short(row,trades,shorts,closes,'short_price')
+        elif action in ('close_long_p','close_long_pw'):
+            t_close_long(row,trades,closes,'close_long_price')
+        elif action in ('close_short_p','close_short_pw'):
+            t_close_short(row,trades,closes,'close_short_price')
+        elif 'close_all' in action:
+            t_close_long(row,trades,closes,'close')
+            t_close_short(row,trades,closes,'close')
+        else:
+            pass
 
     equity.append(trades['total'])
 
@@ -146,3 +148,25 @@ def universal_test_strategy_fast(row,trades,work_strategy):
             ft_close_long(row,trades)
             ft_close_short(row,trades)
 
+def row_vector_test_strategy(row,work_strategy):
+    action = work_strategy(row)
+    if action:
+        if 'close_long' in action:
+            return 0
+        elif 'close_short' in action:
+            return 0
+        elif 'long' in action:
+            return 1
+        elif 'short' in action:
+            return -1
+        elif action == 'close_all':
+            return 0
+
+def vector_test_strategy(df:pd.DataFrame,work_strategy):
+    df['pos'] = df.apply(lambda row: row_vector_test_strategy(row,work_strategy),axis=1)
+    if pd.isna(df['pos'].iloc[0]):
+        df.loc[0,'pos']= 0
+        
+    # Заполняем пропущенные значения предыдущими
+    df['pos'] = df['pos'].ffill()
+    return df

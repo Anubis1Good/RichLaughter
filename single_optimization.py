@@ -1,6 +1,6 @@
 import os
 import traceback
-from Optimiztion.Optimizator1 import Optimizator1
+from Optimiztion.Optimizator1 import Optimizator1,Optimizator2
 
 def optimization(ws,ts,params,test_folder,min_fee: float = 0.0004,
     max_fee: float = 0.0012):
@@ -15,19 +15,43 @@ def optimization(ws,ts,params,test_folder,min_fee: float = 0.0004,
             traceback.print_exc()
             print(rw,'not stocks')
 
+def optimization_multi(ws,ts,params,test_folder,min_fee: float = 0.0004,
+    max_fee: float = 0.0012):
+    list_dir = os.listdir(test_folder)
+    optim = Optimizator2(ws,ts,params,min_fee=min_fee,max_fee=max_fee)
+    for rw in list_dir:
+        raw_file = os.path.join(test_folder,rw)
+        print(rw)
+        try:
+            optim.run(raw_file)
+        except Exception as err:
+            traceback.print_exc()
+            print(rw,'not stocks')
+
 if __name__ == '__main__':
     # from strategies.work_strategies.PTA import PTA2_ALKASH as ws
     from strategies.test_strategies.universal import universal_test_strategy as ts
-    from strategies.work_strategies.OGTA import OGTA4_DOG as ws
+    from strategies.work_strategies.PTAX import PTA14_RWDDCr as ws
+    # from strategies.work_strategies.LTA2 import LTA2_MONSTER as ws
+    # from strategies.work_strategies.PTAX import PTA12_SWDDCr as ws
     # from strategies.work_strategies.STA_ca import STA1e as ws
     test_folder = 'DataForTests\DataFromBitget'
     # test_folder = 'DataForTests\DataFromMOEX'
     # params = [
-    #     [2,3,4]+list(range(5,101,5))
+    #     range(5,66,5),
+    # ]
+    # params = [
+    #     [5]+list(range(10,51,10)),
+    #     range(20,61,10),
+    #     [5]+list(range(10,101,10)),
+    #     range(1,4),
+    #     [5]+list(range(10,51,10)),
     # ]
     params = [
-        range(5,66,5),
-        range(10,36,5)
+        range(5,51,5),
+        (10,20,30,40),
+        range(5,51,5),
+        range(5,51,5),
     ]
     min_fee = 0.0004
     max_fee = 0.0012
@@ -48,4 +72,5 @@ if __name__ == '__main__':
     #     range(2,4),
     #     range(1,22,5)
     # ]
-    optimization(ws,ts,params,test_folder,min_fee,max_fee)
+    optimization_multi(ws,ts,params,test_folder,min_fee,max_fee)
+    # optimization(ws,ts,params,test_folder,min_fee,max_fee)

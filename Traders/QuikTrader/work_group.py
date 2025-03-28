@@ -27,9 +27,9 @@ from Traders.QuikTrader.QuikTrader1 import QuikTrader1
 
 bot_on_ticker = (
     (
-        (PTA4_WDDCrE,(6,30)),
+        (PTA4_WDDCr,(10,20)),
         (
-            ('MMM5','SPBFUT','M5',1),
+            ('MMM5','SPBFUT','M1',1),
         )
     ),
 )

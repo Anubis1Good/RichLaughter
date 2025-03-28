@@ -7,11 +7,12 @@ from request_functions.download_moex import download_moex,create_df
 from utils.work_with_dataframe.convert_timeframe import convert_chart1to5
 from Optimiztion.Optimizator1 import generate_combinations
 from strategies.work_strategies.PTA import PTA4_WDDCr,PTA4_WDDCrE,PTA4_WDDCrVG,PTA4_WDVCr,PTA4_WLISICA,PTA8_WDOBBY_FREEr,PTA4_WDDCr2,PTA4_UNIVERSAL,PTA4_UNIVERSAL2,PTA2_LISICA
-from strategies.work_strategies.PTAX import PTA10_WIZARD
+from strategies.work_strategies.PTAX import PTA10_WIZARD,PTA10_SORCERER,PTA11_KUSURUKEN,PTA12_SWDDCr,PTA14_RWDDCr
 from strategies.work_strategies.MTA import MTA_LORD,MTA_LORD2
 # from strategies.work_strategies.STA_ml import STAML1_XGBR2,STAML1_XGBR4,STAML1_XGBR5,STAML1_XGBR6,STAML1_XGBR7,STAML1_XGBR8,STAML1_PROPHET1,STAML1_XGBR2_DC,STAML1_XGBR2_DCh,STAML1_XGBR2e,STAML1_XGBR2h,STAML1_XGBR2he,STAML1_ARIMAS1,STAML1_PROPHET2s,STAML1_PROPHET3s,STAML1_PROPHET1s,STAML1_PROPHET2,STAML1_PROPHET3
 # from strategies.work_strategies.STA_ca import STA1_LITE
 from strategies.work_strategies.LTA import LTA_KROSH,LTA_OKROSHKA,LTA_PIN
+from strategies.work_strategies.LTA2 import LTA2_MONSTER
 from strategies.work_strategies.OGTA import OGTA4_DOG
 
 # bots1 = []
@@ -26,6 +27,9 @@ wss1 = [
     (LTA_PIN,(10,9,45,3)),
     (LTA_OKROSHKA,(10,15)),
     (LTA_OKROSHKA,(10,30)),
+
+    (LTA2_MONSTER,(40,20,5,3,40)), #F
+    (LTA2_MONSTER,(40,40,5,2,50)), #A
     
     (OGTA4_DOG,(15,30)),
     (OGTA4_DOG,(25,30)),
@@ -56,22 +60,28 @@ wss1 = [
     (PTA10_WIZARD,(50,55,12,10,30)),
     (PTA10_WIZARD,(20,55,12,25,20)),
     (PTA10_WIZARD,(30,55,3,15,20)),
+    (PTA10_SORCERER,(20,5,12,30,20,10)),
+    (PTA10_SORCERER,(80,20,15,30,5,20)),
+    (PTA10_SORCERER,(100,50,15,20,5,10)),
 
+    (PTA11_KUSURUKEN,(50,3,20,10,'c')), #F
+    (PTA11_KUSURUKEN,(70,3,10,40,'hl')), #F
+    (PTA11_KUSURUKEN,(50,6,5,20,'c')), #A
+    (PTA11_KUSURUKEN,(70,15,35,10,'c')), #A
+
+    (PTA12_SWDDCr,(10,40,0.25,5,5)), #F
+    (PTA12_SWDDCr,(10,30,1,5,15)), #A
+    (PTA12_SWDDCr,(10,20,1,20,15)), #A
+    (PTA12_SWDDCr,(15,30,0.25,5,20)), #A
+
+    (PTA14_RWDDCr,(15,30,35,45)), #F
+    (PTA14_RWDDCr,(10,40,30,40)), #F
+    (PTA14_RWDDCr,(10,30,35,35)), #A
+    (PTA14_RWDDCr,(10,20,30,30)), #A
 ]
 
 
 max_period1 = (max(list(map(lambda x: x[1][0],wss1)))+1)*3
-# max_period10 = (max(list(map(lambda x: x[1][0],wss10)))+1)*3
-# max_period15 = (max(list(map(lambda x: x[1][0],wss15)))+1)*3
-# max_period30 = (max(list(map(lambda x: x[1][0],wss30)))+1)*3
-# print('Max period 15:',max_period15)
-# print('Max period 30:',max_period30)
-# symbol = "DOGEUSDT"
-# granularity = "5m"
-# productType = "usdt-futures"
-# n_parts = 1
-# limit = (max_period1+1)*3
-# Получаем текущую дату
 today = date.today()
 
 # Вычитаем один день, чтобы получить вчерашнюю дату
@@ -210,8 +220,8 @@ wss_u2 = []
 configs2 = generate_combinations((
     (10,),
     (10,),
-    (20,60),
-    (20,60),
+    (30,60),
+    (30,60),
     ('DC',),
     ("rsi",),
     (0,1),

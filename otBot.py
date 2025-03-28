@@ -4,11 +4,12 @@ from Bots.TestBot1 import TestMarketBot1
 from request_functions.download_bitget import get_df
 from Optimiztion.Optimizator1 import generate_combinations
 from strategies.work_strategies.PTA import PTA2_LISICA,PTA2_DDCrWork,PTA8_DOBBY,PTA8_OBBY,PTA8_DOBBY_FREEr,PTA4_WDDCr,PTA4_WDDCrE,PTA4_WDDCrVG,PTA4_WDVCr,PTA4_WLISICA,PTA8_WDOBBY_FREEr,PTA4_WDDCr2,PTA4_WDDCr2E,PTA4_WDDC,PTA4_UNIVERSAL,PTA4_UNIVERSAL2
-from strategies.work_strategies.PTAX import PTA10_WIZARD
+from strategies.work_strategies.PTAX import PTA10_WIZARD,PTA10_SORCERER,PTA11_KUSURUKEN,PTA12_SWDDCr,PTA14_RWDDCr
 # from strategies.work_strategies.STA_ml import STAML1_XGBR2,STAML1_XGBR4,STAML1_XGBR5,STAML1_XGBR6,STAML1_XGBR7,STAML1_XGBR8,STAML1_PROPHET1,STAML1_XGBR2_DC,STAML1_XGBR2_DCh,STAML1_XGBR2e,STAML1_XGBR2h,STAML1_XGBR2he,STAML1_ARIMAS1,STAML1_PROPHET2s,STAML1_PROPHET3s,STAML1_PROPHET1s,STAML1_PROPHET2,STAML1_PROPHET3
 # from strategies.work_strategies.STA_ca import STA1_LITE
 from strategies.work_strategies.OGTA import OGTA4_DOG
 from strategies.work_strategies.LTA import LTA_APHOBO,LTA_KROSH,LTA_OKROSHKA,LTA_OKROSHKA2,LTA_PIN,LTA_KOPATYCH,LTA_LOSYASH,LTA_KARYCH,LTA_EJIK,LTA_BARASH,LTA_SAVUNIA,LTA_NUSHA
+from strategies.work_strategies.LTA2 import LTA2_MONSTER
 from strategies.work_strategies.MTA import MTA_LORD,MTA_LORD2
 
 # bots1 = []
@@ -29,6 +30,9 @@ wss1 = [
     (LTA_KROSH,(45,20)),
     (LTA_OKROSHKA,(15,10)),
     (LTA_OKROSHKA2,(15,10)),
+
+    (LTA2_MONSTER,(40,40,5,2,50)), #A
+
     (OGTA4_DOG,(45,15)),
     (OGTA4_DOG,(35,20)),
 
@@ -38,6 +42,13 @@ wss1 = [
     (PTA4_WDDCr,(21,20)), #C
 
     (PTA10_WIZARD,(30,35,12,10,40)), #S
+
+    (PTA11_KUSURUKEN,(90,3,10,10,'c')), #S
+    (PTA11_KUSURUKEN,(90,3,25,30,'hl')),#S
+
+    (PTA12_SWDDCr,(20,30,1,15,15)), #A
+
+    (PTA14_RWDDCr,(50,40,50,50)), #A
 ]
 
 wss5 = [
@@ -48,9 +59,10 @@ wss5 = [
     (LTA_KARYCH,(30,35)),
     (LTA_OKROSHKA,(20,65)),
     (LTA_OKROSHKA2,(20,65)),
+
+    (LTA2_MONSTER,(40,40,5,2,50)), #A
+
     (OGTA4_DOG,(10,15)),
-
-
 
     (PTA4_WDDC,(15,30)), #C
     (PTA4_WDDCr,(6,20)), #C
@@ -58,8 +70,15 @@ wss5 = [
     (PTA4_WDDCr,(21,30)), #C
     (PTA4_WDDCr2,(20,35)), #C
 
+    (PTA10_SORCERER,(80,35,15,30,5,20)),
 
+    (PTA11_KUSURUKEN,(70,9,5,10,'c')), #S
+    (PTA11_KUSURUKEN,(50,9,10,10,'c')), #S
 
+    (PTA12_SWDDCr,(5,10,0.25,10,5)), #A
+
+    (PTA14_RWDDCr,(5,10,20,25)), #A
+    (PTA14_RWDDCr,(20,30,10,10)), #A
 ]
 wss15 = [
     (LTA_APHOBO,(10,1)),
@@ -71,6 +90,9 @@ wss15 = [
     (LTA_NUSHA,(20,35)),
     (LTA_SAVUNIA,(65,35)),
     (LTA_OKROSHKA2,(5,60)),
+
+    (LTA2_MONSTER,(40,40,5,2,50)), #A
+
     (OGTA4_DOG,(5,20)),
     (OGTA4_DOG,(15,25)),
 
@@ -91,25 +113,46 @@ wss15 = [
 
     (PTA8_OBBY,(4,0.5)), #S
     (PTA10_WIZARD,(30,35,6,10,20)), #S
+    (PTA10_SORCERER,(100,20,9,20,10,10)),
 
+    (PTA11_KUSURUKEN,(90,15,5,10,'c')), #S
+    (PTA11_KUSURUKEN,(30,9,5,10,'hl')), #S
 
+    (PTA12_SWDDCr,(5,10,0.25,10,20)), #A
+    (PTA12_SWDDCr,(20,40,0.25,15,5)), #A
 
+    (PTA14_RWDDCr,(15,40,15,15)), #A
+    (PTA14_RWDDCr,(15,40,50,45)), #A
 ]
 wss30 = [
+    (LTA2_MONSTER,(40,40,5,2,50)), #A
+
     (PTA8_WDOBBY_FREEr,(4,2,20)),
     (PTA8_WDOBBY_FREEr,(4,0.5,20)),
     (PTA8_DOBBY_FREEr,(4,0.5)),
     (PTA8_DOBBY,(4,0.5)),
     (PTA8_DOBBY,(8,2)),
 
+    (PTA10_SORCERER,(100,10,9,20,5,10)),
+    (PTA10_SORCERER,(40,30,9,30,20,10)),
+
+    (PTA11_KUSURUKEN,(90,15,5,10,'c')), #S
+    (PTA11_KUSURUKEN,(30,9,5,10,'hl')), #S
+
+    (PTA12_SWDDCr,(5,10,0.25,10,20)), #A
+    (PTA12_SWDDCr,(20,40,0.25,15,5)), #A
+
+    (PTA14_RWDDCr,(15,40,15,15)), #A
+    (PTA14_RWDDCr,(15,40,50,45)), #A
 ]
 # wss = [
 #     (STAML1_LR1,(60,5)),
 # ]
-max_period1 = (max(list(map(lambda x: max(x[1]),wss1)))+1)*3
-max_period5 = (max(list(map(lambda x: max(x[1]),wss5)))+1)*3
-max_period15 = (max(list(map(lambda x: max(x[1]),wss15)))+1)*3
-max_period30 = (max(list(map(lambda x: max(x[1]),wss30)))+1)*3
+
+max_period1 = (max(list(map(lambda x: x[1][0],wss1)))+1)*3
+max_period5 = (max(list(map(lambda x: x[1][0],wss5)))+1)*3
+max_period15 = (max(list(map(lambda x: x[1][0],wss15)))+1)*3
+max_period30 = (max(list(map(lambda x: x[1][0],wss30)))+1)*3
 print('Max period 1:',max_period1)
 print('Max period 5:',max_period5)
 print('Max period 15:',max_period15)
@@ -216,7 +259,7 @@ print('Ботов 30:',len(bots30))
 #     bots30.append(bot)
 
 check_time = True
-check_time = False
+# check_time = False
 
 while True:
     if check_time:

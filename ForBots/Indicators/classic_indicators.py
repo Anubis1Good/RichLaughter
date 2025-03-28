@@ -53,6 +53,28 @@ def add_donchan_channel(df, period=20):
     
     return df
 
+def add_kusuruken_channel(df, period=20,period2=40):
+    """
+    '''add "max_hb", "min_hb", "avarege","max_hb2", "min_hb2", "avarege2"'''
+    
+    :param df: DataFrame с колонками 'high', 'low'
+    :param period: Период для расчета канала Дончиана (по умолчанию 20)
+    :return: DataFrame с добавленными колонками
+    """
+    # Верхняя полоса (максимум за последние N периодов)
+    df['max_hb'] = df['high'].rolling(window=period).max()
+    df['max_hb2'] = df['high'].rolling(window=period2).max()
+    
+    # Нижняя полоса (минимум за последние N периодов)
+    df['min_hb'] = df['low'].rolling(window=period).min()
+    df['min_hb2'] = df['low'].rolling(window=period2).min()
+    
+    # Средняя линия
+    df['avarege'] = (df['max_hb'] + df['min_hb']) / 2
+    df['avarege2'] = (df['max_hb2'] + df['min_hb2']) / 2
+    
+    return df
+
 
 
 
@@ -139,8 +161,8 @@ def add_bollinger(df: pd.DataFrame, period=20, kind='close', multiplier=2):
 
 def add_over_bb(df:pd.DataFrame):
     '''add over_bbu and over_bbd'''
-    df['over_bbu'] = df.apply(lambda row: row['bbu'] < row['low'],axis=1)
-    df['over_bbd'] = df.apply(lambda row: row['bbd'] > row['high'],axis=1)
+    df['over_bbu'] = df['bbu'] < df['low']
+    df['over_bbd'] = df['bbd'] > df['high']
     return df
 
 def get_attached_bb(row,df:pd.DataFrame):
@@ -175,7 +197,8 @@ def add_attached_bb(df:pd.DataFrame):
 def add_big_volume(df:pd.DataFrame,period=20,multiplier=1):
     """add sma_volume, is_big """
     df['sma_volume'] = df['volume'].rolling(period).mean()
-    df['is_big'] = df.apply(lambda row: row['volume']*multiplier > row['sma_volume'],axis=1)
+    df['is_big'] = df['volume']*multiplier > df['sma_volume']
+    # df['is_big'] = df.apply(lambda row: row['volume']*multiplier > row['sma_volume'],axis=1)
     return df
 
 def add_dynamics_ma(df:pd.DataFrame,period=20,kind='sma'):
@@ -935,3 +958,46 @@ def add_rvi(df, period=14):
     
     return df
 
+def add_pivot_points_by_bars(df, bars=5):
+    """
+    Добавляет Pivot Points, которые визуально растягиваются на весь период действия.
+    Уровни выглядят как плоские линии, а не "сдвигаются" к началу группы.
+    
+    :param df: DataFrame с колонками 'high', 'low', 'close'
+    :param bars: Количество свечей в группе (5, 60 и т.д.)
+    :return: DataFrame с добавленными PP, R1, R2, S1, S2
+    """
+    # Сбрасываем индекс, чтобы был 0, 1, 2, ...
+    df = df.reset_index(drop=True)
+    
+    # Создаем группы: 0,0,0,1,1,1,2,2,2...
+    group_ids = np.arange(len(df)) // bars
+    
+    # Находим границы каждой группы (начальный и конечный индекс)
+    group_ranges = df.groupby(group_ids).apply(lambda x: (x.index[0], x.index[-1]))
+    
+    # Рассчитываем Pivot Points для каждой группы
+    grouped = df.groupby(group_ids).agg({
+        'high': 'max',
+        'low': 'min',
+        'close': 'last'
+    })
+    grouped['PP'] = (grouped['high'] + grouped['low'] + grouped['close']) / 3
+    grouped['R1'] = 2 * grouped['PP'] - grouped['low']
+    grouped['S1'] = 2 * grouped['PP'] - grouped['high']
+    grouped['R2'] = grouped['PP'] + (grouped['high'] - grouped['low'])
+    grouped['S2'] = grouped['PP'] - (grouped['high'] - grouped['low'])
+    
+    # Инициализируем колонки для уровней
+    for col in ['PP', 'R1', 'R2', 'S1', 'S2']:
+        df[col] = np.nan
+    
+    # Заполняем уровни для каждой группы (горизонтальные линии)
+    for group_id, (start_idx, end_idx) in group_ranges.items():
+        df.loc[start_idx:end_idx, 'PP'] = grouped.loc[group_id, 'PP']
+        df.loc[start_idx:end_idx, 'R1'] = grouped.loc[group_id, 'R1']
+        df.loc[start_idx:end_idx, 'S1'] = grouped.loc[group_id, 'S1']
+        df.loc[start_idx:end_idx, 'R2'] = grouped.loc[group_id, 'R2']
+        df.loc[start_idx:end_idx, 'S2'] = grouped.loc[group_id, 'S2']
+    
+    return df

@@ -1,23 +1,28 @@
+import sys
 import pandas as pd
 import matplotlib.pyplot as plt
+from matplotlib.gridspec import GridSpec
 import numpy as np
 import numpy.typing as npt
 from time import time
 from Loader.BitgetLoader import bitget_loader
-from utils.draw_utils import draw_lite_chart,draw_chart_channel,draw_hb_chart,draw_bollinger,draw_dynamics,draw_rails
+from utils.draw_utils import draw_lite_chart,draw_chart_channel,draw_hb_chart,draw_bollinger,draw_dynamics,draw_rails,draw_hb_chart_fast
 # from ForBots.Indicators.classic_indicators import add_donchan_channel,add_vangerchik,add_sma, add_slice_df,add_bollinger,add_over_bb,add_attached_bb,add_big_volume,add_dynamics_ma
 from strategies.test_strategies.check import check_strategy
 # from strategies.work_strategies.PTA import PTA4_WLISICA as WS
-# from strategies.work_strategies.STA_ca import STA1_LITE as WS
-from strategies.work_strategies.OGTA import OGTA4_DOG as WS
+# from strategies.work_strategies.PTAX import PTA10_WIZARD as WS
+# from strategies.work_strategies.STA_ca import STA2 as WS
+# from strategies.work_strategies.OGTA import OGTA4_DOG as WS
 # from strategies.work_strategies.LTA import LTA_PIN as WS
+from strategies.work_strategies.LTA2 import LTA2_MONSTER as WS
 # from strategies.work_strategies.MTA import MTA_LORD as WS
 # from strategies.work_strategies.STA_ml import STAML1_XGBR2_DC as WS
 # from strategies.work_strategies.STA_rl import STARL1_HELPGOD as WS
 # from strategies.work_strategies.experiments import ExpBot as WS
 
 from strategies.test_strategies.universal import universal_test_strategy as TS
-raw_file = 'DataForTests\DataFromBitget\DOGEUSDT_1m_1739873922.csv'
+# raw_file = 'DataForTests\DataFromBitget\DOGEUSDT_1m_1739873922.csv'
+raw_file = 'DataForTests\DataFromMOEX\MMH5_1_1739993452.csv'
 # raw_file = 'DataForTests\oldBitget\DOGEUSDT_1m_1741087742_big.csv'
 # raw_file = 'DataForTests\DataFromTicksBitget\DOGEUSDT_1m_from_ticks.csv'
 # raw_file = 'DataForTests\DataFromBitget\DOGEUSDT_3m_1739873329.csv'
@@ -36,45 +41,16 @@ multiplier = 2
 symbol = "DOGEUSDT"
 granularity = "5m"
 slope = 4
-# df = add_sma(df,period)
-# df = add_donchan_channel(df,period)
-# df = add_bollinger(df,period)
-# df = add_over_bb(df)
-# df = add_attached_bb(df)
-# df = add_big_volume(df)
-# df = add_dynamics_ma(df)
-# df = add_slice_df(df,period)
-# bot = STA1e(symbol,granularity,period=period,multiplier=multiplier,slope=slope)
-# df = bot.get_test_df(df)
-# from strategies.work_strategies.PTA import PTA2_LISICA,PTA9_CRAB,PTA2_DDCrWork,PTA8_DOBBY,PTA8_OBBY,PTA8_DOBBY_FREEr,PTA4_WDDCr,PTA4_WDDCrE,PTA4_WDDCrVG,PTA4_WDVCr,PTA4_WLISICA,PTA8_WDOBBY_FREEr,PTA4_WDDCr2,PTA4_WDDCr2E,PTA4_WDDC
-# from strategies.work_strategies.PTAX import PTA10_WIZARD
 
-# from strategies.work_strategies.OGTA import OGTA4_DOG
-# from strategies.work_strategies.LTA import LTA_APHOBO,LTA_KROSH,LTA_OKROSHKA,LTA_OKROSHKA2,LTA_PIN,LTA_KOPATYCH,LTA_LOSYASH,LTA_KARYCH,LTA_EJIK,LTA_BARASH,LTA_SAVUNIA,LTA_NUSHA
-# wss1 = [
-#     (LTA_PIN,(60,3,25,5)),
-#     (LTA_KOPATYCH,(50,45)),
-#     (LTA_LOSYASH,(25,55)),
-#     (LTA_EJIK,(65,9,5)),
-#     (LTA_KROSH,(45,20)),
-#     (LTA_OKROSHKA,(15,10)),
-#     (LTA_OKROSHKA2,(15,10)),
-#     (OGTA4_DOG,(45,15)),
-#     (OGTA4_DOG,(35,20)),
-
-#     (PTA4_WDDC,(30,30)), #C
-#     (PTA4_WDDC,(60,30)), #C
-#     (PTA4_WDDCr,(30,30)), #C
-#     (PTA4_WDDCr,(21,20)), #C
-
-#     (PTA10_WIZARD,(30,35,12,10,40)), #S
-# ]
-# bot = WS(symbol,granularity)
-bot = WS(symbol,granularity,period=10,threshold=15)
+bot = WS(symbol,granularity)
+# conf = (20,55,12,25,20)
+# bot = WS(symbol,granularity,"usdt-futures",1,*conf)
 
 df = bot.get_test_df(df)
 # df.info()
-# print(df.head())
+# print(df.head()['ema'])
+# print(time() - start)
+# sys.exit()
 
 
 
@@ -104,15 +80,35 @@ if see_equity:
     pass
 else:
     # draw_lite_chart(df)
-    # plt.subplot(2,1,1)
-    df.apply(draw_hb_chart,axis=1)
+    plt.subplot(2,1,1)
+    # plt.subplot(3,1,1)
+    plt.grid() 
+    # df.apply(draw_hb_chart,axis=1)
+    draw_hb_chart_fast(df)
     if len(longs.shape) > 1:
         plt.scatter(longs[:,0],longs[:,1],marker='^',color='violet')
     if len(shorts.shape) > 1:
         plt.scatter(shorts[:,0],shorts[:,1],marker='v',color='violet')
     if len(closes.shape) > 1:
         plt.scatter(closes[:,0],closes[:,1],marker='x',color='violet')
-
+    for k in ('max_hb','min_hb','stop_long','stop_short'):
+        plt.plot(df[k])
+    ax1 = plt.gca()
+    plt.subplot(2,1,2,sharex=ax1)
+    # plt.subplot(3,1,2,sharex=ax1)
+    plt.grid() 
+    plt.axhline(40)
+    for k in ( 'adx','sma_adx'):
+        plt.plot(df[k])
+    # ax2 = plt.gca()
+    # plt.plot()
+    # plt.subplot(3,1,3,sharex=ax2)
+    # plt.grid() 
+    # for k in ('rsi',):
+    #     plt.plot(df[k])
+    # plt.axhline(75)
+    # plt.axhline(25)
+    plt.tight_layout() 
 
     # plt.subplot(2,1,2)
     # plt.plot(df['macd'],color='b')

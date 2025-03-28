@@ -3,9 +3,14 @@ import itertools
 import pandas as pd
 import matplotlib.pyplot as plt
 from tqdm import tqdm
+from multiprocessing import Pool, cpu_count
 from collections import defaultdict
 from Loader.BitgetLoader import bitget_loader
 from strategies.test_strategies.check import check_strategy
+
+import psutil
+phys_cores = psutil.cpu_count(logical=False) 
+
 def generate_combinations(ps):
     # Используем itertools.product для генерации всех возможных комбинаций
     combinations = list(itertools.product(*ps))
@@ -38,9 +43,6 @@ class Optimizator1:
                 total_max_fee = trades['total'] - max_fee
                 total_average_fee = trades['total'] - average_fee
                 name_file = self.name_bot +"_"+ "_".join(list(map(str,conf)))
-                # percent_min_fee = (min_fee/trades['open_price'])*100
-                # percent_max_fee = (max_fee/trades['open_price'])*100
-                # percent_average_fee = (average_fee/trades['open_price'])*100
                 total_min_fee_percent = (total_min_fee/trades['open_price'])*100
                 total_max_fee_percent = (total_max_fee/trades['open_price'])*100
                 total_average_fee_percent = (total_average_fee/trades['open_price'])*100
@@ -83,3 +85,81 @@ class Optimizator1:
         if not os.path.exists(images_folder):
             os.mkdir(images_folder)
         return data_folder,images_folder
+
+# TODO мультипроцессорный оптимизатор
+class Optimizator2(Optimizator1):
+    def process_config(self,args):
+        conf, self_ref, raw_file = args
+        self = self_ref  # получаем ссылку на экземпляр класса
+        
+        df = bitget_loader(raw_file)
+        bot = self.ws('BTCUSDT', "1m", "usdt-futures", 1, *conf)
+        df = bot.get_test_df(df)
+        trades, longs, shorts, closes, equity = check_strategy(df, self.ts, bot)
+        
+        result = None
+        if trades['count'] != 0:
+            total_without_fee = (trades['total']/trades['open_price'])*100
+            min_fee = trades['count']*trades['open_price']*self.min_fee
+            max_fee = trades['count']*trades['open_price']*self.max_fee
+            average_fee = trades['count']*trades['open_price']*self.average_fee
+            
+            result = {
+                'name': self.name_bot + "_" + "_".join(list(map(str, conf))),
+                'total': trades['total'],
+                'total_min_fee': trades['total'] - min_fee,
+                'total_max_fee': trades['total'] - max_fee,
+                'total_average_fee': trades['total'] - average_fee,
+                'total_per': total_without_fee,
+                'total_min_fee_percent': (trades['total'] - min_fee)/trades['open_price']*100,
+                'total_max_fee_percent': (trades['total'] - max_fee)/trades['open_price']*100,
+                'total_average_fee_percent': (trades['total'] - average_fee)/trades['open_price']*100,
+                'count': trades['count'],
+                'conf': conf,
+                'equity': equity
+            }
+        return result
+
+    def run(self, raw_file):
+        data_folder, images_folder = self.create_folders(raw_file)
+        data = defaultdict(list)
+        
+        # Подготовка аргументов для каждого процесса
+        args = [(conf, self, raw_file) for conf in self.configs]
+        
+        # Используем количество ядер, но можно задать меньше для экономии памяти
+        num_processes = min(max(1, phys_cores - 2), len(self.configs))
+        print('Use',num_processes,'cores')
+        with Pool(processes=num_processes) as pool:
+            # Используем imap_unordered для более быстрого выполнения (порядок не важен)
+            results = list(tqdm(pool.imap_unordered(self.process_config, args), total=len(self.configs)))
+        
+        # Обработка результатов
+        for result in results:
+            if result:
+                name_file = result['name']
+                data['name'].append(name_file)
+                data['total'].append(result['total'])
+                data['total_min_fee'].append(result['total_min_fee'])
+                data['total_max_fee'].append(result['total_max_fee'])
+                data['total_average_fee'].append(result['total_average_fee'])
+                data['total_per'].append(result['total_per'])
+                data['total_min_fee_percent'].append(result['total_min_fee_percent'])
+                data['total_max_fee_percent'].append(result['total_max_fee_percent'])
+                data['total_average_fee_percent'].append(result['total_average_fee_percent'])
+                data['count'].append(result['count'])
+                
+                for i, el in enumerate(result['conf']):
+                    data[f'param{i}'].append(el)
+                
+                # Сохранение графика
+                full_name_img = os.path.join(images_folder, name_file + '.png')
+                plt.plot(result['equity'], color='blue')
+                plt.savefig(full_name_img)
+                plt.close()
+        
+        # Сохранение результатов в Excel
+        full_name_doc = os.path.join(data_folder, self.name_bot + '.xlsx')
+        df = pd.DataFrame(data)
+        df = df.sort_values('total_min_fee_percent',axis=0,ascending=False)
+        df.to_excel(full_name_doc, sheet_name='total', engine='openpyxl')
