@@ -27,7 +27,7 @@ from Traders.QuikTrader.QuikTrader1 import QuikTrader1
 
 bot_on_ticker = (
     (
-        (PTA4_WDDCr,(10,20)),
+        (PTA14_RWDDCr,(10,30,35,35)),
         (
             ('MMM5','SPBFUT','M1',1),
         )
@@ -38,6 +38,7 @@ def init_trader() -> list[QuikTrader1]:
     bots = []
     for ws,data_tickers in bot_on_ticker:
         for dt in data_tickers:
+            print(dt[0],ws)
             bot = QuikTrader1(*dt,ws)
             bots.append(bot)
     return bots

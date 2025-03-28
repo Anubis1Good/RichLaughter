@@ -41,7 +41,7 @@ class QuikTrader1:
         return df
     
     def _work_action(self,action,pos):
-        print(action,pos)
+        # print(action,pos)
         if 'close_long' in action:
             if pos > 0:
                 self._send_close('B',pos)
@@ -54,13 +54,13 @@ class QuikTrader1:
                 self._reset_req()
         elif 'long' in action:
             if pos < 0:
-                print('B',self.quantity + abs(pos))
+                # print('B',self.quantity + abs(pos))
                 self._send_open('B',self.quantity + abs(pos))
             if pos == 0:
                 self._send_open('B',self.quantity)
         elif 'short' in action:
             if pos > 0 :
-                print('S',self.quantity + pos)
+                # print('S',self.quantity + pos)
                 self._send_open('S',self.quantity + pos)
             if pos == 0:
                 self._send_open('S',self.quantity)

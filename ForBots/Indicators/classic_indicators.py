@@ -718,7 +718,7 @@ def add_keltner_channel(df, period=20, multiplier=2):
     df['keltner_lower'] = df['keltner_middle'] - (multiplier * atr)
     
     return df
-
+# Слишком большой канал
 def add_ma_envelope(df, period=20, deviation=0.05):
     """
     Добавляет колонки 'envelope_upper', 'envelope_lower' в DataFrame.

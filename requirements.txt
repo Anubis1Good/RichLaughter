@@ -19,3 +19,4 @@ statsmodels
 prophet
 pytz
 gymnasium
+psutil

@@ -11,6 +11,7 @@ from strategies.work_strategies.PTA import PTA4_WDDCr,PTA4_WDDCrE,PTA4_WDDCrVG,P
 from strategies.work_strategies.PTAX import PTA10_WIZARD
 # from strategies.work_strategies.STA_ml import STAML1_XGBR2,STAML1_XGBR4,STAML1_XGBR5,STAML1_XGBR6,STAML1_XGBR7,STAML1_XGBR8,STAML1_PROPHET1,STAML1_XGBR2_DC,STAML1_XGBR2_DCh,STAML1_XGBR2e,STAML1_XGBR2h,STAML1_XGBR2he,STAML1_ARIMAS1,STAML1_PROPHET2s,STAML1_PROPHET3s,STAML1_PROPHET1s,STAML1_PROPHET2,STAML1_PROPHET3
 # from strategies.work_strategies.STA_ca import STA1_LITE
+from strategies.work_strategies.STA_ml2 import STAML2_LEGACY,STAML2_CHAOS,STAML2_FLUX,STAML2_TRADITION
 from strategies.work_strategies.LTA import LTA_KROSH,LTA_OKROSHKA,LTA_BARASH,LTA_EJIK,LTA_KARYCH,LTA_KOPATYCH,LTA_LOSYASH,LTA_NUSHA,LTA_PIN,LTA_SAVUNIA
 from strategies.work_strategies.OGTA import OGTA4_DOG
 from strategies.work_strategies.MTA import MTA_LORD2 as WS
@@ -90,7 +91,10 @@ for conf in configs:
 print(len(wss))
 # sys.exit(0)
 tickers = (
-    ('MXI',True),
+    ('MXI',True,STAML2_CHAOS,(60,2,100)),
+    ('MXI',True,STAML2_FLUX,(60,0,2,100)),
+    ('MXI',True,STAML2_FLUX,(60,0.2,2,100)),
+
 )
 print('Ботов 1:',len(wss1))
 print('Тикеров 1:',len(tickers))
@@ -102,23 +106,23 @@ print('Max period 1:',max_period1)
 # ticker = 'SNGSP'
 
 def trade_bots(df,bots,func):
-    for ticker,fut in tickers:
+    for ticker,fut,ws,conf in tickers:
         for bot in bots[ticker]:
             df_c = df.copy()
             func(bot,df_c)
 
 def prepare_bots(folder,granularity):
     bots = defaultdict(list)
-    for ticker,fut in tickers:
+    for ticker,fut,ws,conf in tickers:
         if fut:
             fee=0.00001
         else:
             # fee=0.0002
             fee=0.0012
-        conf  = (60,wss,fee)
-        strategy = WS(ticker,granularity,fut,1,*conf)
+        # conf  = (60,wss,fee)
+        strategy = ws(ticker,granularity,fut,1,*conf)
         print(strategy.period)
-        bot = TestMarketBot1(folder,ticker,strategy,('2u1',),'LogsOffTest')
+        bot = TestMarketBot1(folder,ticker,strategy,conf,'LogsOffTest')
         bots[ticker].append(bot)
     return bots
 bots1 = prepare_bots('OPTB',1)

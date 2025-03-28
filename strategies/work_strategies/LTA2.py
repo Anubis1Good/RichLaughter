@@ -33,4 +33,41 @@ class LTA2_MONSTER(BaseTABitget):
             if row['close'] > row['stop_short']:
                 return 'close_short_pw'
         return 'close_all_pw'
+    
+class LTA2_OVERLORD(BaseTABitget):
+    """period=60,period2=20,period3=10,shift=2"""
+    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=60,period2=20,period3=10,shift=2):
+        super().__init__(symbol, granularity, productType, n_parts, period)
+        self.period2 = period2
+        self.period3 = period3
+        self.shift = shift
+    def preprocessing(self, df):
+        df = add_ema(df,self.period)
+        df = add_chop(df,self.period3)
+        df['sma'] = df['chop'].rolling(window=self.period3).mean()
+        df['sma2'] = df['chop'].rolling(window=self.period2).mean()
+        df['smab'] = df['chop'].rolling(window=self.period).mean()
+        df['stop_long'] = df['low'].shift(self.shift)
+        df['stop_short'] = df['high'].shift(self.shift)
+        df = add_enter_price2close(df)  
+        df = add_slice_df(df, self.period) 
+        return df
+
+    def __call__(self, row, *args, **kwds):
+        if row['smab'] > row['sma'] < row['sma2']: 
+            if row['close'] > row['stop_short']:
+                if row['close'] > row['ema']:
+                    return 'long_pw'
+                else:
+                    return 'close_short_pw'
+            if row['close'] < row['stop_long']:
+                if row['close'] < row['ema']:
+                    return 'short_pw'
+                else:
+                    return 'close_long_pw'
+        else:
+            if row['close'] > row['stop_short']:
+                return 'close_short_pw'
+            if row['close'] < row['stop_long']:
+                return 'close_long_pw'
             

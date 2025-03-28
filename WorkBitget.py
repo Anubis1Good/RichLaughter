@@ -14,8 +14,9 @@ from strategies.test_strategies.check import check_strategy
 # from strategies.work_strategies.STA_ca import STA2 as WS
 # from strategies.work_strategies.OGTA import OGTA4_DOG as WS
 # from strategies.work_strategies.LTA import LTA_PIN as WS
-from strategies.work_strategies.LTA2 import LTA2_MONSTER as WS
+# from strategies.work_strategies.LTA2 import LTA2_OVERLORD as WS
 # from strategies.work_strategies.MTA import MTA_LORD as WS
+from strategies.work_strategies.STA_ml2 import STAML2_TRADITION as WS
 # from strategies.work_strategies.STA_ml import STAML1_XGBR2_DC as WS
 # from strategies.work_strategies.STA_rl import STARL1_HELPGOD as WS
 # from strategies.work_strategies.experiments import ExpBot as WS
@@ -35,7 +36,7 @@ raw_file = 'DataForTests\DataFromMOEX\MMH5_1_1739993452.csv'
 start = time()
 
 df = bitget_loader(raw_file)
-# df = df.iloc[0:200]
+# df = df.iloc[0:100]
 period = 7
 multiplier = 2
 symbol = "DOGEUSDT"
@@ -79,36 +80,49 @@ if see_equity:
     plt.plot(equity,color='red')
     pass
 else:
-    # draw_lite_chart(df)
     plt.subplot(2,1,1)
-    # plt.subplot(3,1,1)
     plt.grid() 
-    # df.apply(draw_hb_chart,axis=1)
     draw_hb_chart_fast(df)
+    
     if len(longs.shape) > 1:
         plt.scatter(longs[:,0],longs[:,1],marker='^',color='violet')
     if len(shorts.shape) > 1:
         plt.scatter(shorts[:,0],shorts[:,1],marker='v',color='violet')
     if len(closes.shape) > 1:
         plt.scatter(closes[:,0],closes[:,1],marker='x',color='violet')
-    for k in ('max_hb','min_hb','stop_long','stop_short'):
-        plt.plot(df[k])
+    for k in ( 'upper_channel',):
+        plt.plot(df[k],color='r',linestyle='--')
+    for k in ( 'lower_channel',):
+        plt.plot(df[k],color='b',linestyle='--')
     ax1 = plt.gca()
     plt.subplot(2,1,2,sharex=ax1)
-    # plt.subplot(3,1,2,sharex=ax1)
     plt.grid() 
-    plt.axhline(40)
-    for k in ( 'adx','sma_adx'):
+    for k in ('regression_slope',):
         plt.plot(df[k])
-    # ax2 = plt.gca()
-    # plt.plot()
-    # plt.subplot(3,1,3,sharex=ax2)
+    # draw_lite_chart(df)
+    # plt.subplot(2,1,1)
+    # # plt.subplot(3,1,1)
     # plt.grid() 
-    # for k in ('rsi',):
+    # # df.apply(draw_hb_chart,axis=1)
+    # draw_hb_chart_fast(df)
+    # for k in ('stop_long','stop_short','ema'):
     #     plt.plot(df[k])
-    # plt.axhline(75)
-    # plt.axhline(25)
-    plt.tight_layout() 
+    # ax1 = plt.gca()
+    # plt.subplot(2,1,2,sharex=ax1)
+    # # plt.subplot(3,1,2,sharex=ax1)
+    # plt.grid() 
+    # plt.axhline(40)
+    # for k in ( 'sma','sma2','smab'):
+    #     plt.plot(df[k])
+    # # ax2 = plt.gca()
+    # # plt.plot()
+    # # plt.subplot(3,1,3,sharex=ax2)
+    # # plt.grid() 
+    # # for k in ('rsi',):
+    # #     plt.plot(df[k])
+    # # plt.axhline(75)
+    # # plt.axhline(25)
+    # plt.tight_layout() 
 
     # plt.subplot(2,1,2)
     # plt.plot(df['macd'],color='b')

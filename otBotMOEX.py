@@ -11,8 +11,9 @@ from strategies.work_strategies.PTAX import PTA10_WIZARD,PTA10_SORCERER,PTA11_KU
 from strategies.work_strategies.MTA import MTA_LORD,MTA_LORD2
 # from strategies.work_strategies.STA_ml import STAML1_XGBR2,STAML1_XGBR4,STAML1_XGBR5,STAML1_XGBR6,STAML1_XGBR7,STAML1_XGBR8,STAML1_PROPHET1,STAML1_XGBR2_DC,STAML1_XGBR2_DCh,STAML1_XGBR2e,STAML1_XGBR2h,STAML1_XGBR2he,STAML1_ARIMAS1,STAML1_PROPHET2s,STAML1_PROPHET3s,STAML1_PROPHET1s,STAML1_PROPHET2,STAML1_PROPHET3
 # from strategies.work_strategies.STA_ca import STA1_LITE
+from strategies.work_strategies.STA_ml2 import STAML2_CHAOS,STAML2_FLUX,STAML2_LEGACY,STAML2_TRADITION
 from strategies.work_strategies.LTA import LTA_KROSH,LTA_OKROSHKA,LTA_PIN
-from strategies.work_strategies.LTA2 import LTA2_MONSTER
+from strategies.work_strategies.LTA2 import LTA2_MONSTER,LTA2_OVERLORD
 from strategies.work_strategies.OGTA import OGTA4_DOG
 
 # bots1 = []
@@ -30,9 +31,19 @@ wss1 = [
 
     (LTA2_MONSTER,(40,20,5,3,40)), #F
     (LTA2_MONSTER,(40,40,5,2,50)), #A
+    (LTA2_OVERLORD,(30,55,50,2)), #A
     
     (OGTA4_DOG,(15,30)),
     (OGTA4_DOG,(25,30)),
+
+    (STAML2_CHAOS,(60,2,200)),
+    # (STAML2_CHAOS,(60,2,150)),
+    (STAML2_FLUX,(60,0.2,2,200)),
+    # (STAML2_FLUX,(60,0.2,2,150)),
+    (STAML2_LEGACY,(5,0.5,5,0.5)),
+    # (STAML2_LEGACY,(10,0,5,0.5)),
+    (STAML2_TRADITION,(5,5,0.5)),
+    # (STAML2_TRADITION,(10,5,0.5)),
 
     (PTA2_LISICA,(7,2)), 
     (PTA2_LISICA,(14,2)), 
@@ -154,17 +165,26 @@ def trade_bots(granularity,bots,bots2,func):
         for bot in bots[ticker]:
             # print(bot)
             df_c = df.copy()
+            if check_time:
+                start2 = time()
             func(bot,df_c)
+            if check_time:
+                print(time()-start2,bot)
         df = convert_chart1to5(df)
         for bot in bots2[ticker]:
             df_c = df.copy()
             func(bot,df_c)
         sleep(0.1)
 
+group_fut = (LTA2_MONSTER,LTA2_OVERLORD,STAML2_TRADITION,STAML2_LEGACY)
+
 def prepare_bots(folder,wss,granularity):
     bots = defaultdict(list)
     for ticker,fut in tickers:
         for WS,conf in wss:
+            if WS in group_fut:
+                if not ticker in ('CRM5','MMM5','GZM5','SRM5','RIM5'):
+                    continue
             strategy = WS(ticker,granularity,fut,1,*conf)
             # bot = TestBot1("DOGEUSDT",strategy,conf)
             bot = TestMarketBot1(folder,ticker,strategy,conf)
@@ -199,22 +219,22 @@ bots5 = prepare_bots('MOEX',wss1,5)
 # append_mta_bot('MOEX',MTA_LORD,bots1,'bots1',1,wss1)
 # append_mta_bot('MOEX',MTA_LORD,bots5,'bots5',5,wss1)
 
-wss_u = []
-configs = generate_combinations((
-    (6,11),
-    (6,11),
-    (30,60),
-    (30,60),
-    ('DC',),
-    ("rsi",),
-    (0,1),
-    (0,1)
-))
-print(len(configs))
-for conf in configs:
-    wss_u.append((PTA4_UNIVERSAL,conf))
-append_mta_bot('MOEX',MTA_LORD,bots1,'u1',1,wss_u)
-append_mta_bot('MOEX',MTA_LORD,bots5,'u5',5,wss_u)
+# wss_u = []
+# configs = generate_combinations((
+#     (6,11),
+#     (6,11),
+#     (30,60),
+#     (30,60),
+#     ('DC',),
+#     ("rsi",),
+#     (0,1),
+#     (0,1)
+# ))
+# print(len(configs))
+# for conf in configs:
+#     wss_u.append((PTA4_UNIVERSAL,conf))
+# append_mta_bot('MOEX',MTA_LORD,bots1,'u1',1,wss_u)
+# append_mta_bot('MOEX',MTA_LORD,bots5,'u5',5,wss_u)
 
 wss_u2 = []
 configs2 = generate_combinations((
@@ -252,10 +272,12 @@ print('Всего ботов:',len(bots1)*len(bots5))
 # print(bots1)
 
 check_time = True
+check_time2 = True
 check_time = False
+check_time2 = False
 
 while True:
-    if check_time:
+    if check_time2:
         start = time()
     try:
         trade_bots(1,bots1,bots5,lambda bot,df:bot.run(df))
@@ -270,7 +292,7 @@ while True:
         sys.exit(0)
     except:
         print('Ошибка')
-    if check_time:
+    if check_time2:
         print('Time:',time()-start)
         # df.info()
         # sleep(3)
