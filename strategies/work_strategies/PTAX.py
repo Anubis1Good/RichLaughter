@@ -219,3 +219,79 @@ class PTA14_RWDDCr(BaseTABitget):
             if row['high'] == row['max_hb']:
                 if row['rsi'] > 100-self.threshold:
                     return 'short_pw'
+                
+class PTA15_NOVA(BaseTABitget):
+    """period=20"""
+    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=20):
+        super().__init__(symbol, granularity, productType, n_parts, period)
+    def preprocessing(self, df:pd.DataFrame):
+        # df = add_donchan_channel(df,self.period)
+        df['max_hb'] = df['high'].rolling(self.period).max()
+        df['min_hb'] = df['low'].rolling(self.period).min()
+        df['max_hb'] = df['max_hb'].shift(1)
+        df['min_hb'] = df['min_hb'].shift(1)
+
+        df['end_up'] = np.where((df['high'].shift(1) >= df['max_hb'].shift(1))&(df['high'] < df['max_hb']), df['high'], np.nan)
+        df['end_down'] = np.where((df['low'].shift(1) <= df['min_hb'].shift(1))&(df['low'] > df['min_hb']), df['low'], np.nan)
+
+        df = add_enter_price2close(df)
+        df = add_slice_df(df,period=self.period)
+        return df
+    def __call__(self, row, *args, **kwds):
+        if not np.isnan(row['end_up']):
+            return 'short_pw'
+        if not np.isnan(row['end_down']):
+            return 'long_pw'
+        
+class PTA15_KERRIGAN(BaseTABitget):
+    """period=20"""
+    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=20):
+        super().__init__(symbol, granularity, productType, n_parts, period)
+    def preprocessing(self, df:pd.DataFrame):
+        df['max_hb'] = df['high'].rolling(self.period).max()
+        df['min_hb'] = df['low'].rolling(self.period).min()
+        df['max_hb'] = df['max_hb'].shift(1)
+        df['min_hb'] = df['min_hb'].shift(1)
+
+        df['end_up'] = np.where((df['high'].shift(1) >= df['max_hb'].shift(1))&(df['high'] < df['max_hb']), df['high'], np.nan)
+        df['end_down'] = np.where((df['low'].shift(1) <= df['min_hb'].shift(1))&(df['low'] > df['min_hb']), df['low'], np.nan)
+
+        df = add_enter_price2close(df)
+        df = add_slice_df(df,period=self.period)
+        return df
+    def __call__(self, row, *args, **kwds):
+        if row['low'] < row['min_hb']:
+            return 'close_long_pw'
+        if row['high'] > row['max_hb']:
+            return 'close_short_pw'
+        if not np.isnan(row['end_up']):
+            return 'short_pw'
+        if not np.isnan(row['end_down']):
+            return 'long_pw'
+
+class PTA15_WIDOWMAKER(BaseTABitget):
+    """period=20,threshold=30"""
+    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=20,threshold=30):
+        super().__init__(symbol, granularity, productType, n_parts, period)
+        self.threshold = threshold
+    def preprocessing(self, df:pd.DataFrame):
+        df['max_hb'] = df['high'].rolling(self.period).max()
+        df['min_hb'] = df['low'].rolling(self.period).min()
+        df['max_hb'] = df['max_hb'].shift(1)
+        df['min_hb'] = df['min_hb'].shift(1)
+        df = add_rsi(df,self.period)
+        df['end_up'] = np.where((df['high'].shift(1) >= df['max_hb'].shift(1))&(df['high'] < df['max_hb']), df['high'], np.nan)
+        df['end_down'] = np.where((df['low'].shift(1) <= df['min_hb'].shift(1))&(df['low'] > df['min_hb']), df['low'], np.nan)
+
+        df = add_enter_price2close(df)
+        df = add_slice_df(df,period=self.period)
+        return df
+    def __call__(self, row, *args, **kwds):
+        nearest_long = row['high'] - row['close'] > row['close'] - row['low'] 
+        if not np.isnan(row['end_down']):
+            if nearest_long:
+                if row['rsi'] < self.threshold:
+                    return 'long_pw'
+        if not np.isnan(row['end_up']):
+            if row['rsi'] > 100-self.threshold:
+                return 'short_pw'

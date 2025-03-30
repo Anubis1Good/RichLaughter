@@ -4,7 +4,7 @@ from Bots.TestBot1 import TestMarketBot1
 from request_functions.download_bitget import get_df
 from Optimiztion.Optimizator1 import generate_combinations
 from strategies.work_strategies.PTA import PTA2_LISICA,PTA2_DDCrWork,PTA8_DOBBY,PTA8_OBBY,PTA8_DOBBY_FREEr,PTA4_WDDCr,PTA4_WDDCrE,PTA4_WDDCrVG,PTA4_WDVCr,PTA4_WLISICA,PTA8_WDOBBY_FREEr,PTA4_WDDCr2,PTA4_WDDCr2E,PTA4_WDDC,PTA4_UNIVERSAL,PTA4_UNIVERSAL2
-from strategies.work_strategies.PTAX import PTA10_WIZARD,PTA10_SORCERER,PTA11_KUSURUKEN,PTA12_SWDDCr,PTA14_RWDDCr
+from strategies.work_strategies.PTAX import PTA10_WIZARD,PTA10_SORCERER,PTA11_KUSURUKEN,PTA12_SWDDCr,PTA14_RWDDCr,PTA15_NOVA,PTA15_KERRIGAN,PTA15_WIDOWMAKER
 # from strategies.work_strategies.STA_ca import STA1_LITE
 from strategies.work_strategies.STA_ml2 import STAML2_CHAOS,STAML2_FLUX,STAML2_LEGACY,STAML2_TRADITION
 from strategies.work_strategies.OGTA import OGTA4_DOG
@@ -37,27 +37,20 @@ wss1 = [
     (OGTA4_DOG,(35,20)),
 
     (STAML2_CHAOS,(60,2,200)),
-    (STAML2_CHAOS,(60,2,150)),
-    (STAML2_FLUX,(60,0.2,2,200)),
-    (STAML2_FLUX,(60,0.2,2,150)),
-    (STAML2_LEGACY,(5,0.5,5,0.5)),
-    (STAML2_LEGACY,(10,0,5,0.5)),
-    (STAML2_TRADITION,(5,5,0.5)),
-    (STAML2_TRADITION,(10,5,0.5)),
 
-    (PTA4_WDDC,(30,30)), #C
-    (PTA4_WDDC,(60,30)), #C
+    (PTA4_WDDC,(30,20)), #C
+    (PTA4_WDDC,(60,20)), #C
     (PTA4_WDDCr,(30,30)), #C
     (PTA4_WDDCr,(21,20)), #C
 
-    (PTA10_WIZARD,(30,35,12,10,40)), #S
 
-    (PTA11_KUSURUKEN,(90,3,10,10,'c')), #S
     (PTA11_KUSURUKEN,(90,3,25,30,'hl')),#S
 
     (PTA12_SWDDCr,(20,30,1,15,15)), #A
 
     (PTA14_RWDDCr,(50,40,50,50)), #A
+
+    (PTA15_NOVA,(70,)), #A
 ]
 
 wss5 = [
@@ -74,15 +67,9 @@ wss5 = [
     (OGTA4_DOG,(10,15)),
 
     (STAML2_CHAOS,(60,2,200)),
-    (STAML2_CHAOS,(60,2,150)),
-    (STAML2_FLUX,(60,0.2,2,200)),
-    (STAML2_FLUX,(60,0.2,2,150)),
-    (STAML2_LEGACY,(5,0.5,5,0.5)),
-    (STAML2_LEGACY,(10,0,5,0.5)),
-    (STAML2_TRADITION,(5,5,0.5)),
-    (STAML2_TRADITION,(10,5,0.5)),
+    (STAML2_TRADITION,(15,5,0.5)),
 
-    (PTA4_WDDC,(15,30)), #C
+    (PTA4_WDDC,(60,30)), #C
     (PTA4_WDDCr,(6,20)), #C
     (PTA4_WDDCr,(10,20)), #C
     (PTA4_WDDCr,(21,30)), #C
@@ -97,6 +84,11 @@ wss5 = [
 
     (PTA14_RWDDCr,(5,10,20,25)), #A
     (PTA14_RWDDCr,(20,30,10,10)), #A
+
+    (PTA15_WIDOWMAKER,(15,40)), #A
+    (PTA15_WIDOWMAKER,(5,20)), #A
+    (PTA15_NOVA,(95,)), #A
+    (PTA15_KERRIGAN,(95,)), #A
 ]
 wss15 = [
     (LTA_APHOBO,(10,1)),
@@ -115,21 +107,16 @@ wss15 = [
     (OGTA4_DOG,(15,25)),
 
     (STAML2_CHAOS,(60,2,200)),
-    (STAML2_CHAOS,(60,2,150)),
-    (STAML2_FLUX,(60,0.2,2,200)),
-    (STAML2_FLUX,(60,0.2,2,150)),
-    (STAML2_LEGACY,(5,0.5,5,0.5)),
     (STAML2_LEGACY,(10,0,5,0.5)),
     (STAML2_TRADITION,(5,5,0.5)),
     (STAML2_TRADITION,(10,5,0.5)),
 
     (PTA2_LISICA,(7,1)),
     (PTA2_LISICA,(14,2)),
-    (PTA4_WLISICA,(7,2,20)),
+    (PTA4_WLISICA,(14,2,20)),
     (PTA2_DDCrWork,(5,)),
 
 
-    (PTA4_WDDC,(10,30)), #C
     (PTA4_WDDCr2,(5,15)), #C
     (PTA4_WDDCr2E,(5,20)), #C
     (PTA4_WDDCr,(3,40)), #C
@@ -138,8 +125,8 @@ wss15 = [
     (PTA4_WDDCrVG,(9,20)),
     (PTA4_WDVCr,(9,20)),
 
-    (PTA8_OBBY,(4,0.5)), #S
-    (PTA10_WIZARD,(30,35,6,10,20)), #S
+    (PTA8_OBBY,(11,0.5)), #S
+    
     (PTA10_SORCERER,(100,20,9,20,10,10)),
 
     (PTA11_KUSURUKEN,(90,15,5,10,'c')), #S
@@ -150,24 +137,28 @@ wss15 = [
 
     (PTA14_RWDDCr,(15,40,15,15)), #A
     (PTA14_RWDDCr,(15,40,50,45)), #A
+
+    (PTA15_WIDOWMAKER,(10,40)), #A
+    (PTA15_WIDOWMAKER,(5,40)), #A
+    (PTA15_KERRIGAN,(5,)), #A
+    (PTA15_NOVA,(5,)), #A
+    (PTA15_NOVA,(30,)), #A
+    (PTA15_NOVA,(45,)), #A
 ]
 wss30 = [
     (LTA2_MONSTER,(40,40,5,2,50)), #A
     (LTA2_OVERLORD,(30,55,50,2)), #A
 
     (STAML2_CHAOS,(60,2,200)),
-    (STAML2_CHAOS,(60,2,150)),
-    (STAML2_FLUX,(60,0.2,2,200)),
-    (STAML2_FLUX,(60,0.2,2,150)),
-    (STAML2_LEGACY,(5,0.5,5,0.5)),
+
     (STAML2_LEGACY,(10,0,5,0.5)),
     (STAML2_TRADITION,(5,5,0.5)),
     (STAML2_TRADITION,(10,5,0.5)),
 
     (PTA8_WDOBBY_FREEr,(4,2,20)),
-    (PTA8_WDOBBY_FREEr,(4,0.5,20)),
+    (PTA8_WDOBBY_FREEr,(11,0.5,20)),
     (PTA8_DOBBY_FREEr,(4,0.5)),
-    (PTA8_DOBBY,(4,0.5)),
+    (PTA8_DOBBY,(8,0.5)),
     (PTA8_DOBBY,(8,2)),
 
     (PTA10_SORCERER,(100,10,9,20,5,10)),
@@ -181,7 +172,26 @@ wss30 = [
 
     (PTA14_RWDDCr,(15,40,15,15)), #A
     (PTA14_RWDDCr,(15,40,50,45)), #A
+    
+    (PTA15_WIDOWMAKER,(10,40)), #A
+    (PTA15_WIDOWMAKER,(5,40)), #A
+    (PTA15_KERRIGAN,(5,)), #A
+    (PTA15_NOVA,(5,)), #A
+    (PTA15_NOVA,(30,)), #A
+    (PTA15_NOVA,(45,)), #A
 ]
+wss60 = (
+    (STAML2_LEGACY,(10,0,5,0.5)),
+    (STAML2_TRADITION,(5,5,0.5)),
+    (STAML2_TRADITION,(10,5,0.5)),
+
+    (PTA15_WIDOWMAKER,(10,40)), #A
+    (PTA15_WIDOWMAKER,(5,40)), #A
+    (PTA15_KERRIGAN,(5,)), #A
+    (PTA15_NOVA,(5,)), #A
+    (PTA15_NOVA,(30,)), #A
+    (PTA15_NOVA,(45,)), #A
+)
 # wss = [
 #     (STAML1_LR1,(60,5)),
 # ]
@@ -190,10 +200,12 @@ max_period1 = (max(list(map(lambda x: x[1][0],wss1)))+1)*3
 max_period5 = (max(list(map(lambda x: x[1][0],wss5)))+1)*3
 max_period15 = (max(list(map(lambda x: x[1][0],wss15)))+1)*3
 max_period30 = (max(list(map(lambda x: x[1][0],wss30)))+1)*3
+max_period60 = (max(list(map(lambda x: x[1][0],wss60)))+1)*3
 print('Max period 1:',max_period1)
 print('Max period 5:',max_period5)
 print('Max period 15:',max_period15)
 print('Max period 30:',max_period30)
+print('Max period 60:',max_period60)
 symbol = "DOGEUSDT"
 granularity = "5m"
 productType = "usdt-futures"
@@ -224,6 +236,7 @@ bots1 = prepare_bots('bitget',wss1,"1m")
 bots5 = prepare_bots('bitget',wss5,"5m")
 bots15 = prepare_bots('bitget',wss15,"15m")
 bots30 = prepare_bots('bitget',wss30,"30m")
+bots60 = prepare_bots('bitget',wss60,"1H")
 configs = generate_combinations((
     (5,10),
     (5,10),
@@ -245,9 +258,9 @@ fee = 0.0012
 granularity = "1m"
 # append_mta_bot('bitget',(MTA_LORD,(100,wss1,fee)),bots1,'wss1')
 # append_mta_bot('bitget',(MTA_LORD,(100,wss1,fee,2)),bots1,'wss1s')
-append_mta_bot('bitget',(MTA_LORD,(100,wss_u,fee)),bots1,'u1')
-append_mta_bot('bitget',(MTA_LORD2,(60,fee,wss_u)),bots1,'u1')
-append_mta_bot('bitget',(MTA_LORD2,(60,fee,wss_u2)),bots1,'u12')
+# append_mta_bot('bitget',(MTA_LORD,(100,wss_u,fee)),bots1,'u1')
+# append_mta_bot('bitget',(MTA_LORD2,(60,fee,wss_u)),bots1,'u1')
+# append_mta_bot('bitget',(MTA_LORD2,(60,fee,wss_u2)),bots1,'u12')
 granularity = "5m"
 # append_mta_bot('bitget',(MTA_LORD,(100,wss5,fee)),bots5,'wss5')
 # append_mta_bot('bitget',(MTA_LORD,(100,wss5,fee,2)),bots5,'wss5s')
@@ -273,6 +286,7 @@ print('Ботов 1:',len(bots1))
 print('Ботов 5:',len(bots5))
 print('Ботов 15:',len(bots15))
 print('Ботов 30:',len(bots30))
+print('Ботов 60:',len(bots60))
 
 # for WS,conf in wss1:
 #     strategy = WS(symbol,'1m',productType,n_parts,*conf)
@@ -307,6 +321,7 @@ while True:
         trade_bots(symbol,'5m',max_period5,bots5,lambda bot,df:bot.run(df))
         trade_bots(symbol,'15m',max_period15,bots15,lambda bot,df:bot.run(df))
         trade_bots(symbol,'30m',max_period30,bots30,lambda bot,df:bot.run(df))
+        trade_bots(symbol,'1H',max_period60,bots60,lambda bot,df:bot.run(df))
 
     except KeyboardInterrupt:
         print('Close all position...')

@@ -7,7 +7,7 @@ from request_functions.download_moex import download_moex,create_df
 from utils.work_with_dataframe.convert_timeframe import convert_chart1to5
 from Optimiztion.Optimizator1 import generate_combinations
 from strategies.work_strategies.PTA import PTA4_WDDCr,PTA4_WDDCrE,PTA4_WDDCrVG,PTA4_WDVCr,PTA4_WLISICA,PTA8_WDOBBY_FREEr,PTA4_WDDCr2,PTA4_UNIVERSAL,PTA4_UNIVERSAL2,PTA2_LISICA
-from strategies.work_strategies.PTAX import PTA10_WIZARD,PTA10_SORCERER,PTA11_KUSURUKEN,PTA12_SWDDCr,PTA14_RWDDCr
+from strategies.work_strategies.PTAX import PTA10_WIZARD,PTA10_SORCERER,PTA11_KUSURUKEN,PTA12_SWDDCr,PTA14_RWDDCr,PTA15_NOVA,PTA15_KERRIGAN,PTA15_WIDOWMAKER
 from strategies.work_strategies.MTA import MTA_LORD,MTA_LORD2
 # from strategies.work_strategies.STA_ml import STAML1_XGBR2,STAML1_XGBR4,STAML1_XGBR5,STAML1_XGBR6,STAML1_XGBR7,STAML1_XGBR8,STAML1_PROPHET1,STAML1_XGBR2_DC,STAML1_XGBR2_DCh,STAML1_XGBR2e,STAML1_XGBR2h,STAML1_XGBR2he,STAML1_ARIMAS1,STAML1_PROPHET2s,STAML1_PROPHET3s,STAML1_PROPHET1s,STAML1_PROPHET2,STAML1_PROPHET3
 # from strategies.work_strategies.STA_ca import STA1_LITE
@@ -89,6 +89,16 @@ wss1 = [
     (PTA14_RWDDCr,(10,40,30,40)), #F
     (PTA14_RWDDCr,(10,30,35,35)), #A
     (PTA14_RWDDCr,(10,20,30,30)), #A
+    
+    (PTA15_KERRIGAN,(5,)), #A
+    (PTA15_NOVA,(5,)), #A
+    (PTA15_NOVA,(10,)), #A
+    (PTA15_NOVA,(15,)), #A
+    (PTA15_NOVA,(30,)), #A
+    (PTA15_NOVA,(60,)), #A
+    (PTA15_KERRIGAN,(60,)), #A
+    (PTA15_WIDOWMAKER,(10,20)), 
+    (PTA15_WIDOWMAKER,(5,30)), 
 ]
 
 
