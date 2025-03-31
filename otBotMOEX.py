@@ -11,7 +11,7 @@ from strategies.work_strategies.PTAX import PTA10_WIZARD,PTA10_SORCERER,PTA11_KU
 from strategies.work_strategies.MTA import MTA_LORD,MTA_LORD2
 # from strategies.work_strategies.STA_ml import STAML1_XGBR2,STAML1_XGBR4,STAML1_XGBR5,STAML1_XGBR6,STAML1_XGBR7,STAML1_XGBR8,STAML1_PROPHET1,STAML1_XGBR2_DC,STAML1_XGBR2_DCh,STAML1_XGBR2e,STAML1_XGBR2h,STAML1_XGBR2he,STAML1_ARIMAS1,STAML1_PROPHET2s,STAML1_PROPHET3s,STAML1_PROPHET1s,STAML1_PROPHET2,STAML1_PROPHET3
 # from strategies.work_strategies.STA_ca import STA1_LITE
-from strategies.work_strategies.STA_ml2 import STAML2_CHAOS,STAML2_FLUX,STAML2_LEGACY,STAML2_TRADITION
+from strategies.work_strategies.STA_ml2 import STAML2_CHAOS,STAML2_FLUX,STAML2_LEGACY,STAML2_TRADITION,STAML2_BALANCE,STAML2_NEWAVE
 from strategies.work_strategies.LTA import LTA_KROSH,LTA_OKROSHKA,LTA_PIN
 from strategies.work_strategies.LTA2 import LTA2_MONSTER,LTA2_OVERLORD
 from strategies.work_strategies.OGTA import OGTA4_DOG
@@ -29,27 +29,28 @@ wss1 = [
     (LTA_OKROSHKA,(10,15)),
     (LTA_OKROSHKA,(10,30)),
 
-    (LTA2_MONSTER,(40,20,5,3,40)), #F
-    (LTA2_MONSTER,(40,40,5,2,50)), #A
-    (LTA2_OVERLORD,(30,55,50,2)), #A
+    # (LTA2_MONSTER,(40,20,5,3,40)), #F
+    # (LTA2_MONSTER,(40,40,5,2,50)), #A
+    # (LTA2_OVERLORD,(30,55,50,2)), #A
     
     (OGTA4_DOG,(15,30)),
     (OGTA4_DOG,(25,30)),
 
     (STAML2_CHAOS,(60,2,200)),
-    # (STAML2_CHAOS,(60,2,150)),
-    (STAML2_FLUX,(60,0.2,2,200)),
-    # (STAML2_FLUX,(60,0.2,2,150)),
-    (STAML2_LEGACY,(5,0.5,5,0.5)),
-    # (STAML2_LEGACY,(10,0,5,0.5)),
+    (STAML2_BALANCE,(60,2,200,30)),
+    (STAML2_BALANCE,(60,2,30,30)),
+    # (STAML2_BALANCE,(60,2,60,30)),
     (STAML2_TRADITION,(5,5,0.5)),
-    # (STAML2_TRADITION,(10,5,0.5)),
+    (STAML2_NEWAVE,(5,5,0.5,30)),
+
 
     (PTA2_LISICA,(7,2)), 
     (PTA2_LISICA,(14,2)), 
 
+    (PTA4_WDDCr,(6,20)), #C
     (PTA4_WDDCr,(6,30)), #C
     (PTA4_WDDCr,(11,30)), #C
+    (PTA4_WDDCr,(12,25)), #C
     (PTA4_WDDCr,(10,20)), #C
     (PTA4_WDDCr,(21,30)), #C
     (PTA4_WDDCr,(30,30)), #C
@@ -186,7 +187,7 @@ def trade_bots(granularity,bots,bots2,func):
             func(bot,df_c)
         sleep(0.1)
 
-group_fut = (LTA2_MONSTER,LTA2_OVERLORD,STAML2_TRADITION,STAML2_LEGACY)
+group_fut = (LTA2_MONSTER,LTA2_OVERLORD,STAML2_TRADITION,STAML2_LEGACY,STAML2_NEWAVE)
 
 def prepare_bots(folder,wss,granularity):
     bots = defaultdict(list)
@@ -283,8 +284,8 @@ print('Всего ботов:',len(bots1)*len(bots5))
 
 check_time = True
 check_time2 = True
-check_time = False
-check_time2 = False
+# check_time = False
+# check_time2 = False
 
 while True:
     if check_time2:

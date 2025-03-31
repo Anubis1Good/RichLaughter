@@ -1,6 +1,6 @@
 import numpy as np
 from strategies.work_strategies.BaseTA import BaseTABitget
-from ForBots.Indicators.classic_indicators import add_slice_df,add_ema,add_enter_price2close
+from ForBots.Indicators.classic_indicators import add_slice_df,add_ema,add_enter_price2close,add_rsi
 from ForBots.Indicators.rare_indicators import add_dynamic_trend_lines_slope_reversed,add_segmented_regression_from_end
 
 class STAML2_CHAOS(BaseTABitget):
@@ -90,4 +90,49 @@ class STAML2_TRADITION(BaseTABitget):
             return 'short_pw'
         if row['lower_channel'] > row['close']:
             return 'long_pw'
+        
+class STAML2_NEWAVE(BaseTABitget):
+    """period=60,min_points=5,multiplier=1,threshold=30"""
+    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=60,min_points=5,multiplier=1,threshold=30):
+        super().__init__(symbol, granularity, productType, n_parts, period)
+        self.min_points = min_points
+        self.multiplier = multiplier
+        self.threshold = threshold
+    def preprocessing(self, df):
+        df = add_segmented_regression_from_end(df,self.period,self.multiplier,self.min_points)
+        df = add_rsi(df,self.period)
+        df = add_enter_price2close(df) 
+        df = add_slice_df(df, self.period) 
+        return df
 
+    def __call__(self, row, *args, **kwds):
+        if row['upper_channel'] < row['close']:
+            if row['rsi'] > 100-self.threshold:
+                return 'short_pw'
+        if row['lower_channel'] > row['close']:
+            if row['rsi'] < self.threshold:
+                return 'long_pw'
+
+class STAML2_BALANCE(BaseTABitget):
+    """ period=60,min_points=2,divider=30,threshold=30"""
+    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=60,min_points=2,divider=30,threshold=30):
+        super().__init__(symbol, granularity, productType, n_parts, period)
+        self.min_points = min_points
+        self.divider = divider
+        self.threshold = threshold
+    def preprocessing(self, df):
+        df = add_dynamic_trend_lines_slope_reversed(df,self.min_points,self.divider)
+        df = add_rsi(df,self.period)
+        df = add_enter_price2close(df) 
+        df = add_slice_df(df, self.period) 
+        return df
+
+    def __call__(self, row, *args, **kwds):
+        if row['trend_up_combined'] < row['trend_down_combined']:
+            if row['trend_down_combined'] < row['close']:
+                if row['rsi'] > 100-self.threshold:
+                    return 'short_pw'
+            if row['trend_up_combined'] > row['close']:
+                if row['rsi'] < self.threshold:
+                    return 'long_pw'
+            
