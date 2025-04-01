@@ -2,7 +2,7 @@ import sys
 from time import sleep,time
 from datetime import date, timedelta
 from collections import defaultdict
-from Bots.TestBot1 import TestMarketBot1
+from Bots.TestBot3 import TestBot3
 from request_functions.download_moex import download_moex,create_df
 from utils.work_with_dataframe.convert_timeframe import convert_chart1to5
 from Optimiztion.Optimizator1 import generate_combinations
@@ -40,8 +40,8 @@ wss1 = [
     (STAML2_BALANCE,(60,2,200,30)),
     (STAML2_BALANCE,(60,2,30,30)),
     # (STAML2_BALANCE,(60,2,60,30)),
-    (STAML2_TRADITION,(5,5,0.5)),
-    (STAML2_NEWAVE,(5,5,0.5,30)),
+    # (STAML2_TRADITION,(5,5,0.5)),
+    # (STAML2_NEWAVE,(5,5,0.5,30)),
 
 
     (PTA2_LISICA,(7,2)), 
@@ -110,11 +110,6 @@ today = date.today()
 yesterday = str(today - timedelta(days=3))
 
 tickers = (
-    ('CRM5',True),
-    ('MMM5',True),
-    ('GZM5',True),
-    ('SRM5',True),
-    ('RIM5',True),
     ('SBER',False),
     ('GAZP',False),
     ('LKOH',False),
@@ -187,22 +182,17 @@ def trade_bots(granularity,bots,bots2,func):
             func(bot,df_c)
         sleep(0.1)
 
-group_fut = (LTA2_MONSTER,LTA2_OVERLORD,STAML2_TRADITION,STAML2_LEGACY,STAML2_NEWAVE)
-
-def prepare_bots(folder,wss,granularity):
+def prepare_bots(wss,granularity):
     bots = defaultdict(list)
     for ticker,fut in tickers:
         for WS,conf in wss:
-            if WS in group_fut:
-                if not ticker in ('CRM5','MMM5','GZM5','SRM5','RIM5'):
-                    continue
             strategy = WS(ticker,granularity,fut,1,*conf)
             # bot = TestBot1("DOGEUSDT",strategy,conf)
-            bot = TestMarketBot1(folder,ticker,strategy,conf)
+            bot = TestBot3('dbs/moex_stocks.db',0.0002,ticker,granularity,strategy,conf)
             bots[ticker].append(bot)
     return bots
 
-def append_mta_bot(folder,ws,bots,wss_str,granularity,wss_f):
+def append_mta_bot(ws,bots,wss_str,granularity,wss_f):
     for ticker,fut in tickers:
         if fut:
             fee=0.00001
@@ -210,10 +200,10 @@ def append_mta_bot(folder,ws,bots,wss_str,granularity,wss_f):
             fee=0.0002
         conf  = (100,wss_f,fee,3)
         strategy = ws(ticker,granularity,fut,1,*conf)
-        bot = TestMarketBot1(folder,ticker,strategy,(wss_str,))
+        bot = TestBot3('dbs/moex_stocks.db',fee,ticker,granularity,strategy,(wss_str,))
         bots[ticker].append(bot)
 
-def append_lord2_bot(folder,ws,bots,wss_str,granularity,wss,period):
+def append_lord2_bot(ws,bots,wss_str,granularity,wss,period):
     for ticker,fut in tickers:
         if fut:
             fee=0.00001
@@ -221,31 +211,11 @@ def append_lord2_bot(folder,ws,bots,wss_str,granularity,wss,period):
             fee=0.0002
         conf  = (period,fee)
         strategy = ws(ticker,granularity,fut,1,*conf,wss)
-        bot = TestMarketBot1(folder,ticker,strategy,(conf[0],wss_str))
+        bot = TestBot3('dbs/moex_stocks.db',fee,ticker,granularity,strategy,(conf[0],wss_str))
         bots[ticker].append(bot)
 
-bots1 = prepare_bots('MOEX',wss1,1)
-bots5 = prepare_bots('MOEX',wss1,5)
-
-# append_mta_bot('MOEX',MTA_LORD,bots1,'bots1',1,wss1)
-# append_mta_bot('MOEX',MTA_LORD,bots5,'bots5',5,wss1)
-
-# wss_u = []
-# configs = generate_combinations((
-#     (6,11),
-#     (6,11),
-#     (30,60),
-#     (30,60),
-#     ('DC',),
-#     ("rsi",),
-#     (0,1),
-#     (0,1)
-# ))
-# print(len(configs))
-# for conf in configs:
-#     wss_u.append((PTA4_UNIVERSAL,conf))
-# append_mta_bot('MOEX',MTA_LORD,bots1,'u1',1,wss_u)
-# append_mta_bot('MOEX',MTA_LORD,bots5,'u5',5,wss_u)
+bots1 = prepare_bots(wss1,1)
+bots5 = prepare_bots(wss1,5)
 
 wss_u2 = []
 configs2 = generate_combinations((
@@ -261,22 +231,15 @@ configs2 = generate_combinations((
 print(len(configs2))
 for conf in configs2:
     wss_u2.append((PTA4_UNIVERSAL,conf))
-wss_u3 = []
-for conf in configs2:
-    wss_u3.append((PTA4_UNIVERSAL2,conf))
-append_mta_bot('MOEX',MTA_LORD,bots1,'u12',1,wss_u2)
-append_mta_bot('MOEX',MTA_LORD,bots5,'u52',5,wss_u2)
-append_lord2_bot('MOEX',MTA_LORD2,bots1,'wss_u2',1,wss_u2,60)
-append_lord2_bot('MOEX',MTA_LORD2,bots5,'wss_u2',5,wss_u2,60)
-append_lord2_bot('MOEX',MTA_LORD2,bots1,'wss_u2',1,wss_u2,30)
-append_lord2_bot('MOEX',MTA_LORD2,bots5,'wss_u2',5,wss_u2,30)
 
-append_mta_bot('MOEX',MTA_LORD,bots1,'u13',1,wss_u3)
-append_mta_bot('MOEX',MTA_LORD,bots5,'u53',5,wss_u3)
-append_lord2_bot('MOEX',MTA_LORD2,bots1,'wss_u3',1,wss_u3,60)
-append_lord2_bot('MOEX',MTA_LORD2,bots5,'wss_u3',5,wss_u3,60)
-append_lord2_bot('MOEX',MTA_LORD2,bots1,'wss_u3',1,wss_u3,30)
-append_lord2_bot('MOEX',MTA_LORD2,bots5,'wss_u3',5,wss_u3,30)
+append_mta_bot(MTA_LORD,bots1,'u12',1,wss_u2)
+append_mta_bot(MTA_LORD,bots5,'u52',5,wss_u2)
+append_lord2_bot(MTA_LORD2,bots1,'wss_u2',1,wss_u2,60)
+append_lord2_bot(MTA_LORD2,bots5,'wss_u2',5,wss_u2,60)
+append_lord2_bot(MTA_LORD2,bots1,'wss_u2',1,wss_u2,30)
+append_lord2_bot(MTA_LORD2,bots5,'wss_u2',5,wss_u2,30)
+
+
 
 print('Всего ботов:',len(bots1)*len(bots5))
 # bots10 = prepare_bots('MOEX',wss10,10)
@@ -300,10 +263,15 @@ while True:
         trade_bots(1,bots1,bots5,lambda bot,df:bot.cancel_trade(df))
         # trade_bots(10,bots10,lambda bot,df:bot.cancel_trade(df))
         print('Position closed!')
-        sys.exit(0)
+        break
+        # sys.exit(0)
     except:
         print('Ошибка')
     if check_time2:
         print('Time:',time()-start)
         # df.info()
         # sleep(3)
+print('Close all position...')
+trade_bots(1,bots1,bots5,lambda bot,df:bot.cancel_trade(df))
+# trade_bots(10,bots10,lambda bot,df:bot.cancel_trade(df))
+print('Position closed!')
