@@ -19,32 +19,52 @@ def load_results(blob) -> np.ndarray:
     buffer = io.BytesIO(zlib.decompress(blob))
     return np.load(buffer, allow_pickle=False)
 
-db_path = 'dbs\moex_fut.db'
+db_path = 'dbs/moex_fut.db'
+db_path = 'dbs/test_MOEX_FUT.db'
 
 db = sqlite3.connect(db_path)
 cursor = db.cursor()
 
-robot_id = 1
-ticker_id = 1
-
-cursor.execute('''
-SELECT 
-    COUNT(*) AS total_trades,
-    SUM(result) AS gross_profit,
-    SUM(result_fee) AS net_profit,
-    SUM(CASE WHEN result > 0 THEN 1 ELSE 0 END) AS profitable_trades
-FROM history_positions
-WHERE robot_id = ? AND ticker_id = ?
-''', (robot_id, ticker_id))
-
-existing_results = cursor.fetchone()
-
-print(existing_results)          
+robot_id = 11
+ticker_id = 2
 
 # cursor.execute('''
-#     SELECT result, result_fee FROM history_positions
-#     WHERE robot_id = ? AND ticker_id = ?
-#     ''', (robot_id, ticker_id))
+#     SELECT * FROM history_positions
+#     WHERE close_timestamp >= datetime('now', '-1 hour')
+#     ORDER BY close_timestamp DESC
+# ''')
+# res = cursor.fetchone()
+# cursor.close()
+# print(res)
+
+# cursor.execute('''
+# SELECT 
+#     COUNT(*) AS total_trades,
+#     SUM(result) AS gross_profit,
+#     SUM(result_fee) AS net_profit,
+#     SUM(CASE WHEN result > 0 THEN 1 ELSE 0 END) AS profitable_trades
+# FROM history_positions
+# WHERE robot_id = ? AND ticker_id = ?
+# ''', (robot_id, ticker_id))
+
+# existing_results = cursor.fetchone()
+
+# print(existing_results)          
+
+# # cursor.execute('''
+# #     SELECT result, result_fee FROM history_positions
+# #     WHERE robot_id = ? AND ticker_id = ?
+# #     ''', (robot_id, ticker_id))
+# cursor.execute('''
+# SELECT 
+#     result,
+#     result_fee,
+#     SUM(result) OVER (ORDER BY open_timestamp) AS cumulative_result,
+#     SUM(result_fee) OVER (ORDER BY open_timestamp) AS cumulative_result_fee
+# FROM history_positions
+# WHERE robot_id = ? AND ticker_id = ? AND close_timestamp >= datetime('now', '-1 hour')
+# ORDER BY open_timestamp
+# ''', (robot_id, ticker_id))
 cursor.execute('''
 SELECT 
     result,
@@ -52,7 +72,7 @@ SELECT
     SUM(result) OVER (ORDER BY open_timestamp) AS cumulative_result,
     SUM(result_fee) OVER (ORDER BY open_timestamp) AS cumulative_result_fee
 FROM history_positions
-WHERE robot_id = ? AND ticker_id = ?
+WHERE robot_id = ? AND ticker_id = ?)
 ORDER BY open_timestamp
 ''', (robot_id, ticker_id))
 existing_results = cursor.fetchall()

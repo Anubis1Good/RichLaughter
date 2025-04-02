@@ -229,9 +229,9 @@ class TestBot3:
         else:
             open_timestamp,direction, open_price = pos
         
-        # Пропускаем если direction = 0
         if direction == new_direction:
             return
+        # Пропускаем если direction = 0
         if direction == 0:
             self.upsert_position(cursor,new_direction,price)
             return
@@ -263,17 +263,21 @@ class TestBot3:
         if not action:
             return
         price = float(row['close'])  # Явное преобразование к float
-        
-        if 'close_long' in action and self.pos == 1:
-            self.process_single_position(0, price)
-        elif 'close_short' in action and self.pos == -1:
-            self.process_single_position(0, price)
-        elif 'long' in action and self.pos != 1:
-            self.process_single_position(1, price)
-        elif 'short' in action and self.pos != -1:
-            self.process_single_position(-1, price)
-        elif 'close_all' in action and self.pos != 0:
-            self.process_single_position(0, price)
+        if 'close_long' in action:
+            if self.pos == 1:
+                self.process_single_position(0, price)
+        elif 'close_short' in action:
+            if self.pos == -1:
+                self.process_single_position(0, price)
+        elif 'long' in action:
+            if self.pos != 1:
+                self.process_single_position(1, price)
+        elif 'short' in action:
+            if self.pos != -1:
+                self.process_single_position(-1, price)
+        elif 'close_all' in action:
+            if self.pos != 0:
+                self.process_single_position(0, price)
 
     def cancel_trade(self,df):
         try:

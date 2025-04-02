@@ -1,0 +1,243 @@
+import os
+import pandas as pd
+import matplotlib.pyplot as plt
+import sqlite3
+import shutil
+import traceback
+from datetime import datetime
+
+
+
+
+def analisys_db(db_path:str):
+    conn = sqlite3.connect(db_path)
+    query = '''
+    SELECT 
+        r.name AS bot,
+        t.name AS ticker,
+        AVG(hp.close_price) AS avg_close_price,
+        SUM(hp.fee) AS total_fee,
+        SUM(hp.result) AS total_result,
+        COUNT(*) AS total_trades,
+        SUM(hp.result_fee) AS total_result_fee
+    FROM 
+        history_positions hp
+    JOIN 
+        robots r ON hp.robot_id = r.id
+    JOIN 
+        tickers t ON hp.ticker_id = t.id
+    GROUP BY 
+        r.name, t.name
+    ORDER BY 
+        r.name, t.name
+    '''
+    result = pd.read_sql_query(query, conn)
+    conn.close()
+    result['total_with_average_fee'] = result['total_result'] - result['total_fee'] * 2
+    result['total_with_max_fee'] = result['total_result'] - result['total_fee'] * 3
+    result['total_per'] = ((result['total_result']/result['avg_close_price'])*100).round(2)
+    result['total_min_fee_percent'] = ((result['total_result_fee']/result['avg_close_price'])*100).round(2)
+    result['total_average_fee_percent'] = ((result['total_with_average_fee']/result['avg_close_price'])*100).round(2)
+    result['total_max_fee_percent'] = ((result['total_with_max_fee']/result['avg_close_price'])*100).round(2)
+
+    result = result.drop(['avg_close_price','total_fee','total_result_fee','total_with_average_fee','total_with_max_fee'],axis=1)
+    
+    result = result.sort_values(by=['ticker','total_min_fee_percent'],axis=0,ascending=[True,False])
+    result = result.reset_index(drop=True)
+
+    ranks = ['total_trades','total_per','total_min_fee_percent','total_average_fee_percent','total_max_fee_percent']
+    data_sum = result.groupby('bot')[ranks].mean().sort_values('total_average_fee_percent',ascending=False).round(2)
+    rank_names = ["rank_"+r for r in ranks]
+    for r in ranks:
+        # print(r)
+        result["rank_"+r] = result.groupby("ticker")[r].rank(ascending=False, method="min")
+    avg_rank = result.groupby("bot")[rank_names].mean().sort_values('rank_total_average_fee_percent').round(2)
+    result2 = pd.concat([avg_rank, data_sum], axis=1)
+    result2 = result2.sort_values('rank_total_min_fee_percent')
+    result2 = result2.reset_index()
+    # print(result2)
+    # print(avg_rank)
+    prefix = "_".join(db_path.split('_')[1:]).replace('.db','')
+    file_name = f'TestOtTrades/Total_All_Test_Result_{prefix}.xlsx'
+
+    with pd.ExcelWriter(file_name, engine='xlsxwriter') as writer:  
+        result.to_excel(writer,sheet_name='total')
+        workbook = writer.book
+        worksheet = writer.sheets['total']
+        for i, col in enumerate(result.columns,start=1):
+            width = max(result[col].apply(lambda x: len(str(x))).max(), len(col))
+            worksheet.set_column(i, i, width)
+            worksheet.conditional_format(1, i, len(result), i, {
+                'type': 'cell',
+                'criteria': 'less than',
+                'value': 0,
+                'format': workbook.add_format({'bg_color': '#FFC7CE', 'font_color': '#9C0006'})
+            })
+            worksheet.conditional_format(1, i, len(result), i, {
+                'type': '3_color_scale',
+                'min_color': '#DA9694',
+                'mid_color': '#FFFFFF',
+                'max_color': '#00B0F0'
+            })
+        result2.to_excel(writer,sheet_name='bots_info')
+        workbook = writer.book
+        worksheet = writer.sheets['bots_info']
+        for i, col in enumerate(result2.columns,start=1):
+            width = max(result2[col].apply(lambda x: len(str(x))).max(), len(col))
+            worksheet.set_column(i, i, width)
+            worksheet.conditional_format(1, i, len(result2), i, {
+                'type': 'cell',
+                'criteria': 'less than',
+                'value': 0,
+                'format': workbook.add_format({'bg_color': '#FFC7CE', 'font_color': '#9C0006'})
+            })
+            # print(col)
+            if col in rank_names:
+                worksheet.conditional_format(1, i, len(result2), i, {
+                    'type': '3_color_scale',
+                    'max_color': '#DA9694',
+                    'mid_color': '#FFFFFF',
+                    'min_color': '#00B0F0'
+                })
+            else:
+                worksheet.conditional_format(1, i, len(result2), i, {
+                    'type': '3_color_scale',
+                    'min_color': '#DA9694',
+                    'mid_color': '#FFFFFF',
+                    'max_color': '#00B0F0'
+                })
+
+
+
+def get_equity_charts_db(db_path):
+    conn = sqlite3.connect(db_path)
+    prefix = "_".join(db_path.split('_')[1:]).replace('.db','')
+    image_path = 'TestOtTrades/cumulative_results_plots/' + prefix
+    if os.path.exists(image_path):
+        shutil.rmtree(image_path)
+    os.makedirs(image_path, exist_ok=True)
+
+    # Создаем список для хранения данных о доходности
+    performance_records = []
+
+    # Получаем список всех тикеров
+    tickers_query = "SELECT id, name FROM tickers"
+    tickers_df = pd.read_sql_query(tickers_query, conn)
+
+    # Для каждого тикера строим графики
+    for ticker_id, ticker_name in tickers_df.values:
+        ticker_path = os.path.join(image_path, ticker_name)
+        os.makedirs(ticker_path, exist_ok=True)
+        
+        query = f'''
+        SELECT 
+            r.name AS bot_name,
+            hp.open_timestamp,
+            hp.result,
+            hp.result_fee,
+            SUM(hp.result) OVER (PARTITION BY r.name ORDER BY hp.open_timestamp) AS cumulative_result,
+            SUM(hp.result_fee) OVER (PARTITION BY r.name ORDER BY hp.open_timestamp) AS cumulative_result_fee
+        FROM 
+            history_positions hp
+        JOIN 
+            robots r ON hp.robot_id = r.id
+        WHERE 
+            hp.ticker_id = {ticker_id}
+        ORDER BY 
+            r.name, hp.open_timestamp
+        '''
+        
+        df = pd.read_sql_query(query, conn)
+        
+        if df.empty:
+            print(f"Нет данных для тикера: {ticker_name}")
+            continue
+        
+        for bot_name, group in df.groupby('bot_name'):
+            # Получаем конечную доходность (с комиссиями)
+            final_result = group['cumulative_result_fee'].iloc[-1]
+            
+            # Добавляем информацию для отчета
+            performance_records.append({
+                'ticker': ticker_name,
+                'bot': bot_name,
+                'result': final_result,
+                'filepath': os.path.join(ticker_name, f'{ticker_name}_{bot_name}_{final_result:+.3f}_result.png')
+            })
+            
+            plt.figure(figsize=(12, 6))
+            
+            # Линия 1: Доходность БЕЗ учета комиссий
+            plt.plot(
+                pd.to_datetime(group['open_timestamp']),
+                group['cumulative_result'],
+                label=f'{bot_name} (Без комиссий)',
+                color='green',
+                linestyle='--',
+                linewidth=2
+            )
+            
+            # Линия 2: Доходность С учетом комиссий
+            plt.plot(
+                pd.to_datetime(group['open_timestamp']),
+                group['cumulative_result_fee'],
+                label=f'{bot_name} (С комиссиями: {final_result:+.3f})',
+                color='blue',
+                linestyle='-',
+                linewidth=2
+            )
+            
+            plt.title(f'Кумулятивная доходность: {bot_name} ({ticker_name})')
+            plt.xlabel('Дата')
+            plt.ylabel('Доходность')
+            plt.legend()
+            plt.grid(True)
+            plt.xticks(rotation=45)
+            plt.tight_layout()
+            
+            # Сохраняем с доходностью в имени файла
+            plot_filename = os.path.join(ticker_path, f'{ticker_name}_{final_result:+.3f}_{bot_name}_result.png')
+            plt.savefig(plot_filename, dpi=300)
+            plt.close()
+            
+            print(f"График сохранен: {plot_filename}")
+
+    conn.close()
+
+    # Создаем отчет о доходности
+    # if performance_records:
+    #     performance_df = pd.DataFrame(performance_records)
+    #     performance_df = performance_df.sort_values('result', ascending=False)
+        
+    #     # Сохраняем CSV с результатами
+    #     report_filename = os.path.join(image_path, '_performance_report.csv')
+    #     performance_df.to_csv(report_filename, index=False)
+        
+    #     # Выводим топ-5 результатов
+    #     print("\nТоп-5 стратегий по доходности:")
+    #     print(performance_df.head(5)[['ticker', 'bot', 'result']].to_string(index=False))
+        
+    #     print(f"\nПолный отчет сохранен: {report_filename}")
+
+    print("Обработка завершена!")
+
+
+need_equity_chart = False
+# need_equity_chart = True
+need_analisys = False
+need_analisys = True
+
+if __name__ == '__main__':
+    folder = 'dbs'
+    files = os.listdir(folder)
+    for file in files:
+        if file.endswith('.db'):
+            try:
+                file_path = os.path.join(folder,file)
+                if need_analisys:
+                    analisys_db(file_path)
+                if need_equity_chart:
+                    get_equity_charts_db(file_path)
+            except Exception as e:
+                traceback.print_exc()
+                print(file,'have problems...')

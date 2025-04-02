@@ -1,0 +1,336 @@
+from strategies.work_strategies.PTA import PTA4_WDDCr,PTA4_WDDCrE,PTA4_WDDCrVG,PTA4_WDVCr,PTA4_WLISICA,PTA8_WDOBBY_FREEr,PTA4_WDDCr2,PTA4_UNIVERSAL,PTA4_UNIVERSAL2,PTA2_LISICA,PTA4_WDDC,PTA8_OBBY,PTA2_DDCrWork,PTA4_WDDCr2E,PTA8_DOBBY,PTA8_DOBBY_FREEr
+from strategies.work_strategies.PTAX import PTA10_WIZARD,PTA10_SORCERER,PTA11_KUSURUKEN,PTA12_SWDDCr,PTA14_RWDDCr,PTA15_NOVA,PTA15_KERRIGAN,PTA15_WIDOWMAKER
+from strategies.work_strategies.MTA import MTA_LORD,MTA_LORD2
+from strategies.work_strategies.STA_ml2 import STAML2_CHAOS,STAML2_TRADITION,STAML2_BALANCE,STAML2_NEWAVE
+from strategies.work_strategies.LTA import LTA_KROSH,LTA_OKROSHKA,LTA_PIN,LTA_APHOBO,LTA_NUSHA,LTA_KARYCH,LTA_KOPATYCH,LTA_OKROSHKA2,LTA_LOSYASH,LTA_SAVUNIA,LTA_EJIK,LTA_BARASH
+from strategies.work_strategies.LTA2 import LTA2_MONSTER,LTA2_OVERLORD
+from strategies.work_strategies.OGTA import OGTA4_DOG
+
+
+wssMoexFut = [
+    (LTA_KROSH,(10,20)),
+    (LTA_PIN,(10,7,50,5)),
+    (LTA_PIN,(10,9,45,3)),
+    (LTA_OKROSHKA,(10,15)),
+    (LTA_OKROSHKA,(10,30)),
+
+    
+    (OGTA4_DOG,(15,30)),
+    (OGTA4_DOG,(25,30)),
+
+    (STAML2_CHAOS,(60,2,200)),
+    (STAML2_BALANCE,(60,2,200,30)),
+    (STAML2_BALANCE,(60,2,30,30)),
+    (STAML2_TRADITION,(5,5,0.5)),
+    (STAML2_NEWAVE,(5,5,0.5,30)),
+
+
+    (PTA2_LISICA,(7,2)), 
+    (PTA2_LISICA,(14,2)), 
+
+    (PTA4_WDDCr,(6,20)), #C
+    (PTA4_WDDCr,(6,30)), #C
+    (PTA4_WDDCr,(11,30)), #C
+    (PTA4_WDDCr,(12,25)), #C
+    (PTA4_WDDCr,(10,20)), #C
+    (PTA4_WDDCr,(21,30)), #C
+    (PTA4_WDDCr,(30,30)), #C
+    (PTA4_WDDCrE,(11,30)), #C
+    (PTA4_WDDCrE,(10,20)), #C
+    (PTA4_WDDCrE,(6,30)), #C
+    (PTA4_WDDCr2,(11,30)), #C
+    (PTA4_WDDCrVG,(11,30)),
+    (PTA4_WDDCrVG,(21,30)),
+    (PTA4_WDVCr,(11,30)),
+    (PTA4_WDVCr,(21,30)),
+    (PTA4_WLISICA,(7,2,30)),
+    (PTA4_WLISICA,(14,2,30)),
+
+    (PTA8_WDOBBY_FREEr,(11,2,30)),
+    (PTA8_WDOBBY_FREEr,(11,0.5,30)),
+    (PTA8_WDOBBY_FREEr,(6,0.5,30)),
+
+    (PTA10_WIZARD,(50,55,12,10,30)),
+    (PTA10_WIZARD,(20,55,12,25,20)),
+    (PTA10_WIZARD,(30,55,3,15,20)),
+    (PTA10_SORCERER,(20,5,12,30,20,10)),
+    (PTA10_SORCERER,(80,20,15,30,5,20)),
+    (PTA10_SORCERER,(100,50,15,20,5,10)),
+
+    (PTA11_KUSURUKEN,(50,3,20,10,'c')), #F
+    (PTA11_KUSURUKEN,(70,3,10,40,'hl')), #F
+    (PTA11_KUSURUKEN,(50,6,5,20,'c')), #A
+    (PTA11_KUSURUKEN,(70,15,35,10,'c')), #A
+
+    (PTA12_SWDDCr,(10,40,0.25,5,5)), #F
+    (PTA12_SWDDCr,(10,30,1,5,15)), #A
+    (PTA12_SWDDCr,(10,20,1,20,15)), #A
+    (PTA12_SWDDCr,(15,30,0.25,5,20)), #A
+
+    (PTA14_RWDDCr,(15,30,35,45)), #F
+    (PTA14_RWDDCr,(10,40,30,40)), #F
+    (PTA14_RWDDCr,(10,30,35,35)), #A
+    (PTA14_RWDDCr,(10,20,30,30)), #A
+    
+    (PTA15_KERRIGAN,(5,)), #A
+    (PTA15_NOVA,(5,)), #A
+    (PTA15_NOVA,(10,)), #A
+    (PTA15_NOVA,(15,)), #A
+    (PTA15_NOVA,(30,)), #A
+    (PTA15_NOVA,(60,)), #A
+    (PTA15_KERRIGAN,(60,)), #A
+    (PTA15_WIDOWMAKER,(10,20)), 
+    (PTA15_WIDOWMAKER,(5,30)), 
+]
+
+wssMoexStocks = [
+    (LTA_KROSH,(10,20)),
+    (LTA_PIN,(10,7,50,5)),
+    (LTA_PIN,(10,9,45,3)),
+    (LTA_OKROSHKA,(10,15)),
+    (LTA_OKROSHKA,(10,30)),
+
+    
+    (OGTA4_DOG,(15,30)),
+    (OGTA4_DOG,(25,30)),
+
+    (STAML2_CHAOS,(60,2,200)),
+    (STAML2_BALANCE,(60,2,200,30)),
+    (STAML2_BALANCE,(60,2,30,30)),
+    (STAML2_TRADITION,(5,5,0.5)),
+    (STAML2_NEWAVE,(5,5,0.5,30)),
+
+
+    (PTA2_LISICA,(7,2)), 
+    (PTA2_LISICA,(14,2)), 
+
+    (PTA4_WDDCr,(6,20)), #C
+    (PTA4_WDDCr,(6,30)), #C
+    (PTA4_WDDCr,(11,30)), #C
+    (PTA4_WDDCr,(12,25)), #C
+    (PTA4_WDDCr,(10,20)), #C
+    (PTA4_WDDCr,(21,30)), #C
+    (PTA4_WDDCr,(30,30)), #C
+    (PTA4_WDDCrE,(11,30)), #C
+    (PTA4_WDDCrE,(10,20)), #C
+    (PTA4_WDDCrE,(6,30)), #C
+    (PTA4_WDDCr2,(11,30)), #C
+    (PTA4_WDDCrVG,(11,30)),
+    (PTA4_WDDCrVG,(21,30)),
+    (PTA4_WDVCr,(11,30)),
+    (PTA4_WDVCr,(21,30)),
+    (PTA4_WLISICA,(7,2,30)),
+    (PTA4_WLISICA,(14,2,30)),
+
+    (PTA8_WDOBBY_FREEr,(11,2,30)),
+    (PTA8_WDOBBY_FREEr,(11,0.5,30)),
+    (PTA8_WDOBBY_FREEr,(6,0.5,30)),
+
+    (PTA10_WIZARD,(50,55,12,10,30)),
+    (PTA10_WIZARD,(20,55,12,25,20)),
+    (PTA10_WIZARD,(30,55,3,15,20)),
+    (PTA10_SORCERER,(20,5,12,30,20,10)),
+    (PTA10_SORCERER,(80,20,15,30,5,20)),
+    (PTA10_SORCERER,(100,50,15,20,5,10)),
+
+    (PTA11_KUSURUKEN,(50,3,20,10,'c')), #F
+    (PTA11_KUSURUKEN,(70,3,10,40,'hl')), #F
+    (PTA11_KUSURUKEN,(50,6,5,20,'c')), #A
+    (PTA11_KUSURUKEN,(70,15,35,10,'c')), #A
+
+    (PTA12_SWDDCr,(10,40,0.25,5,5)), #F
+    (PTA12_SWDDCr,(10,30,1,5,15)), #A
+    (PTA12_SWDDCr,(10,20,1,20,15)), #A
+    (PTA12_SWDDCr,(15,30,0.25,5,20)), #A
+
+    (PTA14_RWDDCr,(15,30,35,45)), #F
+    (PTA14_RWDDCr,(10,40,30,40)), #F
+    (PTA14_RWDDCr,(10,30,35,35)), #A
+    (PTA14_RWDDCr,(10,20,30,30)), #A
+    
+    (PTA15_KERRIGAN,(5,)), #A
+    (PTA15_NOVA,(5,)), #A
+    (PTA15_NOVA,(10,)), #A
+    (PTA15_NOVA,(15,)), #A
+    (PTA15_NOVA,(30,)), #A
+    (PTA15_NOVA,(60,)), #A
+    (PTA15_KERRIGAN,(60,)), #A
+    (PTA15_WIDOWMAKER,(10,20)), 
+    (PTA15_WIDOWMAKER,(5,30)), 
+]
+
+wssBitgetFut1 = [
+    (LTA_PIN,(60,3,25,5)),
+    (LTA_KOPATYCH,(50,45)),
+    (LTA_LOSYASH,(25,55)),
+    (LTA_EJIK,(65,9,5)),
+    (LTA_KROSH,(45,20)),
+    (LTA_OKROSHKA,(15,10)),
+    (LTA_OKROSHKA2,(15,10)),
+
+    (LTA2_MONSTER,(40,40,5,2,50)), #A
+
+    (OGTA4_DOG,(45,15)),
+    (OGTA4_DOG,(35,20)),
+
+    (STAML2_CHAOS,(60,2,200)),
+    (STAML2_BALANCE,(60,2,200,30)),
+    (STAML2_BALANCE,(60,2,60,30)),
+
+    (PTA4_WDDC,(30,20)), #C
+    (PTA4_WDDC,(60,20)), #C
+    (PTA4_WDDCr,(30,30)), #C
+    (PTA4_WDDCr,(21,20)), #C
+
+
+    (PTA11_KUSURUKEN,(90,3,25,30,'hl')),#S
+
+    (PTA12_SWDDCr,(20,30,1,15,15)), #A
+
+    (PTA14_RWDDCr,(50,40,50,50)), #A
+
+    (PTA15_NOVA,(70,)), #A
+]
+
+wssBitgetFut5 = [
+    (LTA_PIN,(20,7,5,1)),
+    (LTA_KROSH,(20,30)),
+    (LTA_EJIK,(35,6,5)),
+    (LTA_EJIK,(20,6,5)),
+    (LTA_KARYCH,(30,35)),
+    (LTA_OKROSHKA,(20,65)),
+    (LTA_OKROSHKA2,(20,65)),
+
+
+    (OGTA4_DOG,(10,15)),
+
+    (STAML2_CHAOS,(60,2,200)),
+    (STAML2_BALANCE,(60,2,200,30)),
+    (STAML2_BALANCE,(60,2,60,30)),
+    (STAML2_TRADITION,(15,5,0.5)),
+    (STAML2_NEWAVE,(15,5,0.5,30)),
+
+    (PTA4_WDDC,(60,30)), #C
+    (PTA4_WDDCr,(6,20)), #C
+    (PTA4_WDDCr,(10,20)), #C
+    (PTA4_WDDCr,(21,30)), #C
+    (PTA4_WDDCr2,(20,35)), #C
+
+    (PTA10_SORCERER,(80,35,15,30,5,20)),
+
+    (PTA11_KUSURUKEN,(70,9,5,10,'c')), #S
+    (PTA11_KUSURUKEN,(50,9,10,10,'c')), #S
+
+    (PTA12_SWDDCr,(5,10,0.25,10,5)), #A
+
+    (PTA14_RWDDCr,(5,10,20,25)), #A
+    (PTA14_RWDDCr,(20,30,10,10)), #A
+
+    (PTA15_WIDOWMAKER,(15,40)), #A
+    (PTA15_WIDOWMAKER,(5,20)), #A
+    (PTA15_NOVA,(95,)), #A
+    (PTA15_KERRIGAN,(95,)), #A
+]
+wssBitgetFut15 = [
+    (LTA_APHOBO,(10,1)),
+    (LTA_KOPATYCH,(20,45)),
+    (LTA_EJIK,(25,7,10)),
+    (LTA_KROSH,(10,35)),
+    (LTA_KARYCH,(5,15)),
+    (LTA_BARASH,(25,45)),
+    (LTA_NUSHA,(20,35)),
+    (LTA_SAVUNIA,(65,35)),
+    (LTA_OKROSHKA2,(5,60)),
+
+
+    (OGTA4_DOG,(5,20)),
+    (OGTA4_DOG,(15,25)),
+
+    (STAML2_CHAOS,(60,2,200)),
+    (STAML2_BALANCE,(60,2,200,30)),
+    (STAML2_TRADITION,(5,5,0.5)),
+    (STAML2_NEWAVE,(5,5,0.5,30)),
+    (STAML2_TRADITION,(10,5,0.5)),
+
+    (PTA2_LISICA,(7,1)),
+    (PTA2_LISICA,(14,2)),
+    (PTA4_WLISICA,(14,2,20)),
+    (PTA2_DDCrWork,(5,)),
+
+
+    (PTA4_WDDCr2,(5,15)), #C
+    (PTA4_WDDCr2E,(5,20)), #C
+    (PTA4_WDDCr,(3,40)), #C
+    (PTA4_WDDCr,(3,20)), #C
+    (PTA4_WDDCrE,(5,20)), #C
+    (PTA4_WDDCrVG,(9,20)),
+    (PTA4_WDVCr,(9,20)),
+
+    (PTA8_OBBY,(11,0.5)), #S
+    
+    (PTA10_SORCERER,(100,20,9,20,10,10)),
+
+    (PTA11_KUSURUKEN,(90,15,5,10,'c')), #S
+    (PTA11_KUSURUKEN,(30,9,5,10,'hl')), #S
+
+    (PTA12_SWDDCr,(5,10,0.25,10,20)), #A
+    (PTA12_SWDDCr,(20,40,0.25,15,5)), #A
+
+    (PTA14_RWDDCr,(15,40,15,15)), #A
+    (PTA14_RWDDCr,(15,40,50,45)), #A
+
+    (PTA15_WIDOWMAKER,(10,40)), #A
+    (PTA15_WIDOWMAKER,(5,40)), #A
+    (PTA15_KERRIGAN,(5,)), #A
+    (PTA15_NOVA,(5,)), #A
+    (PTA15_NOVA,(30,)), #A
+    (PTA15_NOVA,(45,)), #A
+]
+wssBitgetFut30 = [
+    (LTA2_MONSTER,(40,40,5,2,50)), #A
+    (LTA2_OVERLORD,(30,55,50,2)), #A
+
+    (STAML2_CHAOS,(60,2,200)),
+    (STAML2_BALANCE,(60,2,200,30)),
+
+    (STAML2_TRADITION,(5,5,0.5)),
+    (STAML2_NEWAVE,(5,5,0.5,30)),
+    (STAML2_TRADITION,(10,5,0.5)),
+
+    (PTA8_WDOBBY_FREEr,(4,2,20)),
+    (PTA8_WDOBBY_FREEr,(11,0.5,20)),
+    (PTA8_DOBBY_FREEr,(4,0.5)),
+    (PTA8_DOBBY,(8,0.5)),
+    (PTA8_DOBBY,(8,2)),
+
+    (PTA10_SORCERER,(100,10,9,20,5,10)),
+    (PTA10_SORCERER,(40,30,9,30,20,10)),
+
+    (PTA11_KUSURUKEN,(90,15,5,10,'c')), #S
+    (PTA11_KUSURUKEN,(30,9,5,10,'hl')), #S
+
+    (PTA12_SWDDCr,(5,10,0.25,10,20)), #A
+    (PTA12_SWDDCr,(20,40,0.25,15,5)), #A
+
+    (PTA14_RWDDCr,(15,40,15,15)), #A
+    (PTA14_RWDDCr,(15,40,50,45)), #A
+    
+    (PTA15_WIDOWMAKER,(10,40)), #A
+    (PTA15_WIDOWMAKER,(5,40)), #A
+    (PTA15_KERRIGAN,(5,)), #A
+    (PTA15_NOVA,(5,)), #A
+    (PTA15_NOVA,(30,)), #A
+    (PTA15_NOVA,(45,)), #A
+]
+wssBitgetFut60 = (
+    (STAML2_TRADITION,(5,5,0.5)),
+    (STAML2_NEWAVE,(5,5,0.5,30)),
+    (STAML2_TRADITION,(10,5,0.5)),
+
+    (PTA15_WIDOWMAKER,(10,40)), #A
+    (PTA15_WIDOWMAKER,(5,40)), #A
+    (PTA15_KERRIGAN,(5,)), #A
+    (PTA15_NOVA,(5,)), #A
+    (PTA15_NOVA,(30,)), #A
+    (PTA15_NOVA,(45,)), #A
+)

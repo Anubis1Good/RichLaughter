@@ -4,5 +4,6 @@ TestResults/
 logs/
 logsOffTest/
 logsMT/
+TestOtTrades/
 modelML/RL_models/temp/
 .env
