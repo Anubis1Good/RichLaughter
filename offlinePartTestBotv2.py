@@ -126,7 +126,7 @@ def prepare_bots(granularity):
         strategy = ws(ticker,granularity,fut,1,*conf)
         print(strategy.period)
         # bot = TestMarketBot1(folder,ticker,strategy,conf,'LogsOffTest')
-        bot = TestBot3('dbs/moex_fut.db',fee,'MMH5',granularity,strategy,conf)
+        bot = TestBot3('dbs/test_offline.db',fee,'MMH5',granularity,strategy,conf)
         bots[ticker].append(bot)
     return bots
 bots1 = prepare_bots(1)

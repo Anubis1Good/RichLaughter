@@ -20,6 +20,7 @@ wssMoexFut = [
 
     (STAML2_CHAOS,(60,2,200)),
     (STAML2_BALANCE,(60,2,200,30)),
+    (STAML2_CHAOS,(60,2,30)),
     (STAML2_BALANCE,(60,2,30,30)),
     (STAML2_TRADITION,(5,5,0.5)),
     (STAML2_NEWAVE,(5,5,0.5,30)),
@@ -96,8 +97,8 @@ wssMoexStocks = [
 
     (STAML2_CHAOS,(60,2,200)),
     (STAML2_BALANCE,(60,2,200,30)),
+    (STAML2_CHAOS,(60,2,30)),
     (STAML2_BALANCE,(60,2,30,30)),
-    (STAML2_TRADITION,(5,5,0.5)),
     (STAML2_NEWAVE,(5,5,0.5,30)),
 
 
@@ -138,7 +139,6 @@ wssMoexStocks = [
     (PTA11_KUSURUKEN,(50,6,5,20,'c')), #A
     (PTA11_KUSURUKEN,(70,15,35,10,'c')), #A
 
-    (PTA12_SWDDCr,(10,40,0.25,5,5)), #F
     (PTA12_SWDDCr,(10,30,1,5,15)), #A
     (PTA12_SWDDCr,(10,20,1,20,15)), #A
     (PTA12_SWDDCr,(15,30,0.25,5,20)), #A
@@ -148,9 +148,6 @@ wssMoexStocks = [
     (PTA14_RWDDCr,(10,30,35,35)), #A
     (PTA14_RWDDCr,(10,20,30,30)), #A
     
-    (PTA15_KERRIGAN,(5,)), #A
-    (PTA15_NOVA,(5,)), #A
-    (PTA15_NOVA,(10,)), #A
     (PTA15_NOVA,(15,)), #A
     (PTA15_NOVA,(30,)), #A
     (PTA15_NOVA,(60,)), #A

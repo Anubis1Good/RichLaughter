@@ -1,10 +1,14 @@
 tickersMoexFut = (
     ('CRM5',True),
     ('MMM5',True),
+    ('MXM5',True),
     ('GZM5',True),
     ('SRM5',True),
     ('RIM5',True),
+    ('RMM5',True),
+    ('SiM5',True),
 )
+
 tickersMoexStock = (
     ('SBER',False),
     ('GAZP',False),
