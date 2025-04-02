@@ -5,5 +5,7 @@ logs/
 logsOffTest/
 logsMT/
 TestOtTrades/
+dbs/backups
+dbs/archive
 modelML/RL_models/temp/
 .env
