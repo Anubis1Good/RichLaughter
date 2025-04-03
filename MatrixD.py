@@ -8,8 +8,8 @@ while True:
     try:
         start = time()
         smith.download_all()
-        print('time:',time()-start)
-        sleep(60*2)
+        # print('time:',time()-start)
+        sleep(60*5)
     except Exception:
         traceback.print_exc()
         sleep(60)

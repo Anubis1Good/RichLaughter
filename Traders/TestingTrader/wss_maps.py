@@ -15,3 +15,16 @@ skynetTestMap = {
     1:wssMoexSkynet1,
     5:wssMoexSkynet5
 }
+
+def add_skynet(suffix,tradeMap,hourss):
+    for g in tradeMap:
+        for h in hourss:
+            filename = f"{h}_{g}_{suffix}"
+            tradeMap[g] = list(tradeMap[g])
+            tradeMap[g].append((MTA_SKYNET,(100,filename)))
+            tradeMap[g] = tuple(tradeMap[g])
+    return tradeMap
+
+bitgetFutMap = add_skynet('test_Bitget_FUT',bitgetFutMap,(1,4))
+moexFutMap = add_skynet('test_MOEX_FUT',moexFutMap,(1,4))
+moexStockMap = add_skynet('test_MOEX_STOCK',moexStockMap,(1,4))

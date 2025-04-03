@@ -1,4 +1,4 @@
-from strategies.work_strategies.PTA import PTA4_WDDCr,PTA4_WDDCrE,PTA4_WDDCrVG,PTA4_WDVCr,PTA4_WLISICA,PTA8_WDOBBY_FREEr,PTA4_WDDCr2,PTA4_UNIVERSAL,PTA4_UNIVERSAL2,PTA2_LISICA,PTA4_WDDC,PTA8_OBBY,PTA2_DDCrWork,PTA4_WDDCr2E,PTA8_DOBBY,PTA8_DOBBY_FREEr
+from strategies.work_strategies.PTA import PTA4_WDDCr,PTA4_WDDCrE,PTA4_WDDCrVG,PTA4_WDVCr,PTA4_WLISICA,PTA8_WDOBBY_FREEr,PTA4_WDDCr2,PTA4_UNIVERSAL,PTA4_UNIVERSAL2,PTA2_LISICA,PTA4_WDDC,PTA8_OBBY,PTA2_DDCrWork,PTA4_WDDCr2E,PTA8_DOBBY,PTA8_DOBBY_FREEr,PTA2_BDDCr_UNIVERSAL
 from strategies.work_strategies.PTAX import PTA10_WIZARD,PTA10_SORCERER,PTA11_KUSURUKEN,PTA12_SWDDCr,PTA14_RWDDCr,PTA15_NOVA,PTA15_KERRIGAN,PTA15_WIDOWMAKER
 
 from strategies.work_strategies.STA_ml2 import STAML2_CHAOS,STAML2_TRADITION,STAML2_BALANCE,STAML2_NEWAVE
@@ -28,6 +28,9 @@ wssMoexFut = [
 
     (PTA2_LISICA,(7,2)), 
     (PTA2_LISICA,(14,2)), 
+    (PTA2_BDDCr_UNIVERSAL,(7,True,True)), 
+    (PTA2_BDDCr_UNIVERSAL,(7,True,False)), 
+    (PTA2_BDDCr_UNIVERSAL,(7,False,True)), 
 
     (PTA4_WDDCr,(6,20)), #C
     (PTA4_WDDCr,(6,30)), #C
@@ -46,6 +49,10 @@ wssMoexFut = [
     (PTA4_WDVCr,(21,30)),
     (PTA4_WLISICA,(7,2,30)),
     (PTA4_WLISICA,(14,2,30)),
+
+    (PTA4_UNIVERSAL,(7,7,30,30,"DC",'rsi',True,True)),
+    (PTA4_UNIVERSAL,(7,7,50,20,"DC",'rsi',True,False)),
+    (PTA4_UNIVERSAL,(7,7,20,50,"DC",'rsi',False,True)),
 
     (PTA8_WDOBBY_FREEr,(11,2,30)),
     (PTA8_WDOBBY_FREEr,(11,0.5,30)),
@@ -104,6 +111,9 @@ wssMoexStocks = [
 
     (PTA2_LISICA,(7,2)), 
     (PTA2_LISICA,(14,2)), 
+    (PTA2_BDDCr_UNIVERSAL,(7,True,True)), 
+    (PTA2_BDDCr_UNIVERSAL,(7,True,False)), 
+    (PTA2_BDDCr_UNIVERSAL,(7,False,True)), 
 
     (PTA4_WDDCr,(6,20)), #C
     (PTA4_WDDCr,(6,30)), #C
@@ -122,6 +132,10 @@ wssMoexStocks = [
     (PTA4_WDVCr,(21,30)),
     (PTA4_WLISICA,(7,2,30)),
     (PTA4_WLISICA,(14,2,30)),
+
+    (PTA4_UNIVERSAL,(7,7,30,30,"DC",'rsi',True,True)),
+    (PTA4_UNIVERSAL,(7,7,50,20,"DC",'rsi',True,False)),
+    (PTA4_UNIVERSAL,(7,7,20,50,"DC",'rsi',False,True)),
 
     (PTA8_WDOBBY_FREEr,(11,2,30)),
     (PTA8_WDOBBY_FREEr,(11,0.5,30)),
@@ -174,11 +188,18 @@ wssBitgetFut1 = [
     (STAML2_BALANCE,(60,2,200,30)),
     (STAML2_BALANCE,(60,2,60,30)),
 
+    (PTA2_BDDCr_UNIVERSAL,(7,True,True)), 
+    (PTA2_BDDCr_UNIVERSAL,(7,True,False)), 
+    (PTA2_BDDCr_UNIVERSAL,(7,False,True)), 
+
     (PTA4_WDDC,(30,20)), #C
     (PTA4_WDDC,(60,20)), #C
     (PTA4_WDDCr,(30,30)), #C
     (PTA4_WDDCr,(21,20)), #C
 
+    (PTA4_UNIVERSAL,(7,7,30,30,"DC",'rsi',True,True)),
+    (PTA4_UNIVERSAL,(7,7,50,20,"DC",'rsi',True,False)),
+    (PTA4_UNIVERSAL,(7,7,20,50,"DC",'rsi',False,True)),
 
     (PTA11_KUSURUKEN,(90,3,25,30,'hl')),#S
 
@@ -207,11 +228,18 @@ wssBitgetFut5 = [
     (STAML2_TRADITION,(15,5,0.5)),
     (STAML2_NEWAVE,(15,5,0.5,30)),
 
+    (PTA2_BDDCr_UNIVERSAL,(7,True,True)), 
+    (PTA2_BDDCr_UNIVERSAL,(7,True,False)), 
+    (PTA2_BDDCr_UNIVERSAL,(7,False,True)), 
+
     (PTA4_WDDC,(60,30)), #C
     (PTA4_WDDCr,(6,20)), #C
     (PTA4_WDDCr,(10,20)), #C
     (PTA4_WDDCr,(21,30)), #C
     (PTA4_WDDCr2,(20,35)), #C
+    (PTA4_UNIVERSAL,(7,7,30,30,"DC",'rsi',True,True)),
+    (PTA4_UNIVERSAL,(7,7,50,20,"DC",'rsi',True,False)),
+    (PTA4_UNIVERSAL,(7,7,20,50,"DC",'rsi',False,True)),
 
     (PTA10_SORCERER,(80,35,15,30,5,20)),
 
@@ -251,8 +279,10 @@ wssBitgetFut15 = [
 
     (PTA2_LISICA,(7,1)),
     (PTA2_LISICA,(14,2)),
-    (PTA4_WLISICA,(14,2,20)),
     (PTA2_DDCrWork,(5,)),
+    (PTA2_BDDCr_UNIVERSAL,(7,True,True)), 
+    (PTA2_BDDCr_UNIVERSAL,(7,True,False)), 
+    (PTA2_BDDCr_UNIVERSAL,(7,False,True)), 
 
 
     (PTA4_WDDCr2,(5,15)), #C
@@ -262,6 +292,10 @@ wssBitgetFut15 = [
     (PTA4_WDDCrE,(5,20)), #C
     (PTA4_WDDCrVG,(9,20)),
     (PTA4_WDVCr,(9,20)),
+    (PTA4_WLISICA,(14,2,20)),
+    (PTA4_UNIVERSAL,(7,7,30,30,"DC",'rsi',True,True)),
+    (PTA4_UNIVERSAL,(7,7,50,20,"DC",'rsi',True,False)),
+    (PTA4_UNIVERSAL,(7,7,20,50,"DC",'rsi',False,True)),
 
     (PTA8_OBBY,(11,0.5)), #S
     
@@ -294,6 +328,14 @@ wssBitgetFut30 = [
     (STAML2_NEWAVE,(5,5,0.5,30)),
     (STAML2_TRADITION,(10,5,0.5)),
 
+    (PTA2_BDDCr_UNIVERSAL,(7,True,True)), 
+    (PTA2_BDDCr_UNIVERSAL,(7,True,False)), 
+    (PTA2_BDDCr_UNIVERSAL,(7,False,True)), 
+
+    (PTA4_UNIVERSAL,(7,7,30,30,"DC",'rsi',True,True)),
+    (PTA4_UNIVERSAL,(7,7,50,20,"DC",'rsi',True,False)),
+    (PTA4_UNIVERSAL,(7,7,20,50,"DC",'rsi',False,True)),
+
     (PTA8_WDOBBY_FREEr,(4,2,20)),
     (PTA8_WDOBBY_FREEr,(11,0.5,20)),
     (PTA8_DOBBY_FREEr,(4,0.5)),
@@ -323,6 +365,14 @@ wssBitgetFut60 = (
     (STAML2_TRADITION,(5,5,0.5)),
     (STAML2_NEWAVE,(5,5,0.5,30)),
     (STAML2_TRADITION,(10,5,0.5)),
+    
+    (PTA2_BDDCr_UNIVERSAL,(7,True,True)), 
+    (PTA2_BDDCr_UNIVERSAL,(7,True,False)), 
+    (PTA2_BDDCr_UNIVERSAL,(7,False,True)), 
+
+    (PTA4_UNIVERSAL,(7,7,30,30,"DC",'rsi',True,True)),
+    (PTA4_UNIVERSAL,(7,7,50,20,"DC",'rsi',True,False)),
+    (PTA4_UNIVERSAL,(7,7,20,50,"DC",'rsi',False,True)),
 
     (PTA15_WIDOWMAKER,(10,40)), #A
     (PTA15_WIDOWMAKER,(5,40)), #A

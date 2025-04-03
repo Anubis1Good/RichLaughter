@@ -23,6 +23,18 @@ class AgentSmith:
                 self.dbx.files_upload(file.read(), self.remote_file_path,mode=mode)
         except dropbox.exceptions.ApiError as e:
             print(f"Произошла ошибка при загрузке файла: {e}")
+    
+    def upload_all(self):
+        mode = dropbox.files.WriteMode.overwrite
+        try:
+            files = os.listdir('Screening/strat_picks')
+            for file in files:
+                if not file.startswith('u'):
+                    file_path = os.path.join('Screening/strat_picks',file)
+                    with open(file_path, 'rb') as f:
+                        self.dbx.files_upload(f.read(), '/MTA_SKYNET/u'+file,mode=mode)
+        except dropbox.exceptions.ApiError as e:
+            print(f"Произошла ошибка при загрузке файла: {e}")  
 
     def download(self):
         try:

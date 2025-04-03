@@ -20,20 +20,19 @@ archs = (
         (1,4)),
 )
 
-
+smith = AgentSmith('_')
 while True:
-    start=time()
+    # start=time()
     try:
         for arch in archs:
             arch.run()
-        files = os.listdir('Screening/strat_picks')
-        for file in files:
-            if not file.startswith('u'):
-                # print(file,'uploads...')
-                AgentSmith(file).upload()
-                sleep(10)
     except Exception:
         traceback.print_exc()
         sleep(60)
-    print('time:',time()-start)
-    # sleep(60*5)
+    try:
+        smith.upload_all()
+    except Exception:
+        traceback.print_exc()
+        sleep(60)
+    # print('time:',time()-start)
+    sleep(60*5)

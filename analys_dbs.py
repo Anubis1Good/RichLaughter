@@ -13,8 +13,10 @@ def analisys_db(db_path:str):
     conn = sqlite3.connect(db_path)
     query = '''
     SELECT 
+        r.id AS bot_id,
         r.name AS bot,
         t.name AS ticker,
+        MAX(hp.close_timestamp) AS last_trade_date,
         AVG(hp.close_price) AS avg_close_price,
         SUM(hp.fee) AS total_fee,
         SUM(hp.result) AS total_result,
@@ -27,7 +29,7 @@ def analisys_db(db_path:str):
     JOIN 
         tickers t ON hp.ticker_id = t.id
     GROUP BY 
-        r.name, t.name
+        r.id, r.name, t.name
     ORDER BY 
         r.name, t.name
     '''
@@ -225,7 +227,7 @@ def get_equity_charts_db(db_path):
 need_equity_chart = False
 # need_equity_chart = True
 need_analisys = False
-need_analisys = True
+# need_analisys = True
 
 if __name__ == '__main__':
     folder = 'dbs'
@@ -241,3 +243,5 @@ if __name__ == '__main__':
             except Exception as e:
                 traceback.print_exc()
                 print(file,'have problems...')
+    
+    # get_equity_charts_db('dbs/test_MOEX_FUT.db')

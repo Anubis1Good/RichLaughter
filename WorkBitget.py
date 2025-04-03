@@ -9,14 +9,14 @@ from Loader.BitgetLoader import bitget_loader
 from utils.draw_utils import draw_lite_chart,draw_chart_channel,draw_hb_chart,draw_bollinger,draw_dynamics,draw_rails,draw_hb_chart_fast
 # from ForBots.Indicators.classic_indicators import add_donchan_channel,add_vangerchik,add_sma, add_slice_df,add_bollinger,add_over_bb,add_attached_bb,add_big_volume,add_dynamics_ma
 from strategies.test_strategies.check import check_strategy
-# from strategies.work_strategies.PTA import PTA4_WLISICA as WS
+from strategies.work_strategies.PTA import PTA2_BDDCr_UNIVERSAL as WS
 # from strategies.work_strategies.PTAX import PTA15_NOVA as WS
 # from strategies.work_strategies.STA_ca import STA2 as WS
 # from strategies.work_strategies.OGTA import OGTA4_DOG as WS
 # from strategies.work_strategies.LTA import LTA_PIN as WS
 # from strategies.work_strategies.LTA2 import LTA2_OVERLORD as WS
 # from strategies.work_strategies.MTA import MTA_LORD as WS
-from strategies.work_strategies.STA_ml2 import STAML2_NEWAVE as WS
+# from strategies.work_strategies.STA_ml2 import STAML2_NEWAVE as WS
 # from strategies.work_strategies.STA_ml import STAML1_XGBR2_DC as WS
 # from strategies.work_strategies.STA_rl import STARL1_HELPGOD as WS
 # from strategies.work_strategies.experiments import ExpBot as WS
