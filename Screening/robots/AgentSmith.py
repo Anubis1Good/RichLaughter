@@ -8,9 +8,12 @@ class AgentSmith:
         """
         access_token = settings.dropbox_token
         self.dbx = dropbox.Dropbox(access_token)
-        self.local_path_u = os.path.join('./Screening/strat_picks',local_file)
+        self.folder_picks = './Screening/strat_picks'
+        if not os.path.exists(self.folder_picks):
+            os.makedirs(self.folder_picks)
+        self.local_path_u = os.path.join(self.folder_picks,local_file)
         prefix_file = 'u'+local_file
-        self.local_path_d = os.path.join('./Screening/strat_picks',prefix_file)
+        self.local_path_d = os.path.join(self.folder_picks,prefix_file)
         self.remote_file_path = '/MTA_SKYNET/'+prefix_file
 
     def upload(self):
@@ -41,7 +44,7 @@ class AgentSmith:
             # Формируем локальные и удаленные пути к файлам
                 remote_path = entry.path_display
                 relative_path = os.path.relpath(remote_path, '/MTA_SKYNET/')
-                local_path = os.path.join('./Screening/strat_picks', relative_path)
+                local_path = os.path.join(self.folder_picks, relative_path)
                             # Скачиваем файл с Dropbox
                 try:
                     _, res = self.dbx.files_download(remote_path)
