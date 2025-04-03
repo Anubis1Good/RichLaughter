@@ -9,9 +9,11 @@ class Settings:
     apikey_bitget: str
     apisec_bitget: str
     apiphrase_bitget: str
+    dropbox_token:str
 
 settings = Settings(
     apikey_bitget=os.getenv('apikey_bitget'),
     apisec_bitget=os.getenv('apisec_bitget'),
-    apiphrase_bitget = os.getenv('apiphrase_bitget')
+    apiphrase_bitget = os.getenv('apiphrase_bitget'),
+    dropbox_token=os.getenv('dropbox_token')
 )

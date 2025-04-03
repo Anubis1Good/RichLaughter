@@ -12,12 +12,6 @@ from ForBots.Indicators.classic_indicators import add_donchan_channel,add_vanger
 file = 'logs\work_logs\MMH5_1_MTA_LORD.txt'
 
 
-def load_results(blob) -> np.ndarray:
-    if isinstance(blob, str):  # Если данные стали строкой
-        blob = blob.encode('latin1')  # Обратное преобразование
-    
-    buffer = io.BytesIO(zlib.decompress(blob))
-    return np.load(buffer, allow_pickle=False)
 
 db_path = 'dbs/moex_fut.db'
 db_path = 'dbs/test_MOEX_FUT.db'
@@ -65,30 +59,60 @@ ticker_id = 2
 # WHERE robot_id = ? AND ticker_id = ? AND close_timestamp >= datetime('now', '-1 hour')
 # ORDER BY open_timestamp
 # ''', (robot_id, ticker_id))
-cursor.execute('''
-SELECT 
-    result,
-    result_fee,
-    SUM(result) OVER (ORDER BY open_timestamp) AS cumulative_result,
-    SUM(result_fee) OVER (ORDER BY open_timestamp) AS cumulative_result_fee
-FROM history_positions
-WHERE robot_id = ? AND ticker_id = ?)
-ORDER BY open_timestamp
-''', (robot_id, ticker_id))
-existing_results = cursor.fetchall()
+# cursor.execute('''
+# SELECT 
+#     result,
+#     result_fee,
+#     SUM(result) OVER (ORDER BY open_timestamp) AS cumulative_result,
+#     SUM(result_fee) OVER (ORDER BY open_timestamp) AS cumulative_result_fee
+# FROM history_positions
+# WHERE robot_id = ? AND ticker_id = ?
+# ORDER BY open_timestamp
+# ''', (robot_id, ticker_id))
+# existing_results = cursor.fetchall()
 
-existing_results = np.array(existing_results)
-# res = existing_results[:,0].cumsum()
-# res_fee = existing_results[:,1].cumsum()
-# print(existing_results)
-res = existing_results[:,2]
-res_fee = existing_results[:,3]
-print(res)     
-print(res_fee)     
+# existing_results = np.array(existing_results)
+# # res = existing_results[:,0].cumsum()
+# # res_fee = existing_results[:,1].cumsum()
+# # print(existing_results)
+# res = existing_results[:,2]
+# res_fee = existing_results[:,3]
+# print(res)     
+# print(res_fee)     
 
-cursor.close()
-db.close()
+# cursor.close()
+# db.close()
 
-plt.plot(res)
-plt.plot(res_fee)
-plt.show()
+# plt.plot(res)
+# plt.plot(res_fee)
+# plt.show()
+
+
+# import dropbox
+
+# from utils.settings import settings
+
+# # Токен доступа
+# access_token = settings.dropbox_token
+
+# dbx = dropbox.Dropbox(access_token)
+
+# local_file_path = './Screening/strat_picks/1_1_test_MOEX_FUT.json'
+# remote_file_path = '/MTA_SKYNET/1_1_utest_MOEX_FUT.json'
+
+# mode = dropbox.files.WriteMode.overwrite
+
+# with open(local_file_path, 'rb') as file:
+#     dbx.files_upload(file.read(), remote_file_path,mode=mode)
+
+
+# from Screening.robots.Architect import Architect
+from Screening.robots.AgentSmith import AgentSmith
+
+# # arch = Architect('dbs/test_MOEX_FUT.db',(1,5),(1,4))
+# # arch.run()
+
+smith = AgentSmith('1_1_test_MOEX_FUT.json')
+smith.download_all()
+# # smith.upload()
+# smith.download()

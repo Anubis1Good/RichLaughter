@@ -1,18 +1,17 @@
-from Traders.TestingTrader.wss_groups import wssBitgetFut1,wssBitgetFut5,wssBitgetFut15,wssBitgetFut30,wssBitgetFut60,wssMoexFut,wssMoexStocks
+from Traders.TestingTrader.wss_maps_without_MTA import bitgetFutMap,moexFutMap,moexStockMap
+from strategies.work_strategies.MTA import MTA_LORD,MTA_LORD2,MTA_SKYNET
 
-bitgetFutMap = {
-    '1m':wssBitgetFut1,
-    '5m':wssBitgetFut5,
-    '15m':wssBitgetFut15,
-    '30m':wssBitgetFut30,
-    '1H':wssBitgetFut60,
-}
+wssMoexSkynet1 = (
+    (MTA_SKYNET,(100,'u1_1_test_MOEX_FUT')),
+    (MTA_SKYNET,(100,'u4_1_test_MOEX_FUT')),
+)
 
-moexFutMap = {
-    1:wssMoexFut,
-    5:wssMoexFut,
-}
-moexStockMap = {
-    1:wssMoexStocks,
-    5:wssMoexStocks,
+wssMoexSkynet5 = (
+    (MTA_SKYNET,(100,'u1_5_test_MOEX_FUT')),
+    (MTA_SKYNET,(100,'u4_5_test_MOEX_FUT')),
+)
+
+skynetTestMap = {
+    1:wssMoexSkynet1,
+    5:wssMoexSkynet5
 }
