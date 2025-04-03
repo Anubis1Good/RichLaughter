@@ -21,7 +21,10 @@ class Architect:
                 res = get_best_strategies(self.db_path,granularity,hours)
                 if not res.empty:
                     ticker_bot_dict = res.set_index('ticker')['bot'].to_dict()
-                    self.save_file(ticker_bot_dict,hours,granularity)
+                else:
+                    ticker_bot_dict = {"poor": "0_sleep_0"}
+                self.save_file(ticker_bot_dict,hours,granularity)
+                
 
 # if __name__ == "__main__":
 #     arch = Architect('dbs/test_MOEX_FUT.db',(1,5),(1,4))

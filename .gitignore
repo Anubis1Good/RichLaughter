@@ -7,5 +7,6 @@ logsMT/
 TestOtTrades/
 dbs/backups
 dbs/archive
+Screening/strat_picks
 modelML/RL_models/temp/
 .env
