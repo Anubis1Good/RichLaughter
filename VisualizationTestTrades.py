@@ -1,22 +1,19 @@
+import sys
 import sqlite3
 import pandas as pd
-import mplfinance as mpf
-from matplotlib import lines as mlines
+import numpy as np
 import matplotlib.pyplot as plt
-from datetime import date, timedelta,datetime
+
 from request_functions.download_moex import download_moex,create_df
+from utils.draw_utils import draw_hb_chart_fast
 board = "RFUD"
 market = "forts"
 engine= "futures"
 ticker = 'MMM5'
-bot_id = 17
-start = str(date.today() - timedelta(days=2))
-end = None
+bot_id = 140
+# start = str(date.today() - timedelta(days=2))
+# end = None
 
-df = download_moex(ticker,1,start=start,end=end,board=board,market=market,engine=engine)
-df = create_df(df)
-df = df.set_index('ms')  # Устанавливаем время как индекс
-df.index = pd.to_datetime(df.index)
 # print(df.head())
 db_path = 'dbs/test_MOEX_FUT.db'
 
@@ -26,7 +23,7 @@ def load_trades(db_path, bot_id, ticker):
     conn = sqlite3.connect(db_path)
     query = '''
     SELECT hp.open_timestamp, hp.close_timestamp, hp.open_price, hp.close_price, 
-           hp.direction, hp.result, hp.fee, hp.result_fee, t.name as ticker
+           hp.direction as dir_pos, hp.result, hp.fee, hp.result_fee, t.name as ticker
     FROM history_positions hp
     JOIN tickers t ON hp.ticker_id = t.id
     WHERE hp.robot_id = ? AND t.name = ?
@@ -39,102 +36,89 @@ def load_trades(db_path, bot_id, ticker):
     df_trades['open_timestamp'] = pd.to_datetime(df_trades['open_timestamp'])
     df_trades['close_timestamp'] = pd.to_datetime(df_trades['close_timestamp'])
     
+    df_trades['open_timestamp'] = df_trades['open_timestamp'].dt.floor('min')
+    df_trades['close_timestamp'] = df_trades['close_timestamp'].dt.floor('min')
+
     return df_trades
 
 df_trades = load_trades(db_path, bot_id, ticker)
-# df_trades.info()
-# print(df_trades.head())
-# 3. Функция для создания графика
-def plot_trades_with_candles(candles_df, trades_df, title=''):
-    # Настройка стиля
-    mc = mpf.make_marketcolors(up='g', down='r', edge='inherit', wick='inherit')
-    s = mpf.make_mpf_style(marketcolors=mc, gridstyle=':', y_on_right=False)
-    
-    # Подготовка дополнительных графиков для сделок
-    apds = []
-    
-    print(f"Всего сделок для отображения: {len(trades_df)}")
-    
-    for idx, trade in trades_df.iterrows():
-        # Преобразуем timestamp в тот же формат, что и в candles_df
-        open_time = pd.to_datetime(trade['open_timestamp'])
-        close_time = pd.to_datetime(trade['close_timestamp'])
-        
-        # Проверяем, что сделка в пределах отображаемых данных
-        if open_time in candles_df.index and close_time in candles_df.index:
-            print(f"Отображаем сделку {idx}: {open_time} - {close_time}")
-            
-            # Линия между точками
-            line_data = pd.Series(
-                [trade['open_price'], trade['close_price']],
-                index=[open_time, close_time]
-            )
-            apds.append(mpf.make_addplot(
-                line_data,
-                type='line',
-                color='#1f77b4' if trade['direction'] > 0 else '#ff7f0e',
-                width=2
-            ))
-            
-            # Точка входа
-            apds.append(mpf.make_addplot(
-                pd.Series(trade['open_price'], index=[open_time]),
-                type='scatter',
-                color='#1f77b4' if trade['direction'] > 0 else '#ff7f0e',
-                marker='o',
-                markersize=100
-            ))
-            
-            # Точка выхода с результатом
-            result_color = 'darkgreen' if trade['result_fee'] > 0 else 'darkred'
-            apds.append(mpf.make_addplot(
-                pd.Series(trade['close_price'], index=[close_time]),
-                type='scatter',
-                color=result_color,
-                marker=f"${trade['result_fee']:.1f}",
-                markersize=100
-            ))
-        else:
-            print(f"Сделка {idx} вне диапазона графика: {open_time} - {close_time}")
-    
-    if not apds:
-        print("Нет сделок в видимом диапазоне графика!")
-        print(f"Диапазон графика: {candles_df.index.min()} - {candles_df.index.max()}")
-        print(f"Диапазон сделок: {trades_df['open_timestamp'].min()} - {trades_df['close_timestamp'].max()}")
-    
-    # Параметры графика
-    plot_kwargs = {
-        'type': 'candle',
-        'style': s,
-        'addplot': apds,
-        'title': f'{title}\nТикер: {ticker} | Бот: {bot_id}',
-        'ylabel': 'Цена',
-        'figratio': (15, 8),
-        'datetime_format': '%Y-%m-%d %H:%M',
-        'xrotation': 45,
-        'show_nontrading': True,
-        'warn_too_much_data': 10000
-    }
-    
-    # Создание графика
-    fig, axes = mpf.plot(candles_df, returnfig=True, **plot_kwargs)
-    
-    # Добавление легенды
-    legend_elements = [
-        mlines.Line2D([], [], color='#1f77b4', marker='o', linestyle='-', 
-                     markersize=8, label='Покупка (Long)'),
-        mlines.Line2D([], [], color='#ff7f0e', marker='o', linestyle='-', 
-                     markersize=8, label='Продажа (Short)'),
-        mlines.Line2D([], [], color='darkgreen', marker='$...$', linestyle='None',
-                     markersize=10, label='Прибыль'),
-        mlines.Line2D([], [], color='darkred', marker='$...$', linestyle='None',
-                     markersize=10, label='Убыток')
-    ]
-    
-    axes[0].legend(handles=legend_elements, loc='upper left')
-    plt.tight_layout()
-    plt.show()
+if df_trades.empty:
+    print('нет сделок')
+    sys.exit(0)
+start = df_trades['open_timestamp'].min().date()
+end = df_trades['close_timestamp'].max().date()
+df = download_moex(ticker,1,start=start,end=end,board=board,market=market,engine=engine)
+df = create_df(df)
+# df = df.set_index('ms')  # Устанавливаем время как индекс
+# df.index = pd.to_datetime(df.index)
+df['ms'] = pd.to_datetime(df['ms'])
 
-# 4. Генерация графика
-plot_title = f'Торговые сделки | {pd.Timestamp.now().strftime("%Y-%m-%d %H:%M")}'
-plot_trades_with_candles(df, df_trades, plot_title)
+df = df.merge(
+    df_trades[['open_timestamp', 'open_price','dir_pos']],
+    left_on='ms',
+    right_on='open_timestamp',
+    how='left'
+)
+df = df.merge(
+    df_trades[['close_timestamp', 'close_price']],
+    left_on='ms',
+    right_on='close_timestamp',
+    how='left'
+)
+
+df['dir_pos'] = np.where(~pd.isna(df['close_price'])&(pd.isna(df['open_price'])), 0, df['dir_pos'])
+
+df['dir_pos'] = df['dir_pos'].ffill()
+
+df['longs'] = np.where((df['dir_pos'] == 1)&(df['dir_pos'].shift(1) != 1), df['open_price'], np.nan)
+
+df['longs'] = np.where((df['dir_pos'] != 1)&(df['dir_pos'].shift(1) == 1), df['close_price'], df['longs'])
+
+mask = (df['dir_pos'] == 1) | (df['dir_pos'].shift(1) == 1)
+df.loc[mask, 'longs'] = df.loc[mask, 'longs'].interpolate(method='linear')
+
+df['shorts'] = np.where((df['dir_pos'] == -1)&(df['dir_pos'].shift(1) != -1), df['open_price'], np.nan)
+
+df['shorts'] = np.where((df['dir_pos'] != -1)&(df['dir_pos'].shift(1) == -1), df['close_price'], df['shorts'])
+
+mask = (df['dir_pos'] == -1) | (df['dir_pos'].shift(1) == -1)
+df.loc[mask, 'shorts'] = df.loc[mask, 'shorts'].interpolate(method='linear')
+
+# print(df[~pd.isna(df['longs'])])
+# df.info()
+# sys.exit(0)
+
+draw_hb_chart_fast(df)
+# Фильтруем данные для сделок на покупку (dir_pos == 1)
+# Покупки (dir_pos == 1)
+buy_open = df[(~df['open_price'].isna()) & (df['dir_pos'] == 1)]
+buy_close = df[(~df['close_price'].isna()) & (df['dir_pos'].shift(1) == 1)]
+
+# Продажи (dir_pos == -1)
+sell_open = df[(~df['open_price'].isna()) & (df['dir_pos'] == -1)]
+sell_close = df[(~df['close_price'].isna()) & (df['dir_pos'].shift(1) == -1)]
+
+# Маркеры открытия
+plt.scatter(
+    buy_open.index, buy_open['open_price'],
+    marker='^', color='green',  label='Покупка (открытие)'
+)
+plt.scatter(
+    sell_open.index, sell_open['open_price'],
+    marker='v', color='red',  label='Продажа (открытие)'
+)
+
+# Маркеры закрытия
+plt.scatter(
+    buy_close.index, buy_close['close_price'],
+    marker='x', color='blue',  label='Закрытие (покупка)'
+)
+plt.scatter(
+    sell_close.index, sell_close['close_price'],
+    marker='x', color='purple',  label='Закрытие (продажа)'
+)
+
+plt.plot(df['longs'],linestyle='--',color='g')
+plt.plot(df['shorts'],linestyle='--',color='b')
+
+plt.show()

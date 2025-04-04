@@ -188,29 +188,33 @@ def get_best_strategies(db_path, granularity='1h', lookback_hours=1):
         return pd.DataFrame()
     
     # 2. Рассчитываем дополнительные метрики
-    df['profit_per_trade'] = df['total_result_fee'] / df['total_trades']
+    # df['profit_per_trade'] = df['total_result_fee'] / df['total_trades']
     
-    # 3. Нормализуем метрики (приводим к шкале 0-1)
-    metrics = {
-        'total_result_fee': 0.4,    # Общая прибыль (важна, но не главное)
-        'profit_per_trade': 0.4,    # Прибыль на сделку (важнее общей)
-        'total_trades': 0.2         # Количество сделок (менее важно)
-    }
+    # # 3. Нормализуем метрики (приводим к шкале 0-1)
+    # metrics = {
+    #     'total_result_fee': 0.6,    # Общая прибыль (важна, но не главное)
+    #     'profit_per_trade': 0.4,    # Прибыль на сделку (важнее общей)
+    #     'total_trades': 0         # Количество сделок (менее важно)
+    # }
     
-    for col in metrics:
-        df[f'norm_{col}'] = (df[col] - df[col].min()) / (df[col].max() - df[col].min())
+    # for col in metrics:
+    #     df[f'norm_{col}'] = (df[col] - df[col].min()) / (df[col].max() - df[col].min())
     
-    # 4. Композитный рейтинг с приоритетом на качество сделок
-    df['composite_score'] = sum(
-        weight * df[f'norm_{col}'] 
-        for col, weight in metrics.items()
-    )
+    # # 4. Композитный рейтинг с приоритетом на качество сделок
+    # df['composite_score'] = sum(
+    #     weight * df[f'norm_{col}'] 
+    #     for col, weight in metrics.items()
+    # )
     
     # 5. Выбираем лучшего робота для каждого тикера
     try:
-        best_strategies = df.dropna(subset=['composite_score'])\
-                    .loc[df.groupby('ticker')['composite_score'].idxmax()]
+        best_strategies = df.dropna(subset=['total_result_fee'])\
+                    .loc[df.groupby('ticker')['total_result_fee'].idxmax()]
         
-        return best_strategies.sort_values('composite_score', ascending=False)
+        return best_strategies.sort_values('total_result_fee', ascending=False)
+        # best_strategies = df.dropna(subset=['composite_score'])\
+        #             .loc[df.groupby('ticker')['composite_score'].idxmax()]
+        
+        # return best_strategies.sort_values('composite_score', ascending=False)
     except:
         return pd.DataFrame()

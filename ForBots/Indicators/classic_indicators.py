@@ -198,7 +198,6 @@ def add_big_volume(df:pd.DataFrame,period=20,multiplier=1):
     """add sma_volume, is_big """
     df['sma_volume'] = df['volume'].rolling(period).mean()
     df['is_big'] = df['volume']*multiplier > df['sma_volume']
-    # df['is_big'] = df.apply(lambda row: row['volume']*multiplier > row['sma_volume'],axis=1)
     return df
 
 def add_dynamics_ma(df:pd.DataFrame,period=20,kind='sma'):

@@ -6,8 +6,7 @@ class AgentSmith:
     def __init__(self,local_file):
         """local_file = '1_1_test_MOEX_FUT.json'
         """
-        access_token = settings.dropbox_token
-        self.dbx = dropbox.Dropbox(access_token)
+        self.dbx = self.get_dropbox_client()
         self.folder_picks = './Screening/strat_picks'
         if not os.path.exists(self.folder_picks):
             os.makedirs(self.folder_picks)
@@ -16,11 +15,26 @@ class AgentSmith:
         self.local_path_d = os.path.join(self.folder_picks,prefix_file)
         self.remote_file_path = '/MTA_SKYNET/'+prefix_file
 
+    def get_dropbox_client(self):
+        try:
+            dbx = dropbox.Dropbox(
+                oauth2_refresh_token=settings.dropbox_refresh,
+                app_key=settings.dropbox_key,
+                app_secret=settings.dropbox_secret,
+            )
+            print("Успешное подключение к Dropbox!")
+            return dbx
+        except Exception as e:
+            print("Ошибка подключения:", e)
+            return None
+        
     def upload(self):
         try:
             mode = dropbox.files.WriteMode.overwrite
             with open(self.local_path_u, 'rb') as file:
                 self.dbx.files_upload(file.read(), self.remote_file_path,mode=mode)
+        except dropbox.exceptions.AuthError as e:
+            self.get_dropbox_client()
         except dropbox.exceptions.ApiError as e:
             print(f"Произошла ошибка при загрузке файла: {e}")
     
@@ -33,6 +47,8 @@ class AgentSmith:
                     file_path = os.path.join('Screening/strat_picks',file)
                     with open(file_path, 'rb') as f:
                         self.dbx.files_upload(f.read(), '/MTA_SKYNET/u'+file,mode=mode)
+        except dropbox.exceptions.AuthError as e:
+            self.get_dropbox_client()
         except dropbox.exceptions.ApiError as e:
             print(f"Произошла ошибка при загрузке файла: {e}")  
 
@@ -46,21 +62,26 @@ class AgentSmith:
                 file.write(res.content)
             
             # print(f"Файл '{metadata.name}' успешно скачан!")
+        except dropbox.exceptions.AuthError as e:
+            self.get_dropbox_client()
         except dropbox.exceptions.ApiError as e:
             print(f"Произошла ошибка при скачивании файла: {e}")
     
     def download_all(self):
-        entries = self.dbx.files_list_folder('/MTA_SKYNET/', recursive=True).entries
-        for entry in entries:
-            if isinstance(entry, dropbox.files.FileMetadata):
-            # Формируем локальные и удаленные пути к файлам
-                remote_path = entry.path_display
-                relative_path = os.path.relpath(remote_path, '/MTA_SKYNET/')
-                local_path = os.path.join(self.folder_picks, relative_path)
-                            # Скачиваем файл с Dropbox
-                try:
-                    _, res = self.dbx.files_download(remote_path)
-                    with open(local_path, 'wb') as file:
-                        file.write(res.content)
-                except Exception as e:
-                    print(f"Произошла ошибка при скачивании файла '{entry.name}': {e}")
+        try:
+            entries = self.dbx.files_list_folder('/MTA_SKYNET/', recursive=True).entries
+            for entry in entries:
+                if isinstance(entry, dropbox.files.FileMetadata):
+                # Формируем локальные и удаленные пути к файлам
+                    remote_path = entry.path_display
+                    relative_path = os.path.relpath(remote_path, '/MTA_SKYNET/')
+                    local_path = os.path.join(self.folder_picks, relative_path)
+                                # Скачиваем файл с Dropbox
+                    try:
+                        _, res = self.dbx.files_download(remote_path)
+                        with open(local_path, 'wb') as file:
+                            file.write(res.content)
+                    except Exception as e:
+                        print(f"Произошла ошибка при скачивании файла '{entry.name}': {e}")
+        except dropbox.exceptions.AuthError as e:
+            self.get_dropbox_client()

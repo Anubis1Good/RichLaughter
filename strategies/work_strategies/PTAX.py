@@ -295,3 +295,33 @@ class PTA15_WIDOWMAKER(BaseTABitget):
         if not np.isnan(row['end_up']):
             if row['rsi'] > 100-self.threshold:
                 return 'short_pw'
+            
+class PTA15_TRACER(BaseTABitget):
+    """period=20,mode=0"""
+    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=20,mode=0):
+        super().__init__(symbol, granularity, productType, n_parts, period)
+        self.mode = mode
+    def preprocessing(self, df:pd.DataFrame):
+        # df = add_donchan_channel(df,self.period)
+        df['max_hb'] = df['high'].rolling(self.period).max()
+        df['min_hb'] = df['low'].rolling(self.period).min()
+        df['max_hb'] = df['max_hb'].shift(1)
+        df['min_hb'] = df['min_hb'].shift(1)
+
+        df['end_up'] = np.where((df['high'].shift(1) >= df['max_hb'].shift(1))&(df['high'] < df['max_hb']), df['high'], np.nan)
+        df['end_down'] = np.where((df['low'].shift(1) <= df['min_hb'].shift(1))&(df['low'] > df['min_hb']), df['low'], np.nan)
+
+        df = add_enter_price2close(df)
+        df = add_slice_df(df,period=self.period)
+        return df
+    def __call__(self, row, *args, **kwds):
+        if not np.isnan(row['end_up']):
+            if self.mode != 1:
+                return 'short_pw'
+            else:
+                return 'close_long_pw'
+        if not np.isnan(row['end_down']):
+            if self.mode != -1:
+                return 'long_pw'
+            else:
+                return 'close_short_pw'

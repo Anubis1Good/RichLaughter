@@ -79,6 +79,30 @@ class PTA2_BDDC(BaseTABitget):
             if row['high'] > row['avarege']:
                 return "close_short_pw"
             
+class PTA2_BDDC_FIX(BaseTABitget):
+    """period=20,can_long=True,can_short=True"""
+    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=20,can_long=True,can_short=True):
+        super().__init__(symbol, granularity, productType, n_parts, period)
+        self.can_long = can_long
+        self.can_short = can_short
+    def preprocessing(self,df):
+        df = add_donchan_channel(df,self.period)
+        df = add_enter_price2close(df)
+        df = add_slice_df(df,period=self.period)
+        return df
+    
+    def __call__(self,row, *args, **kwds):
+        if row['high'] == row['max_hb']:
+            if self.can_long:
+                return 'long_pw'
+        if row['low'] == row['min_hb']:
+            if self.can_short:
+                return 'short_pw'
+        if row['low'] < row['avarege']:
+            return "close_long_pw"
+        if row['high'] > row['avarege']:
+            return "close_short_pw"
+            
 class PTA2_BDDCr_UNIVERSAL(BaseTABitget):
     """period=20,can_long=True,can_short=True"""
     def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=20,can_long=True,can_short=True):
@@ -98,6 +122,79 @@ class PTA2_BDDCr_UNIVERSAL(BaseTABitget):
             else:
                 return "close_short_pw"
         if row['low'] == row['min_hb']:
+            if self.can_short:
+                return 'short_pw'
+            else:
+                return "close_long_pw"
+            
+class PTA2_BBBUr(BaseTABitget):
+    """period=20,can_long=True,can_short=True"""
+    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=20,can_long=True,can_short=True):
+        super().__init__(symbol, granularity, productType, n_parts, period)
+        self.can_long = can_long
+        self.can_short = can_short
+    def preprocessing(self,df):
+        df = add_bollinger(df,self.period)
+        df = add_enter_price2close(df)
+        df = add_slice_df(df,period=self.period)
+        return df
+    def __call__(self,row, *args, **kwds):
+        if row['high'] > row['bbu']:
+            if self.can_long:
+                return 'long_pw'
+            else:
+                return "close_short_pw"
+        if row['low'] < row['bbd']:
+            if self.can_short:
+                return 'short_pw'
+            else:
+                return "close_long_pw"
+
+        
+class PTA2_BBBU(BaseTABitget):
+    """period=20,can_long=True,can_short=True"""
+    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=20,can_long=True,can_short=True):
+        super().__init__(symbol, granularity, productType, n_parts, period)
+        self.can_long = can_long
+        self.can_short = can_short
+    def preprocessing(self,df):
+        df = add_bollinger(df,self.period)
+        df = add_enter_price2close(df)
+        df = add_slice_df(df,period=self.period)
+        return df
+    
+    def __call__(self,row, *args, **kwds):
+        if row['high'] > row['bbu']:
+            if self.can_long:
+                return 'long_pw'
+        if row['low'] < row['bbd']:
+            if self.can_short:
+                return 'short_pw'
+        if row['low'] < row['sma']:
+            return "close_long_pw"
+        if row['high'] > row['sma']:
+            return "close_short_pw"
+            
+class PTA2_BVGFIX(BaseTABitget):
+    """period=20,can_long=True,can_short=True"""
+    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=20,can_long=True,can_short=True):
+        super().__init__(symbol, granularity, productType, n_parts, period)
+        self.can_long = can_long
+        self.can_short = can_short
+    def preprocessing(self,df):
+        df = add_donchan_channel(df,self.period)
+        df = add_vangerchik(df)
+        df = add_enter_price2close(df)
+        df = add_slice_df(df,period=self.period)
+        return df
+    
+    def __call__(self,row, *args, **kwds):
+        if row['high'] > row['max_vg']:
+            if self.can_long:
+                return 'long_pw'
+            else:
+                return "close_short_pw"
+        if row['low'] < row['min_vg']:
             if self.can_short:
                 return 'short_pw'
             else:

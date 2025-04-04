@@ -1,5 +1,6 @@
+import numpy as np
 from request_functions.download_bitget import get_df
-from ForBots.Indicators.classic_indicators import add_bollinger,add_big_volume,add_attached_bb,add_over_bb,add_dynamics_ma,add_slice_df,add_simple_dynamics_ma,add_sma,add_enter_price,add_enter_price2close,add_awesome_oscillator,add_rsi,add_ema,add_adx
+from ForBots.Indicators.classic_indicators import add_bollinger,add_big_volume,add_attached_bb,add_over_bb,add_dynamics_ma,add_slice_df,add_simple_dynamics_ma,add_sma,add_enter_price,add_enter_price2close,add_awesome_oscillator,add_rsi,add_ema,add_adx, add_atr
 from ForBots.Indicators.price_funcs import get_universal_r,get_universal
 from strategies.work_strategies.BaseTA import BaseTABitget
 
@@ -128,3 +129,82 @@ class STA2(BaseTABitget):
         #         return 'short_pw'
         # else:
         #     pass
+
+class STA_mini(BaseTABitget):
+    """period=20,go_long=True"""
+    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=20,go_long=True):
+        super().__init__(symbol, granularity, productType, n_parts, period)
+        self.go_long = go_long
+    def preprocessing(self, df):
+        df = add_bollinger(df,self.period)
+        df = add_big_volume(df,self.period,3)
+        df = add_over_bb(df)
+        df = add_rsi(df,self.period)
+        df['sma_delta'] = df['sma'].pct_change()
+        df['dynamic_sma'] = df['sma_delta'].rolling(self.period).mean()
+        df = add_enter_price2close(df)
+        df = add_slice_df(df,self.period)
+        return df
+    def __call__(self, row, *args, **kwds):
+        if self.go_long and row['dynamic_sma'] < -0.00001:
+            return 'close_long_pw'
+        if not self.go_long and row['dynamic_sma'] > 0.00001:
+            return 'close_short_pw'
+        if row['high'] > row['bbu']:
+            if row['is_big'] or row['over_bbu'] or row['rsi'] > 85:
+                return 'close_long_pw'
+        if row['low'] < row['bbd']:
+            if row['is_big'] or row['over_bbd'] or row['rsi'] < 15:
+                return 'close_short_pw'
+        if row['low'] < row['sma'] and self.go_long and row['dynamic_sma'] > 0:
+            return 'long_pw'
+        if row['high'] > row['sma']and not self.go_long and row['dynamic_sma'] < 0:
+            return 'short_pw'
+
+# TODO есть идея нормализовать значения delta sma и по ним вычислять тренд
+class STA_FAST(BaseTABitget):
+    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", 
+                 n_parts=1, period=50, trend_period=10):
+        super().__init__(symbol, granularity, productType, n_parts, period)
+        self.trend_period = trend_period  # Период для определения тренда
+    
+    def preprocessing(self, df):
+        # Базовые индикаторы
+        df = add_bollinger(df, period=self.period, multiplier=2)
+        df = add_ema(df, period=self.period//2)
+        
+        # Улучшенное определение тренда
+        df['ma_fast'] = df['close'].rolling(3).mean()
+        df['ma_slow'] = df['close'].rolling(self.trend_period).mean()
+        df['fast_up'] = df['ma_fast'] > df['ma_slow']  # Быстрая MA выше медленной
+        
+        # Альтернативный вариант - наклон скользящей средней
+        df['ema_angle'] = df['ema'].diff(3)  # Изменение EMA за 3 бара
+        df['trend_up'] = df['ema_angle'] > 0  # EMA растет
+        
+        # Комбинированный тренд (можно использовать любой вариант)
+        df['trend'] = df['fast_up'] | df['trend_up']
+        
+        # Детекция открепления
+        df['bbu_detach'] = (df['high'] < df['bbu']) & (df['high'].shift(1) < df['bbu'].shift(1))
+        df['bbd_detach'] = (df['low'] > df['bbd']) & (df['low'].shift(1) > df['bbd'].shift(1))
+        df = add_enter_price2close(df)
+        df = add_slice_df(df,self.period)
+        return df
+    
+    def __call__(self, row, *args, **kwds):
+        # Условия входа
+        if row['low'] < row['ema'] and row['trend']:
+            return 'long_pw'
+            
+        if row['high'] > row['ema'] and not row['trend']:
+            return 'short_pw'
+            
+        # Условия выхода
+        if row['bbu_detach'] and row['trend']:
+            return 'close_long_pw'
+            
+        if row['bbd_detach'] and not row['trend']:
+            return 'close_short_pw'
+        
+        return None
