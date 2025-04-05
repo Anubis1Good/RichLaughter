@@ -24,7 +24,7 @@ while True:
     try:
         for arch in archs:
             arch.run()
-        sleep(60*5)
+        sleep(60*10)
     except Exception:
         traceback.print_exc()
         sleep(60)

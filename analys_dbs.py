@@ -296,4 +296,5 @@ if __name__ == '__main__':
                 traceback.print_exc()
                 print(file,'have problems...')
     
-    get_equity_charts_db('dbs/test_MOEX_FUT.db',queryDayChart,'LastDay')
+    # get_equity_charts_db('dbs/test_MOEX_FUT.db',queryDayChart,'LastDay')
+    # get_equity_charts_db('dbs/test_MOEX_STOCK.db',queryDayChart,'LastDay')
