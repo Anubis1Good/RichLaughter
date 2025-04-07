@@ -11,24 +11,24 @@ def process_history_position(result,suffix,db_path):
     result['total_with_average_fee'] = result['total_result'] - result['total_fee'] * 2
     result['total_with_max_fee'] = result['total_result'] - result['total_fee'] * 3
     result['total_per'] = ((result['total_result']/result['avg_close_price'])*100).round(2)
-    result['total_min_fee_percent'] = ((result['total_result_fee']/result['avg_close_price'])*100).round(2)
-    result['total_average_fee_percent'] = ((result['total_with_average_fee']/result['avg_close_price'])*100).round(2)
-    result['total_max_fee_percent'] = ((result['total_with_max_fee']/result['avg_close_price'])*100).round(2)
+    result['t_min_fp'] = ((result['total_result_fee']/result['avg_close_price'])*100).round(2)
+    result['t_avg_fp'] = ((result['total_with_average_fee']/result['avg_close_price'])*100).round(2)
+    result['t_max_fp'] = ((result['total_with_max_fee']/result['avg_close_price'])*100).round(2)
 
     result = result.drop(['avg_close_price','total_fee','total_result_fee','total_with_average_fee','total_with_max_fee'],axis=1)
     
-    result = result.sort_values(by=['ticker','total_min_fee_percent'],axis=0,ascending=[True,False])
+    result = result.sort_values(by=['ticker','t_min_fp'],axis=0,ascending=[True,False])
     result = result.reset_index(drop=True)
 
-    ranks = ['total_trades','total_per','total_min_fee_percent','total_average_fee_percent','total_max_fee_percent']
-    data_sum = result.groupby('bot')[ranks].mean().sort_values('total_average_fee_percent',ascending=False).round(2)
+    ranks = ['total_trades','total_per','t_min_fp','t_avg_fp','t_max_fp','avgdd','maxdd','avgt','maxp','win_rate']
+    data_sum = result.groupby('bot')[ranks].mean().sort_values('t_avg_fp',ascending=False).round(2)
     rank_names = ["rank_"+r for r in ranks]
     for r in ranks:
         # print(r)
         result["rank_"+r] = result.groupby("ticker")[r].rank(ascending=False, method="min")
-    avg_rank = result.groupby("bot")[rank_names].mean().sort_values('rank_total_average_fee_percent').round(2)
+    avg_rank = result.groupby("bot")[rank_names].mean().sort_values('rank_t_avg_fp').round(2)
     result2 = pd.concat([avg_rank, data_sum], axis=1)
-    result2 = result2.sort_values('rank_total_min_fee_percent')
+    result2 = result2.sort_values('rank_t_min_fp')
     result2 = result2.reset_index()
     # print(result2)
     # print(avg_rank)
@@ -79,7 +79,7 @@ def process_history_position(result,suffix,db_path):
                 'format': workbook.add_format({'bg_color': '#FFC7CE', 'font_color': '#9C0006'})
             })
             # print(col)
-            if col in rank_names:
+            if col in rank_names and not 'dd' in col:
                 worksheet.conditional_format(1, i, len(result2), i, {
                     'type': '3_color_scale',
                     'max_color': '#DA9694',
@@ -98,27 +98,41 @@ def process_history_position(result,suffix,db_path):
 def analisys_db(db_path:str):
     conn = sqlite3.connect(db_path)
     query = '''
-    SELECT 
-        r.id AS bot_id,
-        r.name AS bot,
-        t.name AS ticker,
-        MAX(hp.close_timestamp) AS last_trade_date,
-        AVG(hp.close_price) AS avg_close_price,
-        SUM(hp.fee) AS total_fee,
-        SUM(hp.result) AS total_result,
-        COUNT(*) AS total_trades,
-        SUM(hp.result_fee) AS total_result_fee
-    FROM 
-        history_positions hp
-    JOIN 
-        robots r ON hp.robot_id = r.id
-    JOIN 
-        tickers t ON hp.ticker_id = t.id
-    GROUP BY 
-        r.id, r.name, t.name
-    ORDER BY 
-        r.name, t.name
-    '''
+        SELECT 
+            r.id AS bot_id,
+            r.name AS bot,
+            t.name AS ticker,
+            MAX(hp.close_timestamp) AS last_trade_date,
+            AVG(hp.close_price) AS avg_close_price,
+            SUM(hp.fee) AS total_fee,
+            SUM(hp.result) AS total_result,
+            COUNT(*) AS total_trades,
+            SUM(hp.result_fee) AS total_result_fee,
+            -- Расчет просадок на лету
+            ROUND(AVG(CASE 
+                    WHEN hp.result < 0 
+                    THEN ABS(hp.result) * 100.0 / NULLIF(hp.open_price, 0) 
+                    ELSE 0 
+                    END), 2) AS avgdd,
+            ROUND(MAX(CASE 
+                    WHEN hp.result < 0 
+                    THEN ABS(hp.result) * 100.0 / NULLIF(hp.open_price, 0) 
+                    ELSE 0 
+                    END), 2) AS maxdd,
+            ROUND(AVG(hp.result * 100.0 / NULLIF(hp.open_price, 0)), 2) AS avgt,
+            ROUND(MAX(hp.result * 100.0 / NULLIF(hp.open_price, 0)), 2) AS maxp,
+            ROUND(AVG(CASE WHEN hp.result >= 0 THEN 1.0 ELSE 0.0 END) * 100, 2) AS win_rate
+        FROM 
+            history_positions hp
+        JOIN 
+            robots r ON hp.robot_id = r.id
+        JOIN 
+            tickers t ON hp.ticker_id = t.id
+        GROUP BY 
+            r.id, r.name, t.name
+        ORDER BY 
+            r.name, t.name
+        '''
     result = pd.read_sql_query(query, conn)
     conn.close()
     process_history_position(result,'All',db_path)
@@ -135,7 +149,22 @@ def analisys_db_last(db_path:str):
         SUM(hp.fee) AS total_fee,
         SUM(hp.result) AS total_result,
         COUNT(*) AS total_trades,
-        SUM(hp.result_fee) AS total_result_fee
+        SUM(hp.result_fee) AS total_result_fee,
+        -- Расчет метрик просадки и прибыли
+        -- Расчет просадок на лету
+        ROUND(AVG(CASE 
+                WHEN hp.result < 0 
+                THEN ABS(hp.result) * 100.0 / NULLIF(hp.open_price, 0) 
+                ELSE 0 
+                END), 2) AS avgdd,
+        ROUND(MAX(CASE 
+                WHEN hp.result < 0 
+                THEN ABS(hp.result) * 100.0 / NULLIF(hp.open_price, 0) 
+                ELSE 0 
+                END), 2) AS maxdd,
+        ROUND(AVG(hp.result * 100.0 / NULLIF(hp.open_price, 0)), 2) AS avgt,
+        ROUND(MAX(hp.result * 100.0 / NULLIF(hp.open_price, 0)), 2) AS maxp,
+        ROUND(AVG(CASE WHEN hp.result >= 0 THEN 1.0 ELSE 0.0 END) * 100, 2) AS win_rate
     FROM 
         history_positions hp
     JOIN 
@@ -275,9 +304,9 @@ need_equity_chart = False
 need_equity_last_chart = False
 # need_equity_last_chart = True
 need_analisys = False
-# need_analisys = True
+need_analisys = True
 need_last = False
-need_last = True
+# need_last = True
 
 if __name__ == '__main__':
     folder = 'dbs'

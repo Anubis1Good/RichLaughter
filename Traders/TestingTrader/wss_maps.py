@@ -18,11 +18,13 @@ skynetTestMap = {
 
 def add_skynet(suffix,tradeMap,hourss):
     for g in tradeMap:
+        tradeMap[g] = list(tradeMap[g])
         for h in hourss:
             filename = f"{h}_{g}_{suffix}"
-            tradeMap[g] = list(tradeMap[g])
             tradeMap[g].append((MTA_SKYNET,(100,filename)))
-            tradeMap[g] = tuple(tradeMap[g])
+        filename = f"FC_{g}_{suffix}"
+        tradeMap[g].append((MTA_SKYNET,(100,filename)))
+        tradeMap[g] = tuple(tradeMap[g])
     return tradeMap
 
 bitgetFutMap = add_skynet('test_Bitget_FUT',bitgetFutMap,(1,4,8))

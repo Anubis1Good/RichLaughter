@@ -4,7 +4,7 @@ import sqlite3
 import pandas as pd
 import numpy as np
 from datetime import datetime,timedelta
-from Screening.utils.db_analisys_func import get_best_strategies,get_best_strategies_v2,get_best_strategies_v3,get_best_strategies_stable
+from Screening.utils.db_analisys_func import get_best_strategies,get_best_strategies_v2,get_best_strategies_v3,get_best_strategies_stable,get_best_strategies_v6
 
 class Architect:
     def __init__(self,db_path,granularities,hourss):
@@ -154,12 +154,29 @@ class Architect_v2(StrategyTracker):
         except Exception as e:
             print(f"Save error: {e}")
 
+    def get_fix_count_strategies(self,granularity):
+        df = get_best_strategies_v6(self.db_path,granularity,10)
+        if df is None or df.empty or 'ticker' not in df.columns or 'bot' not in df.columns:
+            return {}
+        return df.dropna(subset=['ticker', 'bot']).set_index('ticker')['bot'].to_dict()
+    
+    def save_file2(self,strategies, granularity):
+        filename = f"FC_{granularity}_{self.db_path.split('/')[-1].replace('.db','')}.json"
+        try:
+            with open(os.path.join(self.folder_picks, filename), 'w') as f:
+                json.dump(strategies, f, indent=2)
+        except Exception as e:
+            print(f"Save error: {e}")
+
     def run(self):
         for granularity in self.granularities:
             for hours in self.hourss:
                 strategies = self.update_strategies(granularity, hours)
                 if strategies:
                     self.save_file(strategies, hours, granularity)
+            strategies = self.get_fix_count_strategies(granularity)
+            if strategies:
+                self.save_file2(strategies,granularity)
 # if __name__ == "__main__":
 #     arch = Architect('dbs/test_MOEX_FUT.db',(1,5),(1,4))
 #     arch.run()
