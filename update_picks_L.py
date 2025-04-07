@@ -1,6 +1,6 @@
 import traceback
 from time import time,sleep
-from Screening.robots.Architect import Architect
+from Screening.robots.Architect import Architect_v2 as Architect
 
 archs = (
     Architect(

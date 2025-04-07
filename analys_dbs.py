@@ -277,7 +277,7 @@ need_equity_last_chart = False
 need_analisys = False
 # need_analisys = True
 need_last = False
-# need_last = True
+need_last = True
 
 if __name__ == '__main__':
     folder = 'dbs'
