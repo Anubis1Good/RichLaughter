@@ -13,142 +13,63 @@ raw_file = 'DataForTests\DataFromMOEX\MMH5_1_1739993452.csv'
 period = 10
 df = bitget_loader(raw_file)
 # df = df.iloc[-100:]
-df = df.iloc[:100]
-df = add_donchan_channel(df,20)
-# df = add_dynamic_trend_lines_extended(df,2,60)
-df['up_attach'] = np.nan
-df['down_attach'] = np.nan
-df['up_attach'] = np.where(df['high'] == df['max_hb'], df['high'], np.nan)
-period=5
-df['down_attach'] = np.where(df['low'] == df['min_hb'], df['low'], np.nan)
-
-df['start_up'] = np.where((df['high'] == df['max_hb'])&(df['high'].shift(1) != df['max_hb'].shift(1)), df['high'], np.nan)
-df['end_up'] = np.where((df['high'] == df['max_hb'])&(df['high'].shift(-1) != df['max_hb'].shift(-1)), df['high'], np.nan)
-
-df['start_down'] = np.where((df['low'] == df['min_hb'])&(df['low'].shift(1) != df['min_hb'].shift(1)), df['low'], np.nan)
-df['end_down'] = np.where((df['low'] == df['min_hb'])&(df['low'].shift(-1) != df['min_hb'].shift(-1)), df['low'], np.nan)
-
-# Шаг 2: Собираем индексы всех стартов и финишей
-starts = df[~df['start_up'].isna()].index.tolist()
-ends = df[~df['end_up'].isna()].index.tolist()
-
-# Шаг 3: Сопоставляем каждый старт с ближайшим финишем после него
-df['up_move'] = np.nan
-
-for start_idx in starts:
-    # Ищем все финиши после текущего старта
-    possible_ends = [e for e in ends if e >= start_idx]
+df = df.iloc[:500]
+# df['mean_volume'] = df['volume'].rolling(10).mean()
+# df['top_zone'] = np.where(df['volume'] > df['mean_volume']*2,df['high'],np.nan)
+# df['bottom_zone'] = np.where(df['volume'] > df['mean_volume']*2,df['low'],np.nan)
+# df['top_zone'] = df['top_zone'].ffill()
+# df['bottom_zone'] = df['bottom_zone'].ffill()
+def add_detect_volume_zones(df, window=10, volume_multiplier=1.5, spread_threshold=1.2):
+    """
+    Определяет зоны больших баров по объему и спреду
+    :param df: DataFrame с колонками ['high', 'low', 'close', 'volume']
+    :param window: окно для скользящего среднего
+    :param volume_multiplier: во сколько раз объем должен превышать средний
+    :param spread_threshold: порог для спреда (в стандартных отклонениях)
+    :return: DataFrame с добавленными колонками зон
+    """
+    # Рассчет базовых показателей
+    df['mean_volume'] = df['volume'].rolling(window).mean()
+    df['volume_std'] = df['volume'].rolling(window).std()
+    df['spread'] = df['high'] - df['low']
+    df['mean_spread'] = df['spread'].rolling(window).mean()
+    df['spread_std'] = df['spread'].rolling(window).std()
     
-    if possible_ends:
-        # Берем самый ближний финиш
-        end_idx = possible_ends[0]
-        df.at[start_idx, 'up_move'] = df.at[end_idx, 'high'] - df.at[start_idx, 'high']
-
-# Шаг 4: Особый случай - старт и финиш на одном баре
-same_bar = (~df['start_up'].isna()) & (~df['end_up'].isna())
-df.loc[same_bar, 'up_move'] = 0
-
-# Шаг 2: Собираем индексы всех стартов и финишей
-starts_down = df[~df['start_down'].isna()].index.tolist()
-ends_down = df[~df['end_down'].isna()].index.tolist()
-
-# Шаг 3: Сопоставляем каждый старт с ближайшим финишем после него
-df['down_move'] = np.nan
-
-for start_idx in starts_down:
-    # Ищем все финиши после текущего старта
-    possible_ends = [e for e in ends_down if e >= start_idx]
+    # Комбинированные условия для значимых баров
+    volume_condition = df['volume'] > (df['mean_volume'] + volume_multiplier * df['volume_std'])
+    spread_condition = df['spread'] > (df['mean_spread'] + spread_threshold * df['spread_std'])
+    df['big_spred'] = np.where(spread_condition,True,False)
+    # Определение зон
+    df['big_bar'] = volume_condition & spread_condition
+    df['top_zone'] = np.where(df['big_bar'], df['high'], np.nan)
+    df['bottom_zone'] = np.where(df['big_bar'], df['low'], np.nan)
     
-    if possible_ends:
-        # Берем самый ближний финиш
-        end_idx = possible_ends[0]
-        df.at[start_idx, 'down_move'] = df.at[start_idx, 'low'] - df.at[end_idx, 'low']
-
-# Шаг 4: Особый случай - старт и финиш на одном баре
-same_bar_down = (~df['start_down'].isna()) & (~df['end_down'].isna())
-df.loc[same_bar_down, 'down_move'] = 0
-
-# Создаем списки индексов всех точек
-start_up_indexes = df[~df['start_up'].isna()].index.tolist()
-end_down_indexes = df[~df['end_down'].isna()].index.tolist()
-
-# Инициализируем новый столбец
-df['down_to_up'] = np.nan
-
-# Для каждого end_down ищем ближайший следующий start_up
-for end_down_idx in end_down_indexes:
-    next_starts = [s for s in start_up_indexes if s > end_down_idx]
-    if next_starts:
-        nearest_start_up = next_starts[0]
-        df.at[end_down_idx, 'down_to_up'] = df.at[nearest_start_up, 'high'] - df.at[end_down_idx, 'low']
-
-# TODO START FUNC
-end_up_indexes = df[~df['end_up'].isna()].index.tolist()
-start_down_indexes = df[~df['start_down'].isna()].index.tolist()
-
-df['up_to_down'] = np.nan
-
-for end_up_idx in end_up_indexes:
-    next_starts = [s for s in start_down_indexes if s > end_up_idx]
-    if next_starts:
-        nearest_start_down = next_starts[0]
-        df.at[end_up_idx, 'up_to_down'] = df.at[end_up_idx, 'high'] - df.at[nearest_start_down, 'low']
-        plt.plot(
-            [end_up_idx, nearest_start_down],       # X-координаты
-            [df.at[end_up_idx, 'high'],             # Y-координаты
-            df.at[nearest_start_down, 'low']],
-            'm--'  # Стиль линии: magenta, пунктир
-        )
-# TODO END FUNC
-# print(df[~df['up_move'].isna()])
-print('totalUP:',df['up_move'].sum())
-print('totalDOWN:',df['down_move'].sum())
-print('totalDU:',df['down_to_up'].sum())
-print('totalUD:',df['up_to_down'].sum())
-period=5
-# df['max_hb'] = df['high'].rolling(window=period).max().rolling(window=period).mean()
-
-# # Нижняя полоса (минимум за последние N периодов)
-# df['min_hb'] = df['low'].rolling(window=period).min().rolling(window=period).mean()
-
-# # Средняя линия
-# df['avarege'] = (df['max_hb'] + df['min_hb']) / 2
-# df = add_ema(df,200)
-# df = add_rsi(df,10)
-
-for idx, row in df[~df['up_move'].isna()].iterrows():
-    plt.text(idx, row['start_up'] + 0.5, f'+{row["up_move"]}', ha='center')
+    # Заполнение зон вперед с "затуханием"
+    df['top_zone'] = df['top_zone'].ffill()
+    df['bottom_zone'] = df['bottom_zone'].ffill()
+    
+    # Дополнительные метрики
+    df['zone_width'] = df['top_zone'] - df['bottom_zone']
+    df['mid_zone'] = (df['top_zone'] + df['bottom_zone']) / 2
+    
+    return df
+df = add_detect_volume_zones(df)
+# df = add_donchan_channel(df,20)
 
 # df = add_slice_df(df,14)
 print(df.tail())
 # plt.subplot(2,1,1)
 # plt.grid() 
 draw_hb_chart_fast(df)
-for k in 'max_hb, min_hb'.split(', '):
-    plt.plot(df[k],color='r',linestyle='--')
-# for k in ('up_attach','down_attach'):
-#     plt.plot(df[k],color='b',)
-plt.scatter(
-    df.index[~df['start_up'].isna()],
-    df['start_up'].dropna(),
-    marker='^',
-    color='violet')
-plt.scatter(
-    df.index[~df['end_up'].isna()],
-    df['end_up'].dropna(),
-    marker='v',
-    color='red')
+plt.plot(df['top_zone'],color='r')
+plt.plot(df['bottom_zone'],color='b')
 
-plt.scatter(
-    df.index[~df['start_down'].isna()],
-    df['start_down'].dropna(),
-    marker='v',
-    color='blue')
-plt.scatter(
-    df.index[~df['end_down'].isna()],
-    df['end_down'].dropna(),
-    marker='^',
-    color='green')
+plt.scatter(df[df['big_spred']].index, 
+            df[df['big_spred']]['high'], 
+            color='lime', marker='^',  label='Широкий спред (High)')
+plt.scatter(df[df['big_spred']].index, 
+            df[df['big_spred']]['low'], 
+            color='red', marker='v',  label='Широкий спред (Low)')
 # ax1 = plt.gca()
 # plt.subplot(2,1,2,sharex=ax1)
 # plt.grid() 

@@ -10,9 +10,9 @@ from utils.draw_utils import draw_lite_chart,draw_chart_channel,draw_hb_chart,dr
 # from ForBots.Indicators.classic_indicators import add_donchan_channel,add_vangerchik,add_sma, add_slice_df,add_bollinger,add_over_bb,add_attached_bb,add_big_volume,add_dynamics_ma
 from strategies.test_strategies.check import check_strategy
 # from strategies.work_strategies.PTA import PTA2_BBBUr as WS
-from strategies.work_strategies.PTAX import PTA15_TRACER as WS
+# from strategies.work_strategies.PTAX import PTA16_ARTANIS as WS
 # from strategies.work_strategies.STA_ca import STA_mini as WS
-# from strategies.work_strategies.OGTA import OGTA4_DOG as WS
+from strategies.work_strategies.OGTA import OGTA5_CAT as WS
 # from strategies.work_strategies.LTA import LTA_PIN as WS
 # from strategies.work_strategies.LTA2 import LTA2_OVERLORD as WS
 # from strategies.work_strategies.MTA import MTA_LORD as WS
@@ -42,7 +42,7 @@ symbol = "DOGEUSDT"
 granularity = "5m"
 slope = 4
 
-bot = WS(symbol,granularity,mode=-1)
+bot = WS(symbol,granularity)
 # conf = (20,55,12,25,20)
 # bot = WS(symbol,granularity,"usdt-futures",1,*conf)
 
@@ -81,6 +81,7 @@ if see_equity:
 else:
     # plt.subplot(2,1,1)
     # plt.grid() 
+    
     draw_hb_chart_fast(df)
     
     if len(longs.shape) > 1:
@@ -89,8 +90,11 @@ else:
         plt.scatter(shorts[:,0],shorts[:,1],marker='v',color='black')
     if len(closes.shape) > 1:
         plt.scatter(closes[:,0],closes[:,1],marker='x',color='black')
+    # for k in 'max_hb, min_hb, avarege'.split(', '):
     # for k in 'max_hb, min_hb'.split(', '):
     #     plt.plot(df[k],color='r',linestyle='--')
+    plt.plot(df['top_zone'],color='r')
+    plt.plot(df['bottom_zone'],color='b')
 
     # plt.scatter(
     # df.index[~df['end_up'].isna()],
@@ -120,6 +124,7 @@ else:
     #     plt.plot(df[k])
     # ax1 = plt.gca()
     # plt.subplot(2,1,2,sharex=ax1)
+    # plt.plot(df['ao'])
     # # plt.subplot(3,1,2,sharex=ax1)
     # plt.grid() 
     # plt.axhline(40)

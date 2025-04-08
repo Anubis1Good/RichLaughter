@@ -373,3 +373,38 @@ def add_balanced_stop_action(df, volume_multiplier=1.5, spread_multiplier=1.2, t
     df.drop(['avg_volume', 'avg_spread', 'trend'], axis=1, inplace=True, errors='ignore')
     
     return df
+
+def add_detect_volume_zones(df, window=10, volume_multiplier=1.5, spread_threshold=1.2):
+    """
+    Определяет зоны больших баров по объему и спреду
+    :param df: DataFrame с колонками ['high', 'low', 'close', 'volume']
+    :param window: окно для скользящего среднего
+    :param volume_multiplier: во сколько раз объем должен превышать средний
+    :param spread_threshold: порог для спреда (в стандартных отклонениях)
+    :return: DataFrame с добавленными колонками зон
+    """
+    # Рассчет базовых показателей
+    df['mean_volume'] = df['volume'].rolling(window).mean()
+    df['volume_std'] = df['volume'].rolling(window).std()
+    df['spread'] = df['high'] - df['low']
+    df['mean_spread'] = df['spread'].rolling(window).mean()
+    df['spread_std'] = df['spread'].rolling(window).std()
+    
+    # Комбинированные условия для значимых баров
+    volume_condition = df['volume'] > (df['mean_volume'] + volume_multiplier * df['volume_std'])
+    spread_condition = df['spread'] > (df['mean_spread'] + spread_threshold * df['spread_std'])
+    df['big_spred'] = np.where(spread_condition,True,False)
+    # Определение зон
+    df['big_bar'] = volume_condition & spread_condition
+    df['top_zone'] = np.where(df['big_bar'], df['high'], np.nan)
+    df['bottom_zone'] = np.where(df['big_bar'], df['low'], np.nan)
+    
+    # Заполнение зон вперед с "затуханием"
+    df['top_zone'] = df['top_zone'].ffill()
+    df['bottom_zone'] = df['bottom_zone'].ffill()
+    
+    # Дополнительные метрики
+    df['zone_width'] = df['top_zone'] - df['bottom_zone']
+    df['mid_zone'] = (df['top_zone'] + df['bottom_zone']) / 2
+    
+    return df

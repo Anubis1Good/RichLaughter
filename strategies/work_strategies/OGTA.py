@@ -1,6 +1,8 @@
+import numpy as np
+import pandas as pd
 from utils.help_trades import reverse_action
 from strategies.work_strategies.BaseTA import BaseTABitget
-from ForBots.Indicators.vsa_indicators import add_rails,add_rails_slice,add_allowance_rails,add_spred,add_OGTA2_rails_info,add_CDV
+from ForBots.Indicators.vsa_indicators import add_rails,add_rails_slice,add_allowance_rails,add_spred,add_OGTA2_rails_info,add_CDV,add_detect_volume_zones
 from ForBots.Indicators.classic_indicators import add_big_volume,add_slice_df,add_enter_price,add_delta_2v,add_sc_and_buffer,add_sma,add_enter_price2close,add_rsi
 from ForBots.Indicators.price_funcs import get_price_reverse_rails,get_universal_r
 
@@ -132,4 +134,37 @@ class OGTA4_DOG(BaseTABitget):
         if row['rsi'] < self.threshold:  
             return 'long_pw'
         if row['rsi'] > 100-self.threshold:  
+            return 'short_pw'
+
+# TODO изменить логику, сейчас все плохо
+class OGTA5_CAT(BaseTABitget):
+    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=20,volume_multiplier=1.5,spread_threshold=1.2):
+        super().__init__(symbol, granularity, productType, n_parts, period)
+        self.volume_multiplier = volume_multiplier
+        self.spread_threshold = spread_threshold
+    def preprocessing(self, df):
+        df = add_detect_volume_zones(df,self.period,self.volume_multiplier,self.spread_threshold)
+        df['signal'] = 0
+        # Правило входа в лонг: текущее закрытие выше зоны И предыдущее закрытие тоже было выше
+        df['signal'] = np.where(
+            (df['close'] > df['top_zone']) & 
+            (df['close'].shift(1) > df['top_zone'].shift(1)),
+            1,
+            df['signal']
+        )
+        # Правило входа в шорт: текущее закрытие ниже зоны И предыдущее закрытие тоже было ниже
+        df['signal'] = np.where(
+            (df['close'] < df['bottom_zone']) & 
+            (df['close'].shift(1) < df['bottom_zone'].shift(1)),
+            -1,
+            df['signal']
+        )
+        df = add_enter_price2close(df)  
+        df = add_slice_df(df, self.period) 
+        return df
+    
+    def __call__(self, row, *args, **kwds):
+        if row['signal'] == 1:
+            return 'long_pw'
+        if row['signal'] == -1:
             return 'short_pw'

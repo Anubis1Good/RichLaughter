@@ -496,7 +496,7 @@ def get_best_strategies_v6(db_path, granularity='1h', lookback_deals=30):
             0.2 * df['avg_result']
         )
         
-        # Выбор топ-3 стратегий для каждого тикера
+        
         best_strategies = df.loc[df.groupby('ticker')['score'].idxmax()]
         
         return best_strategies.sort_values(['ticker', 'score'], ascending=[True, False])
@@ -516,7 +516,7 @@ def get_best_strategies_stable(db_path, granularity='1h', lookback_hours=24):
                 r.name AS bot,
                 t.name AS ticker,
                 r.granularity,
-                AVG(hp.result_fee) AS avg_profit,
+                AVG(COALESCE(hp.result_fee, 0)) AS avg_profit,  -- Защита от NULL
                 COUNT(*) AS total_trades,
                 MAX(hp.close_timestamp) AS last_trade_time,
                 SQRT(ABS(AVG(hp.result_fee * hp.result_fee) - POWER(AVG(hp.result_fee), 2))) AS profit_stddev,
@@ -525,12 +525,12 @@ def get_best_strategies_stable(db_path, granularity='1h', lookback_hours=24):
             JOIN robots r ON hp.robot_id = r.id
             JOIN tickers t ON hp.ticker_id = t.id
             WHERE r.granularity = ?
-              AND hp.close_timestamp >= ?
-              AND r.name NOT LIKE '%SKYNET%'
+            AND hp.close_timestamp >= ?
+            AND r.name NOT LIKE '%SKYNET%'
             GROUP BY r.name, t.name, r.granularity
-            HAVING total_trades >= 5
-               AND profit_stddev > 0
-               AND win_rate BETWEEN 0.3 AND 0.97
+            HAVING total_trades >= 3
+            AND profit_stddev > 0
+            AND win_rate > 0.3
         )
         SELECT *,
             (avg_profit / (CASE WHEN profit_stddev < 1e-6 THEN 1e-6 ELSE profit_stddev END)) * win_rate AS stability_index
@@ -541,6 +541,7 @@ def get_best_strategies_stable(db_path, granularity='1h', lookback_hours=24):
         
         with sqlite3.connect(db_path) as conn:
             df = pd.read_sql(query, conn, params=(granularity, time_threshold_str))
+
             
         if df.empty:
             return pd.DataFrame()
@@ -563,6 +564,166 @@ def get_best_strategies_stable(db_path, granularity='1h', lookback_hours=24):
             
             return best_strategies[['ticker', 'bot', 'score', 'avg_profit', 'win_rate']]\
                      .sort_values('score', ascending=False)
+            
+        except Exception as e:
+            print(f"Metric calculation error: {e}")
+            return pd.DataFrame(columns=['ticker', 'bot'])
+            
+    except Exception as e:
+        print(f"Critical error: {e}")
+        return pd.DataFrame()
+    
+
+def get_top5_strategies(db_path, granularity='1h', lookback_deals=30):
+    """
+    Выбирает топ-5 стратегий с высоким процентом выигрышей и часовой доходностью для каждого тикера
+    :param lookback_deals: количество последних сделок для анализа
+    :return: DataFrame с топ-5 стратегиями для каждого тикера
+    """
+    try:
+        query = f"""
+        WITH ranked_trades AS (
+            SELECT 
+                r.name AS bot,
+                t.name AS ticker,
+                hp.result_fee,
+                hp.close_timestamp,
+                ROW_NUMBER() OVER (
+                    PARTITION BY r.name, t.name 
+                    ORDER BY hp.close_timestamp DESC
+                ) AS trade_num
+            FROM history_positions hp
+            JOIN robots r ON hp.robot_id = r.id
+            JOIN tickers t ON hp.ticker_id = t.id
+            WHERE r.granularity = ?
+              AND r.name NOT LIKE '%SKYNET%'
+        ),
+        last_n_trades AS (
+            SELECT *,
+                CASE WHEN result_fee > 0 THEN 1 ELSE 0 END AS is_win
+            FROM ranked_trades
+            WHERE trade_num <= ?
+        )
+        SELECT
+            bot,
+            ticker,
+            COUNT() AS total_trades,
+            AVG(result_fee) AS avg_result,
+            SUM(result_fee) AS total_result,
+            MAX(close_timestamp) AS last_trade_time,
+            AVG(is_win) * 100 AS win_rate,
+            SUM(result_fee) / (
+                (JULIANDAY(MAX(close_timestamp)) - JULIANDAY(MIN(close_timestamp))) * 24
+            ) AS hourly_return,
+            SQRT(AVG(result_fee*result_fee) - AVG(result_fee)*AVG(result_fee)) AS variance
+        FROM last_n_trades
+        GROUP BY bot, ticker
+        HAVING total_trades >= ? * 0.7
+        AND hourly_return > 0
+        AND win_rate >= 50
+        """
+        
+        with sqlite3.connect(db_path) as conn:
+            df = pd.read_sql(query, conn, 
+                            params=(granularity, lookback_deals, lookback_deals))
+            
+        if df.empty:
+            return pd.DataFrame()
+        # Нормализация метрик
+        metrics = ['win_rate', 'hourly_return', 'avg_result']
+        df[metrics] = df[metrics].apply(lambda x: (x - x.mean()) / (x.std()+1e-6))
+        
+        # Итоговый score с приоритетом на win rate и часовую доходность
+        df['score'] = (
+            0.5 * df['win_rate'] + 
+            0.3 * df['hourly_return'] +
+            0.2 * df['avg_result']
+        )
+        
+        # Получаем топ-5 стратегий для каждого тикера
+        top_strategies = df.groupby('ticker').apply(
+            lambda x: x.nlargest(5, 'score')
+        ).reset_index(drop=True)
+        
+        return top_strategies.sort_values(['ticker', 'score'], ascending=[True, False])
+
+    except Exception as e:
+        print(f"Error: {str(e)}")
+        return pd.DataFrame()
+    
+def get_top5_best_strategies_stable(db_path, granularity='1h', lookback_hours=24):
+    try:
+        time_threshold = datetime.now() - timedelta(hours=lookback_hours)
+        time_threshold_str = time_threshold.strftime('%Y-%m-%d %H:%M:%S')
+        
+        query = """
+        WITH strategy_data AS (
+            SELECT 
+                r.name AS bot,
+                t.name AS ticker,
+                r.granularity,
+                AVG(COALESCE(hp.result_fee, 0)) AS avg_profit,
+                SUM(COALESCE(hp.result_fee, 0)) AS total_profit,  -- Добавляем суммарную прибыль
+                COUNT(*) AS total_trades,
+                MAX(hp.close_timestamp) AS last_trade_time,
+                SQRT(ABS(AVG(hp.result_fee * hp.result_fee) - POWER(AVG(hp.result_fee), 2))) AS profit_stddev,
+                AVG(CASE WHEN hp.result_fee > 0 THEN 1.0 ELSE 0.0 END) AS win_rate,
+                AVG(hp.fee) AS avg_fee  -- Средняя комиссия
+            FROM history_positions hp
+            JOIN robots r ON hp.robot_id = r.id
+            JOIN tickers t ON hp.ticker_id = t.id
+            WHERE r.granularity = ?
+            AND hp.close_timestamp >= ?
+            AND r.name NOT LIKE '%SKYNET%'
+            GROUP BY r.name, t.name, r.granularity
+            HAVING total_trades >= 3
+            AND profit_stddev > 0
+            AND win_rate > 0.3
+        )
+        SELECT *,
+            (avg_profit / (CASE WHEN profit_stddev < 1e-6 THEN 1e-6 ELSE profit_stddev END)) * win_rate AS stability_index,
+            (total_profit - SUM(avg_fee * total_trades)) AS net_profit  -- Прибыль за вычетом комиссий
+        FROM strategy_data
+        WHERE avg_profit > 0
+        GROUP BY bot, ticker, granularity
+        ORDER BY net_profit DESC, stability_index DESC
+        """
+        
+        with sqlite3.connect(db_path) as conn:
+            df = pd.read_sql(query, conn, params=(granularity, time_threshold_str))
+
+        if df.empty:
+            return pd.DataFrame()
+
+        try:
+            # Рассчет свежести данных
+            df['last_trade_hours'] = (datetime.now() - pd.to_datetime(df['last_trade_time'])).dt.total_seconds() / 3600
+            df['recency_score'] = np.exp(-df['last_trade_hours'] / 24)
+            
+            # Рассчет частоты торговли
+            df['trades_per_hour'] = df['total_trades'] / lookback_hours
+            df['activity_score'] = 1 - np.exp(-df['trades_per_hour'] / 0.1)  # Нормализация частоты
+            
+            # Нормализация метрик
+            metrics = ['stability_index', 'win_rate', 'recency_score', 'net_profit', 'activity_score']
+            scaler = RobustScaler()
+            df[metrics] = scaler.fit_transform(df[metrics])
+            
+            # Новый score с учетом прибыльности и активности
+            df['score'] = (
+                0.4 * df['net_profit'] +  # Основной вес у чистой прибыли
+                0.3 * df['stability_index'] +
+                0.1 * df['win_rate'] +
+                0.1 * df['recency_score'] +
+                0.1 * df['activity_score']  # Штрафуем редкие стратегии
+            )
+            
+            # Получаем топ-5 стратегий для каждого тикера
+            top_strategies = df.groupby('ticker').apply(
+                lambda x: x.nlargest(5, 'score')
+            ).reset_index(drop=True)
+            
+            return top_strategies.sort_values(['ticker', 'score'], ascending=[True, False])
             
         except Exception as e:
             print(f"Metric calculation error: {e}")

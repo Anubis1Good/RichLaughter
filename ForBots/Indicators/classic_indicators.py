@@ -610,6 +610,13 @@ def add_awesome_oscillator(df, short_period=5, long_period=34):
     
     # Вычисляем Awesome Oscillator (AO)
     df['ao'] = sma_short - sma_long
+        # Вычисляем Awesome Oscillator (AO)
+    # ao = sma_short - sma_long
+    
+    # # Делим AO на цену закрытия
+    # ao_relative_to_close = ao / df['close']
+    
+    # df['ao'] = ao_relative_to_close
     
     return df
 

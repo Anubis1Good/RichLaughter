@@ -1,7 +1,9 @@
 import numpy as np
 import pandas as pd
 from request_functions.download_bitget import get_df
-from ForBots.Indicators.classic_indicators import add_donchan_channel,add_slice_df,add_big_volume,add_dynamics_ma,add_bollinger,add_over_bb,add_enter_price,add_buffer_add,add_buffer_sub,add_vangerchik,add_simple_dynamics_ma,add_vodka_channel,add_rsi,add_enter_price2close,add_macd,add_rsi_tw,add_adx,add_chop,add_kusuruken_channel
+from ForBots.Indicators.classic_indicators import add_donchan_channel,add_slice_df,add_big_volume,add_dynamics_ma,add_bollinger,add_over_bb,add_enter_price,add_buffer_add,add_buffer_sub,add_vangerchik,add_simple_dynamics_ma,add_vodka_channel,add_rsi,add_enter_price2close,add_macd,add_rsi_tw,add_adx,add_chop,add_kusuruken_channel,add_awesome_oscillator
+from ForBots.Indicators.pva_indicators import add_benefit
+from ForBots.Indicators.help_pva_indicators import get_all_enter_exit_DC,get_all_lup
 from utils.help_trades import reverse_action,chep
 from strategies.work_strategies.BaseTA import BaseTABitget
 
@@ -160,36 +162,35 @@ class PTA12_SWDDCr(BaseTABitget):
             if row['rsi'] > 100-self.threshold:
                 return 'short_pw'
             
-#TODO действует только в сторону тренда    
+#TODO переделать
 class PTA13_DWDDCr(BaseTABitget):
-    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=20,threshold=30,stop=1,shift=10,rolling=10):
+    """period=60,threshold=30,period2=20"""
+    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=60,threshold=30,period2=20):
         super().__init__(symbol, granularity, productType, n_parts, period)
         self.threshold = threshold
-        self.stop = stop
-        self.shift = shift
-        self.rolling = rolling
+        self.period2 = period2
     def preprocessing(self, df:pd.DataFrame):
-        df = add_donchan_channel(df,self.period)
-        df['buffer'] = (df['max_hb'] - df['min_hb']) * self.stop
-        df['stop_long'] = (df['min_hb'] - df['buffer']).shift(self.shift).rolling(self.rolling).mean().rolling(self.rolling).min()
-        df['stop_short'] = (df['max_hb'] + df['buffer']).shift(self.shift).rolling(self.rolling).mean().rolling(self.rolling).max()
-        df = add_rsi(df,self.period)
+        df = add_donchan_channel(df,self.period2)
+        df = add_awesome_oscillator(df,long_period=self.period)
+        df = add_rsi(df,self.period2)
         df = add_enter_price2close(df)
         df = add_slice_df(df,period=self.period)
         return df
     def __call__(self, row, *args, **kwds):
-        if row['close'] < row['stop_long']:
-            return 'close_all_pw'
-        if row['close'] > row['stop_short']:
-            return 'close_all_pw'
         nearest_long = row['high'] - row['close'] > row['close'] - row['low'] 
         if row['low'] == row['min_hb']:
             if nearest_long:
                 if row['rsi'] < self.threshold:
-                    return 'long_pw'
+                    if row['ao'] > 0:
+                        return 'long_pw'
+                    else:
+                        return 'close_short_pw'
         if row['high'] == row['max_hb']:
             if row['rsi'] > 100-self.threshold:
-                return 'short_pw'
+                if row['ao'] < 0:
+                    return 'short_pw'
+                else:
+                    return 'close_long_pw'
             
 class PTA14_RWDDCr(BaseTABitget):
     """period=20,threshold=30,period2=10, period3=20"""
@@ -325,3 +326,137 @@ class PTA15_TRACER(BaseTABitget):
                 return 'long_pw'
             else:
                 return 'close_short_pw'
+            
+class PTA16_LEORIC(BaseTABitget):
+    """period=30,period2=10"""
+    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=30,period2=10):
+        super().__init__(symbol, granularity, productType, n_parts, period)
+        self.period2 = period2
+    def preprocessing(self, df):
+        df = add_donchan_channel(df,self.period2)
+        all_starts,all_ends = get_all_enter_exit_DC(df,'max_hb','min_hb')
+        df = add_benefit(df,all_starts,all_ends,'DCr',self.period)
+        all_starts,all_ends = get_all_enter_exit_DC(df,'max_hb','avarege')
+        df = add_benefit(df,all_starts,all_ends,'DCmaxa',self.period)
+        all_starts,all_ends = get_all_enter_exit_DC(df,'avarege','min_hb')
+        df = add_benefit(df,all_starts,all_ends,'DCmina',self.period)
+        df = add_enter_price2close(df)
+        df = add_slice_df(df,period=self.period)
+        return df
+    def get_bests(self,row):
+        target_indices_long = ['bl_DCr','bl_DCmaxa', 'bl_DCmina']
+        target_indices_short = ['bs_DCr','bs_DCmaxa', 'bs_DCmina']
+        filtered_l = row[target_indices_long]
+        filtered_s = row[target_indices_short]
+        best_l = filtered_l.idxmax()
+        best_s = filtered_s.idxmax()
+        if best_l == 'bl_DCr':
+            kind_l = 'min_hb'
+            kind_cl = 'max_hb'
+        if best_l == 'bl_DCmaxa':
+            kind_l = 'avarege'
+            kind_cl = 'max_hb'
+        if best_l == 'bl_DCmina':
+            kind_l = 'min_hb'
+            kind_cl = 'avarege'
+        if best_s == 'bs_DCr':
+            kind_s = 'max_hb'
+            kind_cs = 'min_hb'
+        if best_s == 'bs_DCmaxa':
+            kind_s = 'max_hb'
+            kind_cs = 'avarege'
+        if best_s == 'bs_DCmina':
+            kind_s = 'avarege'
+            kind_cs = 'min_hb'
+        return best_l,best_s,kind_l,kind_s,kind_cl,kind_cs
+    
+    def __call__(self, row, *args, **kwds):
+        best_l,best_s,kind_l,kind_s,kind_cl,kind_cs = self.get_bests(row)
+        nearest_long = row['high'] - row['close'] > row['close'] - row['low'] 
+        if row[best_l] > 0:
+            if row['low'] <= row[kind_l] and nearest_long:
+                    return 'long_pw'
+        if row[best_s] > 0 and not nearest_long:
+            if row['high'] >= row[kind_s]:
+                    return 'short_pw'
+        if row['low'] <= row[kind_cs] and not nearest_long:
+            return 'close_short_pw'
+        if row['high'] >= row[kind_cl] and nearest_long:
+            return 'close_long_pw'
+        # if row[best_l] < 0:
+        #     return 'close_long_pw'
+        # if row[best_s] < 0:
+        #     return 'close_short_pw'
+
+class PTA16_CHEN(BaseTABitget):
+    """period=30,period2=10"""
+    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=30,period2=10):
+        super().__init__(symbol, granularity, productType, n_parts, period)
+        self.period2 = period2
+    def preprocessing(self, df):
+        df = add_donchan_channel(df,self.period2)
+        all_starts,all_ends = get_all_enter_exit_DC(df,'max_hb','min_hb')
+        df = add_benefit(df,all_starts,all_ends,'DCr',self.period)
+        df = add_enter_price2close(df)
+        df = add_slice_df(df,period=self.period)
+        return df
+
+    def __call__(self, row, *args, **kwds):
+        best_l = 'bl_DCr'
+        best_s = 'bs_DCr'
+        kind_l = 'min_hb'
+        kind_s = 'max_hb'
+        nearest_long = row['high'] - row['close'] > row['close'] - row['low'] 
+        if row[best_l] > 0:
+            if row['low'] <= row[kind_l] and nearest_long:
+                    return 'long_pw'
+        if row[best_s] > 0 and not nearest_long:
+            if row['high'] >= row[kind_s]:
+                    return 'short_pw'
+        if row['low'] <= row[kind_l] and nearest_long:
+            return 'close_short_pw'
+        if row['high'] >= row[kind_s] and not nearest_long:
+            return 'close_long_pw'
+        if row[best_l] < 0:
+            return 'close_long_pw'
+        if row[best_s] < 0:
+            return 'close_short_pw'
+        
+class PTA16_ARTANIS(BaseTABitget):
+    """period=30,period2=10"""
+    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=30,period2=10):
+        super().__init__(symbol, granularity, productType, n_parts, period)
+        self.period2 = period2
+    def preprocessing(self, df):
+        df['max_hb'] = df['high'].rolling(self.period).max()
+        df['min_hb'] = df['low'].rolling(self.period).min()
+        all_starts,all_ends = get_all_lup(df,'max_hb','min_hb')
+        df = add_benefit(df,all_starts,all_ends,'EDCr',self.period)
+        df['max_hb'] = df['max_hb'].shift(1)
+        df['min_hb'] = df['min_hb'].shift(1)
+        df['end_up'] = np.where((df['high'].shift(1) >= df['max_hb'].shift(1))&(df['high'] < df['max_hb']), df['high'], np.nan)
+        df['end_down'] = np.where((df['low'].shift(1) <= df['min_hb'].shift(1))&(df['low'] > df['min_hb']), df['low'], np.nan)
+        df = add_enter_price2close(df)
+        df = add_slice_df(df,period=self.period)
+        return df
+
+    def __call__(self, row, *args, **kwds):
+        best_l = 'bl_EDCr'
+        best_s = 'bs_EDCr'
+        kind_l = 'min_hb'
+        kind_s = 'max_hb'
+        nearest_long = row['high'] - row['close'] > row['close'] - row['low'] 
+        if not np.isnan(row['end_up']):
+            if row[best_s] > 0:
+                return 'short_pw'
+            else:
+                return 'close_long_pw'
+        if not np.isnan(row['end_down']):
+            if row[best_l] > 0:
+                return 'long_pw'
+            else:
+                return 'close_short_pw'
+        if row[best_l] < 0:
+            return 'close_long_pw'
+        if row[best_s] < 0:
+            return 'close_short_pw'
