@@ -4,7 +4,7 @@ import sqlite3
 import pandas as pd
 import numpy as np
 from datetime import datetime,timedelta
-from Screening.utils.db_analisys_func import get_best_strategies_stable,get_best_strategies_v6,get_top5_strategies,get_top5_best_strategies_stable
+from Screening.utils.db_analisys_func import get_best_strategies_stable,get_best_strategies_v6,get_top5_strategies,get_top5_best_strategies_stable,get_top5_best_day_strategies
 
 class Architect:
     def __init__(self,db_path,granularities,hourss):
@@ -68,6 +68,29 @@ class Architect:
         )
         return result_dict
     
+    def get_day_5strategies(self,granularity):
+        df = get_top5_best_day_strategies(self.db_path,granularity,24)
+        if df is None or df.empty or 'ticker' not in df.columns or 'bot' not in df.columns:
+            return {}
+        # Удаляем строки с пропусками
+        df_clean = df.dropna(subset=['ticker', 'bot', 'total_result_fee'])
+        
+        # Создаем список кортежей (бот, score) для каждого тикера
+        result_dict = (
+            df_clean.groupby('ticker')
+            .apply(lambda x: list(zip(x['bot'], x['total_result_fee'])))
+            .to_dict()
+        )
+        return result_dict
+    
+    def universal_save_file(self,strategies,prefix,granularity):
+        filename = f"{prefix}_{granularity}_{self.db_path.split('/')[-1].replace('.db','')}.json"
+        try:
+            with open(os.path.join(self.folder_picks, filename), 'w') as f:
+                json.dump(strategies, f, indent=2)
+        except Exception as e:
+            print(f"Save error: {e}")
+
     def save_file(self,ticker_bot_dict,hours,granularity):
         filename = str(hours) + '_' + str(granularity) + '_' + self.db_path.split('/')[-1].replace('.db','') +  '.json'
         filename = os.path.join(self.folder_picks,filename)
@@ -89,6 +112,7 @@ class Architect:
                 json.dump(strategies, f, indent=2)
         except Exception as e:
             print(f"Save error: {e}")
+
 
     def open_file3(self,granularity):
         filename = f"FC5_{granularity}_{self.db_path.split('/')[-1].replace('.db','')}.json"
@@ -133,6 +157,18 @@ class Architect:
                 return data
         except Exception as e:
             print(f"Save error: {e}")
+    
+    def universal_open_file(self,prefix,granularity):
+        filename = str(prefix) + '_' + str(granularity) + '_' + self.db_path.split('/')[-1].replace('.db','') +  '.json'
+        full_path = os.path.join(self.folder_picks, filename)
+        if not os.path.exists(full_path):
+            return {"poor": "0_sleep_0"}
+        try:
+            with open(full_path, 'r') as f:
+                data = json.load(f)
+                return data
+        except Exception as e:
+            print(f"Save error: {e}")
 
     
     def check_old_strategies(self,new_strategies,old_strategies):
@@ -154,33 +190,59 @@ class Architect:
             final_data[ticker] = best_strat[0]
         return final_data
 
+    # def run(self):
+    #     for granularity in self.granularities:
+    #         for hours in self.hourss:
+    #             strategies = self.get_stable_5strategies(granularity,hours)
+    #             old_strategies = self.open_file(hours,granularity)
+    #             strategies = self.check_old_strategies(strategies,old_strategies)
+    #             if not strategies:
+    #                 strategies = {"poor": "0_sleep_0"}
+    #             self.save_file(strategies,hours,granularity)
+    #         strategies = self.get_fix_count_strategies(granularity)
+    #         if not strategies:
+    #             strategies = {"poor": "0_sleep_0"}
+    #         self.save_file2(strategies,granularity)
+    #         strategies = self.get_fix_count_5strategies(granularity)
+    #         old_strategies = self.open_file3(granularity)
+    #         strategies = self.check_old_strategies(strategies,old_strategies)
+    #         if not strategies:
+    #             strategies = {"poor": "0_sleep_0"}
+    #         self.save_file3(strategies,granularity)
+
+    #         strategies = self.get_fix_count_half_5strategies(granularity)
+    #         old_strategies = self.open_file4(granularity)
+    #         strategies = self.check_old_strategies(strategies,old_strategies)
+    #         if not strategies:
+    #             strategies = {"poor": "0_sleep_0"}
+    #         self.save_file4(strategies,granularity)
+    def processing_strategies(self,strategies,prefix,granularity):
+        old_strategies = self.universal_open_file(prefix,granularity)
+        strategies = self.check_old_strategies(strategies,old_strategies)
+        if not strategies:
+            strategies = {"poor": "0_sleep_0"}
+        self.universal_save_file(strategies,prefix,granularity)
+
     def run(self):
         for granularity in self.granularities:
             for hours in self.hourss:
                 strategies = self.get_stable_5strategies(granularity,hours)
-                old_strategies = self.open_file(hours,granularity)
-                strategies = self.check_old_strategies(strategies,old_strategies)
-                if not strategies:
-                    strategies = {"poor": "0_sleep_0"}
-                self.save_file(strategies,hours,granularity)
+                self.processing_strategies(strategies,hours,granularity)
+
             strategies = self.get_fix_count_strategies(granularity)
             if not strategies:
                 strategies = {"poor": "0_sleep_0"}
             self.save_file2(strategies,granularity)
+            self.universal_save_file(strategies,'FC',granularity)
+
             strategies = self.get_fix_count_5strategies(granularity)
-            old_strategies = self.open_file3(granularity)
-            strategies = self.check_old_strategies(strategies,old_strategies)
-            if not strategies:
-                strategies = {"poor": "0_sleep_0"}
-            self.save_file3(strategies,granularity)
+            self.processing_strategies(strategies,'FC5',granularity)
 
             strategies = self.get_fix_count_half_5strategies(granularity)
-            old_strategies = self.open_file4(granularity)
-            strategies = self.check_old_strategies(strategies,old_strategies)
-            if not strategies:
-                strategies = {"poor": "0_sleep_0"}
-            self.save_file4(strategies,granularity)
-                
+            self.processing_strategies(strategies,'FC5H',granularity)
+
+            strategies = self.get_day_5strategies(granularity)
+            self.processing_strategies(strategies,'B24',granularity)
 
 
 class StrategyTracker:

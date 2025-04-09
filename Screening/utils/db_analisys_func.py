@@ -487,7 +487,7 @@ def get_best_strategies_v6(db_path, granularity='1h', lookback_deals=30):
 
         # Нормализация метрик
         metrics = ['win_rate', 'hourly_return', 'avg_result']
-        df[metrics] = df[metrics].apply(lambda x: (x - x.mean()) / x.std())
+        df[metrics] = df[metrics].apply(lambda x: (x - x.mean()) / (x.std()+1e-6))
         
         # Итоговый score с приоритетом на win rate и часовую доходность
         df['score'] = (
@@ -502,7 +502,7 @@ def get_best_strategies_v6(db_path, granularity='1h', lookback_deals=30):
         return best_strategies.sort_values(['ticker', 'score'], ascending=[True, False])
 
     except Exception as e:
-        print(f"Error: {str(e)}")
+        # print(f"Error: {str(e)}")
         return pd.DataFrame()
 
 def get_best_strategies_stable(db_path, granularity='1h', lookback_hours=24):
@@ -566,11 +566,11 @@ def get_best_strategies_stable(db_path, granularity='1h', lookback_hours=24):
                      .sort_values('score', ascending=False)
             
         except Exception as e:
-            print(f"Metric calculation error: {e}")
+            # print(f"Metric calculation error: {e}")
             return pd.DataFrame(columns=['ticker', 'bot'])
             
     except Exception as e:
-        print(f"Critical error: {e}")
+        # print(f"Critical error: {e}")
         return pd.DataFrame()
     
 
@@ -641,6 +641,7 @@ def get_top5_strategies(db_path, granularity='1h', lookback_deals=30):
         )
         
         # Получаем топ-5 стратегий для каждого тикера
+        df = df.dropna(subset=['ticker', 'score'])
         top_strategies = df.groupby('ticker').apply(
             lambda x: x.nlargest(5, 'score')
         ).reset_index(drop=True)
@@ -648,7 +649,7 @@ def get_top5_strategies(db_path, granularity='1h', lookback_deals=30):
         return top_strategies.sort_values(['ticker', 'score'], ascending=[True, False])
 
     except Exception as e:
-        print(f"Error: {str(e)}")
+        # print(f"Error: {str(e)}")
         return pd.DataFrame()
     
 def get_top5_best_strategies_stable(db_path, granularity='1h', lookback_hours=24):
@@ -697,7 +698,7 @@ def get_top5_best_strategies_stable(db_path, granularity='1h', lookback_hours=24
 
         try:
             # Рассчет свежести данных
-            df['last_trade_hours'] = (datetime.now() - pd.to_datetime(df['last_trade_time'])).dt.total_seconds() / 3600
+            df['last_trade_hours'] = (datetime.now() - pd.to_datetime(df['last_trade_time'], format='%Y-%m-%d %H:%M:%S.%f')).dt.total_seconds() / 3600
             df['recency_score'] = np.exp(-df['last_trade_hours'] / 24)
             
             # Рассчет частоты торговли
@@ -726,9 +727,48 @@ def get_top5_best_strategies_stable(db_path, granularity='1h', lookback_hours=24
             return top_strategies.sort_values(['ticker', 'score'], ascending=[True, False])
             
         except Exception as e:
-            print(f"Metric calculation error: {e}")
+            # print(f"Metric calculation error: {e}")
             return pd.DataFrame(columns=['ticker', 'bot'])
             
     except Exception as e:
-        print(f"Critical error: {e}")
+        # print(f"Critical error: {e}")
+        return pd.DataFrame()
+    
+def get_top5_best_day_strategies(db_path, granularity='1h', lookback_hours=24):
+    try:
+        time_threshold = datetime.now() - timedelta(hours=lookback_hours)
+        time_threshold_str = time_threshold.strftime('%Y-%m-%d %H:%M:%S')
+        
+        # Упрощенный SQL-запрос с базовыми метриками
+        query = """
+        SELECT 
+            r.name AS bot,
+            t.name AS ticker,
+            SUM(hp.result_fee) AS total_result_fee,
+            COUNT(*) AS total_trades
+        FROM history_positions hp
+        JOIN robots r ON hp.robot_id = r.id
+        JOIN tickers t ON hp.ticker_id = t.id
+        WHERE r.granularity = ?
+        AND hp.close_timestamp >= ?
+        AND r.name NOT LIKE '%SKYNET%'
+        GROUP BY r.name, t.name
+        HAVING total_trades >= 3
+        ORDER BY total_result_fee DESC
+        """
+        
+        with sqlite3.connect(db_path) as conn:
+            df = pd.read_sql(query, conn, params=(granularity, time_threshold_str))
+
+        if df.empty:
+            return pd.DataFrame()
+
+        # Выбираем топ-5 стратегий для каждого тикера
+        top_strategies = df.groupby('ticker').apply(
+            lambda x: x.nlargest(5, 'total_result_fee')
+        ).reset_index(drop=True)
+
+        return top_strategies[['ticker', 'bot', 'total_result_fee']]
+
+    except Exception as e:
         return pd.DataFrame()

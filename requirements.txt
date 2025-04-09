@@ -21,3 +21,4 @@ pytz
 gymnasium
 psutil
 dropbox
+lightgbm

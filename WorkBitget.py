@@ -12,14 +12,14 @@ from strategies.test_strategies.check import check_strategy
 # from strategies.work_strategies.PTA import PTA2_BBBUr as WS
 # from strategies.work_strategies.PTAX import PTA16_ARTANIS as WS
 # from strategies.work_strategies.STA_ca import STA_mini as WS
-from strategies.work_strategies.OGTA import OGTA5_CAT as WS
+# from strategies.work_strategies.OGTA import OGTA5_CAT as WS
 # from strategies.work_strategies.LTA import LTA_PIN as WS
 # from strategies.work_strategies.LTA2 import LTA2_OVERLORD as WS
 # from strategies.work_strategies.MTA import MTA_LORD as WS
 # from strategies.work_strategies.STA_ml2 import STAML2_NEWAVE as WS
 # from strategies.work_strategies.STA_ml import STAML1_XGBR2_DC as WS
 # from strategies.work_strategies.STA_rl import STARL1_HELPGOD as WS
-# from strategies.work_strategies.experiments import ExpBot as WS
+from strategies.work_strategies.experiments import ExpBot1 as WS
 
 from strategies.test_strategies.universal import universal_test_strategy as TS
 # raw_file = 'DataForTests\DataFromBitget\DOGEUSDT_1m_1739873922.csv'
@@ -93,8 +93,8 @@ else:
     # for k in 'max_hb, min_hb, avarege'.split(', '):
     # for k in 'max_hb, min_hb'.split(', '):
     #     plt.plot(df[k],color='r',linestyle='--')
-    plt.plot(df['top_zone'],color='r')
-    plt.plot(df['bottom_zone'],color='b')
+    # plt.plot(df['top_zone'],color='r')
+    # plt.plot(df['bottom_zone'],color='b')
 
     # plt.scatter(
     # df.index[~df['end_up'].isna()],

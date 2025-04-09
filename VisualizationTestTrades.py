@@ -10,7 +10,7 @@ board = "RFUD"
 market = "forts"
 engine= "futures"
 ticker = 'MMM5'
-bot_id = 140
+bot_id = 186
 # start = str(date.today() - timedelta(days=2))
 # end = None
 

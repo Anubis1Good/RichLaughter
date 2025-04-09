@@ -376,6 +376,7 @@ def add_stochastic(df, k_period=14, d_period=3,kind='close'):
     return df
 
 def add_atr(df, period=5,kind='close'):
+    '''"atr"'''
     df['high_low'] = df['high'] - df['low']
     df['high_close'] = np.abs(df['high'] - df[kind].shift(1))
     df['low_close'] = np.abs(df['low'] - df[kind].shift(1))

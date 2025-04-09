@@ -28,6 +28,8 @@ def add_skynet(suffix,tradeMap,hourss):
         tradeMap[g].append((MTA_SKYNET,(100,filename)))
         filename = f"FC5H_{g}_{suffix}"
         tradeMap[g].append((MTA_SKYNET,(100,filename)))
+        filename = f"B24_{g}_{suffix}"
+        tradeMap[g].append((MTA_SKYNET,(100,filename)))
         tradeMap[g] = tuple(tradeMap[g])
     return tradeMap
 

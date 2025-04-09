@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+import pandas as pd
 
 def draw_chart(df):
     plt.subplot(2,1,1)
@@ -62,3 +63,30 @@ def draw_rsi(df):
 def draw_stochastic(df):
     plt.plot(df['%K'],color='blue')
     plt.plot(df['%D'],color='green')
+
+def plot_pattern_forecast(df:pd.DataFrame, window=30):
+    df = df.copy()
+    df = df.reset_index(drop=True)
+    fig, ax = plt.subplots(figsize=(15, 7))
+    # Цена
+    ax.plot(df.index, df['close'], label='Цена', color='black', lw=1.5)
+    
+    # Текущий паттерн
+    current_start = df.index[-window]
+    ax.axvspan(current_start, df.index[-1], color='red', alpha=0.1, label='Текущий паттерн')
+    
+    # Похожий паттерн
+    if 'similar_pattern' in df.columns:
+        similar_idx = df['similar_pattern'].first_valid_index()
+        if similar_idx:
+            similar_values = df.loc[similar_idx:similar_idx+window-1, 'similar_pattern']
+            ax.plot(similar_values.index, similar_values, 'b-', label='Похожий паттерн', lw=2)
+    
+    # Прогноз
+    if 'forecast' in df.columns:
+        forecast_values = df['forecast'].dropna()
+        ax.plot(forecast_values.index, forecast_values, 'g--', label='Прогноз', lw=2)
+    
+    ax.set_title('Прогноз на основе похожих паттернов')
+    ax.legend()
+    plt.show()
