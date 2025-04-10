@@ -2,7 +2,7 @@ from time import sleep
 import sys
 from Traders.TestingTrader.TestingTrader1 import TestingTrader1
 from Traders.TestingTrader.tickers_groups import tickersBitgetFut,tickersMoexFut,tickersMoexStock
-from Traders.TestingTrader.wss_maps import bitgetFutMap,moexFutMap,moexStockMap
+from Traders.TestingTrader.wss_maps import bitgetFutMap,moexFutMap,moexStockMap,bitgetMTAFutMap,moexMTAFutMap,moexMTAStockMap
 
 args = sys.argv[1:]
 exchange = args[0]
@@ -15,9 +15,19 @@ if exchange == 'MOEX':
     else:
         tickers = tickersMoexStock
         wss_map = moexStockMap
+elif exchange == 'MOEXM':
+    if spec == 'FUT':
+        tickers = tickersMoexFut
+        wss_map = moexMTAFutMap
+    else:
+        tickers = tickersMoexStock
+        wss_map = moexMTAStockMap
 elif exchange == 'Bitget':
     tickers = tickersBitgetFut
     wss_map = bitgetFutMap
+elif exchange == 'BitgetM':
+    tickers = tickersBitgetFut
+    wss_map = bitgetMTAFutMap
 else:
     sys.exit(0)
 

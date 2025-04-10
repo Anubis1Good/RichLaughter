@@ -91,7 +91,6 @@ wssMoexStocks = [
     (STA_mini,(7,0)),
 
     (STAML2_BALANCE,(60,2,200,30)),
-    (STAML2_SID,(200,10,5,30)),
 
     (PTA2_LISICA,(7,2)), 
     (PTA2_LISICA,(14,2)), 
@@ -289,8 +288,6 @@ wssBitgetFut15 = [
     (PTA12_SWDDCr,(20,30,0.25,15,5)), #A
     (PTA12_SWDDCr,(5,10,0.25,10,20)), #A
 
-
-    (PTA15_NOVA,(5,)), #A
     (PTA15_TRACER,(20,0)), 
     (PTA15_TRACER,(20,1)), 
     (PTA15_TRACER,(20,-1)), 
@@ -300,10 +297,9 @@ wssBitgetFut30 = [
     (STA_mini,(7,1)),
     (STA_mini,(7,0)),
 
-    (STAML2_CHAOS,(60,2,200)),
     (STAML2_BALANCE,(60,2,200,30)),
     (STAML2_SID,(200,10,5,30)),
-    (STAML2_NEWAVE,(5,5,0.5,30)),
+
 
     (PTA2_BDDCr_UNIVERSAL,(7,True,True)), 
     (PTA2_BDDCr_UNIVERSAL,(7,True,False)), 
@@ -326,26 +322,16 @@ wssBitgetFut30 = [
     (PTA4_UNIVERSAL,(7,7,30,30,"DC",'rsi',True,True)),
     (PTA4_UNIVERSAL,(7,7,50,20,"DC",'rsi',True,False)),
     (PTA4_UNIVERSAL,(7,7,20,50,"DC",'rsi',False,True)),
-
-    (PTA8_DOBBY,(8,2)),
-    (PTA8_DOBBY_FREEr,(4,0.5)),
-
-    (PTA10_SORCERER,(40,30,9,30,20,10)),
-
-    (PTA11_KUSURUKEN,(30,9,5,10,'hl')), #S
-    (PTA11_KUSURUKEN,(90,15,5,10,'c')), #S
     
-    (PTA12_SWDDCr,(5,10,0.25,10,20)), #A
-    
-    (PTA15_WIDOWMAKER,(10,40)), #A
+    (PTA15_WIDOWMAKER,(10,30)), #A
     (PTA15_TRACER,(10,0)), 
     (PTA15_TRACER,(10,1)), 
     (PTA15_TRACER,(10,-1)), 
 
 ]
 wssBitgetFut60 = (
-    (STA_mini,(7,1)),
-    (STA_mini,(7,0)),
+    (STA_mini,(10,1)),
+    (STA_mini,(10,0)),
     (PTA2_BDDCr_UNIVERSAL,(7,True,True)), 
     (PTA2_BDDCr_UNIVERSAL,(7,True,False)), 
     (PTA2_BDDCr_UNIVERSAL,(7,False,True)), 
@@ -368,12 +354,11 @@ wssBitgetFut60 = (
     (PTA4_UNIVERSAL,(7,7,50,20,"DC",'rsi',True,False)),
     (PTA4_UNIVERSAL,(7,7,20,50,"DC",'rsi',False,True)),
 
-    (PTA15_KERRIGAN,(5,)), #A
+    (PTA15_KERRIGAN,(10,)), #A
     (PTA15_WIDOWMAKER,(5,40)), #A
-    (PTA15_NOVA,(5,)), #A
     (PTA15_NOVA,(45,)), #A
-    (PTA15_TRACER,(10,0)), 
-    (PTA15_TRACER,(10,1)), 
-    (PTA15_TRACER,(10,-1)), 
+    (PTA15_TRACER,(5,0)), 
+    (PTA15_TRACER,(5,1)), 
+    (PTA15_TRACER,(5,-1)), 
 )
 

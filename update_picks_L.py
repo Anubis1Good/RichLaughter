@@ -6,16 +6,16 @@ archs = (
     Architect(
         'dbs/test_Bitget_FUT.db',
         ('1m','5m','15m','30m','1H'),
-        (1,8,24)
+        (8,24)
         ),
     Architect(
         'dbs/test_MOEX_FUT.db',
         (1,5),
-        (1,8,24)),
+        (8,24)),
     Architect(
         'dbs/test_MOEX_STOCK.db',
         (1,5),
-        (1,8,24)),
+        (8,24)),
 )
 
 

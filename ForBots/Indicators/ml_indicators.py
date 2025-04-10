@@ -136,11 +136,12 @@ def add_find_similar_pattern_lite(
         raise ValueError("Не найдено подходящего паттерна.")
     
     # Масштабируем прогноз
-    scale = current_std / best_past_std if best_past_std != 0 else 1
+    scale = current_std / best_past_std if best_past_std > 1e-8 else 1.0
     forecast = (best_future - best_past_mean) * scale + current_mean
     
     # Записываем только highs/lows в последний бар
     df.loc[df.index[-1], 'forecast_high'] = np.max(forecast)
     df.loc[df.index[-1], 'forecast_low'] = np.min(forecast)
-    df['per_fs'] = (((df['forecast_high'] - df['forecast_low']) / df['forecast_high']) * 100).round(2)
+    epsilon = 1e-8  # Маленькое значение для стабильности
+    df['per_fs'] = (((df['forecast_high'] - df['forecast_low']) / (df['forecast_high'] + epsilon)) * 100).round(2)
     return df

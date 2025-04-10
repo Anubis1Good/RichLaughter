@@ -7,7 +7,7 @@ class MainWindow(QWidget):
         super().__init__()
         self.setWindowTitle('AppTest')
         self.main_layout = QVBoxLayout()
-        self.resize(700,500)
+        self.resize(700,700)
         self.processes = {}  # Словарь для хранения процессов
         self.setStyleSheet("""
             QWidget {
@@ -61,22 +61,39 @@ class MainWindow(QWidget):
         self.moex_stock_btn = QPushButton(text='StartMoexStock')
         self.moex_stock_btn_close = QPushButton(text='CloseMoexStock')
 
+        self.moexm_fut_btn = QPushButton(text='StartMoexMTAFut')
+        self.moexm_fut_btn_close = QPushButton(text='CloseMoexMTAFut')
+        self.moexm_stock_btn = QPushButton(text='StartMoexMTAStock')
+        self.moexm_stock_btn_close = QPushButton(text='CloseMoexMTAStock')
+
         line1.addWidget(self.moex_fut_btn)
         line1.addWidget(self.moex_fut_btn_close)
         line1.addWidget(self.moex_stock_btn)
         line1.addWidget(self.moex_stock_btn_close)
+        line1.addWidget(self.moexm_fut_btn)
+        line1.addWidget(self.moexm_fut_btn_close)
+        line1.addWidget(self.moexm_stock_btn)
+        line1.addWidget(self.moexm_stock_btn_close)
 
 
         self.bitget_fut_btn = QPushButton(text='StartBitgetFut')
         self.bitget_fut_btn_close = QPushButton(text='CloseBitgetFut')
         self.bybit_fut_btn = QPushButton(text='StartBybitFut')
         self.bybit_fut_btn_close = QPushButton(text='CloseBybitFut')
+        self.bitgetm_fut_btn = QPushButton(text='StartBitgetMTAFut')
+        self.bitgetm_fut_btn_close = QPushButton(text='CloseBitgetMTAFut')
+        self.bybitm_fut_btn = QPushButton(text='StartBybitMTAFut')
+        self.bybitm_fut_btn_close = QPushButton(text='CloseBybitMTAFut')
 
 
         line2.addWidget(self.bitget_fut_btn)
         line2.addWidget(self.bitget_fut_btn_close)
         line2.addWidget(self.bybit_fut_btn)
         line2.addWidget(self.bybit_fut_btn_close)
+        line2.addWidget(self.bitgetm_fut_btn)
+        line2.addWidget(self.bitgetm_fut_btn_close)
+        line2.addWidget(self.bybitm_fut_btn)
+        line2.addWidget(self.bybitm_fut_btn_close)
 
 
         line0.addLayout(line1)
@@ -92,17 +109,35 @@ class MainWindow(QWidget):
         self.moex_fut_btn_close.clicked.connect(
             lambda: self.toggle_close_script(self.moex_fut_btn_close,'moex_fut_close',script,['MOEX','FUT','close'])
         )
+        self.moexm_fut_btn.clicked.connect(
+            lambda: self.toggle_script(self.moexm_fut_btn,'moexM_fut',script,['MOEXM','FUT','run'])
+        )
+        self.moexm_fut_btn_close.clicked.connect(
+            lambda: self.toggle_close_script(self.moexm_fut_btn_close,'moexM_fut_close',script,['MOEXM','FUT','close'])
+        )
         self.moex_stock_btn.clicked.connect(
             lambda: self.toggle_script(self.moex_stock_btn,'moex_stock',script,['MOEX','STOCK','run'])
         )
         self.moex_stock_btn_close.clicked.connect(
             lambda: self.toggle_close_script(self.moex_stock_btn_close,'moex_stock_close',script,['MOEX','STOCK','close'])
         )
+        self.moexm_stock_btn.clicked.connect(
+            lambda: self.toggle_script(self.moexm_stock_btn,'moexM_stock',script,['MOEXM','STOCK','run'])
+        )
+        self.moexm_stock_btn_close.clicked.connect(
+            lambda: self.toggle_close_script(self.moexm_stock_btn_close,'moexM_stock_close',script,['MOEXM','STOCK','close'])
+        )
         self.bitget_fut_btn.clicked.connect(
             lambda: self.toggle_script(self.bitget_fut_btn,'bitget_fut',script,['Bitget','FUT','run'])
         )
         self.bitget_fut_btn_close.clicked.connect(
             lambda: self.toggle_close_script(self.bitget_fut_btn_close,'bitget_fut_close',script,['Bitget','FUT','close'])
+        )
+        self.bitgetm_fut_btn.clicked.connect(
+            lambda: self.toggle_script(self.bitgetm_fut_btn,'bitgetM_fut',script,['BitgetM','FUT','run'])
+        )
+        self.bitgetm_fut_btn_close.clicked.connect(
+            lambda: self.toggle_close_script(self.bitgetm_fut_btn_close,'bitgetM_fut_close',script,['BitgetM','FUT','close'])
         )
 
     def update_amount_processes(self):
@@ -127,7 +162,7 @@ class MainWindow(QWidget):
         self.processes[name] = QProcess(self)
         self.processes[name].setProcessChannelMode(QProcess.MergedChannels)  # Объединяем stdout и stderr
         # Подключаем обработчик вывода
-        self.processes[name].readyReadStandardOutput.connect(lambda: print(self.processes[name].readAllStandardOutput().data().decode()))
+        self.processes[name].readyReadStandardOutput.connect(lambda: print(self.processes[name].readAllStandardOutput().data().decode( errors="replace")))
         self.processes[name].start("python", [script_path] + args)
         self.update_amount_processes()
 
