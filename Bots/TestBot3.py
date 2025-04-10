@@ -24,23 +24,46 @@ def with_db_cursor(func):
             
     return wrapper
 
+# def backup_sqlite_db(db_path, backup_dir='dbs/backups'):
+#     """Создает резервную копию файла базы данных"""
+#     if not os.path.exists(backup_dir):
+#         os.makedirs(backup_dir)
+    
+#     timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+#     backup_path = os.path.join(backup_dir, f'{os.path.basename(db_path)}.bak_{timestamp}')
+    
+#     # Убедимся, что нет активных соединений
+#     try:
+#         # Копируем файл
+#         shutil.copy2(db_path, backup_path)
+#         return backup_path
+#     except Exception as e:
+#         print(f"Ошибка при создании резервной копии: {e}")
+#         return None
+
 def backup_sqlite_db(db_path, backup_dir='dbs/backups'):
-    """Создает резервную копию файла базы данных"""
-    if not os.path.exists(backup_dir):
-        os.makedirs(backup_dir)
-    
-    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-    backup_path = os.path.join(backup_dir, f'{os.path.basename(db_path)}.bak_{timestamp}')
-    
-    # Убедимся, что нет активных соединений
+    """Создает резервную копию файла базы данных в подпапке с именем БД"""
     try:
+        # Получаем имя базы данных (без расширения)
+        db_name = os.path.splitext(os.path.basename(db_path))[0]
+        
+        # Создаем путь к подпапке для этой БД
+        db_backup_dir = os.path.join(backup_dir, db_name)
+        
+        # Создаем директорию, если ее нет (включая все родительские)
+        os.makedirs(db_backup_dir, exist_ok=True)
+        
+        # Генерируем имя файла бэкапа с временной меткой
+        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+        backup_filename = f"{db_name}.bak_{timestamp}.db"
+        backup_path = os.path.join(db_backup_dir, backup_filename)
+        
         # Копируем файл
         shutil.copy2(db_path, backup_path)
         return backup_path
     except Exception as e:
         print(f"Ошибка при создании резервной копии: {e}")
         return None
-
 
 class TestBot3:
     def __init__(self,db_path,fee,ticker,granularity,strategy,conf):
@@ -52,8 +75,8 @@ class TestBot3:
         self.fee = fee
         if not os.path.exists('dbs'):
             os.mkdir('dbs')
-        if os.path.exists(self.db_path):
-            backup_sqlite_db(self.db_path)
+        # if os.path.exists(self.db_path):
+        #     backup_sqlite_db(self.db_path)
         self.conn = sqlite3.connect(db_path)
         self.conn.execute("PRAGMA journal_mode=WAL")
         self.conn.execute("PRAGMA synchronous=NORMAL")

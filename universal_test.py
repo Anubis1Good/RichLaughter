@@ -1,5 +1,6 @@
 from time import sleep
 import sys
+from Bots.TestBot3 import backup_sqlite_db
 from Traders.TestingTrader.TestingTrader1 import TestingTrader1
 from Traders.TestingTrader.tickers_groups import tickersBitgetFut,tickersMoexFut,tickersMoexStock
 from Traders.TestingTrader.wss_maps import bitgetFutMap,moexFutMap,moexStockMap,bitgetMTAFutMap,moexMTAFutMap,moexMTAStockMap
@@ -36,6 +37,7 @@ db_path = f'dbs/test_{exchange}_{spec}.db'
 tt1 = TestingTrader1(exchange,spec,db_path,tickers,wss_map)
 
 if mode == 'run':
+    backup_sqlite_db(db_path)
     sys.stdout.write(f"{db_path} starting...\n")
     sys.stdout.flush()
     tt1.run()
