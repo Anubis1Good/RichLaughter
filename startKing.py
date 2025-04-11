@@ -84,7 +84,7 @@ class StrategySelectionDialog(QDialog):
         # Список стратегий
         self.list_widget = QListWidget()
         for bot, score in strategies.items():
-            self.list_widget.addItem(f"{bot}: {score:.2f}")
+            self.list_widget.addItem(f"{bot}: {score:.5f}")
         self.layout.addWidget(self.list_widget)
         
         # Кнопка выбора

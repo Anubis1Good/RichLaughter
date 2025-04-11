@@ -48,10 +48,10 @@ class RL1:
 
     def get_price(self,row):
         self.middle_price = row['middle']
-        self.long_price = row['long_price']
-        self.short_price = row['short_price']
-        self.close_long_price = row['close_long_price']
-        self.close_short_price = row['close_short_price']
+        self.long_price = row['close']
+        self.short_price = row['close']
+        self.close_long_price = row['close']
+        self.close_short_price = row['close']
 
     def run(self):
         try:

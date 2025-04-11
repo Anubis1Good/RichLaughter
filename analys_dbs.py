@@ -54,12 +54,12 @@ def process_history_position(result,suffix,db_path):
                 'mid_color': '#FFFFFF',
                 'max_color': '#00B0F0'
             })
-            worksheet.conditional_format(1, i, len(result), i, {
-                'type': 'text',
-                'criteria': 'containing',
-                'value': 'MTA',
-                'format': workbook.add_format({'bg_color': '#FFC7CE', 'font_color': '#9C0006'})
-            })
+            # worksheet.conditional_format(1, i, len(result), i, {
+            #     'type': 'text',
+            #     'criteria': 'containing',
+            #     'value': 'MTA',
+            #     'format': workbook.add_format({'bg_color': '#FFC7CE', 'font_color': '#9C0006'})
+            # })
         result2.to_excel(writer,sheet_name='bots_info')
         workbook = writer.book
         worksheet = writer.sheets['bots_info']
@@ -102,6 +102,7 @@ def analisys_db(db_path:str):
             r.id AS bot_id,
             r.name AS bot,
             t.name AS ticker,
+            MIN(hp.open_timestamp) AS start_trade_date,
             MAX(hp.close_timestamp) AS last_trade_date,
             AVG(hp.close_price) AS avg_close_price,
             SUM(hp.fee) AS total_fee,
@@ -304,7 +305,7 @@ need_equity_chart = False
 need_equity_last_chart = False
 # need_equity_last_chart = True
 need_analisys = False
-# need_analisys = True
+need_analisys = True
 need_last = False
 need_last = True
 
