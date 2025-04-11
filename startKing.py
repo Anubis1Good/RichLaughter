@@ -1,16 +1,33 @@
 import os 
 import json
+import pandas as pd
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QApplication,QWidget,QListWidget,QPushButton,QHBoxLayout,QVBoxLayout,QLabel
+from PyQt5.QtWidgets import QApplication,QWidget,QListWidget,QPushButton,QHBoxLayout,QVBoxLayout,QDialog
 from Traders.TestingTrader.tickers_groups import tickersBitgetFut,tickersMoexFut,tickersMoexStock
-from Traders.TestingTrader.wss_maps import moexFutMap,bitgetFutMap,moexStockMap
+from Traders.TestingTrader.wss_maps import moexFutMap,bitgetFutMap,moexStockMap,moexMTAFutMap,moexMTAStockMap,bitgetMTAFutMap
+from strategies.work_strategies.HelpTA import CloseTA,BaseTABitget
 from Screening.utils.keys_strategies import get_dict_strategies
 from Screening.robots.AgentSmith import AgentSmith
 from Screening.utils.db_analisys_func import get_top_today_king
 
-bitgetFutDC = get_dict_strategies(bitgetFutMap)
-moexFutDC = get_dict_strategies(moexFutMap)
-moexStockDC = get_dict_strategies(moexStockMap)
+def join_maps(*maps):
+    new_map = {}
+    for t in maps[0]:
+        new_map[t] = []
+        for m in maps:
+           new_map[t] += list(m[t])
+        new_map[t].insert(0,(CloseTA,(10,)))
+        new_map[t].insert(0,(BaseTABitget,(10,)))
+        new_map[t] = tuple(new_map[t])
+    return new_map
+
+allbitgetFutMap = join_maps(bitgetFutMap,bitgetMTAFutMap)
+allMoexFutMap = join_maps(moexFutMap,moexMTAFutMap)
+allMoexStockMap = join_maps(moexStockMap,moexMTAStockMap)
+
+bitgetFutDC = get_dict_strategies(allbitgetFutMap)
+moexFutDC = get_dict_strategies(allMoexFutMap)
+moexStockDC = get_dict_strategies(allMoexStockMap)
 
 tickersExchange = (
     tickersBitgetFut,
@@ -55,6 +72,34 @@ def prepare_timeframe(raw_map:dict):
     keys = raw_map.keys()
     keys = tuple(map(lambda x: str(x),keys))
     return keys
+
+class StrategySelectionDialog(QDialog):
+    def __init__(self, strategies, parent=None):
+        super().__init__(parent)
+        self.setWindowTitle("Выбор стратегии")
+        self.setGeometry(100, 100, 400, 300)
+        
+        self.layout = QVBoxLayout()
+        
+        # Список стратегий
+        self.list_widget = QListWidget()
+        for bot, score in strategies.items():
+            self.list_widget.addItem(f"{bot}: {score:.2f}")
+        self.layout.addWidget(self.list_widget)
+        
+        # Кнопка выбора
+        self.select_button = QPushButton("Выбрать")
+        self.select_button.clicked.connect(self.accept)
+        self.layout.addWidget(self.select_button)
+        
+        self.setLayout(self.layout)
+    
+    def selected_strategy(self):
+        # Возвращает выбранную стратегию (без значения)
+        selected_item = self.list_widget.currentItem()
+        if selected_item:
+            return selected_item.text().split(":")[0].strip()
+        return None
 
 class MainWindow(QWidget):
     def __init__(self):
@@ -186,8 +231,8 @@ class MainWindow(QWidget):
             set_start_ticker_btn = QPushButton(text="SetStrategy")
             sleep_all_btn = QPushButton(text="SleepAll")
             close_all_btn = QPushButton(text="CloseAll")
-            reserve_btn = QPushButton(text='GetMillion')
-            reserve_btn.setDisabled(True)
+            set_btd_btn = QPushButton(text='SetBTD')
+
             bwll1.addWidget(best_today_btn)
             bwll1.addWidget(best_mta_today_btn)
             bwll1.addWidget(check_best_today_btn)
@@ -199,7 +244,7 @@ class MainWindow(QWidget):
             bwll2.addWidget(send_btn)
             bwll2.addWidget(unlock_btn)
             bwll2.addWidget(unlock_all_btn)
-            bwll2.addWidget(reserve_btn)
+            bwll2.addWidget(set_btd_btn)
             self.line4.addWidget(bw)
             self.bws.append(bw)
 
@@ -218,8 +263,11 @@ class MainWindow(QWidget):
             unlock_all_btn.clicked.connect(lambda check,dc=dc: self.unlock_all(dc))
             unlock_btn.clicked.connect(lambda check,dc=dc: self.unlock(dc))
             close_all_btn.clicked.connect(lambda check,dc=dc: self.set_help_all(dc,'CloseTA'))
-            sleep_all_btn.clicked.connect(lambda check,dc=dc: self.set_help_all(dc,'SleepTA'))
+            sleep_all_btn.clicked.connect(lambda check,dc=dc: self.set_help_all(dc,'BaseTA'))
             best_mta_today_btn.clicked.connect(lambda check,dc=dc: self.set_best_mta_strategies(dc))
+            best_today_btn.clicked.connect(lambda check,dc=dc: self.set_best_bot_strategies(dc))
+            set_btd_btn.clicked.connect(lambda check,dc=dc: self.set_btd_all(dc))
+            check_best_today_btn.clicked.connect(lambda check,dc=dc: self.check_best_strategies_on_bot(dc))
 
             self.locks[exchages[dc]] = {}
             self.picks[exchages[dc]] = {}
@@ -234,8 +282,8 @@ class MainWindow(QWidget):
         bots.clear()
         interval = intervals.currentItem().text()
         dc = list(filter(lambda x: x.startswith(interval),allDC[tickers].keys()))
-        dc.insert(0,'SleepTA')
-        dc.insert(0,'CloseTA')
+        # dc.insert(0,'SleepTA')
+        # dc.insert(0,'CloseTA')
         bots.addItems(dc)
     
     def update_lock(self,index_ex):
@@ -276,23 +324,69 @@ class MainWindow(QWidget):
 
     def set_help_all(self,index_ex,bot):
         for t in self.picks[exchages[index_ex]]:
+            bot_key = next((key for key in allDC[index_ex] if str(t)+'_'+bot in key), 'SleepTA')
             for ticker in self.picks[exchages[index_ex]][t]:
                 if not ticker in self.locks[exchages[index_ex]][t]:
-                    self.picks[exchages[index_ex]][t][ticker] = bot
+                    self.picks[exchages[index_ex]][t][ticker] = bot_key
 
-    def processing_df(self,df):
+    def set_btd_all(self,index_ex):
+        for t in self.picks[exchages[index_ex]]:
+            for ticker in self.picks[exchages[index_ex]][t]:
+                if not ticker in self.locks[exchages[index_ex]][t]:
+                    self.picks[exchages[index_ex]][t][ticker] = t+"_MTA_SKYNET_100_BTD_1_test_MOEX_FUT"
+
+    def processing_df(self, df):
         if df is None or df.empty or 'ticker' not in df.columns or 'bot' not in df.columns:
             return {}
+
         # Удаляем строки с пропусками
         df_clean = df.dropna(subset=['ticker', 'bot', 'total_result_fee'])
         
-        # Создаем список кортежей (бот, score) для каждого тикера
+        # 1. Создаем основной словарь {тикер: [(бот1, score1), ...]}
         result_dict = (
-            df_clean.groupby('ticker')
+            df_clean.groupby('ticker')[['bot', 'total_result_fee']]
             .apply(lambda x: list(zip(x['bot'], x['total_result_fee'])))
             .to_dict()
         )
+
+        # 2. Рассчитываем средние места для раздела "Other"
+        if not df_clean.empty:
+            all_tickers = df_clean['ticker'].unique()
+            all_bots = df_clean['bot'].unique()
+            max_place_per_ticker = df_clean.groupby('ticker').size()  # Максимальное место в каждом тикере
+            
+            # Словарь для хранения мест каждой стратегии
+            bot_rankings = {bot: [] for bot in all_bots}
+            
+            # Заполняем места для каждого тикера
+            for ticker, bot_scores in result_dict.items():
+                max_place = max_place_per_ticker[ticker]
+                for place, (bot, score) in enumerate(bot_scores, start=1):
+                    bot_rankings[bot].append(place)
+                
+                # Для ботов, которых нет в этом тикере, добавляем max_place + 1
+                missing_bots = set(all_bots) - {b for b, s in bot_scores}
+                for bot in missing_bots:
+                    bot_rankings[bot].append(max_place + 1)
+            
+            # Вычисляем среднее место для каждого бота
+            avg_places = {
+                bot: sum(places) / len(places)
+                for bot, places in bot_rankings.items()
+                if places  # На всякий случай проверяем, что список не пустой
+            }
+            
+            # Берем топ-5 ботов с наименьшим средним местом (чем меньше - тем лучше)
+            top_bots_other = sorted(
+                avg_places.items(),
+                key=lambda x: x[1]
+            )[:5]
+            
+            # Добавляем в результат
+            result_dict["Other"] = top_bots_other
+
         return result_dict
+
     
     def check_old_strategies(self,new_strategies,old_strategies,locks):
         final_data = {}
@@ -320,7 +414,42 @@ class MainWindow(QWidget):
         for t in self.picks[exchages[index_ex]]:
             bots = get_top_today_king(dbs_mta[index_ex],t)
             bots = self.processing_df(bots)
-            self.check_old_strategies(bots,self.picks[exchages[index_ex]][t],self.locks[exchages[index_ex]][t])
+            self.picks[exchages[index_ex]][t] = self.check_old_strategies(bots,self.picks[exchages[index_ex]][t],self.locks[exchages[index_ex]][t])
+
+    def get_top_today_all(self,index_ex,t):
+        botsMta = get_top_today_king(dbs_mta[index_ex],t)
+        botsBase = get_top_today_king(dbs_base[index_ex],t)
+        bots = pd.concat([botsMta,botsBase],axis=0)
+        bots = (
+            bots
+            .sort_values('total_result_fee', ascending=False)
+            .groupby('ticker').head(10).reset_index(drop=True)
+        )
+        bots = self.processing_df(bots)
+        return bots
+    
+    def set_best_bot_strategies(self,index_ex):
+        for t in self.picks[exchages[index_ex]]:
+            bots = self.get_top_today_all(index_ex,t)
+            self.picks[exchages[index_ex]][t] = self.check_old_strategies(bots,self.picks[exchages[index_ex]][t],self.locks[exchages[index_ex]][t])
+    
+    def check_best_strategies_on_bot(self, index_ex):
+        ticker = self.qlwss[index_ex].currentItem().text()
+        timeframe = self.qlwts[index_ex].currentItem().text()
+        
+        # Получаем стратегии
+        strategies = dict(self.get_top_today_all(index_ex, timeframe)[ticker])
+        
+        # Создаем и показываем диалоговое окно
+        dialog = StrategySelectionDialog(strategies, self)
+        if dialog.exec_() == QDialog.Accepted:
+            selected_strategy = dialog.selected_strategy()
+            if selected_strategy:
+                self.picks[exchages[index_ex]][timeframe][ticker] = selected_strategy
+                if not ticker in self.locks[exchages[index_ex]][timeframe]:
+                    self.locks[exchages[index_ex]][timeframe].append(ticker)
+                self.update_lock(index_ex)
+
 
     def write_files(self,ex):
         for tf in self.picks[ex]:
@@ -355,7 +484,6 @@ if __name__ == '__main__':
 
 # TODO
 """
-    1.доделать SetMTAToday для Other
-    2.сделать SetBestToday
     3.сделать CheckBestToday
+    4. изменить other
 """

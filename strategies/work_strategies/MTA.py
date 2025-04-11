@@ -16,15 +16,15 @@ class MTA_SKYNET(BaseTABitget):
     Анализирует по шагам с историей, как otBot
     """
 
-    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=100,pick_file:str='1_1_test_MOEX_FUT'):
+    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=100,pick_file:str='1_1_test_MOEX_FUT',need_log=True):
         super().__init__(symbol, granularity, productType, n_parts, period)
         self.pick_file = os.path.join('Screening/strat_picks',pick_file+'.json')
         self.tas = (BaseTABitget,(self.period,))
         self.strategy = self.tas[0](self.symbol,self.granularity,self.productType,1,*self.tas[1])
         key_name_dc = "_".join(pick_file.split('_')[-2:])
         self.dc = allDC[key_name_dc]
-        need_log = True
-        if need_log:
+        self.need_log = need_log
+        if self.need_log:
             folder = 'logs/work_logs/'
             filename = f'{self.symbol}_{self.granularity}_MTA_SKYNET_{pick_file}.txt' 
             if not os.path.exists(folder):
@@ -51,7 +51,8 @@ class MTA_SKYNET(BaseTABitget):
                     name_bot = ks[self.symbol]
                     if name_bot != self.name_bot:
                         self.name_bot = name_bot
-                        self.write_log()
+                        if self.need_log:
+                            self.write_log()
                     if name_bot in self.dc:
                         self.tas = self.dc[name_bot]
                         return

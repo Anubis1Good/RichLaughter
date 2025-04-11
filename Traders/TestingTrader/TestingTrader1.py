@@ -76,7 +76,7 @@ class TestingTrader1:
         f.close()
     
     def init_ex_spec(self):
-        if self.exchange == 'MOEX':
+        if 'MOEX' in self.exchange:
             if self.spec == 'FUT':
                 self.fee = 0.00001
                 self.board = "RFUD"
@@ -88,7 +88,7 @@ class TestingTrader1:
                 self.market: str = "shares"
                 self.engine: str = "stock"
             self.trade_base = self.trade_bots_moex
-        if self.exchange == 'Bitget':
+        if 'Bitget' in self.exchange:
             self.fee = 0.0004
             self.trade_base = self.trade_bots_bitget
         
