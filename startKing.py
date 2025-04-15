@@ -380,7 +380,7 @@ class MainWindow(QWidget):
             top_bots_other = sorted(
                 avg_places.items(),
                 key=lambda x: x[1]
-            )[:5]
+            )[:10]
             
             # Добавляем в результат
             result_dict["Other"] = top_bots_other

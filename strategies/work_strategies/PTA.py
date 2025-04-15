@@ -20,10 +20,10 @@ class PTA2_BDDC_FIX(BaseTABitget):
         return df
     
     def __call__(self,row, *args, **kwds):
-        if row['high'] == row['max_hb']:
+        if row['high'] >= row['max_hb']:
             if self.can_long:
                 return 'long_pw'
-        if row['low'] == row['min_hb']:
+        if row['low'] <= row['min_hb']:
             if self.can_short:
                 return 'short_pw'
         if row['low'] < row['avarege']:
@@ -44,12 +44,12 @@ class PTA2_BDDCr_UNIVERSAL(BaseTABitget):
         return df
     
     def __call__(self,row, *args, **kwds):
-        if row['high'] == row['max_hb']:
+        if row['high'] >= row['max_hb']:
             if self.can_long:
                 return 'long_pw'
             else:
                 return "close_short_pw"
-        if row['low'] == row['min_hb']:
+        if row['low'] <= row['min_hb']:
             if self.can_short:
                 return 'short_pw'
             else:
@@ -138,10 +138,10 @@ class PTA2_DDCrWork(BaseTABitget):
         return df
     def __call__(self, row, *args, **kwds):
         nearest_long = row['high'] - row['close'] > row['close'] - row['low'] 
-        if row['low'] == row['min_hb']:
+        if row['low'] <= row['min_hb']:
             if nearest_long:
                 return 'long_pw'
-        if row['high'] == row['max_hb']:
+        if row['high'] >= row['max_hb']:
             return 'short_pw'
 #D         
 class PTA4_WDDCr(BaseTABitget):
@@ -156,11 +156,11 @@ class PTA4_WDDCr(BaseTABitget):
         return df
     def __call__(self, row, *args, **kwds):
         nearest_long = row['high'] - row['close'] > row['close'] - row['low'] 
-        if row['low'] == row['min_hb']:
+        if row['low'] <= row['min_hb']:
             if nearest_long:
                 if row['rsi'] < self.threshold:
                     return 'long_pw'
-        if row['high'] == row['max_hb']:
+        if row['high'] >= row['max_hb']:
             if row['rsi'] > 100-self.threshold:
                 return 'short_pw'
             
@@ -176,11 +176,11 @@ class PTA4_WDDCr2(BaseTABitget):
         return df
     def __call__(self, row, *args, **kwds):
         nearest_long = row['high'] - row['close'] > row['close'] - row['low'] 
-        if row['low'] == row['min_hb']:
+        if row['low'] <= row['min_hb']:
             if nearest_long:
                 if row['rsi_tw'] < self.threshold:
                     return 'long_pw'
-        if row['high'] == row['max_hb']:
+        if row['high'] >= row['max_hb']:
             if row['rsi_tw'] > 100-self.threshold:
                 return 'short_pw'
 #D         
@@ -196,13 +196,13 @@ class PTA4_WDDCr2E(BaseTABitget):
         return df
     def __call__(self, row, *args, **kwds):
         nearest_long = row['high'] - row['close'] > row['close'] - row['low'] 
-        if row['low'] == row['min_hb']:
+        if row['low'] <= row['min_hb']:
             if nearest_long:
                 if row['rsi_tw'] < self.threshold:
                     return 'long_pw'
                 else:
                     return 'close_short_pw'
-        if row['high'] == row['max_hb']:
+        if row['high'] >= row['max_hb']:
             if row['rsi_tw'] > 100-self.threshold:
                 return 'short_pw'
             else:
@@ -220,13 +220,13 @@ class PTA4_WDDCrE(BaseTABitget):
         return df
     def __call__(self, row, *args, **kwds):
         nearest_long = row['high'] - row['close'] > row['close'] - row['low'] 
-        if row['low'] == row['min_hb']:
+        if row['low'] <= row['min_hb']:
             if nearest_long:
                 if row['rsi'] < self.threshold:
                     return 'long_pw'
                 else:
                     return 'close_short_pw'
-        if row['high'] == row['max_hb']:
+        if row['high'] >= row['max_hb']:
             if row['rsi'] > 100-self.threshold:
                 return 'short_pw'
             else:
@@ -244,11 +244,11 @@ class PTA4_WDDCde(BaseTABitget):
         return df
     def __call__(self, row, *args, **kwds):
         nearest_long = row['high'] - row['close'] > row['close'] - row['low'] 
-        if row['low'] == row['min_hb']:
+        if row['low'] <= row['min_hb']:
             if nearest_long:
                 if row['rsi'] < self.threshold:
                     return 'long_pw'
-        if row['high'] == row['max_hb']:
+        if row['high'] >= row['max_hb']:
             if row['rsi'] > 100-self.threshold:
                 return 'short_pw'
         if row['high'] < row['avarege']:
@@ -430,11 +430,11 @@ class PTA4_WDDC(BaseTABitget):
         return df
     def __call__(self, row, *args, **kwds):
         nearest_long = row['high'] - row['close'] > row['close'] - row['low'] 
-        if row['low'] == row['min_hb']:
+        if row['low'] <= row['min_hb']:
             if nearest_long:
                 if row['rsi'] < self.threshold:
                     return 'long_pw'
-        if row['high'] == row['max_hb']:
+        if row['high'] >= row['max_hb']:
             if row['rsi'] > 100-self.threshold:
                 return 'short_pw'
         if row['close'] < row['avarege']:

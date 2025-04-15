@@ -10,7 +10,7 @@ from utils.draw_utils import draw_lite_chart,draw_chart_channel,draw_hb_chart,dr
 # from ForBots.Indicators.classic_indicators import add_donchan_channel,add_vangerchik,add_sma, add_slice_df,add_bollinger,add_over_bb,add_attached_bb,add_big_volume,add_dynamics_ma
 from strategies.test_strategies.check import check_strategy
 # from strategies.work_strategies.PTA import PTA2_BBBUr as WS
-# from strategies.work_strategies.PTAX import PTA16_ARTANIS as WS
+from strategies.work_strategies.PTAX import PTA15_VALLA as WS
 # from strategies.work_strategies.STA_ca import STA_mini as WS
 # from strategies.work_strategies.OGTA import OGTA5_CAT as WS
 # from strategies.work_strategies.LTA import LTA_PIN as WS
@@ -19,11 +19,11 @@ from strategies.test_strategies.check import check_strategy
 # from strategies.work_strategies.STA_ml2 import STAML2_NEWAVE as WS
 # from strategies.work_strategies.STA_ml import STAML1_XGBR2_DC as WS
 # from strategies.work_strategies.STA_rl import STARL1_HELPGOD as WS
-from strategies.work_strategies.experiments import ExpBot1 as WS
+# from strategies.work_strategies.experiments import ExpBot1 as WS
 
 from strategies.test_strategies.universal import universal_test_strategy as TS
 # raw_file = 'DataForTests\DataFromBitget\DOGEUSDT_1m_1739873922.csv'
-raw_file = 'DataForTests\DataFromMOEX\MMH5_1_1739993452.csv'
+raw_file = 'DataForTests\DataFromMOEX\MMM5_1_1744615735.csv'
 # raw_file = 'DataForTests\oldBitget\DOGEUSDT_1m_1741087742_big.csv'
 # raw_file = 'DataForTests\DataFromTicksBitget\DOGEUSDT_1m_from_ticks.csv'
 # raw_file = 'DataForTests\DataFromBitget\DOGEUSDT_3m_1739873329.csv'

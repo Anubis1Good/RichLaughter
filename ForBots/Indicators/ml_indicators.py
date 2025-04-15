@@ -92,7 +92,10 @@ def add_find_similar_pattern_lite(
     
     # Проверка данных
     if len(df) < window + forecast_length:
-        raise ValueError(f"Нужно минимум {window + forecast_length} баров, есть {len(df)}")
+        df['forecast_high'] = np.nan
+        df['forecast_low'] = np.nan
+        df['per_fs'] = np.nan
+        return df
     
     # Корректировка lookback
     lookback = min(lookback, len(close_prices) - (window + forecast_length))
@@ -133,7 +136,10 @@ def add_find_similar_pattern_lite(
             best_past_std = past_std
     
     if best_future is None:
-        raise ValueError("Не найдено подходящего паттерна.")
+        df['forecast_high'] = np.nan
+        df['forecast_low'] = np.nan
+        df['per_fs'] = np.nan
+        return df
     
     # Масштабируем прогноз
     scale = current_std / best_past_std if best_past_std > 1e-8 else 1.0

@@ -851,7 +851,7 @@ def get_top_today_king(db_path, granularity='1h'):
 
         # Выбираем топ-5 стратегий для каждого тикера
         top_strategies = df.groupby('ticker').apply(
-            lambda x: x.nlargest(5, 'total_result_fee')
+            lambda x: x.nlargest(10, 'total_result_fee')
         ).reset_index(drop=True)
 
         return top_strategies[['ticker', 'bot', 'total_result_fee']]

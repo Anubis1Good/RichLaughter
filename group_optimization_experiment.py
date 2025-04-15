@@ -4,11 +4,11 @@ from Optimiztion.Optimizator1 import Optimizator2
 from strategies.test_strategies.universal import universal_test_strategy as ts
 
 # from strategies.work_strategies.STA_ml import STAML1_PROPHET1s,STAML1_PROPHET2s,STAML1_PROPHET3s
-from strategies.work_strategies.STA_ml2 import STAML2_TRADITION,STAML2_CHAOS,STAML2_FLUX,STAML2_LEGACY
+# from strategies.work_strategies.STA_ml2 import STAML2_TRADITION,STAML2_CHAOS,STAML2_FLUX,STAML2_LEGACY
 # from strategies.work_strategies.LTA import LTA_EJIK,LTA_KARYCH,LTA_SAVUNIA,LTA_NUSHA,LTA_KOPATYCH,LTA_LOSYASH,LTA_BARASH,LTA_PIN
 # # from strategies.work_strategies.OGTA import OGTA4_DOG
 # from strategies.work_strategies.PTA import PTA4_WDDCr2,PTA4_WDDCr2E,PTA1_FEMA,PTA1_FSMA,PTA1_CEMA,PTA1_CSMA
-# from strategies.work_strategies.PTAX import PTA10_WIZARD
+from strategies.work_strategies.PTAX import PTA15_VALLA,PTA15_SILVANA
 
 def optimization_multi(ws,ts,params,test_folder,min_fee: float = 0.0004,
     max_fee: float = 0.0012):
@@ -46,28 +46,16 @@ max_fee: float = 0.0012
 # ]
 group = (
 
-    (STAML2_LEGACY,[
+    # (PTA15_SILVANA,[
+    #     range(5,106,5),
+    #     (20,30,40),
+    #     range(5,106,5),
+    # ]),
+
+    (PTA15_VALLA,[
         range(5,106,5),
-        (0,0.1,0.2,0.3,0.5),
-        (5,),
-        (0.5,1,1.5,2)
     ]),
-    (STAML2_CHAOS,[
-        (60,),
-        (2,3,4),
-        (10,20,30,60,100,200)
-    ]),
-    (STAML2_FLUX,[
-        (60,),
-        (0,0.1,0.2,0.3,0.5),
-        (2,3,4),
-        (10,20,30,60,100,200)
-    ]),
-    (STAML2_TRADITION,[
-        range(5,106,5),
-        (5,),
-        (0.5,1,1.5,2)
-    ]),
+
 
 )
 

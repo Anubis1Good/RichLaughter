@@ -19,7 +19,7 @@ from strategies.work_strategies.STA_ml2 import STAML2_SID as WS
 # from strategies.work_strategies.experiments import ExpBot as WS
 # raw_file = 'DataForTests\DataFromBitget\DOGEUSDT_1m_1739873922.csv'
 raw_file = 'DataForTests\DataFromBitget\DOGEUSDT_15m_1739873596.csv'
-raw_file = 'DataForTests\DataFromMOEX\MMH5_1_1739993452.csv'
+raw_file = 'DataForTests\DataFromMOEX\MMM5_1_1744615735.csv'
 df = bitget_loader(raw_file)
 
 

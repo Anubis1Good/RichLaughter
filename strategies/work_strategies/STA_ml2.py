@@ -1,4 +1,5 @@
 import numpy as np
+import pandas as pd
 from strategies.work_strategies.BaseTA import BaseTABitget
 from ForBots.Indicators.classic_indicators import add_slice_df,add_ema,add_enter_price2close,add_rsi
 from ForBots.Indicators.rare_indicators import add_dynamic_trend_lines_slope_reversed,add_segmented_regression_from_end
@@ -142,11 +143,12 @@ class STAML2_SID(BaseTABitget):
     """period=200,window=20,forecast_length=30,threshold=30
     \n
     """
-    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=200,window=10,forecast_length=5,threshold=30):
+    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=200,window=10,forecast_length=5,threshold=30,percent_threshold=0.1):
         super().__init__(symbol, granularity, productType, n_parts, period)
         self.window = window
         self.forecast_length = forecast_length
         self.threshold = threshold
+        self.percent_threshold = percent_threshold
     def preprocessing(self, df):
         df = add_rsi(df,self.window)
         df = add_find_similar_pattern_lite(df,self.window,self.period,forecast_length=self.forecast_length)
@@ -155,14 +157,16 @@ class STAML2_SID(BaseTABitget):
         return df
 
     def __call__(self, row, *args, **kwds):
+        if row is None:
+            return None
         delta_fc = (row['forecast_high'] - row['forecast_low'])/10
         if row['close'] > row['forecast_high'] - delta_fc :
-            if row['per_fs'] > 0.1 and row['rsi'] > 100-self.threshold:
+            if row['per_fs'] > self.percent_threshold and row['rsi'] > 100-self.threshold:
                 return 'short_pw'
             else:
                 return 'close_long_pw'
         if row['close'] < row['forecast_low'] + delta_fc :
-            if row['per_fs'] > 0.1 and row['rsi'] < self.threshold:
+            if row['per_fs'] > self.percent_threshold and row['rsi'] < self.threshold:
                 return 'long_pw'
             else:
                 return 'close_short_pw'
