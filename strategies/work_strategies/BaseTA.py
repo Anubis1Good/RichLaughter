@@ -17,8 +17,11 @@ class BaseTABitget:
         return df
     
     def get_test_row(self,df):
-        df = self.preprocessing(df)
-        return df.iloc[-1]
+        try:
+            df = self.preprocessing(df)
+            return df.iloc[-1]
+        except:
+            print(self.symbol,self.granularity, 'empty df!')
     
     def get_row(self):
         limit = self.period*3

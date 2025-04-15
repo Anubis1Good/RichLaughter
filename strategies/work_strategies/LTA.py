@@ -7,6 +7,7 @@ from ForBots.Indicators.price_funcs import get_universal_r,get_universal
 from utils.help_trades import reverse_action
 #D Похоже на WDDCr
 class LTA_LAKSA(BaseTABitget):
+    """period=20,period2=5"""
     def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=20,period2=5):
         super().__init__(symbol, granularity, productType, n_parts, period)
         self.period2 = period2

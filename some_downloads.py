@@ -10,10 +10,11 @@ start = end-week
 today = date.today()
 start_date = str(today - timedelta(days=30))
 # start_date = '2025-02-01'
-# fut = True
-fut = False
+fut = True
+# fut = False
 from request_functions.download_moex import save_df
-tickers = ['SBER','LKOH','GAZP',"MTLR","VTBR"]
+# tickers = ['SBER','LKOH','GAZP',"MTLR","VTBR"]
+tickers = ['MMM5']
 for ticker in tickers:
     print(ticker)
     if fut:

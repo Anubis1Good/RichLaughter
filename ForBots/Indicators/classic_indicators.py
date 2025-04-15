@@ -345,27 +345,47 @@ def add_rsi_tw(df, period=14, kind='close'):
     
     return df
 
+# def add_ema(df, period=20, kind='close'):
+#     """
+#     add 'ema'\n
+#     Вычисляет EMA для DataFrame с данными о ценах.
+    
+#     :param data: DataFrame с колонкой 'Close' (цены закрытия)
+#     :param period: Период EMA (по умолчанию 20)
+#     :param column: Название колонки с ценами (по умолчанию 'Close')
+#     :return: DataFrame с добавленной колонкой 'EMA'
+#     """
+#     # Вычисляем коэффициент сглаживания
+#     alpha = 2 / (period + 1)
+    
+#     # Вычисляем SMA для первой точки
+#     df['ema'] = df[kind].rolling(window=period).mean()
+    
+#     # Вычисляем EMA для остальных точек
+#     for i in range(period, len(df)):
+#         df.loc[df.index[i], 'ema'] = (df[kind].iloc[i] * alpha) + (df['ema'].iloc[i - 1] * (1 - alpha))
+    
+#     return df
 def add_ema(df, period=20, kind='close'):
     """
-    add 'ema'\n
     Вычисляет EMA для DataFrame с данными о ценах.
     
-    :param data: DataFrame с колонкой 'Close' (цены закрытия)
+    :param df: DataFrame с колонкой цен (по умолчанию 'close')
     :param period: Период EMA (по умолчанию 20)
-    :param column: Название колонки с ценами (по умолчанию 'Close')
-    :return: DataFrame с добавленной колонкой 'EMA'
+    :param kind: Название колонки с ценами (по умолчанию 'close')
+    :return: DataFrame с добавленной колонкой 'ema'
     """
-    # Вычисляем коэффициент сглаживания
     alpha = 2 / (period + 1)
     
-    # Вычисляем SMA для первой точки
-    df['ema'] = df[kind].rolling(window=period).mean()
+    # Используем expanding() и apply() для векторизованного расчета EMA
+    sma = df[kind].rolling(window=period, min_periods=period).mean()
+    ema = df[kind].ewm(alpha=alpha, adjust=False).mean()
     
-    # Вычисляем EMA для остальных точек
-    for i in range(period, len(df)):
-        df.loc[df.index[i], 'ema'] = (df[kind].iloc[i] * alpha) + (df['ema'].iloc[i - 1] * (1 - alpha))
+    # Комбинируем SMA (первые period-1 значений) и EMA (остальные значения)
+    df['ema'] = sma.where(sma.notna(), ema)
     
     return df
+
 
 def add_stochastic(df, k_period=14, d_period=3,kind='close'):
     """add 'lowest_so','highest_so','%k','%d' """

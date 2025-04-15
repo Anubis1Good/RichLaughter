@@ -25,7 +25,7 @@ class TestingTrader1:
         self.prepare_bots_outer()
         self.yesterday = str(date.today() - timedelta(days=3))
         self.check_time = False
-        self.check_time2 = False
+        self.check_time2 = True
         self.count_bars = 300
         self.start_info()
 
@@ -119,6 +119,7 @@ class TestingTrader1:
                 self.output('Ошибка')
             if self.check_time2:
                 self.output('Time:',time()-start)
+                self.check_time2 = False
 
     def close_all_pos(self):
         self.output('Close all position...')
