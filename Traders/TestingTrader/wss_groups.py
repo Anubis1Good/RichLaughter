@@ -196,7 +196,7 @@ wssBitgetFut1 = [
     (STA_mini,(14,0)),
 
     (STAML2_BALANCE,(60,2,200,30)),
-    (STAML2_SID,(200,10,5,30)),
+    # (STAML2_SID,(200,10,5,30)),
 
     (PTA2_BDDCr_UNIVERSAL,(14,True,True)), 
     (PTA2_BDDCr_UNIVERSAL,(14,True,False)), 
@@ -243,7 +243,7 @@ wssBitgetFut5 = [
     (STA_mini,(14,0)),
 
     (STAML2_BALANCE,(60,2,200,30)),
-    (STAML2_SID,(200,10,5,30)),
+    # (STAML2_SID,(200,10,5,30)),
 
     (PTA2_BDDCr_UNIVERSAL,(14,True,True)), 
     (PTA2_BDDCr_UNIVERSAL,(14,True,False)), 
@@ -294,7 +294,7 @@ wssBitgetFut15 = [
     (STA_mini,(14,0)),
 
     (STAML2_BALANCE,(60,2,200,30)),
-    (STAML2_SID,(200,10,5,30)),
+    # (STAML2_SID,(200,10,5,30)),
 
     (PTA2_BDDCr_UNIVERSAL,(7,True,True)), 
     (PTA2_BDDCr_UNIVERSAL,(7,True,False)), 
@@ -334,7 +334,7 @@ wssBitgetFut30 = [
     (STA_mini,(7,0)),
 
     (STAML2_BALANCE,(60,2,200,30)),
-    (STAML2_SID,(200,10,5,30)),
+    # (STAML2_SID,(200,10,5,30)),
 
 
     (PTA2_BDDCr_UNIVERSAL,(7,True,True)), 

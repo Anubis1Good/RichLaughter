@@ -8,16 +8,16 @@ archs = (
     Architect(
         'dbs/test_Bitget_FUT.db',
         ('1m','5m','15m','30m','1H'),
-        (1,4,8)
+        (8,24)
         ),
     Architect(
         'dbs/test_MOEX_FUT.db',
         (1,5),
-        (1,4,8)),
+        (8,24)),
     Architect(
         'dbs/test_MOEX_STOCK.db',
         (1,5),
-        (1,4,8)),
+        (8,24)),
 )
 
 smith = AgentSmith('_')

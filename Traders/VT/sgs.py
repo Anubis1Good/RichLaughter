@@ -1,6 +1,6 @@
 stock_groups= { 
     'LI':(
-        'MXI',
+        'MMM5',
         'ROSN',
         'MAGN',
         'CHMF',

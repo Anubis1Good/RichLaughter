@@ -1,12 +1,13 @@
-from strategies.work_strategies.LTA import *
-from strategies.work_strategies.PTA import *
-from strategies.work_strategies.PTAX import *
-from strategies.work_strategies.STA_ca import *
-from strategies.work_strategies.STA_ml import *
-from strategies.work_strategies.STA_ca import *
-from strategies.work_strategies.OGTA import *
-from strategies.work_strategies.MTA import *
-from strategies.work_strategies.BaseTA import BaseTABitget
+# from strategies.work_strategies.LTA import *
+# from strategies.work_strategies.PTA import *
+# from strategies.work_strategies.PTAX import *
+# from strategies.work_strategies.STA_ca import *
+# from strategies.work_strategies.STA_ml import *
+# from strategies.work_strategies.STA_ca import *
+# from strategies.work_strategies.OGTA import *
+# from strategies.work_strategies.MTA import *
+# from strategies.work_strategies.BaseTA import BaseTABitget
+from strategies.work_strategies.MTA_KING import MTA_KING
 
 from Optimiztion.Optimizator1 import generate_combinations
 
@@ -27,9 +28,11 @@ from Traders.QuikTrader.QuikTrader1 import QuikTrader1
 
 bot_on_ticker = (
     (
-        (PTA14_RWDDCr,(10,30,35,35)),
+        (MTA_KING,(100,'KING_5_MOEX_FUT')),
         (
-            ('MMM5','SPBFUT','M1',1),
+            ('MMM5','SPBFUT','M5',1),
+            ('RMM5','SPBFUT','M5',1),
+            ('CRM5','SPBFUT','M5',1),
         )
     ),
 )
