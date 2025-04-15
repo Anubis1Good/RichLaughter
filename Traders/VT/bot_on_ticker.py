@@ -29,6 +29,8 @@ bot_on_ticker = (
 
     ((MTA_KING,(100,'KING_5_MOEX_STOCK','u')),
      ('NVTK','RUAL','CHMF','GAZP','ALRS','TRMK','MTLR','LSRG','MAGN''NMTP','GMKN','AFLT','IRAO','ROSN','NLMK','TATN','AFKS','HYDR','PIKK','SELG','UPRO','YDEX','TRNFP','BANEP','RTKM','MGNT','SIBN','MOEX','MTSS','SNGSP','FESH','LKOH','CBOM','FEES','SBER','VTBR','SNGS')),
+    # ((MTA_KING,(100,'KING_1_MOEX_STOCK','u')),
+    #  ('',)),
     ((MTA_KING,(100,'KING_1_MOEX_FUT','u')),
      ('CRM5','MMM5','MXM5','GZM5','SRM5','RIM5','RMM5','SiM5')),
 

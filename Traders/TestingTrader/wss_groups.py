@@ -1,7 +1,7 @@
 from strategies.work_strategies.PTA import PTA4_WDDCr,PTA4_WDDCrE,PTA4_WDDCrVG,PTA4_WDVCr,PTA4_WLISICA,PTA8_WDOBBY_FREEr,PTA4_UNIVERSAL,PTA2_LISICA,PTA4_WDDC,PTA8_OBBY,PTA2_DDCrWork,PTA2_BDDCr_UNIVERSAL,PTA2_BDDC_FIX,PTA2_BVGFIX,PTA2_BBBU,PTA2_BBBUr,PTA2_DDCrVG,PTA2_DVCr,PTA2_VOLCHARA,PTA8_LOBSTER
-from strategies.work_strategies.PTAX import PTA10_WIZARD,PTA10_SORCERER,PTA11_KUSURUKEN,PTA12_SWDDCr,PTA14_RWDDCr,PTA15_NOVA,PTA15_KERRIGAN,PTA15_WIDOWMAKER,PTA15_TRACER,PTA10_MAGIC,PTA13_DWDDCr
+from strategies.work_strategies.PTAX import PTA10_WIZARD,PTA10_SORCERER,PTA11_KUSURUKEN,PTA12_SWDDCr,PTA14_RWDDCr,PTA15_NOVA,PTA15_KERRIGAN,PTA15_WIDOWMAKER,PTA15_TRACER,PTA10_MAGIC,PTA13_DWDDCr,PTA15_SILVANA,PTA15_VALLA
 
-from strategies.work_strategies.STA_ml2 import STAML2_CHAOS,STAML2_BALANCE,STAML2_NEWAVE,STAML2_SID
+from strategies.work_strategies.STA_ml2 import STAML2_CHAOS,STAML2_NEWAVE,STAML2_SID,STAML2_GOLDENMEAN
 from strategies.work_strategies.STA_ca import STA_mini
 from strategies.work_strategies.LTA import LTA_OKROSHKA,LTA_PIN,LTA_KARYCH,LTA_LAKSA,LTA_LAKSAe
 # from strategies.work_strategies.LTA2 import LTA2_MONSTER,LTA2_OVERLORD
@@ -20,9 +20,10 @@ wssMoexFut = [
     (STA_mini,(7,0)),
 
     (STAML2_CHAOS,(60,2,30)),
-    # (STAML2_BALANCE,(60,2,30,30)),
+    (STAML2_GOLDENMEAN,(60,2,30,30)),
     (STAML2_NEWAVE,(5,5,0.5,30)),
-    # (STAML2_SID,(200,10,5,30)),
+    (STAML2_SID,(200,10,5,30)),
+    (STAML2_SID,(200,10,5,30,0.05)),
 
     (PTA2_DDCrWork,(5,)),
     (PTA2_LISICA,(7,2)), 
@@ -96,8 +97,12 @@ wssMoexFut = [
 
    
     (PTA15_KERRIGAN,(5,)), #A
-    (PTA15_NOVA,(5,)), #A
     (PTA15_WIDOWMAKER,(5,30)), 
+    (PTA15_SILVANA,(5,30,5)), 
+
+    (PTA15_VALLA,(10,0)), 
+    (PTA15_VALLA,(10,1)), 
+    (PTA15_VALLA,(10,-1)), 
 
     (PTA15_TRACER,(10,0)), 
     (PTA15_TRACER,(10,1)), 
@@ -116,7 +121,8 @@ wssMoexStocks = [
     (STA_mini,(60,0)),
     (STA_mini,(60,1)),
 
-    # (STAML2_BALANCE,(60,2,200,30)),
+    (STAML2_GOLDENMEAN,(60,2,200,30)),
+    (STAML2_SID,(200,10,5,30,0.2)),
 
     (PTA2_LISICA,(10,1)), 
     (PTA2_LISICA,(60,2)), 
@@ -181,7 +187,7 @@ wssMoexStocks = [
     (PTA14_RWDDCr,(90,50,10,90)), #F
 
     (PTA15_WIDOWMAKER,(30,30)), 
-
+    (PTA15_SILVANA,(20,40,65)), 
     (PTA15_TRACER,(20,0)), 
     (PTA15_TRACER,(20,1)), 
     (PTA15_TRACER,(20,-1)), 
@@ -195,8 +201,8 @@ wssBitgetFut1 = [
     (STA_mini,(14,1)),
     (STA_mini,(14,0)),
 
-    (STAML2_BALANCE,(60,2,200,30)),
-    # (STAML2_SID,(200,10,5,30)),
+    (STAML2_GOLDENMEAN,(60,2,200,30)),
+    (STAML2_SID,(200,10,5,30,0.2)),
 
     (PTA2_BDDCr_UNIVERSAL,(14,True,True)), 
     (PTA2_BDDCr_UNIVERSAL,(14,True,False)), 
@@ -231,6 +237,10 @@ wssBitgetFut1 = [
 
     (PTA12_SWDDCr,(15,30,0.25,5,20)), #A
 
+    (PTA15_VALLA,(70,0)), 
+    (PTA15_VALLA,(70,1)), 
+    (PTA15_VALLA,(70,-1)), 
+
     (PTA15_TRACER,(20,0)), 
     (PTA15_TRACER,(20,1)), 
     (PTA15_TRACER,(20,-1)), 
@@ -242,8 +252,8 @@ wssBitgetFut5 = [
     (STA_mini,(14,1)),
     (STA_mini,(14,0)),
 
-    (STAML2_BALANCE,(60,2,200,30)),
-    # (STAML2_SID,(200,10,5,30)),
+    (STAML2_GOLDENMEAN,(60,2,200,30)),
+    (STAML2_SID,(200,10,5,30,0.2)),
 
     (PTA2_BDDCr_UNIVERSAL,(14,True,True)), 
     (PTA2_BDDCr_UNIVERSAL,(14,True,False)), 
@@ -283,6 +293,7 @@ wssBitgetFut5 = [
 
     (PTA14_RWDDCr,(10,10,20,25)), #A
 
+    (PTA15_SILVANA,(35,40,50)), 
     (PTA15_TRACER,(20,0)), 
     (PTA15_TRACER,(20,1)), 
     (PTA15_TRACER,(20,-1)), 
@@ -293,8 +304,8 @@ wssBitgetFut15 = [
     (STA_mini,(14,1)),
     (STA_mini,(14,0)),
 
-    (STAML2_BALANCE,(60,2,200,30)),
-    # (STAML2_SID,(200,10,5,30)),
+    (STAML2_GOLDENMEAN,(60,2,200,30)),
+    (STAML2_SID,(200,10,5,30,0.2)),
 
     (PTA2_BDDCr_UNIVERSAL,(7,True,True)), 
     (PTA2_BDDCr_UNIVERSAL,(7,True,False)), 
@@ -324,6 +335,11 @@ wssBitgetFut15 = [
     (PTA12_SWDDCr,(20,30,0.25,15,5)), #A
     (PTA12_SWDDCr,(5,10,0.25,10,20)), #A
 
+    (PTA15_SILVANA,(45,40,35)), 
+    
+    (PTA15_VALLA,(45,0)), 
+    (PTA15_VALLA,(45,1)), 
+    (PTA15_VALLA,(45,-1)), 
     (PTA15_TRACER,(20,0)), 
     (PTA15_TRACER,(20,1)), 
     (PTA15_TRACER,(20,-1)), 
@@ -333,9 +349,8 @@ wssBitgetFut30 = [
     (STA_mini,(7,1)),
     (STA_mini,(7,0)),
 
-    (STAML2_BALANCE,(60,2,200,30)),
-    # (STAML2_SID,(200,10,5,30)),
-
+    (STAML2_GOLDENMEAN,(60,2,200,30)),
+    (STAML2_SID,(200,10,5,30,0.2)),
 
     (PTA2_BDDCr_UNIVERSAL,(7,True,True)), 
     (PTA2_BDDCr_UNIVERSAL,(7,True,False)), 

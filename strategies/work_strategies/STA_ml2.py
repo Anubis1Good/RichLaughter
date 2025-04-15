@@ -138,9 +138,36 @@ class STAML2_BALANCE(BaseTABitget):
                 if row['rsi'] < self.threshold:
                     return 'long_pw'
             
+class STAML2_GOLDENMEAN(BaseTABitget):
+    """ period=60,min_points=2,divider=30,threshold=30"""
+    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=60,min_points=2,divider=30,threshold=30):
+        super().__init__(symbol, granularity, productType, n_parts, period)
+        self.min_points = min_points
+        self.divider = divider
+        self.threshold = threshold
+    def preprocessing(self, df):
+        df = add_dynamic_trend_lines_slope_reversed(df,self.min_points,self.divider)
+        df = add_rsi(df,self.period)
+        df = add_enter_price2close(df) 
+        df = add_slice_df(df, self.period) 
+        return df
+
+    def __call__(self, row, *args, **kwds):
+        if row['trend_up_combined'] < row['trend_down_combined']:
+            if row['trend_down_combined'] < row['close']:
+                if row['rsi'] > 100-self.threshold:
+                    return 'short_pw'
+                else:
+                    return 'close_long_pw'
+            if row['trend_up_combined'] > row['close']:
+                if row['rsi'] < self.threshold:
+                    return 'long_pw'
+                else:
+                    return 'close_short_pw'
+            
 
 class STAML2_SID(BaseTABitget):
-    """period=200,window=20,forecast_length=30,threshold=30
+    """period=200,window=10,forecast_length=5,threshold=30,percent_threshold=0.1
     \n
     """
     def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=200,window=10,forecast_length=5,threshold=30,percent_threshold=0.1):

@@ -24,11 +24,11 @@ def optimization_multi(ws,ts,params,test_folder,min_fee: float = 0.0004,
             print(rw,'not stocks')
 
 test_folder = 'DataForTests\DataFromBitget'
-# test_folder = 'DataForTests\DataFromMOEX'
+test_folder = 'DataForTests\DataFromMOEX'
 min_fee: float = 0.0004
 max_fee: float = 0.0012
-# min_fee = 0.0002
-# max_fee = 0.0009
+min_fee = 0.0002
+max_fee = 0.0009
 # params1 = [
 #     [3,4] + list(range(5,26,5)),
 #     (0.5,1,2,3)
@@ -46,11 +46,11 @@ max_fee: float = 0.0012
 # ]
 group = (
 
-    # (PTA15_SILVANA,[
-    #     range(5,106,5),
-    #     (20,30,40),
-    #     range(5,106,5),
-    # ]),
+    (PTA15_SILVANA,[
+        range(5,106,5),
+        (20,30,40),
+        range(5,106,5),
+    ]),
 
     (PTA15_VALLA,[
         range(5,106,5),

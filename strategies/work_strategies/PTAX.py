@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 from request_functions.download_bitget import get_df
 from ForBots.Indicators.classic_indicators import add_donchan_channel,add_slice_df,add_big_volume,add_dynamics_ma,add_bollinger,add_over_bb,add_enter_price,add_buffer_add,add_buffer_sub,add_vangerchik,add_simple_dynamics_ma,add_vodka_channel,add_rsi,add_enter_price2close,add_macd,add_rsi_tw,add_adx,add_chop,add_kusuruken_channel,add_awesome_oscillator
-from ForBots.Indicators.pva_indicators import add_benefit
+from ForBots.Indicators.pva_indicators import add_benefit,add_velcro_indicator
 from ForBots.Indicators.help_pva_indicators import get_all_enter_exit_DC,get_all_lup
 from utils.help_trades import reverse_action,chep
 from strategies.work_strategies.BaseTA import BaseTABitget
@@ -538,3 +538,35 @@ class PTA16_ARTANIS(BaseTABitget):
             return 'close_long_pw'
         if row[best_s] < 0:
             return 'close_short_pw'
+
+# TODO
+class PTA17_PHOENIX(BaseTABitget):
+    """period=60,threshold=30,period2=20"""
+    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=60,threshold=30,period2=20,threshold_velcro=50,rsi_mode=0):
+        super().__init__(symbol, granularity, productType, n_parts, period)
+        self.threshold = threshold
+        self.threshold_velcro = threshold_velcro
+        self.period2 = period2
+        self.rsi_mode = rsi_mode
+    def preprocessing(self, df:pd.DataFrame):
+        df = add_donchan_channel(df,self.period)
+        df = add_velcro_indicator(df,self.period)
+        df = add_rsi(df,self.period2)
+        df = add_enter_price2close(df)
+        df = add_slice_df(df,period=self.period)
+        return df
+    def __call__(self, row, *args, **kwds):
+        nearest_long = row['high'] - row['close'] > row['close'] - row['low'] 
+        if row['low'] <= row['min_hb']:
+            if nearest_long:
+                if row['rsi'] < self.threshold:
+                    if row['ao'] > 0:
+                        return 'long_pw'
+                    else:
+                        return 'close_short_pw'
+        if row['high'] >= row['max_hb']:
+            if row['rsi'] > 100-self.threshold:
+                if row['ao'] < 0:
+                    return 'short_pw'
+                else:
+                    return 'close_long_pw'
