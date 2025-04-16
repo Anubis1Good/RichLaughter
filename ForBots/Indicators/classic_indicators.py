@@ -293,6 +293,63 @@ def add_fractals(df, period=5):
     
     return df
 
+def add_fractal_zones(df, period=5):
+    """
+    add 'fractal_up_high', 
+        'fractal_down_low',
+        'fractal_up_middle',
+        'fractal_down_middle',
+        'fractal_middle'
+    Добавляет фракталы с использованием middle в качестве второй точки
+    
+    Параметры:
+    df (pd.DataFrame): DataFrame с колонками 'high', 'low', 'middle'
+    period (int): Количество свечей для поиска фракталов (нечетное)
+    
+    Возвращает:
+    pd.DataFrame: С добавленными колонками:
+    - fractal_up_high: Значение high для фрактала вверх
+    - fractal_down_low: Значение low для фрактала вниз
+    - fractal_up_middle: Значение middle для фрактала вверх
+    - fractal_down_middle: Значение middle для фрактала вниз
+    """
+    shift = (period - 1) // 2
+    
+    # Проверка наличия необходимых колонок
+    if 'middle' not in df.columns:
+        raise ValueError("DataFrame должен содержать колонку 'middle'")
+    
+    # Создаем маски для фракталов
+    up_mask = pd.Series(True, index=df.index)
+    down_mask = pd.Series(True, index=df.index)
+    
+    for i in range(1, shift + 1):
+        up_mask &= (df['high'] > df['high'].shift(i)) 
+        up_mask &= (df['high'] > df['high'].shift(-i))
+        
+        down_mask &= (df['low'] < df['low'].shift(i))
+        down_mask &= (df['low'] < df['low'].shift(-i))
+
+    # Создаем колонки с значениями
+    df['fractal_up_high'] = df['high'].where(up_mask)
+    df['fractal_down_low'] = df['low'].where(down_mask)
+    
+    # Добавляем middle значения
+    df['fractal_up_middle'] = df['middle'].where(up_mask)
+    df['fractal_down_middle'] = df['middle'].where(down_mask)
+    
+    # Заполняем пропуски вперед
+    fractal_cols = [
+        'fractal_up_high', 
+        'fractal_down_low',
+        'fractal_up_middle',
+        'fractal_down_middle'
+    ]
+    
+    df[fractal_cols] = df[fractal_cols].ffill()
+    df['fractal_middle'] = (df['fractal_up_high'] - df['fractal_down_low'])/2 + df['fractal_down_low']
+    return df
+
 def add_rsi(df, period=14,kind='close'):
     """
     add 'rsi'\n

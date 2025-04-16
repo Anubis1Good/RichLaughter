@@ -3,6 +3,7 @@ import numpy as np
 from ForBots.Indicators.classic_indicators import *
 from ForBots.Indicators.vsa_indicators import *
 from ForBots.Indicators.ml_indicators import *
+from ForBots.Indicators.pva_indicators import *
 from strategies.work_strategies.BaseTA import BaseTABitget
 import matplotlib.pyplot as plt
 
@@ -25,6 +26,28 @@ class TemplateBot(BaseTABitget):
 
         # Сигнал на продажу (short)
         if row['signal'] == -1:  
+            return 'short_pw'  # Сигнал на продажу
+        
+class ExpBot(BaseTABitget):
+    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=20):
+        super().__init__(symbol, granularity, productType, n_parts, period)
+
+    def preprocessing(self, df):
+
+        df = add_enter_price2close(df)  
+        df = add_kvas_channel(df,self.period)
+        df = add_slice_df(df, period=self.period) 
+        # df['signal'] = add_signal(df) # поиск какого-то сигнала
+        return df
+
+    def __call__(self, row, *args, **kwds):
+
+        # Сигнал на покупку (long)
+        if row['close'] <= row['low_kvas']:  
+            return 'long_pw'  # Сигнал на покупку
+
+        # Сигнал на продажу (short)
+        if row['close'] >= row['top_kvas']: 
             return 'short_pw'  # Сигнал на продажу
         
         # так же могут быть 'close_long_pw','close_short_pw'
@@ -134,3 +157,70 @@ class ToThinkBot(BaseTABitget):
         return None
     
 
+import pandas as pd
+import numpy as np
+from ForBots.Indicators.van_indicators import add_van_zigzag
+
+class ZigZagBot(BaseTABitget):
+    def __init__(self, symbol="BTCUSDT", granularity="1m", 
+                 productType="usdt-futures", period=14):
+        super().__init__(symbol, granularity, productType, n_parts=1, period=period)
+        self.min_swing = 0.001  # 0.1% для разворота
+        self.trend_confirmation = 2  # подтверждающих свечи
+
+    def preprocessing(self, df):
+        df = add_enter_price2close(df)
+        df = self._calculate_zigzag(df)
+        df['signal'] = self._generate_signals(df)
+        return df
+
+    def __call__(self, row, *args, **kwds):
+        if row['signal'] == 1: 
+            return 'long_pw'
+        if row['signal'] == -1: 
+            return 'short_pw'
+        return None
+
+    def _calculate_zigzag(self, df):
+        """Упрощенный ZigZag с базовой логикой"""
+        df['zigzag'] = np.nan
+        last_high = df['high'].iloc[0]
+        last_low = df['low'].iloc[0]
+        trend = 0
+        
+        for i in range(1, len(df)):
+            # Определение экстремумов
+            current_high = df['high'].iloc[i]
+            current_low = df['low'].iloc[i]
+            
+            if trend <= 0 and current_high > last_high * (1 + self.min_swing):
+                df.at[i, 'zigzag'] = current_high
+                last_high = current_high
+                trend = 1
+                
+            elif trend >= 0 and current_low < last_low * (1 - self.min_swing):
+                df.at[i, 'zigzag'] = current_low
+                last_low = current_low
+                trend = -1
+                
+        return df
+
+    def _generate_signals(self, df):
+        """Генерация сигналов с подтверждением"""
+        signals = np.zeros(len(df))
+        
+        for i in range(2, len(df)):
+            if np.isnan(df['zigzag'].iloc[i]):
+                continue
+                
+            # Для лонга: новый минимум + подтверждение
+            if df['zigzag'].iloc[i] == df['low'].iloc[i] and \
+               df['close'].iloc[i] > df['close'].iloc[i-self.trend_confirmation:i].mean():
+                signals[i] = 1
+                
+            # Для шорта: новый максимум + подтверждение 
+            elif df['zigzag'].iloc[i] == df['high'].iloc[i] and \
+                 df['close'].iloc[i] < df['close'].iloc[i-self.trend_confirmation:i].mean():
+                signals[i] = -1
+                
+        return signals

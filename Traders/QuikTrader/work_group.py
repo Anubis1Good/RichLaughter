@@ -33,6 +33,7 @@ bot_on_ticker = (
             ('MMM5','SPBFUT','M5',1),
             ('RMM5','SPBFUT','M5',1),
             ('CRM5','SPBFUT','M5',1),
+            ('GZM5','SPBFUT','M5',1),
         )
     ),
 )

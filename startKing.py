@@ -2,7 +2,7 @@ import os
 import json
 import pandas as pd
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QApplication,QWidget,QListWidget,QPushButton,QHBoxLayout,QVBoxLayout,QDialog
+from PyQt5.QtWidgets import QApplication,QWidget,QListWidget,QPushButton,QHBoxLayout,QVBoxLayout,QDialog,QLabel,QTextBrowser
 from Traders.TestingTrader.tickers_groups import tickersBitgetFut,tickersMoexFut,tickersMoexStock
 from Traders.TestingTrader.wss_maps import moexFutMap,bitgetFutMap,moexStockMap,moexMTAFutMap,moexMTAStockMap,bitgetMTAFutMap
 from strategies.work_strategies.HelpTA import CloseTA,BaseTABitget
@@ -73,41 +73,7 @@ def prepare_timeframe(raw_map:dict):
     keys = tuple(map(lambda x: str(x),keys))
     return keys
 
-class StrategySelectionDialog(QDialog):
-    def __init__(self, strategies, parent=None):
-        super().__init__(parent)
-        self.setWindowTitle("Выбор стратегии")
-        self.setGeometry(100, 100, 400, 300)
-        
-        self.layout = QVBoxLayout()
-        
-        # Список стратегий
-        self.list_widget = QListWidget()
-        for bot, score in strategies.items():
-            self.list_widget.addItem(f"{bot}: {score:.5f}")
-        self.layout.addWidget(self.list_widget)
-        
-        # Кнопка выбора
-        self.select_button = QPushButton("Выбрать")
-        self.select_button.clicked.connect(self.accept)
-        self.layout.addWidget(self.select_button)
-        
-        self.setLayout(self.layout)
-    
-    def selected_strategy(self):
-        # Возвращает выбранную стратегию (без значения)
-        selected_item = self.list_widget.currentItem()
-        if selected_item:
-            return selected_item.text().split(":")[0].strip()
-        return None
-
-class MainWindow(QWidget):
-    def __init__(self):
-        super().__init__()
-        self.setWindowTitle('StartKing')
-        self.main_layout = QHBoxLayout()
-        self.resize(1400,800)
-        self.setStyleSheet("""
+stylesheet = """
             QWidget {
                 background-color: #5CCDC9;
             }
@@ -139,7 +105,7 @@ class MainWindow(QWidget):
                 qproperty-alignment: 'AlignCenter';
                 border-radius: 5px;
                 color: white;
-                font-size:18px;
+                font-size:14px;
             }
             QPushButton {
                 background-color: #006561;
@@ -155,7 +121,99 @@ class MainWindow(QWidget):
             QPushButton:pressed {
                 background-color: #A6A600;
             }
-        """)
+            QTextBrowser {
+                background-color: #009B95;
+                border-radius: 5px;
+                color: white;
+                font-size:14px;
+                padding: 5px;
+                margin: 5px;
+            }
+        """
+
+class StrategySelectionDialog(QDialog):
+    def __init__(self, strategies, parent=None):
+        super().__init__(parent)
+        self.setWindowTitle("Выбор стратегии")
+        self.setGeometry(100, 100, 400, 300)
+        
+        self.layout = QVBoxLayout()
+        
+        # Список стратегий
+        self.list_widget = QListWidget()
+        for bot, score in strategies.items():
+            self.list_widget.addItem(f"{bot}: {score:.5f}")
+        self.layout.addWidget(self.list_widget)
+        
+        # Кнопка выбора
+        self.select_button = QPushButton("Выбрать")
+        self.select_button.clicked.connect(self.accept)
+        self.layout.addWidget(self.select_button)
+        
+        self.setLayout(self.layout)
+        self.center_on_parent()
+
+    def center_on_parent(self):
+        if self.parent():
+            # Получаем геометрию родительского окна
+            parent_geometry = self.parent().geometry()
+            
+            # Вычисляем центр родительского окна
+            x = parent_geometry.x() + (parent_geometry.width() - self.width()) // 2
+            y = parent_geometry.y() + (parent_geometry.height() - self.height()) // 2
+            
+            # Устанавливаем позицию
+            self.move(x, y)
+    def selected_strategy(self):
+        # Возвращает выбранную стратегию (без значения)
+        selected_item = self.list_widget.currentItem()
+        if selected_item:
+            return selected_item.text().split(":")[0].strip()
+        return None
+
+class InfoWindow(QDialog):
+    def __init__(self, data, parent=None):
+        super().__init__()
+        text = ''
+        for d in data:
+            text += f"{d} : {data[d]}\n"
+        self.data = text
+        self.initUI()
+        self.center_on_parent()
+
+    def center_on_parent(self):
+        if self.parent():
+            # Получаем геометрию родительского окна
+            parent_geometry = self.parent().geometry()
+            
+            # Вычисляем центр родительского окна
+            x = parent_geometry.x() + (parent_geometry.width() - self.width()) // 2
+            y = parent_geometry.y() + (parent_geometry.height() - self.height()) // 2
+            
+            # Устанавливаем позицию
+            self.move(x, y)
+
+    def initUI(self):
+        self.setWindowTitle('Детальная информация')
+        self.setFixedSize(500, 500)
+        self.setStyleSheet(stylesheet)
+        label = QTextBrowser(self)
+        label.setText(self.data)
+        close_btn = QPushButton('Закрыть', self)
+        close_btn.clicked.connect(self.close)
+
+        layout = QVBoxLayout()
+        layout.addWidget(label)
+        layout.addWidget(close_btn)
+        self.setLayout(layout)
+
+class MainWindow(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle('StartKing')
+        self.main_layout = QHBoxLayout()
+        self.resize(1400,800)
+        self.setStyleSheet(stylesheet)
         self.init_btn_style = """
             QPushButton {
                 background-color: #006561;
@@ -228,23 +286,23 @@ class MainWindow(QWidget):
             unlock_all_btn = QPushButton(text='UnlockAll')
             unlock_btn = QPushButton(text='Unlock')
             check_best_today_btn = QPushButton(text='CheckBestToday')
-            set_start_ticker_btn = QPushButton(text="SetStrategy")
-            sleep_all_btn = QPushButton(text="SleepAll")
+            set_strat_ticker_btn = QPushButton(text="SetStrategy")
+            cur_choices_btn = QPushButton(text="CurrentChoices")
             close_all_btn = QPushButton(text="CloseAll")
-            set_btd_btn = QPushButton(text='SetBTD')
+            set_strat_all_btn = QPushButton(text='SetAllInterval')
 
             bwll1.addWidget(best_today_btn)
             bwll1.addWidget(best_mta_today_btn)
             bwll1.addWidget(check_best_today_btn)
-            bwll1.addWidget(set_start_ticker_btn)
-            bwll1.addWidget(sleep_all_btn)
+            bwll1.addWidget(set_strat_ticker_btn)
+            bwll1.addWidget(set_strat_all_btn)
             bwll1.addWidget(close_all_btn)
             bwll2.addWidget(load_btn)
             bwll2.addWidget(write_btn)
             bwll2.addWidget(send_btn)
             bwll2.addWidget(unlock_btn)
             bwll2.addWidget(unlock_all_btn)
-            bwll2.addWidget(set_btd_btn)
+            bwll2.addWidget(cur_choices_btn)
             self.line4.addWidget(bw)
             self.bws.append(bw)
 
@@ -259,14 +317,14 @@ class MainWindow(QWidget):
             write_btn.clicked.connect(lambda check,dc=dc: self.write_files(exchages[dc]))
             load_btn.clicked.connect(lambda check,dc=dc: self.load_files(exchages[dc]))
             send_btn.clicked.connect(lambda check,dc=dc: self.send_files(exchages[dc]))
-            set_start_ticker_btn.clicked.connect(lambda check,dc=dc: self.set_strategy(dc))
+            set_strat_ticker_btn.clicked.connect(lambda check,dc=dc: self.set_strategy(dc))
             unlock_all_btn.clicked.connect(lambda check,dc=dc: self.unlock_all(dc))
             unlock_btn.clicked.connect(lambda check,dc=dc: self.unlock(dc))
             close_all_btn.clicked.connect(lambda check,dc=dc: self.set_help_all(dc,'CloseTA'))
-            sleep_all_btn.clicked.connect(lambda check,dc=dc: self.set_help_all(dc,'BaseTA'))
+            cur_choices_btn.clicked.connect(lambda check,dc=dc: self.show_cur_choice(dc))
             best_mta_today_btn.clicked.connect(lambda check,dc=dc: self.set_best_mta_strategies(dc))
             best_today_btn.clicked.connect(lambda check,dc=dc: self.set_best_bot_strategies(dc))
-            set_btd_btn.clicked.connect(lambda check,dc=dc: self.set_btd_all(dc))
+            set_strat_all_btn.clicked.connect(lambda check,dc=dc: self.set_strat_all(dc))
             check_best_today_btn.clicked.connect(lambda check,dc=dc: self.check_best_strategies_on_bot(dc))
 
             self.locks[exchages[dc]] = {}
@@ -328,12 +386,28 @@ class MainWindow(QWidget):
             for ticker in self.picks[exchages[index_ex]][t]:
                 if not ticker in self.locks[exchages[index_ex]][t]:
                     self.picks[exchages[index_ex]][t][ticker] = bot_key
+    
+    def show_cur_choice(self,index_ex):
+        # Получаем выбранный timeframe
+        if self.qlwts[index_ex].currentItem():
+            timeframe = self.qlwts[index_ex].currentItem().text()
+            data = self.picks[exchages[index_ex]][timeframe]
+            
+            self.info_window = InfoWindow(data, self)  # Передаем self как родителя
+            self.info_window.setWindowModality(Qt.WindowModal)  # Модальное окно
+            self.info_window.show()
 
-    def set_btd_all(self,index_ex):
-        for t in self.picks[exchages[index_ex]]:
+    def set_strat_all(self,index_ex):
+        try:
+            ticker = self.qlwss[index_ex].currentItem().text()
+            t = self.qlwts[index_ex].currentItem().text()
+            strategy = self.qlwbs[index_ex].currentItem().text()
             for ticker in self.picks[exchages[index_ex]][t]:
                 if not ticker in self.locks[exchages[index_ex]][t]:
-                    self.picks[exchages[index_ex]][t][ticker] = t+"_MTA_SKYNET_100_BTD_1_test_MOEX_FUT"
+                    self.picks[exchages[index_ex]][t][ticker] = strategy
+        except:
+            print('Choice strategy')
+
 
     def processing_df(self, df):
         if df is None or df.empty or 'ticker' not in df.columns or 'bot' not in df.columns:

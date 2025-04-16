@@ -297,6 +297,37 @@ class PTA15_WIDOWMAKER(BaseTABitget):
             if row['rsi'] > 100-self.threshold:
                 return 'short_pw'
             
+class PTA15_ANNA(BaseTABitget):
+    """period=20,threshold=30"""
+    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=20,threshold=30):
+        super().__init__(symbol, granularity, productType, n_parts, period)
+        self.threshold = threshold
+    def preprocessing(self, df:pd.DataFrame):
+        df['max_hb'] = df['high'].rolling(self.period).max()
+        df['min_hb'] = df['low'].rolling(self.period).min()
+        df['max_hb'] = df['max_hb'].shift(1)
+        df['min_hb'] = df['min_hb'].shift(1)
+        df = add_rsi(df,self.period)
+        df['end_up'] = np.where((df['high'].shift(1) >= df['max_hb'].shift(1))&(df['high'] < df['max_hb']), df['high'], np.nan)
+        df['end_down'] = np.where((df['low'].shift(1) <= df['min_hb'].shift(1))&(df['low'] > df['min_hb']), df['low'], np.nan)
+
+        df = add_enter_price2close(df)
+        df = add_slice_df(df,period=self.period)
+        return df
+    def __call__(self, row, *args, **kwds):
+        nearest_long = row['high'] - row['close'] > row['close'] - row['low'] 
+        if not np.isnan(row['end_down']):
+            if nearest_long:
+                if row['rsi'] < self.threshold:
+                    return 'long_pw'
+                else:
+                    return 'close_short_pw'
+        if not np.isnan(row['end_up']):
+            if row['rsi'] > 100-self.threshold:
+                return 'short_pw'
+            else:
+                return 'close_long_pw'
+            
 class PTA15_SILVANA(BaseTABitget):
     """period=20,threshold=30,period2=20"""
     def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=20,threshold=30,period2=20):
@@ -542,7 +573,7 @@ class PTA16_ARTANIS(BaseTABitget):
 # TODO
 class PTA17_PHOENIX(BaseTABitget):
     """period=60,threshold=30,period2=20"""
-    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=60,threshold=30,period2=20,threshold_velcro=50,rsi_mode=0):
+    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=20,threshold=30,period2=20,threshold_velcro=50,rsi_mode=0):
         super().__init__(symbol, granularity, productType, n_parts, period)
         self.threshold = threshold
         self.threshold_velcro = threshold_velcro
@@ -559,14 +590,21 @@ class PTA17_PHOENIX(BaseTABitget):
         nearest_long = row['high'] - row['close'] > row['close'] - row['low'] 
         if row['low'] <= row['min_hb']:
             if nearest_long:
-                if row['rsi'] < self.threshold:
-                    if row['ao'] > 0:
+                    if row['velcro'] > 100-self.threshold_velcro:
                         return 'long_pw'
                     else:
-                        return 'close_short_pw'
+                        if self.rsi_mode:
+                            if row['rsi'] < self.threshold:
+                                return 'close_short_pw'
+                        else:
+                            return 'close_short_pw'
+
         if row['high'] >= row['max_hb']:
-            if row['rsi'] > 100-self.threshold:
-                if row['ao'] < 0:
+                if row['velcro'] < self.threshold_velcro:
                     return 'short_pw'
                 else:
-                    return 'close_long_pw'
+                    if self.rsi_mode:
+                        if row['rsi'] > 100-self.threshold:
+                            return 'close_long_pw'
+                    else:
+                        return 'close_long_pw'

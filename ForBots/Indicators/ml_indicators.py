@@ -1,4 +1,6 @@
 import numpy as np
+import pandas as pd
+from math import atan, degrees
 from scipy.spatial.distance import cdist
 
 def add_find_similar_pattern(
@@ -150,4 +152,59 @@ def add_find_similar_pattern_lite(
     df.loc[df.index[-1], 'forecast_low'] = np.min(forecast)
     epsilon = 1e-8  # Маленькое значение для стабильности
     df['per_fs'] = (((df['forecast_high'] - df['forecast_low']) / (df['forecast_high'] + epsilon)) * 100).round(2)
+    return df
+
+
+
+
+def add_linear_regression(df: pd.DataFrame, 
+                         period: int = 20, 
+                         price_col: str = 'close') -> pd.DataFrame:
+    """
+    Добавляет в DataFrame:
+    1. Угол наклона линейной регрессии (в градусах)
+    2. Значение линии регрессии на последней свече окна
+    
+    :param df: Исходный DataFrame с ценами
+    :param period: Размер окна для расчета
+    :param price_col: Название колонки с ценами
+    :return: Модифицированный DataFrame
+    """
+    # Создаем колонки для результатов
+    df = df.copy()
+    df['regression_angle'] = np.nan
+    df['regression_line'] = np.nan
+    
+    # Предварительные расчеты
+    x = np.arange(period)
+    x_sum = x.sum()
+    x2_sum = (x**2).sum()
+    denominator = period * x2_sum - x_sum**2
+    
+    # Основной цикл расчета
+    for i in range(period-1, len(df)):
+        window = df[price_col].iloc[i-period+1:i+1]
+        if len(window) != period:
+            continue
+            
+        y = window.values
+        y_sum = y.sum()
+        xy = np.dot(x, y)
+        
+        # Расчет коэффициентов регрессии
+        if denominator != 0:
+            a = (period * xy - x_sum * y_sum) / denominator
+        else:
+            a = 0.0
+            
+        b = (y_sum - a * x_sum) / period
+        
+        # Запись результатов
+        df.loc[df.index[i], 'regression_angle'] = degrees(atan(a))
+        df.loc[df.index[i], 'regression_line'] = a * (period-1) + b
+    
+    # Заполнение пропусков
+    df['regression_line'] = df['regression_line'].ffill()
+    df['regression_angle'] = df['regression_angle'].ffill()
+    
     return df

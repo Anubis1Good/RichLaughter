@@ -1,4 +1,5 @@
 import numpy as np
+import pandas as pd
 from ForBots.Indicators.help_pva_indicators import add_touch_signals,calculate_changes,calculate_cumulative_changes
 
 def add_benefit(df,all_starts,all_ends,id,period=60):
@@ -58,4 +59,18 @@ def add_market_mode(df,period_check=10,period_frequency=5):
         [0, 2],
         default=1
     )
+    return df
+
+def add_kvas_channel(df:pd.DataFrame,period=20):
+    df['delta_p'] = (df['close'] - df['close'].shift(period))
+    df['top_kvas'] = df['high'].rolling(period).max() + df['delta_p']
+    df['low_kvas'] = df['low'].rolling(period).min() + df['delta_p']
+    return df
+
+def add_kefir_channel(df:pd.DataFrame,period=20):
+    df['delta_p'] = df['close'] - df['close'].shift(period)
+    df['delta_t'] = df['delta_p'].shift(period).rolling(period).max()
+    df['delta_l'] = df['delta_p'].shift(period).rolling(period).min()
+    df['top_kefir'] = df['high'].rolling(period).max() + df['delta_t']
+    df['low_kefir'] = df['low'].rolling(period).min() + df['delta_l']
     return df

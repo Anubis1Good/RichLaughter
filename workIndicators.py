@@ -14,21 +14,49 @@ period = 10
 df = bitget_loader(raw_file)
 # df = df.iloc[-500:]
 
-df = add_donchan_channel(df,10)
+def add_kvas_channel(df:pd.DataFrame,period=20):
+    df['delta_p'] = (df['close'] - df['close'].shift(period))
+    df['top_kvas'] = df['high'].rolling(period).max() + df['delta_p']
+    df['low_kvas'] = df['low'].rolling(period).min() + df['delta_p']
+    return df
+
+def add_kefir_channel(df:pd.DataFrame,period=20):
+    df['delta_p'] = df['close'] - df['close'].shift(period)
+    df['delta_t'] = df['delta_p'].shift(period).rolling(period).max()
+    df['delta_l'] = df['delta_p'].shift(period).rolling(period).min()
+    df['top_kefir'] = df['high'].rolling(period).max() + df['delta_t']
+    df['low_kefir'] = df['low'].rolling(period).min() + df['delta_l']
+    return df
 
 
-plt.subplot(2,1,1)
+
+# Пример использования
+# df = add_kvas_channel(df,10)
+df = add_kefir_channel(df,10)
+
+
+print(df.tail())
+# plt.subplot(2,1,1)
 draw_hb_chart_fast(df)
-for k in 'max_hb, min_hb, avarege'.split(', '):
-    plt.plot(df[k])
-ax1 = plt.gca()
-plt.subplot(2,1,2,sharex=ax1)
-# plt.plot(df['li'])
-plt.plot(df['market_mode'])
+# plt.plot(df['top_kvas'])
+# plt.plot(df['low_kvas'])
+plt.plot(df['top_kefir'])
+plt.plot(df['low_kefir'])
+# for k in ('fractal_up_high', 
+#         'fractal_down_low',
+#         'fractal_up_middle',
+#         'fractal_down_middle',
+#         'fractal_middle'):
+#     plt.plot(df[k])
+# for k in 'max_hb, min_hb, avarege'.split(', '):
+# ax1 = plt.gca()
+# plt.subplot(2,1,2,sharex=ax1)
+# plt.plot(df['regression_angle'])
+# # plt.plot(df['li'])
+# plt.plot(df['market_mode'])
 
-plt.grid() 
+# plt.grid() 
 
-# for k in ( 'regression_line','upper_channel','lower_channel'):
 # for k in ( 'trend_up','trend_down'):
 # # for k in 'PP, R1, R2, S1, S2'.split(', '):
 # #     plt.plot(df[k],color='g')

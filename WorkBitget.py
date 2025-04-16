@@ -9,17 +9,17 @@ from Loader.BitgetLoader import bitget_loader
 from utils.draw_utils import draw_lite_chart,draw_chart_channel,draw_hb_chart,draw_bollinger,draw_dynamics,draw_rails,draw_hb_chart_fast
 # from ForBots.Indicators.classic_indicators import add_donchan_channel,add_vangerchik,add_sma, add_slice_df,add_bollinger,add_over_bb,add_attached_bb,add_big_volume,add_dynamics_ma
 from strategies.test_strategies.check import check_strategy
-# from strategies.work_strategies.PTA import PTA2_BBBUr as WS
-from strategies.work_strategies.PTAX import PTA15_VALLA as WS
+from strategies.work_strategies.PTA import PTA4_WDDCrE as WS
+# from strategies.work_strategies.PTAX import PTA15_ANNA as WS
 # from strategies.work_strategies.STA_ca import STA_mini as WS
 # from strategies.work_strategies.OGTA import OGTA5_CAT as WS
 # from strategies.work_strategies.LTA import LTA_PIN as WS
-# from strategies.work_strategies.LTA2 import LTA2_OVERLORD as WS
+# from strategies.work_strategies.LTA2 import LTA2_HARDWAY as WS
 # from strategies.work_strategies.MTA import MTA_LORD as WS
 # from strategies.work_strategies.STA_ml2 import STAML2_NEWAVE as WS
 # from strategies.work_strategies.STA_ml import STAML1_XGBR2_DC as WS
 # from strategies.work_strategies.STA_rl import STARL1_HELPGOD as WS
-# from strategies.work_strategies.experiments import ExpBot1 as WS
+# from strategies.work_strategies.experiments import ExpBot as WS
 
 from strategies.test_strategies.universal import universal_test_strategy as TS
 # raw_file = 'DataForTests\DataFromBitget\DOGEUSDT_1m_1739873922.csv'
@@ -43,6 +43,7 @@ granularity = "5m"
 slope = 4
 
 bot = WS(symbol,granularity)
+bot = WS(symbol,granularity,period=10,threshold=10)
 # conf = (20,55,12,25,20)
 # bot = WS(symbol,granularity,"usdt-futures",1,*conf)
 
@@ -83,7 +84,8 @@ else:
     # plt.grid() 
     
     draw_hb_chart_fast(df)
-    
+    # plt.plot(df['low_kvas'])
+    # plt.plot(df['top_kvas'])
     if len(longs.shape) > 1:
         plt.scatter(longs[:,0],longs[:,1],marker='^',color='black')
     if len(shorts.shape) > 1:
@@ -112,7 +114,7 @@ else:
     # ax1 = plt.gca()
     # plt.subplot(2,1,2,sharex=ax1)
     # plt.grid() 
-    # for k in ('regression_slope',):
+    # for k in ('velcro','s_velcro'):
     #     plt.plot(df[k])
     # draw_lite_chart(df)
     # plt.subplot(2,1,1)
