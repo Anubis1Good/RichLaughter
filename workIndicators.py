@@ -13,35 +13,83 @@ raw_file = 'DataForTests\DataFromMOEX\MMM5_1_1744615735.csv'
 period = 10
 df = bitget_loader(raw_file)
 # df = df.iloc[-500:]
+# df = df.iloc[10:500]
 
-def add_kvas_channel(df:pd.DataFrame,period=20):
-    df['delta_p'] = (df['close'] - df['close'].shift(period))
-    df['top_kvas'] = df['high'].rolling(period).max() + df['delta_p']
-    df['low_kvas'] = df['low'].rolling(period).min() + df['delta_p']
-    return df
 
-def add_kefir_channel(df:pd.DataFrame,period=20):
-    df['delta_p'] = df['close'] - df['close'].shift(period)
-    df['delta_t'] = df['delta_p'].shift(period).rolling(period).max()
-    df['delta_l'] = df['delta_p'].shift(period).rolling(period).min()
-    df['top_kefir'] = df['high'].rolling(period).max() + df['delta_t']
-    df['low_kefir'] = df['low'].rolling(period).min() + df['delta_l']
+import numpy as np
+import pandas as pd
+
+def add_hl_stair_fast(df: pd.DataFrame, n=3, period=20):
+    df = df.copy()
+    high = df['high'].values
+    low = df['low'].values
+
+    # Предварительные расчеты
+    spread = high - low
+    threshold_break = pd.Series(spread).rolling(period).mean().fillna(0).values * n
+
+    # Инициализация массивов
+    size = len(df)
+    last_dir = np.ones(size, dtype=np.int8)
+    last_high = np.zeros(size)
+    last_low = np.zeros(size)
+
+    # Начальные значения
+    last_high[0] = high[0]
+    last_low[0] = low[0]
+
+    # Основной цикл
+    for i in range(1, size):
+        current_dir = last_dir[i-1]
+        current_high = last_high[i-1]
+        current_low = last_low[i-1]
+        th = threshold_break[i]
+        h = high[i]
+        l = low[i]
+
+        if current_dir == 1:
+            new_high = max(h, current_high)
+            if l <= (new_high - th):
+                current_dir = -1
+                new_low = l
+            else:
+                new_low = current_low
+        else:
+            new_low = min(l, current_low)
+            if h >= (new_low + th):
+                current_dir = 1
+                new_high = h
+            else:
+                new_high = current_high
+
+        last_dir[i] = current_dir
+        last_high[i] = new_high
+        last_low[i] = new_low
+
+    # Отмечаем точки разворота
+    dir_changes = np.diff(last_dir, prepend=0) != 0
+    df['stair'] = np.where(dir_changes, np.where(last_dir == -1, high, low), np.nan)
+    
+    # Заполняем значения вперед
+    df['stair'] = df['stair'].ffill()
     return df
 
 
 
 # Пример использования
-# df = add_kvas_channel(df,10)
-df = add_kefir_channel(df,10)
+# df = pd.read_csv('your_data.csv')
+df = add_hl_stair_fast(df, n=5)
+df['stair_s'] = df['stair'].rolling(100).mean()
+# print(df[['high', 'low', 'direction', 'last_extreme']].head())
 
 
 print(df.tail())
 # plt.subplot(2,1,1)
 draw_hb_chart_fast(df)
-# plt.plot(df['top_kvas'])
-# plt.plot(df['low_kvas'])
-plt.plot(df['top_kefir'])
-plt.plot(df['low_kefir'])
+plt.plot(df['stair'])
+plt.plot(df['stair_s'])
+# plt.plot(df['last_high'])
+# plt.plot(df['last_low'])
 # for k in ('fractal_up_high', 
 #         'fractal_down_low',
 #         'fractal_up_middle',

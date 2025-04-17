@@ -74,3 +74,118 @@ def add_kefir_channel(df:pd.DataFrame,period=20):
     df['top_kefir'] = df['high'].rolling(period).max() + df['delta_t']
     df['low_kefir'] = df['low'].rolling(period).min() + df['delta_l']
     return df
+
+
+
+def add_hl_stair_fast(df: pd.DataFrame, n=3, period=20):
+    df = df.copy()
+    high = df['high'].values
+    low = df['low'].values
+
+    # Предварительные расчеты
+    spread = high - low
+    threshold_break = pd.Series(spread).rolling(period).mean().fillna(0).values * n
+
+    # Инициализация массивов
+    size = len(df)
+    last_dir = np.ones(size, dtype=np.int8)
+    last_high = np.zeros(size)
+    last_low = np.zeros(size)
+
+    # Начальные значения
+    last_high[0] = high[0]
+    last_low[0] = low[0]
+
+    # Основной цикл
+    for i in range(1, size):
+        current_dir = last_dir[i-1]
+        current_high = last_high[i-1]
+        current_low = last_low[i-1]
+        th = threshold_break[i]
+        h = high[i]
+        l = low[i]
+
+        if current_dir == 1:
+            new_high = max(h, current_high)
+            if l <= (new_high - th):
+                current_dir = -1
+                new_low = l
+            else:
+                new_low = current_low
+        else:
+            new_low = min(l, current_low)
+            if h >= (new_low + th):
+                current_dir = 1
+                new_high = h
+            else:
+                new_high = current_high
+
+        last_dir[i] = current_dir
+        last_high[i] = new_high
+        last_low[i] = new_low
+
+    # Отмечаем точки разворота
+    dir_changes = np.diff(last_dir, prepend=0) != 0
+    df['stair'] = np.where(dir_changes, np.where(last_dir == -1, high, low), np.nan)
+    
+    # Заполняем значения вперед
+    df['stair'] = df['stair'].ffill()
+    return df
+
+def add_pc_stair_fast(df: pd.DataFrame, n=3, period=20):
+    df = df.copy()
+    close = df['close'].values
+    high = df['high'].values
+    low = df['low'].values
+    
+    # Предварительные расчеты
+    prev_close = np.roll(close, 1)
+    prev_close[0] = close[0]
+    
+    spread = high - low
+    threshold_break = pd.Series(spread).rolling(period).mean().fillna(0).values * n
+    
+    # Инициализация массивов состояний
+    size = len(df)
+    last_dir = np.ones(size, dtype=np.int8)
+    last_high = np.empty(size)
+    last_low = np.empty(size)
+    
+    # Начальные значения
+    last_high[0] = prev_close[0]
+    last_low[0] = prev_close[0]
+    
+    # Основной цикл (оптимизированный)
+    for i in range(1, size):
+        current_dir = last_dir[i-1]
+        current_high = last_high[i-1]
+        current_low = last_low[i-1]
+        th = threshold_break[i]
+        pc = prev_close[i]
+        
+        if current_dir == 1:
+            new_high = max(pc, current_high)
+            if pc <= (new_high - th):
+                current_dir = -1
+                new_low = pc
+            else:
+                new_low = current_low
+        else:
+            new_low = min(pc, current_low)
+            if pc >= (new_low + th):
+                current_dir = 1
+                new_high = pc
+            else:
+                new_high = current_high
+        
+        last_dir[i] = current_dir
+        last_high[i] = new_high
+        last_low[i] = new_low
+    
+    # Построение финального индикатора
+    dir_changes = np.where(np.diff(last_dir, prepend=last_dir[0]) != 0)[0]
+    stair = np.full(size, np.nan)
+    stair[dir_changes] = prev_close[dir_changes]
+    
+    df['stair'] = pd.Series(stair).ffill()
+    return df

@@ -307,6 +307,7 @@ class TestBot3:
             price = float(df.iloc[-1]['close'])
             self.process_single_position(0,price)
         except Exception as err:
+            print(self.ticker,self.name)
             traceback.print_exc()
 
     def run(self,df):
@@ -319,4 +320,5 @@ class TestBot3:
             # print("+++++++++++++++++")
             self.trade_next(action,row)
         except Exception as err:
+            print(self.ticker,self.name)
             traceback.print_exc()
