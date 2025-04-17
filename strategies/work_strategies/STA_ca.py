@@ -1,8 +1,9 @@
 import numpy as np
 from request_functions.download_bitget import get_df
 from ForBots.Indicators.classic_indicators import add_bollinger,add_big_volume,add_attached_bb,add_over_bb,add_dynamics_ma,add_slice_df,add_simple_dynamics_ma,add_sma,add_enter_price,add_enter_price2close,add_awesome_oscillator,add_rsi,add_ema,add_adx, add_atr
-from ForBots.Indicators.price_funcs import get_universal_r,get_universal
+from ForBots.Indicators.pva_indicators import add_pc_stair_fast
 from strategies.work_strategies.BaseTA import BaseTABitget
+
 
 # class STA1e:
 #     def __init__(self,symbol="BTCUSDT",granularity="1m",productType="usdt-futures",n_parts=1,period=20,multiplier=2,slope=5):
@@ -94,41 +95,6 @@ class STA1_LITE(BaseTABitget):
         else:
             pass
 
-class STA2(BaseTABitget):
-    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=30,multiplier=2,slope=0.5,period2=10):
-        super().__init__(symbol, granularity, productType, n_parts, period)
-        self.multiplier = multiplier
-        self.slope = slope
-        self.period2 = period2
-    def preprocessing(self, df):
-        df = add_bollinger(df,self.period,multiplier=self.multiplier)
-        df = add_big_volume(df,self.period)
-        df = add_over_bb(df)
-        df = add_adx(df,self.period2)
-        df = add_rsi(df,self.period2)
-        df = add_ema(df,self.period2)
-        df = add_enter_price2close(df)
-        df = add_slice_df(df,self.period)
-        return df
-    
-    def __call__(self, row, *args, **kwds):
-        pass
-        # if row['sdm'] >= self.slope:
-        #     if row['high'] > row['bbu'] and row['is_big']:
-        #         return 'close_long_pw'
-        #     if row['over_bbu']:
-        #         return 'close_long_pw'
-        #     if row['low'] < row['sma'] and row['sma2'] > row['sma']:
-        #         return 'long_pw'
-        # elif row['sdm'] <= -self.slope:
-        #     if row['over_bbd']:
-        #         return 'close_short_pw'
-        #     if row['low'] < row['bbd'] and row['is_big']:
-        #         return 'close_short_pw'
-        #     if row['high'] > row['sma'] and row['sma2'] < row['sma']:
-        #         return 'short_pw'
-        # else:
-        #     pass
 
 class STA_mini(BaseTABitget):
     """period=20,go_long=True"""
@@ -161,50 +127,172 @@ class STA_mini(BaseTABitget):
         if row['high'] > row['sma']and not self.go_long and row['dynamic_sma'] < 0:
             return 'short_pw'
 
-# TODO есть идея нормализовать значения delta sma и по ним вычислять тренд
-class STA_FAST(BaseTABitget):
+class STA2(BaseTABitget):
+    """period=100,n_stairs=3,period2=20"""
+    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=100,n_stairs=3,period2=20):
+        super().__init__(symbol, granularity, productType, n_parts, period)
+        self.n_stairs = n_stairs
+        self.period2 = period2
+    def preprocessing(self, df):
+        df = add_pc_stair_fast(df,self.n_stairs,self.period2)
+        df = add_bollinger(df,self.period2)
+        df = add_big_volume(df,self.period2,3)
+        df = add_over_bb(df)
+        df = add_rsi(df,self.period2)
+        df['sma_delta'] = df['sma'].pct_change()
+        df['dynamic_sma'] = df['sma_delta'].rolling(self.period2).mean()
+        df = add_enter_price2close(df)
+        df = add_slice_df(df,self.period)
+        return df
+    def __call__(self, row, *args, **kwds):
+        go_long = row['close'] > row['stair']
+        if go_long and row['dynamic_sma'] < -0.00001:
+            return 'close_long_pw'
+        if not go_long and row['dynamic_sma'] > 0.00001:
+            return 'close_short_pw'
+        if row['high'] > row['bbu']:
+            if row['is_big'] or row['over_bbu'] or row['rsi'] > 85:
+                return 'close_long_pw'
+        if row['low'] < row['bbd']:
+            if row['is_big'] or row['over_bbd'] or row['rsi'] < 15:
+                return 'close_short_pw'
+        if row['low'] < row['sma'] and go_long and row['dynamic_sma'] > 0:
+            return 'long_pw'
+        if row['high'] > row['sma']and not go_long and row['dynamic_sma'] < 0:
+            return 'short_pw'
+        
+
+class STA2_FAST(BaseTABitget):
+    """period=100, n_stairs=3,trend_period=20,adx_threshold=25"""
     def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", 
-                 n_parts=1, period=50, trend_period=10):
+                 n_parts=1, period=100, n_stairs=3,trend_period=20,adx_threshold=25):
         super().__init__(symbol, granularity, productType, n_parts, period)
         self.trend_period = trend_period  # Период для определения тренда
-    
+        self.n_stairs = n_stairs
+        self.adx_threshold = adx_threshold
     def preprocessing(self, df):
         # Базовые индикаторы
-        df = add_bollinger(df, period=self.period, multiplier=2)
-        df = add_ema(df, period=self.period//2)
-        
+        df = add_bollinger(df, period=self.trend_period, multiplier=2)
+        df = add_ema(df, period=self.trend_period//2)
+        df = add_pc_stair_fast(df,self.n_stairs,self.trend_period)
+        df = add_adx(df,self.trend_period)
         # Улучшенное определение тренда
-        df['ma_fast'] = df['close'].rolling(3).mean()
-        df['ma_slow'] = df['close'].rolling(self.trend_period).mean()
-        df['fast_up'] = df['ma_fast'] > df['ma_slow']  # Быстрая MA выше медленной
-        
-        # Альтернативный вариант - наклон скользящей средней
-        df['ema_angle'] = df['ema'].diff(3)  # Изменение EMA за 3 бара
-        df['trend_up'] = df['ema_angle'] > 0  # EMA растет
-        
-        # Комбинированный тренд (можно использовать любой вариант)
-        df['trend'] = df['fast_up'] | df['trend_up']
         
         # Детекция открепления
-        df['bbu_detach'] = (df['high'] < df['bbu']) & (df['high'].shift(1) < df['bbu'].shift(1))
-        df['bbd_detach'] = (df['low'] > df['bbd']) & (df['low'].shift(1) > df['bbd'].shift(1))
+        df['bbu_detach'] = (df['high'] < df['bbu']) & (df['high'].shift(1) < df['bbu'].shift(1)) & (df['high'].shift(2) > df['bbu'].shift(2))
+        df['bbd_detach'] = (df['low'] > df['bbd']) & (df['low'].shift(1) > df['bbd'].shift(1)) & (df['low'].shift(2) < df['bbd'].shift(2))
         df = add_enter_price2close(df)
         df = add_slice_df(df,self.period)
         return df
     
     def __call__(self, row, *args, **kwds):
+        go_long = row['close'] > row['stair']
         # Условия входа
-        if row['low'] < row['ema'] and row['trend']:
-            return 'long_pw'
-            
-        if row['high'] > row['ema'] and not row['trend']:
-            return 'short_pw'
+
+        # if row['width_bb'] > row['spred'] * self.n_stairs * 2:
+        if row['adx'] > self.adx_threshold:
+            if row['low'] < row['ema'] and go_long:
+                return 'long_pw'
+                
+            if row['high'] > row['ema'] and not go_long:
+                return 'short_pw'
             
         # Условия выхода
-        if row['bbu_detach'] and row['trend']:
-            return 'close_long_pw'
-            
-        if row['bbd_detach'] and not row['trend']:
-            return 'close_short_pw'
+        if go_long:
+            if row['bbu_detach']:
+                return 'close_long_pw'
+        else:        
+            if row['bbd_detach']:
+                return 'close_short_pw'
         
         return None
+    
+class STA2_SLOW(BaseTABitget):
+    """period=100, n_stairs=3,trend_period=20,adx_threshold=25"""
+    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", 
+                 n_parts=1, period=100, n_stairs=3,trend_period=20,adx_threshold=25):
+        super().__init__(symbol, granularity, productType, n_parts, period)
+        self.trend_period = trend_period  # Период для определения тренда
+        self.n_stairs = n_stairs
+        self.adx_threshold = adx_threshold
+    def preprocessing(self, df):
+        # Базовые индикаторы
+        df = add_bollinger(df, period=self.trend_period, multiplier=2)
+        df = add_pc_stair_fast(df,self.n_stairs,self.trend_period)
+        df = add_adx(df,self.trend_period)
+        # Улучшенное определение тренда
+        
+        # Детекция открепления
+        df['bbu_detach'] = (df['high'] < df['bbu']) & (df['high'].shift(1) < df['bbu'].shift(1)) & (df['high'].shift(2) > df['bbu'].shift(2))
+        df['bbd_detach'] = (df['low'] > df['bbd']) & (df['low'].shift(1) > df['bbd'].shift(1)) & (df['low'].shift(2) < df['bbd'].shift(2))
+        df = add_enter_price2close(df)
+        df = add_slice_df(df,self.period)
+        return df
+    
+    def __call__(self, row, *args, **kwds):
+        go_long = row['close'] > row['stair']
+        # Условия входа
+
+        # if row['width_bb'] > row['spred'] * self.n_stairs * 2:
+        if row['adx'] > self.adx_threshold:
+            if row['low'] < row['sma'] and go_long:
+                return 'long_pw'
+                
+            if row['high'] > row['sma'] and not go_long:
+                return 'short_pw'
+            
+        # Условия выхода
+        if go_long:
+            if row['bbu_detach']:
+                return 'close_long_pw'
+        else:        
+            if row['bbd_detach']:
+                return 'close_short_pw'
+        
+        return None
+    
+class STA2_ULTRA(BaseTABitget):
+    """period=100,n_stairs=3,period2=20,adx_threshold=25"""
+    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=100,n_stairs=3,period2=20,adx_threshold=25):
+        super().__init__(symbol, granularity, productType, n_parts, period)
+        self.n_stairs = n_stairs
+        self.period2 = period2
+        self.adx_threshold = adx_threshold
+    def preprocessing(self, df):
+        df = add_pc_stair_fast(df,self.n_stairs,self.period2)
+        df = add_bollinger(df,self.period2)
+        df = add_big_volume(df,self.period2,3)
+        df = add_over_bb(df)
+        df = add_adx(df,self.period2)
+        df = add_rsi(df,self.period2)
+        df['sma_delta'] = df['sma'].pct_change()
+        df['dynamic_sma'] = df['sma_delta'].rolling(self.period2).mean()
+        df['bbu_detach'] = (df['high'] < df['bbu']) & (df['high'].shift(1) < df['bbu'].shift(1)) & (df['high'].shift(2) > df['bbu'].shift(2))
+        df['bbd_detach'] = (df['low'] > df['bbd']) & (df['low'].shift(1) > df['bbd'].shift(1)) & (df['low'].shift(2) < df['bbd'].shift(2))
+        df = add_enter_price2close(df)
+        df = add_slice_df(df,self.period)
+        return df
+    def __call__(self, row, *args, **kwds):
+        go_long = row['close'] > row['stair']
+        if go_long and row['dynamic_sma'] < -0.00001:
+            return 'close_long_pw'
+        if not go_long and row['dynamic_sma'] > 0.00001:
+            return 'close_short_pw'
+        if row['high'] > row['bbu']:
+            if row['is_big'] or row['over_bbu'] or row['rsi'] > 90:
+                return 'close_long_pw'
+        if row['low'] < row['bbd']:
+            if row['is_big'] or row['over_bbd'] or row['rsi'] < 10:
+                return 'close_short_pw'
+        if go_long:
+            if row['bbu_detach']:
+                return 'close_long_pw'
+        else:        
+            if row['bbd_detach']:
+                return 'close_short_pw'
+        if row['adx'] > self.adx_threshold:
+            if row['low'] < row['sma'] and go_long and row['dynamic_sma'] > 0:
+                return 'long_pw'
+            if row['high'] > row['sma']and not go_long and row['dynamic_sma'] < 0:
+                return 'short_pw'
+    

@@ -78,6 +78,8 @@ def add_kefir_channel(df:pd.DataFrame,period=20):
 
 
 def add_hl_stair_fast(df: pd.DataFrame, n=3, period=20):
+    """ add 'stair'
+    """
     df = df.copy()
     high = df['high'].values
     low = df['low'].values
@@ -133,6 +135,8 @@ def add_hl_stair_fast(df: pd.DataFrame, n=3, period=20):
     return df
 
 def add_pc_stair_fast(df: pd.DataFrame, n=3, period=20):
+    """ add 'stair'
+    """
     df = df.copy()
     close = df['close'].values
     high = df['high'].values

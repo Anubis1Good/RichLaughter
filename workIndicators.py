@@ -12,7 +12,7 @@ raw_file = 'DataForTests\DataFromBitget\DOGEUSDT_1m_1739873922.csv'
 raw_file = 'DataForTests\DataFromMOEX\MMM5_1_1744615735.csv'
 period = 10
 df = bitget_loader(raw_file)
-# df = df.iloc[-500:]
+df = df.iloc[-200:]
 # df = df.iloc[10:500]
 
 

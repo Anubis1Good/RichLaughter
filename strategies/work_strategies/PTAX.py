@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 from request_functions.download_bitget import get_df
 from ForBots.Indicators.classic_indicators import add_donchan_channel,add_slice_df,add_big_volume,add_dynamics_ma,add_bollinger,add_over_bb,add_enter_price,add_buffer_add,add_buffer_sub,add_vangerchik,add_simple_dynamics_ma,add_vodka_channel,add_rsi,add_enter_price2close,add_macd,add_rsi_tw,add_adx,add_chop,add_kusuruken_channel,add_awesome_oscillator
-from ForBots.Indicators.pva_indicators import add_benefit,add_velcro_indicator
+from ForBots.Indicators.pva_indicators import add_benefit,add_velcro_indicator,add_pc_stair_fast
 from ForBots.Indicators.help_pva_indicators import get_all_enter_exit_DC,get_all_lup
 from utils.help_trades import reverse_action,chep
 from strategies.work_strategies.BaseTA import BaseTABitget
@@ -608,3 +608,284 @@ class PTA17_PHOENIX(BaseTABitget):
                             return 'close_long_pw'
                     else:
                         return 'close_long_pw'
+
+
+class PTA18_ARTAS(BaseTABitget):
+    """period=100,n_stairs=3,period2=10,threshold=30"""
+    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=100,n_stairs=3,period2=10,threshold=30):
+        super().__init__(symbol, granularity, productType, n_parts, period)
+        self.n_stairs = n_stairs
+        self.period2 = period2
+        self.threshold = threshold
+    def preprocessing(self, df):
+        df = add_pc_stair_fast(df,self.n_stairs,self.period2)
+        df = add_donchan_channel(df,self.period2)
+        df = add_rsi(df,self.period2)
+        df = add_enter_price2close(df)
+        df['stair_s'] = df['stair'].rolling(self.period2).mean()
+        df = add_slice_df(df,self.period)
+        return df
+    def __call__(self, row, *args, **kwds):
+        can_long = row['close'] > row['stair_s']
+        nearest_long = row['high'] - row['close'] > row['close'] - row['low'] 
+        if row['low'] <= row['min_hb']:
+            if nearest_long:
+                if can_long:
+                    return 'long_pw'
+                if row['rsi'] < self.threshold:
+                    return 'close_short_pw'
+        if row['high'] >= row['max_hb']:
+            if not nearest_long:
+                if not can_long:
+                    return 'short_pw'
+                if row['rsi'] > 100-self.threshold:
+                    return 'close_long_pw'
+        if can_long:
+            return 'close_short_pw'
+        else:
+            return 'close_long_pw'
+        
+class PTA18_KELTHUZAD(BaseTABitget):
+    """period=100,n_stairs=3,period2=10,threshold=30"""
+    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=100,n_stairs=3,period2=10,threshold=30):
+        super().__init__(symbol, granularity, productType, n_parts, period)
+        self.n_stairs = n_stairs
+        self.period2 = period2
+        self.threshold = threshold
+    def preprocessing(self, df):
+        df = add_pc_stair_fast(df,self.n_stairs,self.period2)
+        df = add_donchan_channel(df,self.period2)
+        df = add_rsi(df,self.period2)
+        df = add_enter_price2close(df)
+        df['stair_s'] = df['stair'].rolling(self.period2).mean()
+        df = add_slice_df(df,self.period)
+        return df
+    def __call__(self, row, *args, **kwds):
+        can_long = row['close'] > row['stair_s']
+        nearest_long = row['high'] - row['close'] > row['close'] - row['low'] 
+        if row['low'] <= row['min_hb']:
+            if nearest_long:
+                if can_long:
+                    return 'long_pw'
+                if row['rsi'] < self.threshold:
+                    return 'close_short_pw'
+        if row['high'] >= row['max_hb']:
+            if not nearest_long:
+                if not can_long:
+                    return 'short_pw'
+                if row['rsi'] > 100-self.threshold:
+                    return 'close_long_pw'
+                
+class PTA18_GULDAN(BaseTABitget):
+    """period=100,n_stairs=3,period2=10,threshold=30"""
+    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=100,n_stairs=3,period2=10,threshold=30):
+        super().__init__(symbol, granularity, productType, n_parts, period)
+        self.n_stairs = n_stairs
+        self.period2 = period2
+        self.threshold = threshold
+    def preprocessing(self, df):
+        df = add_pc_stair_fast(df,self.n_stairs,self.period2)
+        df = add_donchan_channel(df,self.period2)
+        df = add_rsi(df,self.period2)
+        df = add_enter_price2close(df)
+        df['stair_s'] = df['stair'].rolling(self.period2).mean()
+        df = add_slice_df(df,self.period)
+        return df
+    def __call__(self, row, *args, **kwds):
+        can_long = row['close'] > row['stair_s']
+        nearest_long = row['high'] - row['close'] > row['close'] - row['low'] 
+        if row['low'] <= row['min_hb']:
+            if nearest_long and row['rsi'] < self.threshold:
+                if can_long:
+                    return 'long_pw'
+                else:
+                    return 'close_short_pw'
+        if row['high'] >= row['max_hb']:
+            if not nearest_long and row['rsi'] > 100-self.threshold:
+                if not can_long:
+                    return 'short_pw'
+                else:
+                    return 'close_long_pw'
+                
+class PTA18_CHOGALL(BaseTABitget):
+    """period=100,n_stairs=3,period2=10,threshold=30"""
+    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=100,n_stairs=3,period2=10,threshold=30):
+        super().__init__(symbol, granularity, productType, n_parts, period)
+        self.n_stairs = n_stairs
+        self.period2 = period2
+        self.threshold = threshold
+    def preprocessing(self, df):
+        df = add_pc_stair_fast(df,self.n_stairs,self.period2)
+        df = add_donchan_channel(df,self.period2)
+        df = add_rsi(df,self.period2)
+        df = add_enter_price2close(df)
+        df['stair_s'] = df['stair'].rolling(self.period2).mean()
+        df = add_slice_df(df,self.period)
+        return df
+    def __call__(self, row, *args, **kwds):
+        can_long = row['close'] > row['stair_s']
+        nearest_long = row['high'] - row['close'] > row['close'] - row['low'] 
+        if row['low'] <= row['min_hb']:
+            if nearest_long and row['rsi'] < self.threshold:
+                if can_long:
+                    return 'long_pw'
+                else:
+                    return 'close_short_pw'
+        if row['high'] >= row['max_hb']:
+            if not nearest_long and row['rsi'] > 100-self.threshold:
+                if not can_long:
+                    return 'short_pw'
+                else:
+                    return 'close_long_pw'
+        if can_long:
+            return 'close_short_pw'
+        else:
+            return 'close_long_pw'
+
+
+# TODO Сменить способ определения боковика   
+class PTA18_UTER(BaseTABitget):
+    """period=100,n_stairs=3,period2=20"""
+    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=100,n_stairs=3,period2=10,threshold=30,threshold_adx=40,period3=30):
+        super().__init__(symbol, granularity, productType, n_parts, period)
+        self.n_stairs = n_stairs
+        self.period2 = period2
+        self.period3 = period3
+        self.threshold_adx = threshold_adx
+        self.threshold = threshold
+    def preprocessing(self, df):
+        df = add_pc_stair_fast(df,self.n_stairs,self.period2)
+        df = add_donchan_channel(df,self.period2)
+        df = add_rsi(df,self.period2)
+        df = add_adx(df,self.period3)
+        df = add_enter_price2close(df)
+        df['stair_s'] = df['stair'].rolling(self.period2).mean()
+        df = add_slice_df(df,self.period)
+        return df
+    def __call__(self, row, *args, **kwds):
+        nearest_long = row['high'] - row['close'] > row['close'] - row['low'] 
+        if row['adx'] > self.threshold:
+            can_long = row['close'] > row['stair_s']
+            if row['low'] <= row['min_hb']:
+                if nearest_long:
+                    if can_long:
+                        return 'long_pw'
+                    if row['rsi'] < self.threshold:
+                        return 'close_short_pw'
+            if row['high'] >= row['max_hb']:
+                if not nearest_long:
+                    if not can_long:
+                        return 'short_pw'
+                    if row['rsi'] > 100-self.threshold:
+                        return 'close_long_pw'
+            if can_long:
+                return 'close_short_pw'
+            else:
+                return 'close_long_pw'
+        else:
+            if row['low'] <= row['min_hb'] and nearest_long:
+                return 'long_pw'
+            if row['high'] >= row['max_hb'] and not nearest_long: 
+                return 'short_pw'
+
+# TODO надо что-то сделать с пропусками   
+class PTA18_ILLIDAN(BaseTABitget):
+    """period=100,n_stairs=3,period2=20"""
+    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=100,n_stairs=3,period2=10,threshold=30):
+        super().__init__(symbol, granularity, productType, n_parts, period)
+        self.n_stairs = n_stairs
+        self.period2 = period2
+        self.threshold = threshold
+    def preprocessing(self, df):
+        df = add_pc_stair_fast(df,self.n_stairs,self.period2)
+        df['max_hb'] = df['high'].rolling(self.period2).max()
+        df['min_hb'] = df['low'].rolling(self.period2).min()
+        df['max_hb'] = df['max_hb'].shift(1)
+        df['min_hb'] = df['min_hb'].shift(1)
+
+        df['end_up'] = np.where((df['high'].shift(1) >= df['max_hb'].shift(1))&(df['high'] < df['max_hb']), df['high'], np.nan)
+        df['end_down'] = np.where((df['low'].shift(1) <= df['min_hb'].shift(1))&(df['low'] > df['min_hb']), df['low'], np.nan)
+
+        df = add_enter_price2close(df)
+        df['stair_s'] = df['stair'].rolling(self.period2).mean()
+        df = add_slice_df(df,self.period)
+        return df
+    def __call__(self, row, *args, **kwds):
+        can_long = row['close'] > row['stair_s']
+        if not np.isnan(row['end_up']):
+            if not can_long:
+                return 'short_pw'
+            else:
+                return 'close_long_pw'
+        if not np.isnan(row['end_down']):
+            if can_long:
+                return 'long_pw'
+            else:
+                return 'close_short_pw'
+        if can_long:
+            return 'close_short_pw'
+        else:
+            return 'close_long_pw'
+        
+
+class PTA18_DIABLO(BaseTABitget):
+    """period=100,n_stairs=3,period2=10,threshold=30"""
+    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=100,n_stairs=3,period2=10,threshold=30):
+        super().__init__(symbol, granularity, productType, n_parts, period)
+        self.n_stairs = n_stairs
+        self.period2 = period2
+        self.threshold = threshold
+    def preprocessing(self, df):
+        df = add_pc_stair_fast(df,self.n_stairs,self.period2)
+        df = add_donchan_channel(df,self.period2)
+        df = add_rsi(df,self.period2)
+        df = add_enter_price2close(df)
+        df['stair_s'] = df['stair'].rolling(self.period2).mean()
+        df = add_slice_df(df,self.period)
+        return df
+    def __call__(self, row, *args, **kwds):
+        can_long = row['close'] > row['stair_s']
+        nearest_long = row['high'] - row['close'] > row['close'] - row['low'] 
+        if row['close'] <= row['avarege']:
+            if nearest_long and can_long:
+                return 'long_pw'
+        if row['close'] >= row['avarege']:
+            if not nearest_long and not can_long:
+                return 'short_pw'
+        if row['rsi'] < self.threshold and row['low'] <= row['min_hb']:
+            return 'close_short_pw'
+        if row['rsi'] > 100-self.threshold and row['high'] >= row['max_hb']:
+            return 'close_long_pw'
+        if can_long:
+            return 'close_short_pw'
+        else:
+            return 'close_long_pw'
+        
+class PTA18_DEHAKA(BaseTABitget):
+    """period=100,n_stairs=3,period2=10,threshold=30"""
+    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=100,n_stairs=3,period2=10,threshold=30):
+        super().__init__(symbol, granularity, productType, n_parts, period)
+        self.n_stairs = n_stairs
+        self.period2 = period2
+        self.threshold = threshold
+    def preprocessing(self, df):
+        df = add_pc_stair_fast(df,self.n_stairs,self.period2)
+        df = add_donchan_channel(df,self.period2)
+        df = add_rsi(df,self.period2)
+        df = add_enter_price2close(df)
+        df['stair_s'] = df['stair'].rolling(self.period2).mean()
+        df = add_slice_df(df,self.period)
+        return df
+    def __call__(self, row, *args, **kwds):
+        can_long = row['close'] > row['stair_s']
+        nearest_long = row['high'] - row['close'] > row['close'] - row['low'] 
+        if row['close'] <= row['avarege']:
+            if nearest_long and can_long:
+                return 'long_pw'
+        if row['close'] >= row['avarege']:
+            if not nearest_long and not can_long:
+                return 'short_pw'
+        if row['rsi'] < self.threshold and row['low'] <= row['min_hb']:
+            return 'close_short_pw'
+        if row['rsi'] > 100-self.threshold and row['high'] >= row['max_hb']:
+            return 'close_long_pw'

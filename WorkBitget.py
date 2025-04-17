@@ -9,12 +9,12 @@ from Loader.BitgetLoader import bitget_loader
 from utils.draw_utils import draw_lite_chart,draw_chart_channel,draw_hb_chart,draw_bollinger,draw_dynamics,draw_rails,draw_hb_chart_fast
 # from ForBots.Indicators.classic_indicators import add_donchan_channel,add_vangerchik,add_sma, add_slice_df,add_bollinger,add_over_bb,add_attached_bb,add_big_volume,add_dynamics_ma
 from strategies.test_strategies.check import check_strategy
-from strategies.work_strategies.PTA import PTA4_WDDCrE as WS
-# from strategies.work_strategies.PTAX import PTA15_ANNA as WS
-# from strategies.work_strategies.STA_ca import STA_mini as WS
+# from strategies.work_strategies.PTA import PTA4_WDDCrE as WS
+from strategies.work_strategies.PTAX import PTA18_CHOGALL as WS
+# from strategies.work_strategies.STA_ca import STA2_SLOW as WS
 # from strategies.work_strategies.OGTA import OGTA5_CAT as WS
 # from strategies.work_strategies.LTA import LTA_PIN as WS
-# from strategies.work_strategies.LTA2 import LTA2_HARDWAY as WS
+# from strategies.work_strategies.LTA2 import LTA2_BLAST as WS
 # from strategies.work_strategies.MTA import MTA_LORD as WS
 # from strategies.work_strategies.STA_ml2 import STAML2_NEWAVE as WS
 # from strategies.work_strategies.STA_ml import STAML1_XGBR2_DC as WS
@@ -43,7 +43,7 @@ granularity = "5m"
 slope = 4
 
 bot = WS(symbol,granularity)
-bot = WS(symbol,granularity,period=10,threshold=10)
+# bot = WS(symbol,granularity,period=10,threshold=10)
 # conf = (20,55,12,25,20)
 # bot = WS(symbol,granularity,"usdt-futures",1,*conf)
 
@@ -81,10 +81,11 @@ if see_equity:
     pass
 else:
     # plt.subplot(2,1,1)
-    # plt.grid() 
+    plt.grid() 
     
     draw_hb_chart_fast(df)
-    # plt.plot(df['low_kvas'])
+    plt.plot(df['stair'])
+    plt.plot(df['stair_s'])
     # plt.plot(df['top_kvas'])
     if len(longs.shape) > 1:
         plt.scatter(longs[:,0],longs[:,1],marker='^',color='black')
@@ -93,8 +94,8 @@ else:
     if len(closes.shape) > 1:
         plt.scatter(closes[:,0],closes[:,1],marker='x',color='black')
     # for k in 'max_hb, min_hb, avarege'.split(', '):
-    # for k in 'max_hb, min_hb'.split(', '):
-    #     plt.plot(df[k],color='r',linestyle='--')
+    for k in 'max_hb, min_hb, avarege'.split(', '):
+        plt.plot(df[k],color='r',linestyle='--')
     # plt.plot(df['top_zone'],color='r')
     # plt.plot(df['bottom_zone'],color='b')
 
@@ -114,7 +115,7 @@ else:
     # ax1 = plt.gca()
     # plt.subplot(2,1,2,sharex=ax1)
     # plt.grid() 
-    # for k in ('velcro','s_velcro'):
+    # for k in ('adx',):
     #     plt.plot(df[k])
     # draw_lite_chart(df)
     # plt.subplot(2,1,1)
