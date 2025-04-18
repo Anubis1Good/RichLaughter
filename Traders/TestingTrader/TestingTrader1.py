@@ -48,6 +48,11 @@ class TestingTrader1:
         for ticker,fut in self.tickers:
             df = download_moex(ticker,1,self.yesterday,board=self.board,market=self.market,engine=self.engine)
             df = create_df(df)
+            df5 = convert_chart1to5(df.copy())
+            if len(df.index) > 400:
+                df = df.iloc[-400:]
+            if len(df5.index) > 400:
+                df5 = df5.iloc[-400:]
             for bot in self.map_bots[1][ticker]:
                 # print(bot)
                 df_c = df.copy()
@@ -56,9 +61,8 @@ class TestingTrader1:
                 func(bot,df_c)
                 if self.check_time:
                     self.output(time()-start2,bot)
-            df = convert_chart1to5(df)
             for bot in self.map_bots[5][ticker]:
-                df_c = df.copy()
+                df_c = df5.copy()
                 func(bot,df_c)
 
     def trade_bots_bitget(self,func):

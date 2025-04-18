@@ -10,7 +10,7 @@ from utils.draw_utils import draw_lite_chart,draw_chart_channel,draw_hb_chart,dr
 # from ForBots.Indicators.classic_indicators import add_donchan_channel,add_vangerchik,add_sma, add_slice_df,add_bollinger,add_over_bb,add_attached_bb,add_big_volume,add_dynamics_ma
 from strategies.test_strategies.check import check_strategy
 # from strategies.work_strategies.PTA import PTA4_WDDCrE as WS
-from strategies.work_strategies.PTAX import PTA18_CHOGALL as WS
+from strategies.work_strategies.PTAX import PTA18_VARIAN as WS
 # from strategies.work_strategies.STA_ca import STA2_SLOW as WS
 # from strategies.work_strategies.OGTA import OGTA5_CAT as WS
 # from strategies.work_strategies.LTA import LTA_PIN as WS
@@ -80,7 +80,7 @@ if see_equity:
     plt.plot(equity,color='red')
     pass
 else:
-    # plt.subplot(2,1,1)
+    plt.subplot(2,1,1)
     plt.grid() 
     
     draw_hb_chart_fast(df)
@@ -112,11 +112,11 @@ else:
     # plt.plot(df['bbu'],linestyle='--')
     # for k in ('bbd','sma'):
     #     plt.plot(df[k])
-    # ax1 = plt.gca()
-    # plt.subplot(2,1,2,sharex=ax1)
-    # plt.grid() 
-    # for k in ('adx',):
-    #     plt.plot(df[k])
+    ax1 = plt.gca()
+    plt.subplot(2,1,2,sharex=ax1)
+    plt.grid() 
+    for k in ('ii',):
+        plt.plot(df[k])
     # draw_lite_chart(df)
     # plt.subplot(2,1,1)
     # # plt.subplot(3,1,1)

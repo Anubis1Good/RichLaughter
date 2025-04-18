@@ -72,12 +72,12 @@ def process_history_position(result,suffix,db_path):
                 'value': 0,
                 'format': workbook.add_format({'bg_color': '#FFC7CE', 'font_color': '#9C0006'})
             })
-            worksheet.conditional_format(1, i, len(result2), i, {
-                'type': 'text',
-                'criteria': 'containing',
-                'value': 'MTA',
-                'format': workbook.add_format({'bg_color': '#FFC7CE', 'font_color': '#9C0006'})
-            })
+            # worksheet.conditional_format(1, i, len(result2), i, {
+            #     'type': 'text',
+            #     'criteria': 'containing',
+            #     'value': 'MTA',
+            #     'format': workbook.add_format({'bg_color': '#FFC7CE', 'font_color': '#9C0006'})
+            # })
             # print(col)
             if col in rank_names and not 'dd' in col:
                 worksheet.conditional_format(1, i, len(result2), i, {

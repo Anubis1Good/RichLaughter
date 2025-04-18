@@ -193,3 +193,10 @@ def add_pc_stair_fast(df: pd.DataFrame, n=3, period=20):
     
     df['stair'] = pd.Series(stair).ffill()
     return df
+
+def add_integrity_index(df:pd.DataFrame,period:int=14):
+    df['spred'] = df['high'] - df['low']
+    df['integrity'] = np.where(df['direction'] == 1, df['spred'],-df['spred'])
+    df['ii'] = (df['integrity'].rolling(period).sum() / np.abs(df['integrity']).rolling(period).sum()) * 100
+    df = df.drop(['spred','integrity'],axis=1)
+    return df

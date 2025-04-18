@@ -181,8 +181,8 @@ class MainWindow(QWidget):
             print(f"Скрипт {name} завершен!")
 
     def base_start_btn_styling(self,btn,name, script_path, args):
-        self.add_process(name+'close', script_path, args[:-1] + ['close'])
-        self.processes[name+'close'].finished.connect(self.cleanup_processes)
+        # self.add_process(name+'close', script_path, args[:-1] + ['close'])
+        # self.processes[name+'close'].finished.connect(self.cleanup_processes)
         btn.setText(btn.text().replace('Stopping', 'Start').replace('...','').replace('Stop','Start'))
         btn.setStyleSheet(self.init_btn_style)
         btn.setEnabled(True)
