@@ -8,7 +8,7 @@ from strategies.work_strategies.PTA import PTA2_BDDC_FIX,PTA2_BDDCr_UNIVERSAL,PT
 from strategies.work_strategies.PTAX import PTA10_WIZARD,PTA10_MAGIC,PTA10_SORCERER,PTA11_KUSURUKEN,PTA12_SWDDCr,PTA13_DWDDCr,PTA14_RWDDCr,PTA15_KERRIGAN,PTA15_TRACER,PTA15_WIDOWMAKER
 from strategies.work_strategies.OGTA import OGTA4_DOG
 
-from strategies.work_strategies.LTA import LTA_LAKSA,LTA_LAKSAe,LTA_BORSCH,LTA_OKROSHKA,LTA_OKROSHKA2,LTA_PIN
+from strategies.work_strategies.LTA import LTA_OKROSHKA,LTA_OKROSHKA2,LTA_PIN
 
 
 def optimization_multi(ws,ts,params,test_folder,min_fee: float = 0.0004,
@@ -25,7 +25,8 @@ def optimization_multi(ws,ts,params,test_folder,min_fee: float = 0.0004,
             print(rw,'not stocks')
 
 # test_folder = 'DataForTests\DataFromBitget'
-test_folder = 'DataForTests\DataFromMOEX'
+# test_folder = 'DataForTests\DataFromMOEX'
+test_folder = 'DataForTests\DataFromMOEXto5'
 min_fee: float = 0.0004
 max_fee: float = 0.0012
 min_fee = 0.0002
@@ -33,76 +34,76 @@ max_fee = 0.0009
 
 group = (
 
-    # (STA_mini,[
-    #     range(10,101,10),
-    #     (0,1)
-    # ]),
-    # (PTA2_BDDC_FIX,[
-    #     range(10,101,10),
-    #     (1,),
-    #     (1,),
-    # ]),
-    # (PTA2_BDDCr_UNIVERSAL,[
-    #     range(10,101,10),
-    #     (1,),
-    #     (1,),
-    # ]),
-    # (PTA2_BBBUr,[
-    #     range(10,101,10),
-    #     (1,),
-    #     (1,),
-    # ]),
-    # (PTA2_BBBU,[
-    #     range(10,101,10),
-    #     (1,),
-    #     (1,),
-    # ]),
-    # (PTA2_BVGFIX,[
-    #     range(10,101,10),
-    #     (1,),
-    #     (1,),
-    # ]),
-    # (PTA2_DDCrWork,[
-    #     range(10,101,10),
-    # ]),
-    # (PTA2_DDCrVG,[
-    #     range(10,101,10),
-    # ]),
-    # (PTA2_DVCr,[
-    #     range(10,101,10),
-    # ]),
-    # (PTA2_LISICA,[
-    #     range(10,101,10),
-    #     (0.5,1,1.5,2),
-    # ]),
-    # (PTA2_VOLCHARA,[
-    #     range(10,101,10),
-    #     (0.5,1,1.5,2),
-    # ]), 
-    # (PTA8_OBBY,[
-    #     range(10,101,10),
-    #     (0.5,1,1.5,2),
-    # ]), 
-    # (PTA8_LOBSTER,[
-    #     range(10,101,10),
-    #     (0.5,1,1.5,2),
-    # ]), 
-    # (PTA10_WIZARD,[
-    #     range(10,101,10),
-    #     range(10,101,10),
-    #     range(3,16,3),
-    #     (20,30),
-    #     (20,30,40,50),
-    # ]),
-    # (PTA10_SORCERER,[
-    #     range(10,101,10),
-    #     range(10,101,10),
-    #     range(3,16,3),
-    #     (20,30,),
-    #     range(3,16,3),
-    #     (10,20),
+    (STA_mini,[
+        range(10,101,10),
+        (0,1)
+    ]),
+    (PTA2_BDDC_FIX,[
+        range(10,101,10),
+        (1,),
+        (1,),
+    ]),
+    (PTA2_BDDCr_UNIVERSAL,[
+        range(10,101,10),
+        (1,),
+        (1,),
+    ]),
+    (PTA2_BBBUr,[
+        range(10,101,10),
+        (1,),
+        (1,),
+    ]),
+    (PTA2_BBBU,[
+        range(10,101,10),
+        (1,),
+        (1,),
+    ]),
+    (PTA2_BVGFIX,[
+        range(10,101,10),
+        (1,),
+        (1,),
+    ]),
+    (PTA2_DDCrWork,[
+        range(10,101,10),
+    ]),
+    (PTA2_DDCrVG,[
+        range(10,101,10),
+    ]),
+    (PTA2_DVCr,[
+        range(10,101,10),
+    ]),
+    (PTA2_LISICA,[
+        range(10,101,10),
+        (0.5,1,1.5,2),
+    ]),
+    (PTA2_VOLCHARA,[
+        range(10,101,10),
+        (0.5,1,1.5,2),
+    ]), 
+    (PTA8_OBBY,[
+        range(10,101,10),
+        (0.5,1,1.5,2),
+    ]), 
+    (PTA8_LOBSTER,[
+        range(10,101,10),
+        (0.5,1,1.5,2),
+    ]), 
+    (PTA10_WIZARD,[
+        range(10,101,10),
+        range(10,101,10),
+        range(3,16,3),
+        (20,30),
+        (20,30,40,50),
+    ]),
+    (PTA10_SORCERER,[
+        range(10,101,10),
+        range(10,101,10),
+        range(3,16,3),
+        (20,30,),
+        range(3,16,3),
+        (10,20),
         
-    # ]),
+    ]),
     (PTA10_MAGIC,[
         range(10,101,10),
         range(10,101,10),
@@ -148,18 +149,6 @@ group = (
         range(10,101,10),
         (20,30,40,50),
     ]),
-    (LTA_LAKSA,[
-        range(10,101,10),
-        range(10,101,10),
-    ]),
-    (LTA_LAKSAe,[
-        range(10,101,10),
-        range(10,101,10),
-    ]),
-    (LTA_BORSCH,[
-        range(10,101,10),
-        range(10,101,10),
-    ]),
     (LTA_OKROSHKA,[
         range(10,101,10),
         range(10,101,10),
@@ -175,16 +164,16 @@ group = (
         (3,5)
     ]),
 
-    # (PTA4_UNIVERSAL,[
-    #     range(10,61,10),
-    #     range(5,61,5),
-    #     (20,30,40,50),
-    #     (20,30,40,50),
-    #     ["DC","VG","BB","VC","WC"],
-    #     ["rsi","rsi_tw","mfi","s","uo"],
-    #     (1,),
-    #     (1,)
-    # ]), 
+    (PTA4_UNIVERSAL,[
+        range(10,61,10),
+        range(5,61,5),
+        (20,30,40,50),
+        (20,30,40,50),
+        ["DC","VG","BB","VC","WC"],
+        ["rsi","rsi_tw","mfi","s","uo"],
+        (1,),
+        (1,)
+    ]), 
     # (PTA4_UNIVERSAL2,[
     #     range(10,61,10),
     #     range(5,61,5),
@@ -195,7 +184,79 @@ group = (
     #     (1,),
     #     (1,)
     # ]), 
-
+    # (PTA18_KELTHUZAD,[
+    #     (50,100,200),
+    #     (3,5,7,10),
+    #     range(5,56,5),
+    #     (10,20,30,40),
+    # ]),
+    # (PTA18_ARTAS,[
+    #     (50,100,200),
+    #     (3,5,7,10),
+    #     range(5,56,5),
+    #     (10,20,30,40),
+    # ]),
+    # (PTA18_CHOGALL,[
+    #     (50,100,200),
+    #     (3,5,7,10),
+    #     range(5,56,5),
+    #     (10,20,30,40),
+    # ]),
+    # (PTA18_DEHAKA,[
+    #     (50,100,200),
+    #     (3,5,7,10),
+    #     range(5,56,5),
+    #     (10,20,30,40),
+    # ]),
+    # (PTA18_DIABLO,[
+    #     (50,100,200),
+    #     (3,5,7,10),
+    #     range(5,56,5),
+    #     (10,20,30,40),
+    # ]),
+    # (PTA18_GULDAN,[
+    #     (50,100,200),
+    #     (3,5,7,10),
+    #     range(5,56,5),
+    #     (10,20,30,40),
+    # ]),
+    # (PTA18_REXXAR,[
+    #     (50,100,200),
+    #     (3,5,7,10),
+    #     range(5,56,5),
+    #     (30,40,50),
+    #     (10,20,30,40),
+    # ]),
+    # (PTA18_VARIAN,[
+    #     (50,100,200),
+    #     (3,5,7,10),
+    #     range(5,56,5),
+    #     (10,20,30,40),
+    #     range(10,41,5),
+    # ]),
+    # (STA2,[
+    #     (50,100,200),
+    #     (3,5,7,10),
+    #     range(5,56,5),
+    # ]),
+    # (STA2_FAST,[
+    #     (50,100,200),
+    #     (3,5,7,10),
+    #     range(5,56,5),
+    #     range(10,41,5),
+    # ]),
+    # (STA2_SLOW,[
+    #     (50,100,200),
+    #     (3,5,7,10),
+    #     range(5,56,5),
+    #     range(10,41,5),
+    # ]),
+    # (STA2_ULTRA,[
+    #     (50,100,200),
+    #     (3,5,7,10),
+    #     range(5,56,5),
+    #     range(10,41,5),
+    # ]),
 
 )
 
