@@ -23,7 +23,12 @@ class TestingTrader1:
         self.init_ex_spec()
         self.map_bots = defaultdict(lambda :defaultdict(list))
         self.prepare_bots_outer()
-        self.yesterday = str(date.today() - timedelta(days=3))
+        today = date.today()
+        if today.weekday() == 0:
+            delta = timedelta(days=4)
+        else:
+            delta = timedelta(days=2)
+        self.yesterday = self.yesterday = str(today - delta)
         self.check_time = False
         self.check_time2 = True
         self.count_bars = 300

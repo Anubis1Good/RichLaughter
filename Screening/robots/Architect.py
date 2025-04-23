@@ -68,8 +68,8 @@ class Architect:
         )
         return result_dict
     
-    def get_day_5strategies(self,granularity):
-        df = get_top5_best_day_strategies(self.db_path,granularity,24)
+    def get_day_5strategies(self,granularity,hour=24):
+        df = get_top5_best_day_strategies(self.db_path,granularity,hour)
         if df is None or df.empty or 'ticker' not in df.columns or 'bot' not in df.columns:
             return {}
         # Удаляем строки с пропусками
@@ -98,8 +98,8 @@ class Architect:
         )
         return result_dict
     
-    def get_ncandels_5(self,granularity):
-        df = get_top5_stable_by_ncandles(self.db_path,granularity,100)
+    def get_ncandels_5(self,granularity,ncandels=100):
+        df = get_top5_stable_by_ncandles(self.db_path,granularity,ncandels)
         if df is None or df.empty or 'ticker' not in df.columns or 'bot' not in df.columns:
             return {}
         # Удаляем строки с пропусками
@@ -247,10 +247,16 @@ class Architect:
             strategies = self.get_day_5strategies(granularity)
             self.processing_strategies(strategies,'B24',granularity)
 
+            strategies = self.get_day_5strategies(granularity,100)
+            self.processing_strategies(strategies,'B100',granularity)
+
             strategies = self.get_today_5(granularity)
             self.processing_strategies(strategies,'BTD',granularity)
 
             strategies = self.get_ncandels_5(granularity)
             self.processing_strategies(strategies,'C100',granularity)
+
+            strategies = self.get_ncandels_5(granularity,500)
+            self.processing_strategies(strategies,'C500',granularity)
 
 

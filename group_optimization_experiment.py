@@ -5,10 +5,10 @@ from strategies.test_strategies.universal import universal_test_strategy as ts
 
 from strategies.work_strategies.STA_ca import STA2,STA2_FAST,STA2_SLOW,STA2_ULTRA
 # from strategies.work_strategies.STA_ml2 import STAML2_TRADITION,STAML2_CHAOS,STAML2_FLUX,STAML2_LEGACY
-# from strategies.work_strategies.LTA import LTA_EJIK,LTA_KARYCH,LTA_SAVUNIA,LTA_NUSHA,LTA_KOPATYCH,LTA_LOSYASH,LTA_BARASH,LTA_PIN
+from strategies.work_strategies.LTA2 import LTA2_LOGAN
 # # from strategies.work_strategies.OGTA import OGTA4_DOG
 # from strategies.work_strategies.PTA import PTA4_WDDCr2,PTA4_WDDCr2E,PTA1_FEMA,PTA1_FSMA,PTA1_CEMA,PTA1_CSMA
-from strategies.work_strategies.PTAX import PTA18_CHOGALL,PTA18_GULDAN,PTA18_ARTAS,PTA18_DEHAKA,PTA18_DIABLO,PTA18_KELTHUZAD,PTA18_REXXAR,PTA18_VARIAN
+from strategies.work_strategies.PTAX import PTA19_ANUBARAK,PTA18_BLAZE,PTA19_JOHANNA,PTA19_TYRAEL
 
 def optimization_multi(ws,ts,params,test_folder,min_fee: float = 0.0004,
     max_fee: float = 0.0012):
@@ -46,80 +46,45 @@ max_fee = 0.0009
 #     (10,20,30,40)
 # ]
 group = (
-    # (PTA18_KELTHUZAD,[
-    #     (50,100,200),
+    # (PTA19_JOHANNA,[
+    #     (100,),
     #     (3,5,7,10),
-    #     range(5,56,5),
+    #     range(5,36,5),
+    #     range(10,106,20),
+    #     (30,40,50),
     #     (10,20,30,40),
+    #     (0,1)
     # ]),
-    # (PTA18_ARTAS,[
-    #     (50,100,200),
+    # (PTA19_TYRAEL,[
+    #     (100,),
     #     (3,5,7,10),
-    #     range(5,56,5),
+    #     range(5,36,5),
+    #     range(10,106,20),
+    #     (30,40,50),
     #     (10,20,30,40),
+    #     (0,1)
     # ]),
-    # (PTA18_CHOGALL,[
-    #     (50,100,200),
-    #     (3,5,7,10),
-    #     range(5,56,5),
+    # (PTA18_BLAZE,[
+    #     range(10,106,20),
+    #     range(5,36,5),
+    #     range(11,106,15),
+    #     (30,40,50),
     #     (10,20,30,40),
+    #     (0,1)
     # ]),
-    # (PTA18_DEHAKA,[
-    #     (50,100,200),
-    #     (3,5,7,10),
-    #     range(5,56,5),
+    # (PTA19_ANUBARAK,[
+    #     range(10,106,20),
+    #     range(5,36,5),
+    #     (30,40,50),
     #     (10,20,30,40),
-    # ]),
-    # (PTA18_DIABLO,[
-    #     (50,100,200),
-    #     (3,5,7,10),
-    #     range(5,56,5),
     #     (10,20,30,40),
+    #     (0,1)
     # ]),
-    # (PTA18_GULDAN,[
-    #     (50,100,200),
-    #     (3,5,7,10),
-    #     range(5,56,5),
-    #     (10,20,30,40),
+    # (LTA2_LOGAN,[
+    #     range(10,106,10),
+    #     range(10,106,15),
+    #     (20,30,40,50),
     # ]),
-    (PTA18_REXXAR,[
-        (50,100,200),
-        (3,5,7,10),
-        range(5,56,5),
-        (30,40,50),
-        (10,20,30,40),
-    ]),
-    (PTA18_VARIAN,[
-        (50,100,200),
-        (3,5,7,10),
-        range(5,56,5),
-        (10,20,30,40),
-        range(10,41,5),
-    ]),
-    # (STA2,[
-    #     (50,100,200),
-    #     (3,5,7,10),
-    #     range(5,56,5),
-    # ]),
-    # (STA2_FAST,[
-    #     (50,100,200),
-    #     (3,5,7,10),
-    #     range(5,56,5),
-    #     range(10,41,5),
-    # ]),
-    # (STA2_SLOW,[
-    #     (50,100,200),
-    #     (3,5,7,10),
-    #     range(5,56,5),
-    #     range(10,41,5),
-    # ]),
-    # (STA2_ULTRA,[
-    #     (50,100,200),
-    #     (3,5,7,10),
-    #     range(5,56,5),
-    #     range(10,41,5),
-    # ]),
-
 )
 
 # group = (

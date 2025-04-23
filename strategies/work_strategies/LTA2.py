@@ -3,7 +3,7 @@ import  matplotlib.pyplot as plt
 import pandas as pd
 from strategies.work_strategies.BaseTA import BaseTABitget
 from ForBots.Indicators.classic_indicators import add_slice_df,add_ema,add_enter_price2close,add_rsi,add_chop,add_rsi_tw,add_cci,add_williams_r,add_mfi,add_ultimate_oscillator,add_cmo,add_adx,add_donchan_channel,add_sma
-from ForBots.Indicators.pva_indicators import add_velcro_indicator,add_pc_stair_fast
+from ForBots.Indicators.pva_indicators import add_velcro_indicator,add_pc_stair_fast,add_static_channel
 
 class LTA2_MONSTER(BaseTABitget):
     """period=20,threshold=30,period2=10,shift=2,period_adx=30"""
@@ -108,3 +108,28 @@ class LTA2_BLAST(BaseTABitget):
             return 'long_pw'
         if row['open'] < row['stair_s'] > row['close']:
             return 'short_pw'
+        
+class LTA2_LOGAN(BaseTABitget):
+    """period=100,period2=50,threshold=50"""
+    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=100,period2=50,threshold=50):
+        super().__init__(symbol, granularity, productType, n_parts, period)
+        self.period2 = period2
+        self.threshold = threshold
+    def preprocessing(self, df:pd.DataFrame):
+        df = add_static_channel(df,self.period)
+        df = add_chop(df,self.period2)
+        df = add_enter_price2close(df)
+        df = add_slice_df(df,period=self.period)
+        return df
+    def __call__(self, row, *args, **kwds):
+        if row['chop'] > self.threshold:
+            if row['top_line'] < row['close']:
+                return 'short_pw'
+            if row['bottom_line'] > row['close']:
+                return 'long_pw'
+            if row['center_line'] > row['close']:
+                return 'close_short_pw'
+            if row['center_line'] < row['close']:
+                return 'close_long_pw'
+        else:
+            return 'close_all_pw'

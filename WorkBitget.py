@@ -10,11 +10,11 @@ from utils.draw_utils import draw_lite_chart,draw_chart_channel,draw_hb_chart,dr
 # from ForBots.Indicators.classic_indicators import add_donchan_channel,add_vangerchik,add_sma, add_slice_df,add_bollinger,add_over_bb,add_attached_bb,add_big_volume,add_dynamics_ma
 from strategies.test_strategies.check import check_strategy
 # from strategies.work_strategies.PTA import PTA4_WDDCrE as WS
-from strategies.work_strategies.PTAX import PTA18_VARIAN as WS
+from strategies.work_strategies.PTAX import PTA19_ANUBARAK as WS
 # from strategies.work_strategies.STA_ca import STA2_SLOW as WS
 # from strategies.work_strategies.OGTA import OGTA5_CAT as WS
 # from strategies.work_strategies.LTA import LTA_PIN as WS
-# from strategies.work_strategies.LTA2 import LTA2_BLAST as WS
+# from strategies.work_strategies.LTA2 import LTA2_LOGAN as WS
 # from strategies.work_strategies.MTA import MTA_LORD as WS
 # from strategies.work_strategies.STA_ml2 import STAML2_NEWAVE as WS
 # from strategies.work_strategies.STA_ml import STAML1_XGBR2_DC as WS
@@ -42,7 +42,7 @@ symbol = "DOGEUSDT"
 granularity = "5m"
 slope = 4
 
-bot = WS(symbol,granularity)
+bot = WS(symbol,granularity,use_stop=1)
 # bot = WS(symbol,granularity,period=10,threshold=10)
 # conf = (20,55,12,25,20)
 # bot = WS(symbol,granularity,"usdt-futures",1,*conf)
@@ -80,12 +80,12 @@ if see_equity:
     plt.plot(equity,color='red')
     pass
 else:
-    plt.subplot(2,1,1)
+    # plt.subplot(2,1,1)
     plt.grid() 
     
     draw_hb_chart_fast(df)
-    plt.plot(df['stair'])
-    plt.plot(df['stair_s'])
+    # plt.plot(df['stair'])
+    # plt.plot(df['stair_s'])
     # plt.plot(df['top_kvas'])
     if len(longs.shape) > 1:
         plt.scatter(longs[:,0],longs[:,1],marker='^',color='black')
@@ -94,8 +94,8 @@ else:
     if len(closes.shape) > 1:
         plt.scatter(closes[:,0],closes[:,1],marker='x',color='black')
     # for k in 'max_hb, min_hb, avarege'.split(', '):
-    for k in 'max_hb, min_hb, avarege'.split(', '):
-        plt.plot(df[k],color='r',linestyle='--')
+    # for k in 'max_hb, min_hb, avarege'.split(', '):
+    #     plt.plot(df[k],color='r',linestyle='--')
     # plt.plot(df['top_zone'],color='r')
     # plt.plot(df['bottom_zone'],color='b')
 
@@ -112,11 +112,11 @@ else:
     # plt.plot(df['bbu'],linestyle='--')
     # for k in ('bbd','sma'):
     #     plt.plot(df[k])
-    ax1 = plt.gca()
-    plt.subplot(2,1,2,sharex=ax1)
-    plt.grid() 
-    for k in ('ii',):
-        plt.plot(df[k])
+    # ax1 = plt.gca()
+    # plt.subplot(2,1,2,sharex=ax1)
+    # plt.grid() 
+    # for k in ('chop',):
+    #     plt.plot(df[k])
     # draw_lite_chart(df)
     # plt.subplot(2,1,1)
     # # plt.subplot(3,1,1)
