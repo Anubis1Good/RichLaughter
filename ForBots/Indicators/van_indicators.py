@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 def add_van_zigzag(df, period=7):
+    """add swing_high  swing_low  zigzag  zigzag_high  zigzag_low  zigzag_line"""
     # Создаем копию DataFrame и сбрасываем индекс
     df = df.copy(deep=True).reset_index(drop=True)
     n = len(df)

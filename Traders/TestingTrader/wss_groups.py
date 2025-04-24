@@ -14,7 +14,6 @@ wssMoexFut1 = [
     (LTA2_LOGAN,(10,100,30)),
     (LTA2_LOGAN,(30,100,30)),
 
-    (OGTA4_DOG,(40,30)),
     (OGTA4_DOG,(10,40)),
 
     (STA_mini,(7,1)),
@@ -24,7 +23,6 @@ wssMoexFut1 = [
     (STA2_SLOW,(100,5,15,25)),
     (STA2_ULTRA,(100,3,20,15)),
 
-    (STAML2_CHAOS,(60,2,30)),
     (STAML2_GOLDENMEAN,(60,2,30,30)),
     (STAML2_NEWAVE,(5,5,0.5,30)),
     # (STAML2_SID,(200,10,5,30)),
@@ -141,7 +139,6 @@ wssMoexFut5 = [
     (STA2_SLOW,(100,3,20,25)),
     (STA2_ULTRA,(100,7,5,15)),
 
-    # (STAML2_CHAOS,(60,2,30)),
     (STAML2_GOLDENMEAN,(60,2,30,30)),
     (STAML2_NEWAVE,(5,5,0.5,30)),
 

@@ -7,6 +7,7 @@ from ForBots.Indicators.classic_indicators import *
 from ForBots.Indicators.vsa_indicators import *
 from ForBots.Indicators.rare_indicators import *
 from ForBots.Indicators.pva_indicators import *
+from ForBots.Indicators.van_indicators import *
 from scipy.stats import linregress
 
 raw_file = 'DataForTests\DataFromBitget\DOGEUSDT_1m_1739873922.csv'
@@ -14,28 +15,25 @@ raw_file = 'DataForTests\DataFromMOEX\MMM5_1_1744615735.csv'
 period = 10
 df = bitget_loader(raw_file)
 # df = df.iloc[-500:]
-# df = df.iloc[10:500]
+# df = df.iloc[10:510]
 
 df = add_donchan_channel(df)
 
-
+df = add_van_zigzag(df,100)
     
-
-
 
 
 
 # Пример использования
 # df = pd.read_csv('your_data.csv')
-df = add_assessment_motion_index(df)
 # print(df[['high', 'low', 'direction', 'last_extreme']].head())
 
 
 print(df.tail())
-plt.subplot(2,1,1)
+# plt.subplot(2,1,1)
 plt.grid() 
 draw_hb_chart_fast(df)
-# plt.plot(df['top_line'])
+plt.plot(df['zigzag_line'])
 # plt.plot(df['bottom_line'])
 # plt.plot(df['center_line'])
 # for k in ('fractal_up_high', 
@@ -43,13 +41,13 @@ draw_hb_chart_fast(df)
 #         'fractal_up_middle',
 #         'fractal_down_middle',
 #         'fractal_middle'):
-for k in 'max_hb, min_hb, avarege'.split(', '):
-    plt.plot(df[k])
-ax1 = plt.gca()
-plt.subplot(2,1,2,sharex=ax1)
-plt.grid() 
-plt.plot(df['ami'])
-plt.plot(df['ami_filter'])
+# for k in 'max_hb, min_hb, avarege'.split(', '):
+#     plt.plot(df[k])
+# ax1 = plt.gca()
+# plt.subplot(2,1,2,sharex=ax1)
+# plt.grid() 
+# plt.plot(df['ami'])
+# plt.plot(df['ami_filter'])
 # plt.plot(df['ii'])
 # plt.plot(df['market_mode'])
 
