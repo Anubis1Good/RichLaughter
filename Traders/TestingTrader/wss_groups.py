@@ -16,8 +16,6 @@ wssMoexFut1 = [
 
     (OGTA4_DOG,(10,40)),
 
-    (STA_mini,(7,1)),
-    (STA_mini,(7,0)),
     (STA2,(100,3,25)),
     (STA2_FAST,(100,3,20,25)),
     (STA2_SLOW,(100,5,15,25)),
@@ -25,8 +23,6 @@ wssMoexFut1 = [
 
     (STAML2_GOLDENMEAN,(60,2,30,30)),
     (STAML2_NEWAVE,(5,5,0.5,30)),
-    # (STAML2_SID,(200,10,5,30)),
-    # (STAML2_SID,(200,10,5,30,0.05)),
 
     (PTA2_DDCrWork,(5,)),
     (PTA2_LISICA,(7,2)), 
@@ -41,10 +37,6 @@ wssMoexFut1 = [
     (PTA2_BVGFIX,(7,1,1)), 
     (PTA2_BVGFIX,(7,1,0)), 
     (PTA2_BVGFIX,(7,0,1)), 
-
-    (PTA2_BDDC_FIX,(20,1,1)), 
-    (PTA2_BDDC_FIX,(20,1,0)), 
-    (PTA2_BDDC_FIX,(20,0,1)), 
 
     (PTA2_BBBU,(14,1,1)), 
     (PTA2_BBBU,(14,1,0)), 
@@ -74,24 +66,21 @@ wssMoexFut1 = [
     (PTA10_WIZARD,(30,55,3,15,20)),
     (PTA10_WIZARD,(50,55,12,10,30)),
     (PTA10_MAGIC,(40,80,3)),
-    (PTA10_SORCERER,(90,10,3,30,15,20)),
 
     (PTA11_KUSURUKEN,(50,6,5,20,'c')), #A
     (PTA11_KUSURUKEN,(70,3,10,40,'hl')), #F
-    (PTA11_KUSURUKEN,(10,12,10,40,'hl')), #A
     (PTA11_KUSURUKEN,(50,3,20,10,'c')), #F
 
     (PTA12_SWDDCr,(15,30,0.25,5,20)), #A
     (PTA12_SWDDCr,(10,30,0.5,5,15)), #A
-    (PTA12_SWDDCr,(10,40,0.25,5,5)), #F
 
-    (PTA13_DWDDCr,(70,40,10)), #A
+    (PTA13_DWDDCr,(70,40,10)), #Проблемы оптимизации
 
     (PTA14_RWDDCr,(15,30,35,45)), #F
     (PTA14_RWDDCr,(10,30,90,80)), #F
 
     (PTA15_WIDOWMAKER,(5,30)), 
-    (PTA15_KERRIGAN,(5,)), #A
+    # (PTA15_KERRIGAN,(5,)), #A
     (PTA15_SILVANA,(5,30,5)), 
     (PTA15_ANNA,(5,30)), 
 
@@ -127,7 +116,8 @@ wssMoexFut5 = [
     (LTA_OKROSHKA,(10,80)),
     (LTA_PIN,(10,6,40,5)),
     (LTA_PIN,(20,3,40,3)), #2104
-
+    (LTA2_LOGAN,(10,100,30)),
+    
     (OGTA4_DOG,(40,30)),
     (OGTA4_DOG,(10,40)),
     (OGTA4_DOG,(30,50)), #2104
@@ -187,14 +177,11 @@ wssMoexFut5 = [
     (PTA4_UNIVERSAL,(20,10,50,30,"BB",'mfi',1,1)),
 
     (PTA8_WDOBBY_FREEr,(6,0.5,30)),
-    (PTA8_LOBSTER,(10,2)),
-    (PTA8_OBBY,(10,1)),
 
     (PTA10_MAGIC,(80,10,9)),
     (PTA10_WIZARD,(20,10,6,30,20)),
     (PTA10_WIZARD,(20,55,12,25,20)),
     (PTA10_WIZARD,(30,55,3,15,20)),
-    (PTA10_SORCERER,(20,10,3,30,15,20)),
 
     (PTA11_KUSURUKEN,(10,9,30,40,'c')), #F
     (PTA11_KUSURUKEN,(10,12,10,40,'hl')), #A
@@ -235,13 +222,13 @@ wssMoexFut5 = [
 ]
 
 wssMoexStocks1 = [
-    (LTA_OKROSHKA,(10,10)),
-    (LTA_PIN,(40,9,40,3)),
+    (LTA_OKROSHKA,(20,10)),
+    (LTA_PIN,(60,12,40,3)),
+    (LTA2_LOGAN,(100,100,30)),
+    (OGTA4_DOG,(60,30)),
 
-    (OGTA4_DOG,(40,30)),
-
-    (STA_mini,(60,0)),
-    (STA_mini,(60,1)),
+    (STA_mini,(90,0)),
+    (STA_mini,(90,1)),
     (STA2_FAST,(100,3,40,35)),
     (STA2_SLOW,(100,3,35,35)),
     (STA2_ULTRA,(100,3,20,35)),
@@ -249,56 +236,53 @@ wssMoexStocks1 = [
     (STAML2_GOLDENMEAN,(60,2,200,30)),
     # (STAML2_SID,(200,10,5,30,0.2)),
 
-    (PTA2_LISICA,(60,2)), 
-    (PTA2_DDCrWork,(50,)),
+    (PTA2_LISICA,(60,1)), 
+    (PTA2_LISICA,(90,2)), 
+    (PTA2_DDCrWork,(100,)),
 
-    (PTA2_BDDCr_UNIVERSAL,(30,1,1)), 
-    (PTA2_BDDCr_UNIVERSAL,(30,1,0)), 
-    (PTA2_BDDCr_UNIVERSAL,(30,0,0)), 
+    (PTA2_BDDCr_UNIVERSAL,(60,1,1)), 
+    (PTA2_BDDCr_UNIVERSAL,(60,1,0)), 
+    (PTA2_BDDCr_UNIVERSAL,(60,0,0)), 
 
-    (PTA2_BVGFIX,(30,1,1)), 
-    (PTA2_BVGFIX,(30,1,0)), 
-    (PTA2_BVGFIX,(30,0,1)), 
+    (PTA2_BVGFIX,(60,1,1)), 
+    (PTA2_BVGFIX,(60,1,0)), 
+    (PTA2_BVGFIX,(60,0,1)), 
 
-    (PTA2_BDDC_FIX,(30,1,1)), 
-    (PTA2_BDDC_FIX,(30,1,0)), 
-    (PTA2_BDDC_FIX,(30,0,1)), 
+    (PTA2_BBBU,(60,1,1)), 
+    (PTA2_BBBU,(60,1,0)), 
+    (PTA2_BBBU,(60,0,1)), 
 
-    (PTA2_BBBU,(30,1,1)), 
-    (PTA2_BBBU,(30,1,0)), 
-    (PTA2_BBBU,(30,0,1)), 
-
-    (PTA2_BBBUr,(30,1,1)), 
-    (PTA2_BBBUr,(30,1,0)), 
-    (PTA2_BBBUr,(30,0,1)), 
+    (PTA2_BBBUr,(60,1,1)), 
+    (PTA2_BBBUr,(60,1,0)), 
+    (PTA2_BBBUr,(60,0,1)), 
 
     (PTA4_WLISICA,(30,2,30)),
-
-    (PTA4_WDVCr,(21,30)),
-    (PTA4_WDDCrVG,(21,30)),
-
-    (PTA4_WDDCr,(21,30)), #C
-    (PTA4_WDDCr,(10,20)), #C
+    (PTA4_WDVCr,(30,30)),
+    (PTA4_WDDCrVG,(30,30)),
+    (PTA4_WDDCr,(30,30)), #C
 
     (PTA4_UNIVERSAL,(30,15,30,30,"DC",'rsi',1,1)),
     (PTA4_UNIVERSAL,(30,15,50,20,"DC",'rsi',1,0)),
     (PTA4_UNIVERSAL,(30,15,20,50,"DC",'rsi',0,1)),
 
-    (PTA11_KUSURUKEN,(70,15,35,10,'c')), #A
+    (PTA11_KUSURUKEN,(120,30,35,10,'c')), #A
     (PTA11_KUSURUKEN,(90,3,35,20,'c')), #F
 
-    (PTA12_SWDDCr,(30,40,0.5,5,25)), #A
+    (PTA12_SWDDCr,(90,40,0.5,5,25)), #A
 
     (PTA13_DWDDCr,(90,50,40)), #A
     
     (PTA14_RWDDCr,(90,50,10,90)), #F
 
     (PTA15_WIDOWMAKER,(30,30)), 
+    (PTA15_SILVANA,(30,30,20)), 
     (PTA15_ANNA,(30,30)), 
-    (PTA15_SILVANA,(20,40,65)), 
-    (PTA15_TRACER,(20,0)), 
-    (PTA15_TRACER,(20,1)), 
-    (PTA15_TRACER,(20,-1)), 
+    (PTA15_TRACER,(60,0)), 
+    (PTA15_TRACER,(60,1)), 
+    (PTA15_TRACER,(60,-1)), 
+    (PTA15_VALLA,(60,0)), 
+    (PTA15_VALLA,(60,1)), 
+    (PTA15_VALLA,(60,-1)), 
 
     (PTA18_ARTAS,(100,7,15,20)), 
     (PTA18_KELTHUZAD,(100,7,15,20)), 
@@ -308,7 +292,6 @@ wssMoexStocks1 = [
     (PTA18_DEHAKA,(100,7,15,30)), 
     (PTA18_REXXAR,(100,7,15,40,10)), 
     (PTA18_VARIAN,(100,7,15,10,10)), 
-
     (PTA18_BLAZE,(10,15,11,50,10,0)),    
     (PTA18_BLAZE,(10,15,11,50,10,1)),  
 
@@ -323,6 +306,7 @@ wssMoexStocks1 = [
 wssMoexStocks5 = [
     (LTA_OKROSHKA,(10,30)),
     (LTA_PIN,(40,9,40,3)),
+    (LTA2_LOGAN,(20,100,30)),
 
     (OGTA4_DOG,(40,30)),
 
@@ -360,27 +344,19 @@ wssMoexStocks5 = [
     (PTA2_BBBUr,(30,0,1)), 
 
     (PTA4_WLISICA,(30,2,30)),
-
     (PTA4_WDVCr,(21,30)),
     (PTA4_WDDCrVG,(21,30)),
-
     (PTA4_WDDCr,(21,30)), #C
-    # (PTA4_WDDCr,(10,20)), #C
 
     (PTA4_UNIVERSAL,(30,15,30,30,"DC",'rsi',1,1)),
     (PTA4_UNIVERSAL,(30,15,50,20,"DC",'rsi',1,0)),
     (PTA4_UNIVERSAL,(30,15,20,50,"DC",'rsi',0,1)),
 
-    # (PTA4_UNIVERSAL,(20,5,20,20,"BB",'mfi',1,1)),
+    (PTA4_UNIVERSAL,(20,5,20,20,"BB",'mfi',1,1)),
     (PTA4_UNIVERSAL,(20,10,30,30,"WC",'rsi',1,1)),
     (PTA4_UNIVERSAL,(20,5,30,30,"VG",'mfi',1,1)),
 
-    (PTA8_LOBSTER,(20,2)),
-    (PTA8_OBBY,(30,1.5)),
-
-    (PTA10_MAGIC,(100,30,12)),
     (PTA10_WIZARD,(20,50,12,30,20)),
-    (PTA10_SORCERER,(10,20,3,30,12,20)),
 
     (PTA11_KUSURUKEN,(10,9,20,20,'c')), #A
     (PTA11_KUSURUKEN,(70,15,35,10,'c')), #A
@@ -391,9 +367,10 @@ wssMoexStocks5 = [
     
     (PTA14_RWDDCr,(10,40,10,100)), #F
 
-    (PTA15_WIDOWMAKER,(5,30)), 
     (PTA15_ANNA,(5,30)), 
-    (PTA15_SILVANA,(5,30,5)), 
+    (PTA15_VALLA,(10,0)), 
+    (PTA15_VALLA,(10,1)), 
+    (PTA15_VALLA,(10,-1)), 
 
     (PTA18_ARTAS,(100,10,5,10)), 
     (PTA18_KELTHUZAD,(100,10,5,10)), 
