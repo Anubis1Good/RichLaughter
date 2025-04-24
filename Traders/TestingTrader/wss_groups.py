@@ -117,7 +117,7 @@ wssMoexFut5 = [
     (LTA_PIN,(10,6,40,5)),
     (LTA_PIN,(20,3,40,3)), #2104
     (LTA2_LOGAN,(10,100,30)),
-    
+
     (OGTA4_DOG,(40,30)),
     (OGTA4_DOG,(10,40)),
     (OGTA4_DOG,(30,50)), #2104
@@ -159,10 +159,7 @@ wssMoexFut5 = [
     (PTA2_BBBUr,(7,1,0)), 
     (PTA2_BBBUr,(7,0,1)), 
 
-    # (PTA4_WDDCrE,(11,30)), #C
-    # (PTA4_WDDCrE,(10,20)), #C
     (PTA4_WDDCrE,(6,30)), #C
-    # (PTA4_WDDCr,(6,30)), #C
     (PTA4_WDDCr,(11,30)), #C
 
     (PTA4_WDDCrVG,(7,30)),
@@ -234,7 +231,6 @@ wssMoexStocks1 = [
     (STA2_ULTRA,(100,3,20,35)),
 
     (STAML2_GOLDENMEAN,(60,2,200,30)),
-    # (STAML2_SID,(200,10,5,30,0.2)),
 
     (PTA2_LISICA,(60,1)), 
     (PTA2_LISICA,(90,2)), 
@@ -317,7 +313,6 @@ wssMoexStocks5 = [
     (STA2_ULTRA,(100,3,20,35)),
 
     (STAML2_GOLDENMEAN,(60,2,200,30)),
-    # (STAML2_SID,(200,10,5,30,0.2)),
 
     (PTA2_LISICA,(10,1)), 
     (PTA2_DDCrWork,(20,)),
