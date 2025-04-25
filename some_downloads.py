@@ -15,6 +15,7 @@ fut = True
 from request_functions.download_moex import save_df
 # tickers = ['SBER','LKOH','GAZP',"MTLR","VTBR"]
 tickers = ['MMM5']
+# tickers = ['SiM5']
 for ticker in tickers:
     print(ticker)
     if fut:

@@ -3,7 +3,7 @@ import pandas as pd
 from strategies.work_strategies.BaseTA import BaseTABitget
 from ForBots.Indicators.classic_indicators import add_slice_df,add_ema,add_enter_price2close,add_rsi
 from ForBots.Indicators.rare_indicators import add_dynamic_trend_lines_slope_reversed,add_segmented_regression_from_end
-from ForBots.Indicators.ml_indicators import add_find_similar_pattern_lite
+from ForBots.Indicators.ml_indicators import add_find_similar_pattern_lite,add_linear_regression_last_row
 
 class STAML2_CHAOS(BaseTABitget):
     """ period=60,min_points=2,divider=30"""
@@ -196,4 +196,49 @@ class STAML2_SID(BaseTABitget):
             if row['per_fs'] > self.percent_threshold and row['rsi'] < self.threshold:
                 return 'long_pw'
             else:
+                return 'close_short_pw'
+            
+
+class STAML2_KAMIKAZE(BaseTABitget):
+    """period=60,threshold=30"""
+    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=60,threshold=30):
+        super().__init__(symbol, granularity, productType, n_parts, period)
+        self.threshold = threshold
+    def preprocessing(self, df):
+        df = add_linear_regression_last_row(df,self.period)
+        df = add_enter_price2close(df) 
+        df = add_slice_df(df, self.period) 
+        return df
+
+    def __call__(self, row, *args, **kwds):
+        if row['regression_angle'] < -self.threshold:
+            return 'short_pw'
+        if row['regression_angle'] > self.threshold:
+            return 'long_pw'
+        
+class STAML2_TRENDWAVE(BaseTABitget):
+    """period=60,min_points=5,multiplier=1,threshold_enter=40,threshold_exit=20"""
+    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=60,min_points=5,multiplier=1,threshold_enter=40,threshold_exit=20):
+        super().__init__(symbol, granularity, productType, n_parts, period)
+        self.min_points = min_points
+        self.multiplier = multiplier
+        self.threshold_enter = threshold_enter
+        self.threshold_exit = threshold_exit
+    def preprocessing(self, df):
+        df = add_segmented_regression_from_end(df,self.period,self.multiplier,self.min_points)
+        df = add_rsi(df,self.period)
+        df = add_enter_price2close(df) 
+        df = add_slice_df(df, self.period) 
+        return df
+
+    def __call__(self, row, *args, **kwds):
+        if row['upper_channel'] < row['close']:
+            if row['rsi'] > 100-self.threshold_enter and row['regression_slope'] < 0:
+                return 'short_pw'
+            if row['rsi'] > 100-self.threshold_exit:
+                return 'close_long_pw'
+        if row['lower_channel'] > row['close']:
+            if row['rsi'] < self.threshold_enter and row['regression_slope'] > 0:
+                return 'long_pw'
+            if row['rsi'] < self.threshold_exit:
                 return 'close_short_pw'

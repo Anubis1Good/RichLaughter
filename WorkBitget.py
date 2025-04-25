@@ -10,11 +10,11 @@ from utils.draw_utils import draw_lite_chart,draw_chart_channel,draw_hb_chart,dr
 # from ForBots.Indicators.classic_indicators import add_donchan_channel,add_vangerchik,add_sma, add_slice_df,add_bollinger,add_over_bb,add_attached_bb,add_big_volume,add_dynamics_ma
 from strategies.test_strategies.check import check_strategy
 # from strategies.work_strategies.PTA import PTA4_WDDCrE as WS
-from strategies.work_strategies.PTAX import PTA19_ANUBARAK as WS
+# from strategies.work_strategies.PTAX import PTA19_ZERATUL as WS
 # from strategies.work_strategies.STA_ca import STA2_SLOW as WS
-# from strategies.work_strategies.OGTA import OGTA5_CAT as WS
+# from strategies.work_strategies.OGTA import OGTA4_DOG as WS
 # from strategies.work_strategies.LTA import LTA_PIN as WS
-# from strategies.work_strategies.LTA2 import LTA2_LOGAN as WS
+from strategies.work_strategies.LTA2 import LTA2_LYNX as WS
 # from strategies.work_strategies.MTA import MTA_LORD as WS
 # from strategies.work_strategies.STA_ml2 import STAML2_NEWAVE as WS
 # from strategies.work_strategies.STA_ml import STAML1_XGBR2_DC as WS
@@ -24,6 +24,7 @@ from strategies.work_strategies.PTAX import PTA19_ANUBARAK as WS
 from strategies.test_strategies.universal import universal_test_strategy as TS
 # raw_file = 'DataForTests\DataFromBitget\DOGEUSDT_1m_1739873922.csv'
 raw_file = 'DataForTests\DataFromMOEX\MMM5_1_1744615735.csv'
+raw_file = 'DataForTests\oldMoex\SiM5_1_1745579847.csv'
 # raw_file = 'DataForTests\oldBitget\DOGEUSDT_1m_1741087742_big.csv'
 # raw_file = 'DataForTests\DataFromTicksBitget\DOGEUSDT_1m_from_ticks.csv'
 # raw_file = 'DataForTests\DataFromBitget\DOGEUSDT_3m_1739873329.csv'
@@ -41,9 +42,10 @@ multiplier = 2
 symbol = "DOGEUSDT"
 granularity = "5m"
 slope = 4
+#  (PTA18_REXXAR,(100,5,10,50,30)),   
+# bot = WS(symbol,granularity,'e',1,100,5,10,40,20,10,1)
+bot = WS(symbol,granularity,'e',1,use_stop=1)
 
-bot = WS(symbol,granularity,use_stop=1)
-# bot = WS(symbol,granularity,period=10,threshold=10)
 # conf = (20,55,12,25,20)
 # bot = WS(symbol,granularity,"usdt-futures",1,*conf)
 
@@ -94,8 +96,12 @@ else:
     if len(closes.shape) > 1:
         plt.scatter(closes[:,0],closes[:,1],marker='x',color='black')
     # for k in 'max_hb, min_hb, avarege'.split(', '):
-    # for k in 'max_hb, min_hb, avarege'.split(', '):
-    #     plt.plot(df[k],color='r',linestyle='--')
+    # for k in 'max_hb, min_hb'.split(', '):
+    for k in 'top_buff, bottom_buff'.split(', '):
+        plt.plot(df[k],color='r',linestyle='--')
+    # for k in ('stair','top_line','bottom_line'):
+    for k in ('bbu','bbd'):
+        plt.plot(df[k],color='b',linestyle=':')
     # plt.plot(df['top_zone'],color='r')
     # plt.plot(df['bottom_zone'],color='b')
 

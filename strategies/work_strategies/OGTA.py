@@ -136,6 +136,29 @@ class OGTA4_DOG(BaseTABitget):
             return 'long_pw'
         if row['rsi'] > 100-self.threshold:  
             return 'short_pw'
+        
+class OGTA4_PUPPY(BaseTABitget):
+    """period=14,threshold_enter=30,threshold_exit=40"""
+    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=14,threshold_enter=30,threshold_exit=40):
+        super().__init__(symbol, granularity, productType, n_parts, period)
+        self.threshold_enter = threshold_enter
+        self.threshold_exit = threshold_exit
+    def preprocessing(self, df):
+        df = add_CDV(df)
+        df = add_rsi(df,self.period,'cdv')
+        df = add_enter_price2close(df)  
+        df = add_slice_df(df, self.period) 
+        return df
+
+    def __call__(self, row, *args, **kwds):
+        if row['rsi'] < self.threshold_enter:  
+            return 'long_pw'
+        if row['rsi'] > 100-self.threshold_enter:  
+            return 'short_pw'
+        if row['rsi'] < self.threshold_exit:  
+            return 'close_short_pw'
+        if row['rsi'] > 100-self.threshold_exit:  
+            return 'close_long_pw'
 
 # TODO изменить логику, сейчас все плохо
 class OGTA5_CAT(BaseTABitget):

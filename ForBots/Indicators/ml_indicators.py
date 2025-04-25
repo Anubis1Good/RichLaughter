@@ -161,6 +161,8 @@ def add_linear_regression(df: pd.DataFrame,
                          period: int = 20, 
                          price_col: str = 'close') -> pd.DataFrame:
     """
+    'regression_line'
+    'regression_angle'
     Добавляет в DataFrame:
     1. Угол наклона линейной регрессии (в градусах)
     2. Значение линии регрессии на последней свече окна
@@ -206,5 +208,57 @@ def add_linear_regression(df: pd.DataFrame,
     # Заполнение пропусков
     df['regression_line'] = df['regression_line'].ffill()
     df['regression_angle'] = df['regression_angle'].ffill()
+    
+    return df
+
+def add_linear_regression_last_row(df: pd.DataFrame, 
+                                  period: int = 20, 
+                                  price_col: str = 'close') -> pd.DataFrame:
+    """
+    Добавляет значения линейной регрессии ТОЛЬКО ДЛЯ ПОСЛЕДНЕЙ СТРОКИ.
+    
+    :param df: Исходный DataFrame с ценами
+    :param period: Размер окна для расчета
+    :param price_col: Название колонки с ценами
+    :return: Модифицированный DataFrame
+    """
+    df = df.copy()
+    
+    # Создаем колонки, если их нет
+    if 'regression_angle' not in df.columns:
+        df['regression_angle'] = np.nan
+    if 'regression_line' not in df.columns:
+        df['regression_line'] = np.nan
+    
+    # Проверка достаточности данных
+    if len(df) < period:
+        return df
+    
+    # Берем последние period значений
+    window = df[price_col].iloc[-period:]
+    if len(window) != period:
+        return df
+    
+    # Формулы линейной регрессии
+    x = np.arange(period)
+    x_sum = x.sum()
+    y_sum = window.sum()
+    xy = np.dot(x, window.values)
+    denominator = period * (x**2).sum() - x_sum**2
+    
+    if denominator != 0:
+        a = (period * xy - x_sum * y_sum) / denominator
+    else:
+        a = 0.0
+        
+    b = (y_sum - a * x_sum) / period
+    
+    # Расчет значений для последней строки
+    angle = degrees(np.arctan(a))
+    last_value = a * (period-1) + b
+    
+    # Обновляем только последнюю строку
+    df.loc[df.index[-1], 'regression_angle'] = angle
+    df.loc[df.index[-1], 'regression_line'] = last_value
     
     return df

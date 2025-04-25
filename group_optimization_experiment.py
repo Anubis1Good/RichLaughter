@@ -3,12 +3,12 @@ import traceback
 from Optimiztion.Optimizator1 import Optimizator2
 from strategies.test_strategies.universal import universal_test_strategy as ts
 
-from strategies.work_strategies.STA_ca import STA2,STA2_FAST,STA2_SLOW,STA2_ULTRA
+# from strategies.work_strategies.STA_ca import STA2,STA2_FAST,STA2_SLOW,STA2_ULTRA
 # from strategies.work_strategies.STA_ml2 import STAML2_TRADITION,STAML2_CHAOS,STAML2_FLUX,STAML2_LEGACY
-from strategies.work_strategies.LTA2 import LTA2_LOGAN
-# # from strategies.work_strategies.OGTA import OGTA4_DOG
+from strategies.work_strategies.LTA2 import LTA2_HOTS,LTA2_PUBG,LTA2_LYNX,LTA2_FENNEC,LTA2_ALKASH,LTA2_DRINKER
+from strategies.work_strategies.OGTA import OGTA4_PUPPY
 # from strategies.work_strategies.PTA import PTA4_WDDCr2,PTA4_WDDCr2E,PTA1_FEMA,PTA1_FSMA,PTA1_CEMA,PTA1_CSMA
-from strategies.work_strategies.PTAX import PTA19_ANUBARAK,PTA18_BLAZE,PTA19_JOHANNA,PTA19_TYRAEL
+from strategies.work_strategies.PTAX import PTA19_YREL,PTA19_VALEERA,PTA19_ZERATUL,PTA18_MISHA
 
 def optimization_multi(ws,ts,params,test_folder,min_fee: float = 0.0004,
     max_fee: float = 0.0012):
@@ -25,7 +25,7 @@ def optimization_multi(ws,ts,params,test_folder,min_fee: float = 0.0004,
 
 test_folder = 'DataForTests\DataFromBitget'
 test_folder = 'DataForTests\DataFromMOEX'
-# test_folder = 'DataForTests\DataFromMOEXto5'
+test_folder = 'DataForTests\DataFromMOEXto5'
 min_fee: float = 0.0004
 max_fee: float = 0.0012
 min_fee = 0.0002
@@ -46,45 +46,99 @@ max_fee = 0.0009
 #     (10,20,30,40)
 # ]
 group = (
-    # (PTA19_JOHANNA,[
-    #     (100,),
-    #     (3,5,7,10),
-    #     range(5,36,5),
-    #     range(10,106,20),
-    #     (30,40,50),
-    #     (10,20,30,40),
-    #     (0,1)
-    # ]),
-    # (PTA19_TYRAEL,[
-    #     (100,),
-    #     (3,5,7,10),
-    #     range(5,36,5),
-    #     range(10,106,20),
-    #     (30,40,50),
-    #     (10,20,30,40),
-    #     (0,1)
-    # ]),
-    # (PTA18_BLAZE,[
-    #     range(10,106,20),
-    #     range(5,36,5),
-    #     range(11,106,15),
-    #     (30,40,50),
-    #     (10,20,30,40),
-    #     (0,1)
-    # ]),
-    # (PTA19_ANUBARAK,[
-    #     range(10,106,20),
-    #     range(5,36,5),
-    #     (30,40,50),
-    #     (10,20,30,40),
-    #     (10,20,30,40),
-    #     (0,1)
-    # ]),
-    # (LTA2_LOGAN,[
-    #     range(10,106,10),
-    #     range(10,106,15),
-    #     (20,30,40,50),
-    # ]),
+    (PTA19_YREL,[
+        (100,),
+        (3,5,7,10),
+        range(5,36,5),
+        (30,40,50),
+        (10,20,30,40),
+        range(0,31,10),
+        (0,1)
+    ]),
+    (PTA19_VALEERA,[
+        (100,),
+        (3,5,7,10),
+        range(5,36,5),
+        (30,40,50),
+        (10,20,30,40),
+        range(0,31,10),
+        (0,1)
+    ]),
+    (PTA19_ZERATUL,[
+        (100,),
+        (3,5,7,10),
+        range(5,36,5),
+        range(10,106,20),
+        (30,40,50),
+        (10,20,30,40),
+        (0,1)
+    ]),
+    (PTA18_MISHA,[
+        (100,),
+        (3,5,7,10),
+        range(5,36,5),
+        (30,40,50),
+        (10,20,30,40),
+    ]),
+    (LTA2_HOTS,[
+        (60,90,150),
+        (0.5,1,2),
+        range(5,36,5),
+        (30,40,50),
+        (10,20,30),
+        range(0,31,10),
+        (0,1)
+    ]),
+    (LTA2_PUBG,[
+        (60,90,150),
+        (0.5,1,2),
+        range(5,36,5),
+        (30,40,50),
+        (10,20,30),
+        range(0,31,10),
+        (0,1)
+    ]),
+    (OGTA4_PUPPY,[
+        range(5,66,5),
+        (20,30,40),
+        (10,20,30,40),
+
+    ]),
+    (LTA2_DRINKER,[
+        (60,90,150),
+        (0.5,1,2),
+        range(5,36,5),
+        (30,40,50),
+        (10,20,30),
+        range(0,31,10),
+        (0,1)
+    ]),
+    (LTA2_FENNEC,[
+        (150,),
+        (2,),
+        range(5,36,5),
+        (30,40,50),
+        (10,20,30),
+        range(0,31,10),
+        (0.5,1,2),
+        (0,1)
+    ]),
+    (LTA2_ALKASH,[
+        (60,90,150),
+        (0.5,1,2),
+        range(5,36,5),
+        range(0,31,10),
+        (0,1)
+    ]),
+    (LTA2_LYNX,[
+        (60,90,150),
+        (0.5,1,2),
+        range(5,36,5),
+        range(0,31,10),
+        (0.5,1,2),
+        (0,1)
+    ]),
+  
 )
 
 # group = (

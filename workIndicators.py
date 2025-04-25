@@ -8,20 +8,18 @@ from ForBots.Indicators.vsa_indicators import *
 from ForBots.Indicators.rare_indicators import *
 from ForBots.Indicators.pva_indicators import *
 from ForBots.Indicators.van_indicators import *
+from ForBots.Indicators.ml_indicators import *
 from scipy.stats import linregress
 
 raw_file = 'DataForTests\DataFromBitget\DOGEUSDT_1m_1739873922.csv'
 raw_file = 'DataForTests\DataFromMOEX\MMM5_1_1744615735.csv'
+raw_file = 'DataForTests\oldMoex\SiM5_1_1745579847.csv'
 period = 10
 df = bitget_loader(raw_file)
 # df = df.iloc[-500:]
 # df = df.iloc[10:510]
 
-df = add_donchan_channel(df)
-
-df = add_van_zigzag(df,100)
-    
-
+df = add_segmented_regression_from_end(df)
 
 
 # Пример использования
@@ -33,9 +31,11 @@ print(df.tail())
 # plt.subplot(2,1,1)
 plt.grid() 
 draw_hb_chart_fast(df)
-plt.plot(df['zigzag_line'])
+# plt.plot(df['zigzag_line'])
+# plt.plot(df['top_line'])
 # plt.plot(df['bottom_line'])
-# plt.plot(df['center_line'])
+plt.plot(df['regression_line'])
+# plt.plot(df['stair'])
 # for k in ('fractal_up_high', 
 #         'fractal_down_low',
 #         'fractal_up_middle',

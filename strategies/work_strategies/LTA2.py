@@ -2,7 +2,7 @@ import numpy as np
 import  matplotlib.pyplot as plt
 import pandas as pd
 from strategies.work_strategies.BaseTA import BaseTABitget
-from ForBots.Indicators.classic_indicators import add_slice_df,add_ema,add_enter_price2close,add_rsi,add_chop,add_rsi_tw,add_cci,add_williams_r,add_mfi,add_ultimate_oscillator,add_cmo,add_adx,add_donchan_channel,add_sma
+from ForBots.Indicators.classic_indicators import add_slice_df,add_ema,add_enter_price2close,add_rsi,add_chop,add_rsi_tw,add_cci,add_williams_r,add_mfi,add_ultimate_oscillator,add_cmo,add_adx,add_donchan_channel,add_sma,add_bollinger,add_vodka_channel,add_buffer_add
 from ForBots.Indicators.pva_indicators import add_velcro_indicator,add_pc_stair_fast,add_static_channel
 
 class LTA2_MONSTER(BaseTABitget):
@@ -133,3 +133,257 @@ class LTA2_LOGAN(BaseTABitget):
                 return 'close_long_pw'
         else:
             return 'close_all_pw'
+        
+class LTA2_HOTS(BaseTABitget):
+    """period=100,multiplier=2,period2=10,threshold_enter=40,threshold_exit=20,shift=10,use_stop=1"""
+    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=100,multiplier=2,period2=10,threshold_enter=40,threshold_exit=20,shift=10,use_stop=1):
+        super().__init__(symbol, granularity, productType, n_parts, period)
+        self.period2 = period2
+        self.multiplier = multiplier
+        self.threshold_enter = threshold_enter
+        self.threshold_exit = threshold_exit
+        self.shift = shift
+        self.use_stop = use_stop
+    def preprocessing(self, df):
+        df = add_bollinger(df,self.period,multiplier=self.multiplier)
+        df['bbu'] = df['bbu'].shift(self.shift)
+        df['bbd'] = df['bbd'].shift(self.shift)
+        df['sma'] = df['sma'].shift(self.shift)
+        df = add_donchan_channel(df,self.period2)
+        df = add_rsi(df,self.period2)
+        df = add_enter_price2close(df)
+        df = add_slice_df(df,self.period)
+        return df
+    def __call__(self, row, *args, **kwds):
+        can_long = row['close'] > row['bbd']
+        can_short = row['close'] < row['bbu']
+        nearest_long = row['high'] - row['close'] > row['close'] - row['low'] 
+        if row['low'] <= row['min_hb']:
+            if nearest_long:
+                if can_long and row['rsi'] < self.threshold_enter:
+                    return 'long_pw'
+                if row['rsi'] < self.threshold_exit:
+                    return 'close_short_pw'
+        if row['high'] >= row['max_hb']:
+            if not nearest_long :
+                if can_short and row['rsi'] > 100-self.threshold_enter:
+                    return 'short_pw'
+                if row['rsi'] > 100-self.threshold_exit:
+                    return 'close_long_pw'
+        if self.use_stop:
+            if not can_short:
+                return 'close_short_pw'
+            if not can_long:
+                return 'close_long_pw'
+            
+class LTA2_PUBG(BaseTABitget):
+    """period=100,multiplier=2,period2=10,threshold_enter=40,threshold_exit=20,shift=10,use_stop=1"""
+    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=100,multiplier=2,period2=10,threshold_enter=40,threshold_exit=20,shift=10,use_stop=1):
+        super().__init__(symbol, granularity, productType, n_parts, period)
+        self.period2 = period2
+        self.multiplier = multiplier
+        self.threshold_enter = threshold_enter
+        self.threshold_exit = threshold_exit
+        self.shift = shift
+        self.use_stop = use_stop
+    def preprocessing(self, df):
+        df = add_bollinger(df,self.period,multiplier=self.multiplier)
+        df['bbu'] = df['bbu'].shift(self.shift)
+        df['bbd'] = df['bbd'].shift(self.shift)
+        df['sma'] = df['sma'].shift(self.shift)
+        df = add_donchan_channel(df,self.period2)
+        df = add_rsi(df,self.period2)
+        df = add_enter_price2close(df)
+        df = add_slice_df(df,self.period)
+        return df
+    def __call__(self, row, *args, **kwds):
+        can_long = row['close'] > row['bbd']
+        can_short = row['close'] < row['bbu']
+        nearest_long = row['high'] - row['close'] > row['close'] - row['low'] 
+        if row['low'] <= row['min_hb']:
+            if nearest_long:
+                if can_long and row['rsi'] < self.threshold_enter:
+                    return 'long_pw'
+                if row['rsi'] < self.threshold_exit:
+                    return 'close_short_pw'
+            if not can_long:
+                return 'short_pw'
+        if row['high'] >= row['max_hb']:
+            if not nearest_long :
+                if can_short and row['rsi'] > 100-self.threshold_enter:
+                    return 'short_pw'
+                if row['rsi'] > 100-self.threshold_exit:
+                    return 'close_long_pw'
+            if not can_short:
+                return 'long_pw'
+        if self.use_stop:
+            if not can_short:
+                return 'close_short_pw'
+            if not can_long:
+                return 'close_long_pw'
+            
+class LTA2_DRINKER(BaseTABitget):
+    """period=100,multiplier=2,period2=10,threshold_enter=40,threshold_exit=20,shift=10,use_stop=1"""
+    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=100,multiplier=2,period2=10,threshold_enter=40,threshold_exit=20,shift=10,use_stop=1):
+        super().__init__(symbol, granularity, productType, n_parts, period)
+        self.period2 = period2
+        self.multiplier = multiplier
+        self.threshold_enter = threshold_enter
+        self.threshold_exit = threshold_exit
+        self.shift = shift
+        self.use_stop = use_stop
+    def preprocessing(self, df):
+        df = add_bollinger(df,self.period,multiplier=self.multiplier)
+        df['bbu'] = df['bbu'].shift(self.shift)
+        df['bbd'] = df['bbd'].shift(self.shift)
+        df['sma'] = df['sma'].shift(self.shift)
+        df = add_vodka_channel(df,self.period2)
+        df = add_rsi(df,self.period2)
+        df = add_enter_price2close(df)
+        df = add_slice_df(df,self.period)
+        return df
+    def __call__(self, row, *args, **kwds):
+        can_long = row['close'] > row['bbd']
+        can_short = row['close'] < row['bbu']
+        nearest_long = row['high'] - row['close'] > row['close'] - row['low'] 
+        if row['low'] <= row['bottom_mean']:
+            if nearest_long:
+                if can_long and row['rsi'] < self.threshold_enter:
+                    return 'long_pw'
+                if row['rsi'] < self.threshold_exit:
+                    return 'close_short_pw'
+        if row['high'] >= row['top_mean']:
+            if not nearest_long :
+                if can_short and row['rsi'] > 100-self.threshold_enter:
+                    return 'short_pw'
+                if row['rsi'] > 100-self.threshold_exit:
+                    return 'close_long_pw'
+        if self.use_stop:
+            if not can_short:
+                return 'close_short_pw'
+            if not can_long:
+                return 'close_long_pw'
+            
+class LTA2_ALKASH(BaseTABitget):
+    """period=100,multiplier=2,period2=10,shift=10,use_stop=1"""
+    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=100,multiplier=2,period2=10,shift=10,use_stop=1):
+        super().__init__(symbol, granularity, productType, n_parts, period)
+        self.period2 = period2
+        self.multiplier = multiplier
+        self.shift = shift
+        self.use_stop = use_stop
+    def preprocessing(self, df):
+        df = add_bollinger(df,self.period,multiplier=self.multiplier)
+        df['bbu'] = df['bbu'].shift(self.shift)
+        df['bbd'] = df['bbd'].shift(self.shift)
+        df['sma'] = df['sma'].shift(self.shift)
+        df = add_vodka_channel(df,self.period2)
+        df = add_enter_price2close(df)
+        df = add_slice_df(df,self.period)
+        return df
+    def __call__(self, row, *args, **kwds):
+        can_long = row['close'] > row['bbd']
+        can_short = row['close'] < row['bbu']
+        nearest_long = row['high'] - row['close'] > row['close'] - row['low'] 
+        if row['low'] <= row['bottom_mean']:
+            if nearest_long:
+                if can_long:
+                    return 'long_pw'
+                else:
+                    return 'close_short_pw'
+        if row['high'] >= row['top_mean']:
+            if not nearest_long :
+                if can_short:
+                    return 'short_pw'
+                else:
+                    return 'close_long_pw'
+        if self.use_stop:
+            if not can_short:
+                return 'close_short_pw'
+            if not can_long:
+                return 'close_long_pw'
+            
+class LTA2_FENNEC(BaseTABitget):
+    """period=100,multiplier=2,period2=10,threshold_enter=40,threshold_exit=20,shift=10,divider=1,use_stop=1"""
+    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=100,multiplier=2,period2=10,threshold_enter=40,threshold_exit=20,shift=10,divider=1,use_stop=1):
+        super().__init__(symbol, granularity, productType, n_parts, period)
+        self.period2 = period2
+        self.multiplier = multiplier
+        self.threshold_enter = threshold_enter
+        self.threshold_exit = threshold_exit
+        self.shift = shift
+        self.use_stop = use_stop
+        self.divider = divider
+    def preprocessing(self, df):
+        df = add_bollinger(df,self.period,multiplier=self.multiplier)
+        df['bbu'] = df['bbu'].shift(self.shift)
+        df['bbd'] = df['bbd'].shift(self.shift)
+        df['sma'] = df['sma'].shift(self.shift)
+        df = add_vodka_channel(df,self.period2)
+        df = add_buffer_add(df,'top_mean','bottom_mean',self.divider)
+        df = add_rsi(df,self.period2)
+        df = add_enter_price2close(df)
+        df = add_slice_df(df,self.period)
+        return df
+    def __call__(self, row, *args, **kwds):
+        can_long = row['close'] > row['bbd']
+        can_short = row['close'] < row['bbu']
+        nearest_long = row['high'] - row['close'] > row['close'] - row['low'] 
+        if row['low'] <= row['bottom_buff']:
+            if nearest_long:
+                if can_long and row['rsi'] < self.threshold_enter:
+                    return 'long_pw'
+                if row['rsi'] < self.threshold_exit:
+                    return 'close_short_pw'
+        if row['high'] >= row['top_buff']:
+            if not nearest_long :
+                if can_short and row['rsi'] > 100-self.threshold_enter:
+                    return 'short_pw'
+                if row['rsi'] > 100-self.threshold_exit:
+                    return 'close_long_pw'
+        if self.use_stop:
+            if not can_short:
+                return 'close_short_pw'
+            if not can_long:
+                return 'close_long_pw'
+            
+class LTA2_LYNX(BaseTABitget):
+    """period=100,multiplier=2,period2=10,shift=10,divider=1,use_stop=1"""
+    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=100,multiplier=2,period2=10,shift=10,divider=1,use_stop=1):
+        super().__init__(symbol, granularity, productType, n_parts, period)
+        self.period2 = period2
+        self.multiplier = multiplier
+        self.shift = shift
+        self.use_stop = use_stop
+        self.divider = divider
+    def preprocessing(self, df):
+        df = add_bollinger(df,self.period,multiplier=self.multiplier)
+        df['bbu'] = df['bbu'].shift(self.shift)
+        df['bbd'] = df['bbd'].shift(self.shift)
+        df['sma'] = df['sma'].shift(self.shift)
+        df = add_vodka_channel(df,self.period2)
+        df = add_buffer_add(df,'top_mean','bottom_mean',self.divider)
+        df = add_enter_price2close(df)
+        df = add_slice_df(df,self.period)
+        return df
+    def __call__(self, row, *args, **kwds):
+        can_long = row['close'] > row['bbd']
+        can_short = row['close'] < row['bbu']
+        nearest_long = row['high'] - row['close'] > row['close'] - row['low'] 
+        if row['low'] <= row['bottom_buff']:
+            if nearest_long:
+                if can_long:
+                    return 'long_pw'
+                else:
+                    return 'close_short_pw'
+        if row['high'] >= row['top_buff']:
+            if not nearest_long :
+                if can_short:
+                    return 'short_pw'
+                else:
+                    return 'close_long_pw'
+        if self.use_stop:
+            if not can_short:
+                return 'close_short_pw'
+            if not can_long:
+                return 'close_long_pw'

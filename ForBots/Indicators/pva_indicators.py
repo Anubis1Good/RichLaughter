@@ -81,6 +81,7 @@ def add_hl_stair_fast(df: pd.DataFrame, n=3, period=20):
     """ add 'stair'
     """
     df = df.copy()
+    df = df.reset_index(drop=True)
     high = df['high'].values
     low = df['low'].values
 
@@ -138,6 +139,7 @@ def add_pc_stair_fast(df: pd.DataFrame, n=3, period=20):
     """ add 'stair'
     """
     df = df.copy()
+    df = df.reset_index(drop=True)
     close = df['close'].values
     high = df['high'].values
     low = df['low'].values
@@ -276,4 +278,69 @@ def add_assessment_motion_index(df:pd.DataFrame,period=100,period_filter=50):
     """add 'ami', 'ami_filter'"""
     df['ami'] = (((df['avarege'].diff().rolling(period,1).sum())/ np.abs(df['avarege'].diff()).rolling(period).sum())*100).round(2)
     df['ami_filter'] = df['ami'].rolling(period_filter).mean()
+    return df
+
+def add_hope_channel(df: pd.DataFrame, n=3, period=100,shift=10):
+    """ add 'stair','top_line','bottom_line'
+    """
+    df = df.copy()
+    df = df.reset_index(drop=True)
+    close = df['close'].values
+    high = df['high'].values
+    low = df['low'].values
+    
+    # Предварительные расчеты
+    prev_close = np.roll(close, 1)
+    prev_close[0] = close[0]
+    
+    spread = high - low
+    threshold_break = pd.Series(spread).rolling(period).mean().fillna(0).values * n
+    
+    # Инициализация массивов состояний
+    size = len(df)
+    last_dir = np.ones(size, dtype=np.int8)
+    last_high = np.empty(size)
+    last_low = np.empty(size)
+    
+    # Начальные значения
+    last_high[0] = prev_close[0]
+    last_low[0] = prev_close[0]
+    
+    # Основной цикл (оптимизированный)
+    for i in range(1, size):
+        current_dir = last_dir[i-1]
+        current_high = last_high[i-1]
+        current_low = last_low[i-1]
+        th = threshold_break[i]
+        pc = prev_close[i]
+        
+        if current_dir == 1:
+            new_high = max(pc, current_high)
+            if pc <= (new_high - th):
+                current_dir = -1
+                new_low = pc
+            else:
+                new_low = current_low
+        else:
+            new_low = min(pc, current_low)
+            if pc >= (new_low + th):
+                current_dir = 1
+                new_high = pc
+            else:
+                new_high = current_high
+        
+        last_dir[i] = current_dir
+        last_high[i] = new_high
+        last_low[i] = new_low
+    
+    # Построение финального индикатора
+    dir_changes = np.where(np.diff(last_dir, prepend=last_dir[0]) != 0)[0]
+    stair = np.full(size, np.nan)
+    stair[dir_changes] = prev_close[dir_changes]
+    df['stair'] = pd.Series(stair).shift(shift)
+    df['top_line'] = df['stair'] + threshold_break
+    df['bottom_line'] = df['stair'] - threshold_break
+    df['stair'] = df['stair'].ffill()
+    df['top_line'] = df['top_line'].ffill()
+    df['bottom_line'] = df['bottom_line'].ffill()
     return df
