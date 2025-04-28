@@ -4,6 +4,7 @@ import pandas as pd
 
 
 folder = 'DataForTests\DataFromMOEX'
+folder = 'DataForTests\otherMOEX'
 listdir = os.listdir(folder)
 output_folder = 'DataForTests\DataFromMOEXto5'
 for f in listdir:

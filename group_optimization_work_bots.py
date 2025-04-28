@@ -3,12 +3,13 @@ import traceback
 from Optimiztion.Optimizator1 import Optimizator2
 from strategies.test_strategies.universal import universal_test_strategy as ts
 
-from strategies.work_strategies.STA_ca import STA_mini
-from strategies.work_strategies.PTA import PTA2_BDDC_FIX,PTA2_BDDCr_UNIVERSAL,PTA2_BBBUr,PTA2_BBBU,PTA2_BVGFIX,PTA2_DDCrWork,PTA4_UNIVERSAL,PTA4_UNIVERSAL2,PTA4_WDDC,PTA2_DDCrVG,PTA2_DVCr,PTA2_VOLCHARA,PTA2_LISICA,PTA8_OBBY,PTA8_LOBSTER
-from strategies.work_strategies.PTAX import PTA10_WIZARD,PTA10_MAGIC,PTA10_SORCERER,PTA11_KUSURUKEN,PTA12_SWDDCr,PTA13_DWDDCr,PTA14_RWDDCr,PTA15_KERRIGAN,PTA15_TRACER,PTA15_WIDOWMAKER
-from strategies.work_strategies.OGTA import OGTA4_DOG
+from strategies.work_strategies.STA_ca import *
+from strategies.work_strategies.PTA import *
+from strategies.work_strategies.PTAX import *
+from strategies.work_strategies.OGTA import *
 
-from strategies.work_strategies.LTA import LTA_OKROSHKA,LTA_OKROSHKA2,LTA_PIN
+from strategies.work_strategies.LTA import *
+from strategies.work_strategies.LTA2 import *
 
 
 def optimization_multi(ws,ts,params,test_folder,min_fee: float = 0.0004,
@@ -27,6 +28,7 @@ def optimization_multi(ws,ts,params,test_folder,min_fee: float = 0.0004,
 # test_folder = 'DataForTests\DataFromBitget'
 # test_folder = 'DataForTests\DataFromMOEX'
 test_folder = 'DataForTests\DataFromMOEXto5'
+test_folder = 'DataForTests\otherMOEX'
 min_fee: float = 0.0004
 max_fee: float = 0.0012
 min_fee = 0.0002
@@ -174,220 +176,220 @@ group = (
         (1,),
         (1,)
     ]), 
-    # (PTA4_UNIVERSAL2,[
-    #     range(10,61,10),
-    #     range(5,61,5),
-    #     (20,30,40,50),
-    #     (20,30,40,50),
-    #     ["DC","VG","BB","VC","WC"],
-    #     ["rsi","rsi_tw","mfi","s","uo"],
-    #     (1,),
-    #     (1,)
-    # ]), 
-    # (PTA18_KELTHUZAD,[
-    #     (50,100,200),
-    #     (3,5,7,10),
-    #     range(5,56,5),
-    #     (10,20,30,40),
-    # ]),
-    # (PTA18_ARTAS,[
-    #     (50,100,200),
-    #     (3,5,7,10),
-    #     range(5,56,5),
-    #     (10,20,30,40),
-    # ]),
-    # (PTA18_CHOGALL,[
-    #     (50,100,200),
-    #     (3,5,7,10),
-    #     range(5,56,5),
-    #     (10,20,30,40),
-    # ]),
-    # (PTA18_DEHAKA,[
-    #     (50,100,200),
-    #     (3,5,7,10),
-    #     range(5,56,5),
-    #     (10,20,30,40),
-    # ]),
-    # (PTA18_DIABLO,[
-    #     (50,100,200),
-    #     (3,5,7,10),
-    #     range(5,56,5),
-    #     (10,20,30,40),
-    # ]),
-    # (PTA18_GULDAN,[
-    #     (50,100,200),
-    #     (3,5,7,10),
-    #     range(5,56,5),
-    #     (10,20,30,40),
-    # ]),
-    # (PTA18_REXXAR,[
-    #     (50,100,200),
-    #     (3,5,7,10),
-    #     range(5,56,5),
-    #     (30,40,50),
-    #     (10,20,30,40),
-    # ]),
-    # (PTA18_VARIAN,[
-    #     (50,100,200),
-    #     (3,5,7,10),
-    #     range(5,56,5),
-    #     (10,20,30,40),
-    #     range(10,41,5),
-    # ]),
-    # (STA2,[
-    #     (50,100,200),
-    #     (3,5,7,10),
-    #     range(5,56,5),
-    # ]),
-    # (STA2_FAST,[
-    #     (50,100,200),
-    #     (3,5,7,10),
-    #     range(5,56,5),
-    #     range(10,41,5),
-    # ]),
-    # (STA2_SLOW,[
-    #     (50,100,200),
-    #     (3,5,7,10),
-    #     range(5,56,5),
-    #     range(10,41,5),
-    # ]),
-    # (STA2_ULTRA,[
-    #     (50,100,200),
-    #     (3,5,7,10),
-    #     range(5,56,5),
-    #     range(10,41,5),
-    # ]),
-    # (PTA19_JOHANNA,[
-    #     (100,),
-    #     (3,5,7,10),
-    #     range(5,36,5),
-    #     range(10,106,20),
-    #     (30,40,50),
-    #     (10,20,30,40),
-    #     (0,1)
-    # ]),
-    # (PTA19_TYRAEL,[
-    #     (100,),
-    #     (3,5,7,10),
-    #     range(5,36,5),
-    #     range(10,106,20),
-    #     (30,40,50),
-    #     (10,20,30,40),
-    #     (0,1)
-    # ]),
-    # (PTA18_BLAZE,[
-    #     range(10,106,20),
-    #     range(5,36,5),
-    #     range(11,106,15),
-    #     (30,40,50),
-    #     (10,20,30,40),
-    #     (0,1)
-    # ]),
-    # (PTA19_ANUBARAK,[
-    #     range(10,106,20),
-    #     range(5,36,5),
-    #     (30,40,50),
-    #     (10,20,30,40),
-    #     (10,20,30,40),
-    #     (0,1)
-    # ]),
-    # (LTA2_LOGAN,[
-    #     range(10,106,10),
-    #     range(10,106,15),
-    #     (20,30,40,50),
-    # ]),
-    #     (PTA19_YREL,[
-    #     (100,),
-    #     (3,5,7,10),
-    #     range(5,36,5),
-    #     (30,40,50),
-    #     (10,20,30,40),
-    #     range(0,31,10),
-    #     (0,1)
-    # ]),
-    # (PTA19_VALEERA,[
-    #     (100,),
-    #     (3,5,7,10),
-    #     range(5,36,5),
-    #     (30,40,50),
-    #     (10,20,30,40),
-    #     range(0,31,10),
-    #     (0,1)
-    # ]),
-    # (PTA19_ZERATUL,[
-    #     (100,),
-    #     (3,5,7,10),
-    #     range(5,36,5),
-    #     range(10,106,20),
-    #     (30,40,50),
-    #     (10,20,30,40),
-    #     (0,1)
-    # ]),
-    # (PTA18_MISHA,[
-    #     (100,),
-    #     (3,5,7,10),
-    #     range(5,36,5),
-    #     (30,40,50),
-    #     (10,20,30,40),
-    # ]),
-    # (LTA2_HOTS,[
-    #     (60,90,150),
-    #     (0.5,1,2),
-    #     range(5,36,5),
-    #     (30,40,50),
-    #     (10,20,30),
-    #     range(0,31,10),
-    #     (0,1)
-    # ]),
-    # (LTA2_PUBG,[
-    #     (60,90,150),
-    #     (0.5,1,2),
-    #     range(5,36,5),
-    #     (30,40,50),
-    #     (10,20,30),
-    #     range(0,31,10),
-    #     (0,1)
-    # ]),
-    # (OGTA4_PUPPY,[
-    #     range(5,66,5),
-    #     (20,30,40),
-    #     (10,20,30,40),
+    (PTA4_UNIVERSAL2,[
+        range(10,61,10),
+        range(5,61,5),
+        (20,30,40,50),
+        (20,30,40,50),
+        ["DC","VG","BB","VC","WC"],
+        ["rsi","rsi_tw","mfi","s","uo"],
+        (1,),
+        (1,)
+    ]), 
+    (PTA18_KELTHUZAD,[
+        (50,100,200),
+        (3,5,7,10),
+        range(5,56,5),
+        (10,20,30,40),
+    ]),
+    (PTA18_ARTAS,[
+        (50,100,200),
+        (3,5,7,10),
+        range(5,56,5),
+        (10,20,30,40),
+    ]),
+    (PTA18_CHOGALL,[
+        (50,100,200),
+        (3,5,7,10),
+        range(5,56,5),
+        (10,20,30,40),
+    ]),
+    (PTA18_DEHAKA,[
+        (50,100,200),
+        (3,5,7,10),
+        range(5,56,5),
+        (10,20,30,40),
+    ]),
+    (PTA18_DIABLO,[
+        (50,100,200),
+        (3,5,7,10),
+        range(5,56,5),
+        (10,20,30,40),
+    ]),
+    (PTA18_GULDAN,[
+        (50,100,200),
+        (3,5,7,10),
+        range(5,56,5),
+        (10,20,30,40),
+    ]),
+    (PTA18_REXXAR,[
+        (50,100,200),
+        (3,5,7,10),
+        range(5,56,5),
+        (30,40,50),
+        (10,20,30,40),
+    ]),
+    (PTA18_VARIAN,[
+        (50,100,200),
+        (3,5,7,10),
+        range(5,56,5),
+        (10,20,30,40),
+        range(10,41,5),
+    ]),
+    (STA2,[
+        (50,100,200),
+        (3,5,7,10),
+        range(5,56,5),
+    ]),
+    (STA2_FAST,[
+        (50,100,200),
+        (3,5,7,10),
+        range(5,56,5),
+        range(10,41,5),
+    ]),
+    (STA2_SLOW,[
+        (50,100,200),
+        (3,5,7,10),
+        range(5,56,5),
+        range(10,41,5),
+    ]),
+    (STA2_ULTRA,[
+        (50,100,200),
+        (3,5,7,10),
+        range(5,56,5),
+        range(10,41,5),
+    ]),
+    (PTA19_JOHANNA,[
+        (100,),
+        (3,5,7,10),
+        range(5,36,5),
+        range(10,106,20),
+        (30,40,50),
+        (10,20,30,40),
+        (0,1)
+    ]),
+    (PTA19_TYRAEL,[
+        (100,),
+        (3,5,7,10),
+        range(5,36,5),
+        range(10,106,20),
+        (30,40,50),
+        (10,20,30,40),
+        (0,1)
+    ]),
+    (PTA18_BLAZE,[
+        range(10,106,20),
+        range(5,36,5),
+        range(11,106,15),
+        (30,40,50),
+        (10,20,30,40),
+        (0,1)
+    ]),
+    (PTA19_ANUBARAK,[
+        range(10,106,20),
+        range(5,36,5),
+        (30,40,50),
+        (10,20,30,40),
+        (10,20,30,40),
+        (0,1)
+    ]),
+    (LTA2_LOGAN,[
+        range(10,106,10),
+        range(10,106,15),
+        (20,30,40,50),
+    ]),
+        (PTA19_YREL,[
+        (100,),
+        (3,5,7,10),
+        range(5,36,5),
+        (30,40,50),
+        (10,20,30,40),
+        range(0,31,10),
+        (0,1)
+    ]),
+    (PTA19_VALEERA,[
+        (100,),
+        (3,5,7,10),
+        range(5,36,5),
+        (30,40,50),
+        (10,20,30,40),
+        range(0,31,10),
+        (0,1)
+    ]),
+    (PTA19_ZERATUL,[
+        (100,),
+        (3,5,7,10),
+        range(5,36,5),
+        range(10,106,20),
+        (30,40,50),
+        (10,20,30,40),
+        (0,1)
+    ]),
+    (PTA18_MISHA,[
+        (100,),
+        (3,5,7,10),
+        range(5,36,5),
+        (30,40,50),
+        (10,20,30,40),
+    ]),
+    (LTA2_HOTS,[
+        (60,90,150),
+        (0.5,1,2),
+        range(5,36,5),
+        (30,40,50),
+        (10,20,30),
+        range(0,31,10),
+        (0,1)
+    ]),
+    (LTA2_PUBG,[
+        (60,90,150),
+        (0.5,1,2),
+        range(5,36,5),
+        (30,40,50),
+        (10,20,30),
+        range(0,31,10),
+        (0,1)
+    ]),
+    (OGTA4_PUPPY,[
+        range(5,66,5),
+        (20,30,40),
+        (10,20,30,40),
 
-    # ]),
-    # (LTA2_DRINKER,[
-    #     (60,90,150),
-    #     (0.5,1,2),
-    #     range(5,36,5),
-    #     (30,40,50),
-    #     (10,20,30),
-    #     range(0,31,10),
-    #     (0,1)
-    # ]),
-    # (LTA2_FENNEC,[
-    #     (150,),
-    #     (2,),
-    #     range(5,36,5),
-    #     (30,40,50),
-    #     (10,20,30),
-    #     range(0,31,10),
-    #     (0.5,1,2),
-    #     (0,1)
-    # ]),
-    # (LTA2_ALKASH,[
-    #     (60,90,150),
-    #     (0.5,1,2),
-    #     range(5,36,5),
-    #     range(0,31,10),
-    #     (0,1)
-    # ]),
-    # (LTA2_LYNX,[
-    #     (60,90,150),
-    #     (0.5,1,2),
-    #     range(5,36,5),
-    #     range(0,31,10),
-    #     (0.5,1,2),
-    #     (0,1)
-    # ]),
+    ]),
+    (LTA2_DRINKER,[
+        (60,90,150),
+        (0.5,1,2),
+        range(5,36,5),
+        (30,40,50),
+        (10,20,30),
+        range(0,31,10),
+        (0,1)
+    ]),
+    (LTA2_FENNEC,[
+        (150,),
+        (2,),
+        range(5,36,5),
+        (30,40,50),
+        (10,20,30),
+        range(0,31,10),
+        (0.5,1,2),
+        (0,1)
+    ]),
+    (LTA2_ALKASH,[
+        (60,90,150),
+        (0.5,1,2),
+        range(5,36,5),
+        range(0,31,10),
+        (0,1)
+    ]),
+    (LTA2_LYNX,[
+        (60,90,150),
+        (0.5,1,2),
+        range(5,36,5),
+        range(0,31,10),
+        (0.5,1,2),
+        (0,1)
+    ]),
 )
 
 if __name__ == '__main__':
