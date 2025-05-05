@@ -39,10 +39,14 @@ class QuikTrader1:
     def _get_df(self) -> pd.DataFrame:
         df = get_bars(self.sec_code,self.granularity,self.count,self.class_code)
         return df
-    
+ 
     def _work_action(self,action,pos):
         # print(action,pos)
-        if 'close_long' in action:
+        if pos > self.quantity:
+            self._send_close('B',pos-self.quantity)
+        elif pos < self.quantity:
+            self._send_close('S',abs(pos)-self.quantity)
+        elif 'close_long' in action:
             if pos > 0:
                 self._send_close('B',pos)
             else:
