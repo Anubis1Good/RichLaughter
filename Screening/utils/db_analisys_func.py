@@ -774,6 +774,65 @@ def get_top5_best_day_strategies(db_path, granularity='1h', lookback_hours=24):
     except Exception as e:
         return pd.DataFrame()
     
+def get_top5_best_window_strategies_filtered(db_path, granularity='1h', lookback_hours=24, allowed_patterns=None):
+    try:
+        time_threshold = datetime.now() - timedelta(hours=lookback_hours)
+        time_threshold_str = time_threshold.strftime('%Y-%m-%d %H:%M:%S')
+        
+        # Базовые части запроса
+        query_parts = [
+            """
+            SELECT 
+                r.name AS bot,
+                t.name AS ticker,
+                SUM(hp.result_fee) AS total_result_fee,
+                COUNT(*) AS total_trades
+            FROM history_positions hp
+            JOIN robots r ON hp.robot_id = r.id
+            JOIN tickers t ON hp.ticker_id = t.id
+            WHERE r.granularity = ?
+            AND hp.close_timestamp >= ?
+            AND r.name NOT LIKE '%SKYNET%'
+            """
+        ]
+
+        params = [granularity, time_threshold_str]
+
+        # Добавляем фильтр по паттернам
+        if allowed_patterns:
+            patterns = [f"%{p}%" for p in allowed_patterns]
+            pattern_conditions = " OR ".join(["r.name LIKE ?" for _ in allowed_patterns])
+            query_parts.append(f"AND ({pattern_conditions})")
+            params.extend(patterns)
+
+        # Завершающие части запроса
+        query_parts.append("""
+            GROUP BY r.name, t.name
+            HAVING total_trades >= 3
+            AND SUM(hp.result_fee) > 0
+            ORDER BY total_result_fee DESC
+        """)
+
+        # Собираем полный запрос
+        full_query = " ".join(query_parts)
+        
+        with sqlite3.connect(db_path) as conn:
+            df = pd.read_sql(full_query, conn, params=tuple(params))
+
+        if df.empty:
+            return pd.DataFrame()
+
+        # Выбираем топ-5 стратегий для каждого тикера
+        top_strategies = df.groupby('ticker').apply(
+            lambda x: x.nlargest(5, 'total_result_fee')
+        ).reset_index(drop=True)
+
+        return top_strategies[['ticker', 'bot', 'total_result_fee']]
+
+    except Exception as e:
+        print(f"Error: {e}")  # Для дебага
+        return pd.DataFrame()
+    
 def get_top5_best_today_strategies(db_path, granularity='1h'):
     try:
         # Получаем текущую дату и время
@@ -815,6 +874,61 @@ def get_top5_best_today_strategies(db_path, granularity='1h'):
         return top_strategies[['ticker', 'bot', 'total_result_fee']]
 
     except Exception as e:
+        return pd.DataFrame()
+    
+def get_top5_best_today_strategies_filtered(db_path, granularity='1h', allowed_patterns=None):
+    try:
+        now = datetime.now()
+        start_of_day = datetime(now.year, now.month, now.day)
+        start_of_day_str = start_of_day.strftime('%Y-%m-%d %H:%M:%S')
+        
+        query_parts = [
+            """
+            SELECT 
+                r.name AS bot,
+                t.name AS ticker,
+                SUM(hp.result_fee) AS total_result_fee,
+                COUNT(*) AS total_trades
+            FROM history_positions hp
+            JOIN robots r ON hp.robot_id = r.id
+            JOIN tickers t ON hp.ticker_id = t.id
+            WHERE r.granularity = ?
+            AND hp.close_timestamp >= ?
+            AND r.name NOT LIKE '%SKYNET%'
+            """
+        ]
+        
+        params = [granularity, start_of_day_str]
+
+        # Добавляем фильтр по паттернам
+        if allowed_patterns:
+            patterns = [f"%{p}%" for p in allowed_patterns]
+            pattern_conditions = " OR ".join(["r.name LIKE ?" for _ in allowed_patterns])
+            query_parts.append(f"AND ({pattern_conditions})")
+            params.extend(patterns)
+
+        query_parts.append("""
+            GROUP BY r.name, t.name
+            HAVING SUM(hp.result_fee) > 0
+            ORDER BY total_result_fee DESC
+        """)
+
+        full_query = " ".join(query_parts)
+        
+        with sqlite3.connect(db_path) as conn:
+            df = pd.read_sql(full_query, conn, params=tuple(params))
+
+        if df.empty:
+            return pd.DataFrame()
+
+        top_strategies = df.groupby('ticker').apply(
+            lambda x: x.nlargest(5, 'total_result_fee')
+        ).reset_index(drop=True)
+
+        return top_strategies[['ticker', 'bot', 'total_result_fee']]
+
+    except Exception as e:
+        print(f"Error: {e}")  # Для дебага
         return pd.DataFrame()
     
 def get_top_today_king(db_path, granularity='1h'):

@@ -4,7 +4,7 @@ import sqlite3
 import pandas as pd
 import numpy as np
 from datetime import datetime,timedelta
-from Screening.utils.db_analisys_func import get_best_strategies_v6,get_top5_strategies,get_top5_best_strategies_stable,get_top5_best_day_strategies,get_top5_best_today_strategies,get_top5_stable_by_ncandles
+from Screening.utils.db_analisys_func import get_best_strategies_v6,get_top5_strategies,get_top5_best_strategies_stable,get_top5_best_day_strategies,get_top5_best_today_strategies,get_top5_stable_by_ncandles,get_top5_best_today_strategies_filtered,get_top5_best_window_strategies_filtered
 
 class Architect:
     def __init__(self,db_path,granularities,hourss):
@@ -70,6 +70,36 @@ class Architect:
     
     def get_day_5strategies(self,granularity,hour=24):
         df = get_top5_best_day_strategies(self.db_path,granularity,hour)
+        if df is None or df.empty or 'ticker' not in df.columns or 'bot' not in df.columns:
+            return {}
+        # Удаляем строки с пропусками
+        df_clean = df.dropna(subset=['ticker', 'bot', 'total_result_fee'])
+        
+        # Создаем список кортежей (бот, score) для каждого тикера
+        result_dict = (
+            df_clean.groupby('ticker')
+            .apply(lambda x: list(zip(x['bot'], x['total_result_fee'])))
+            .to_dict()
+        )
+        return result_dict
+    
+    def get_window_5strategies_filter(self,granularity,hour=24):
+        df = get_top5_best_window_strategies_filtered(self.db_path,granularity,hour,('PTA19','PTA18','LTA2'))
+        if df is None or df.empty or 'ticker' not in df.columns or 'bot' not in df.columns:
+            return {}
+        # Удаляем строки с пропусками
+        df_clean = df.dropna(subset=['ticker', 'bot', 'total_result_fee'])
+        
+        # Создаем список кортежей (бот, score) для каждого тикера
+        result_dict = (
+            df_clean.groupby('ticker')
+            .apply(lambda x: list(zip(x['bot'], x['total_result_fee'])))
+            .to_dict()
+        )
+        return result_dict
+    
+    def get_today_5strategies_filter(self,granularity):
+        df = get_top5_best_today_strategies_filtered(self.db_path,granularity,('PTA19','PTA18','LTA2'))
         if df is None or df.empty or 'ticker' not in df.columns or 'bot' not in df.columns:
             return {}
         # Удаляем строки с пропусками
@@ -244,11 +274,20 @@ class Architect:
             strategies = self.get_fix_count_half_5strategies(granularity)
             self.processing_strategies(strategies,'FC5H',granularity)
 
+            strategies = self.get_today_5strategies_filter(granularity)
+            self.processing_strategies(strategies,'BTDF',granularity)
+
             strategies = self.get_day_5strategies(granularity)
             self.processing_strategies(strategies,'B24',granularity)
 
             strategies = self.get_day_5strategies(granularity,100)
             self.processing_strategies(strategies,'B100',granularity)
+
+            strategies = self.get_window_5strategies_filter(granularity)
+            self.processing_strategies(strategies,'BF24',granularity)
+
+            strategies = self.get_window_5strategies_filter(granularity,100)
+            self.processing_strategies(strategies,'BF100',granularity)
 
             strategies = self.get_today_5(granularity)
             self.processing_strategies(strategies,'BTD',granularity)
