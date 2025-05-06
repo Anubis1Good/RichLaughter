@@ -44,7 +44,7 @@ class QuikTrader1:
         # print(action,pos)
         if pos > self.quantity:
             self._send_close('B',pos-self.quantity)
-        elif pos < self.quantity:
+        elif pos < -self.quantity:
             self._send_close('S',abs(pos)-self.quantity)
         elif 'close_long' in action:
             if pos > 0:
