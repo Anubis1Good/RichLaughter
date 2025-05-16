@@ -39,6 +39,16 @@ class QuikTrader1:
     def _get_df(self) -> pd.DataFrame:
         df = get_bars(self.sec_code,self.granularity,self.count,self.class_code)
         return df
+    
+    def _check_time(self):
+        now = datetime.now()
+        chour = now.hour
+        cminute = now.minute
+        if chour > 9:
+            if chour == 23 and cminute > 20:
+                return -1
+            return 1
+        return 0
  
     def _work_action(self,action,pos):
         # print(action,pos)
@@ -78,14 +88,20 @@ class QuikTrader1:
 
     def run(self):
         try:
-            df = self._get_df()
-            row = self.ws.get_test_row(df)
-            action = self.ws(row)
-            pos = self._check_position()
-            if action:
-                self._work_action(action,pos)
+            time_mode = self._check_time()
+            if time_mode == 0:
+                return
             else:
-                self._reset_req()
+                df = self._get_df()
+                row = self.ws.get_test_row(df)
+                action = self.ws(row)
+                pos = self._check_position()
+                if time_mode == -1:
+                    action = 'close_all'
+                if action:
+                    self._work_action(action,pos)
+                else:
+                    self._reset_req()
         except Exception as err:
             print(f"!!!! {type(err).__name__}: {err} !!!!")
             with open(self.error_log,'a',encoding="utf-8") as f:
