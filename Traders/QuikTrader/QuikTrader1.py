@@ -1,5 +1,6 @@
 import os
 import traceback
+from time import sleep
 from datetime import datetime
 import pandas as pd
 from Traders.QuikTrader.QuikFuncs import get_bars,get_best_glass,get_pos_futures,close_active_order,send_transaction
@@ -44,7 +45,7 @@ class QuikTrader1:
         now = datetime.now()
         chour = now.hour
         cminute = now.minute
-        if chour > 9:
+        if chour > 8:
             if chour == 23 and cminute > 20:
                 return -1
             return 1
@@ -90,6 +91,7 @@ class QuikTrader1:
         try:
             time_mode = self._check_time()
             if time_mode == 0:
+                sleep(60*5)
                 return
             else:
                 df = self._get_df()
