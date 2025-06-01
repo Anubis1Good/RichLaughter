@@ -13,14 +13,14 @@ from scipy.stats import linregress
 
 raw_file = 'DataForTests\DataFromBitget\DOGEUSDT_1m_1739873922.csv'
 raw_file = 'DataForTests\DataFromMOEX\MMM5_1_1744615735.csv'
-raw_file = 'DataForTests\oldMoex\SiM5_1_1745579847.csv'
+# raw_file = 'DataForTests\oldMoex\SiM5_1_1745579847.csv'
 period = 10
 df = bitget_loader(raw_file)
 # df = df.iloc[-500:]
 # df = df.iloc[10:510]
 
-df = add_segmented_regression_from_end(df)
-
+# df = add_segmented_regression_from_end(df)
+df = add_dynamic_trend_lines_slope_reversed(df)
 
 # Пример использования
 # df = pd.read_csv('your_data.csv')
@@ -34,15 +34,11 @@ draw_hb_chart_fast(df)
 # plt.plot(df['zigzag_line'])
 # plt.plot(df['top_line'])
 # plt.plot(df['bottom_line'])
-plt.plot(df['regression_line'])
+# plt.plot(df['regression_line'])
 # plt.plot(df['stair'])
-# for k in ('fractal_up_high', 
-#         'fractal_down_low',
-#         'fractal_up_middle',
-#         'fractal_down_middle',
-#         'fractal_middle'):
+for k in ('trend_up_combined','trend_down_combined'):
+    plt.plot(df[k])
 # for k in 'max_hb, min_hb, avarege'.split(', '):
-#     plt.plot(df[k])
 # ax1 = plt.gca()
 # plt.subplot(2,1,2,sharex=ax1)
 # plt.grid() 

@@ -8,14 +8,14 @@ start = end-week
 # download_bitget_ticks(symbol="DOGEUSDT",start=start,end=end)
 # save_df(symbol="DOGEUSDT",n_parts=500,granularity='1m')
 today = date.today()
-start_date = str(today - timedelta(days=30))
+start_date = str(today - timedelta(days=90))
 # start_date = '2025-02-01'
 fut = True
-# fut = False
+fut = False
 from request_functions.download_moex import save_df
-# tickers = ['SBER','LKOH','GAZP',"MTLR","VTBR"]
 tickers = ['MMM5']
-# tickers = ['SiM5']
+# tickers = ['GZM5','CRM5','RMM5']
+tickers = ['SBER','ROSN','GAZP',"MTLR","VTBR","NLMK"]
 for ticker in tickers:
     print(ticker)
     if fut:

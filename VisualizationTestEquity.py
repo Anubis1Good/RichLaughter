@@ -12,14 +12,18 @@ market = "forts"
 engine= "futures"
 ticker = 'MMM5'
 ticker = 'CRM5'
-# ticker = 'SiM5'
+ticker = 'GZM5'
+ticker = 'RMM5'
 bot_id = 73
-granularity = '1'
+granularity = '5'
 # start = str(date.today() - timedelta(days=2))
 # end = None
 
 # print(df.head())
 db_path = 'dbs/test_MOEX_FUT.db'
+# db_path = 'dbs/test_MOEXM_FUT.db'
+# db_path = 'dbs/test_MOEX_STOCK.db'
+# db_path = 'dbs/test_MOEXM_STOCK.db'
 
 
 # 2. Загрузка сделок из базы данных
