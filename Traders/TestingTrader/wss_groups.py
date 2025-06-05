@@ -168,7 +168,7 @@ wssMoexFut5 = [
     (LTA2_DRINKER,(60,1,10,30,20,0,0)), #CNY S
     (LTA2_DRINKER,(60,2,5,40,30,0,0)), #CNY S RMM B
     (LTA2_DRINKER,(60,2,5,40,30,0,1)), #CNY S RMM B
-    (LTA2_FENNEC,(150,2,15,40,10,0.5,1)), #0106
+    (LTA2_FENNEC,(150,2,15,40,10,0,0.5,1)), #0106
     (LTA2_FENNEC,(150,2,20,50,10,10,1,0)), #RMM B RTS A-
     (LTA2_FENNEC,(150,2,5,40,20,10,2,0)), #CNY RMM B RTS B Si A
     (LTA2_FENNEC,(150,2,5,40,20,10,2,1)), #CNY RMM B Si B+
@@ -407,22 +407,22 @@ wssMoexStocks5 = [
     (LTA2_ALKASH,(90,0.5,10,30,0)), #
     (LTA2_ALKASH,(90,0.5,10,30,1)), #
     (LTA2_DRINKER,(90,2,10,30,10,30,0)),
-    (LTA2_DRINKER,(90,2,10,30,10,30,1)),
+    # (LTA2_DRINKER,(90,2,10,30,10,30,1)),
     (LTA2_FENNEC,(150,2,10,40,20,20,1,0)),
-    (LTA2_FENNEC,(150,2,10,40,20,20,1,1)),
-    (LTA2_HOTS,(60,0.5,10,40,30,10,0)),
-    (LTA2_HOTS,(60,0.5,10,40,30,10,1)),
+    # (LTA2_FENNEC,(150,2,10,40,20,20,1,1)),
+    # (LTA2_HOTS,(60,0.5,10,40,30,10,0)),
+    # (LTA2_HOTS,(60,0.5,10,40,30,10,1)),
     (LTA2_LYNX,(90,1,15,0,2,0)),
-    (LTA2_LYNX,(90,1,15,0,2,1)),
-    (LTA2_PUBG,(150,0.5,5,30,10,30,0)),
-    (LTA2_PUBG,(150,0.5,5,30,10,30,1)),
+    # (LTA2_LYNX,(90,1,15,0,2,1)),
+    # (LTA2_PUBG,(150,0.5,5,30,10,30,0)),
+    # (LTA2_PUBG,(150,0.5,5,30,10,30,1)),
 
     (OGTA4_DOG,(40,30)),
-    (OGTA4_PUPPY,(10,40,20)),
+    # (OGTA4_PUPPY,(10,40,20)),
 
-    (STA_mini,(20,0)),
-    (STA_mini,(20,1)),
-    (STA2_ULTRA,(100,3,20,35)),
+    # (STA_mini,(20,0)),
+    # (STA_mini,(20,1)),
+    # (STA2_ULTRA,(100,3,20,35)),
 
     (STAML2_GOLDENMEAN,(60,2,200,30)),
 
@@ -430,25 +430,25 @@ wssMoexStocks5 = [
     (PTA2_DDCrWork,(20,)),
     (PTA2_DDCrWork,(50,)),
 
-    (PTA2_BDDCr_UNIVERSAL,(30,1,1)), 
-    (PTA2_BDDCr_UNIVERSAL,(30,1,0)), 
-    (PTA2_BDDCr_UNIVERSAL,(30,0,1)), 
+    # (PTA2_BDDCr_UNIVERSAL,(30,1,1)), 
+    # (PTA2_BDDCr_UNIVERSAL,(30,1,0)), 
+    # (PTA2_BDDCr_UNIVERSAL,(30,0,1)), 
 
-    (PTA2_BVGFIX,(30,1,1)), 
-    (PTA2_BVGFIX,(30,1,0)), 
-    (PTA2_BVGFIX,(30,0,1)), 
+    # (PTA2_BVGFIX,(30,1,1)), 
+    # (PTA2_BVGFIX,(30,1,0)), 
+    # (PTA2_BVGFIX,(30,0,1)), 
 
-    (PTA2_BDDC_FIX,(30,1,1)), 
-    (PTA2_BDDC_FIX,(30,1,0)), 
-    (PTA2_BDDC_FIX,(30,0,1)), 
+    # (PTA2_BDDC_FIX,(30,1,1)), 
+    # (PTA2_BDDC_FIX,(30,1,0)), 
+    # (PTA2_BDDC_FIX,(30,0,1)), 
 
-    (PTA2_BBBU,(30,1,1)), 
-    (PTA2_BBBU,(30,1,0)), 
-    (PTA2_BBBU,(30,0,1)), 
+    # (PTA2_BBBU,(30,1,1)), 
+    # (PTA2_BBBU,(30,1,0)), 
+    # (PTA2_BBBU,(30,0,1)), 
 
-    (PTA2_BBBUr,(30,1,1)), 
-    (PTA2_BBBUr,(30,1,0)), 
-    (PTA2_BBBUr,(30,0,1)), 
+    # (PTA2_BBBUr,(30,1,1)), 
+    # (PTA2_BBBUr,(30,1,0)), 
+    # (PTA2_BBBUr,(30,0,1)), 
 
     (PTA4_WLISICA,(30,2,30)),
     (PTA4_WDVCr,(21,30)),
@@ -456,8 +456,8 @@ wssMoexStocks5 = [
     (PTA4_WDDCr,(21,30)), #C
 
     (PTA4_UNIVERSAL,(30,15,30,30,"DC",'rsi',1,1)),
-    (PTA4_UNIVERSAL,(30,15,50,20,"DC",'rsi',1,0)),
-    (PTA4_UNIVERSAL,(30,15,20,50,"DC",'rsi',0,1)),
+    # (PTA4_UNIVERSAL,(30,15,50,20,"DC",'rsi',1,0)),
+    # (PTA4_UNIVERSAL,(30,15,20,50,"DC",'rsi',0,1)),
 
     (PTA4_UNIVERSAL,(20,5,20,20,"BB",'mfi',1,1)),
     (PTA4_UNIVERSAL,(20,10,30,30,"WC",'rsi',1,1)),
@@ -468,38 +468,38 @@ wssMoexStocks5 = [
     (PTA11_KUSURUKEN,(10,9,20,20,'c')), #A
     (PTA11_KUSURUKEN,(70,15,35,10,'c')), #A
 
-    (PTA12_SWDDCr,(10,30,1,10,20)), #A
+    # (PTA12_SWDDCr,(10,30,1,10,20)), #A
 
     (PTA13_DWDDCr,(60,40,10)), #A
     
     (PTA14_RWDDCr,(10,40,10,100)), #F
 
     (PTA15_ANNA,(5,30)), 
-    (PTA15_VALLA,(10,0)), 
-    (PTA15_VALLA,(10,1)), 
-    (PTA15_VALLA,(10,-1)), 
+    # (PTA15_VALLA,(10,0)), 
+    # (PTA15_VALLA,(10,1)), 
+    # (PTA15_VALLA,(10,-1)), 
 
-    (PTA18_KELTHUZAD,(100,10,5,10)), 
-    (PTA18_CHOGALL,(100,10,5,40)), 
+    # (PTA18_KELTHUZAD,(100,10,5,10)), 
+    # (PTA18_CHOGALL,(100,10,5,40)), 
     (PTA18_GULDAN,(100,10,5,40)), 
-    (PTA18_DIABLO,(100,10,10,20)), 
+    # (PTA18_DIABLO,(100,10,10,20)), 
     (PTA18_DEHAKA,(100,10,10,20)), 
-    (PTA18_MISHA,(100,3,5,40,10)), 
+    # (PTA18_MISHA,(100,3,5,40,10)), 
     (PTA18_BLAZE,(30,5,26,40,10,0)),    
-    (PTA18_BLAZE,(30,5,26,40,10,1)),    
+    # (PTA18_BLAZE,(30,5,26,40,10,1)),    
 
-    (PTA19_ANUBARAK,(30,5,40,10,20,0)),    
-    (PTA19_ANUBARAK,(30,5,40,10,20,1)),    
+    # (PTA19_ANUBARAK,(30,5,40,10,20,0)),    
+    # (PTA19_ANUBARAK,(30,5,40,10,20,1)),    
     (PTA19_JOHANNA,(100,7,5,90,30,10,0)),    
-    (PTA19_JOHANNA,(100,7,5,90,30,10,1)),    
-    (PTA19_TYRAEL,(100,3,10,70,40,30,0)),    
-    (PTA19_TYRAEL,(100,3,10,70,40,30,1)),    
-    (PTA19_VALEERA,(100,3,10,50,20,30,0)),    
-    (PTA19_VALEERA,(100,3,10,50,20,30,1)),    
+    # (PTA19_JOHANNA,(100,7,5,90,30,10,1)),    
+    # (PTA19_TYRAEL,(100,3,10,70,40,30,0)),    
+    # (PTA19_TYRAEL,(100,3,10,70,40,30,1)),    
+    # (PTA19_VALEERA,(100,3,10,50,20,30,0)),    
+    # (PTA19_VALEERA,(100,3,10,50,20,30,1)),    
     (PTA19_YREL,(100,5,5,40,10,30,0)), #
-    (PTA19_YREL,(100,5,5,40,10,30,1)), #  
-    (PTA19_ZERATUL,(100,3,10,50,40,20,0)),    
-    (PTA19_ZERATUL,(100,3,10,50,40,20,1)),   
+    # (PTA19_YREL,(100,5,5,40,10,30,1)), #  
+    # (PTA19_ZERATUL,(100,3,10,50,40,20,0)),    
+    # (PTA19_ZERATUL,(100,3,10,50,40,20,1)),   
 ]
 
 wssBitgetFut1 = [

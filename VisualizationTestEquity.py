@@ -19,10 +19,11 @@ granularity = '5'
 # start = str(date.today() - timedelta(days=2))
 # end = None
 
+get_all = True
 # print(df.head())
-db_path = 'dbs/test_MOEX_FUT.db'
+# db_path = 'dbs/test_MOEX_FUT.db'
 # db_path = 'dbs/test_MOEXM_FUT.db'
-# db_path = 'dbs/test_MOEX_STOCK.db'
+db_path = 'dbs/test_MOEX_STOCK.db'
 # db_path = 'dbs/test_MOEXM_STOCK.db'
 
 
@@ -70,14 +71,29 @@ folder_img = './TestOtTrades/cumulative_results_plots/AllTime/'
 if not os.path.exists(folder_img):
     os.makedirs(folder_img)
     print('...')
-for bot_id,name in robots:
-    df_trades = load_trades(db_path, bot_id, ticker)
-    if df_trades.empty:
-        print(name,'нет сделок')
-        continue
+
+if get_all:
+    conn = sqlite3.connect(db_path)
+    query = '''
+        SELECT 
+            name
+        FROM 
+            tickers
+    '''
+    tickers = pd.read_sql(query, conn)
+    conn.close()
+    tickers = tickers['name']
+else:
+    tickers = (ticker,)
+for ticker in tickers:
+    for bot_id,name in robots:
+        df_trades = load_trades(db_path, bot_id, ticker)
+        if df_trades.empty:
+            print(name,'нет сделок')
+            continue
 
 
-    plt.plot(df_trades['cumulative_return'])
-    filepath = os.path.join(folder_img,ticker+'__'+name+'.png')
-    plt.savefig(filepath)
-    plt.close()
+        plt.plot(df_trades['cumulative_return'])
+        filepath = os.path.join(folder_img,ticker+'__'+name+'.png')
+        plt.savefig(filepath)
+        plt.close()
