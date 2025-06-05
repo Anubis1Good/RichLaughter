@@ -16,14 +16,15 @@ ticker = 'GZM5'
 ticker = 'RMM5'
 bot_id = 73
 granularity = '5'
+# granularity = '1'
 # start = str(date.today() - timedelta(days=2))
 # end = None
 
 get_all = True
 # print(df.head())
-# db_path = 'dbs/test_MOEX_FUT.db'
+db_path = 'dbs/test_MOEX_FUT.db'
 # db_path = 'dbs/test_MOEXM_FUT.db'
-db_path = 'dbs/test_MOEX_STOCK.db'
+# db_path = 'dbs/test_MOEX_STOCK.db'
 # db_path = 'dbs/test_MOEXM_STOCK.db'
 
 

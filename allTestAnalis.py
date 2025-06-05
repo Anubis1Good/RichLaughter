@@ -12,7 +12,8 @@ def get_minute_eq(row,kind='total_average_fee_percent'):
         mult = int(timer)
     return row[kind]/mult
 
-
+has_limit = True
+limit_count = 250
 
 folder_name = 'TestResults'
 data_folder = 'data'
@@ -30,6 +31,8 @@ for folder in folders:
             path_bot = os.path.join(full_path_folder,variant,data_folder,folder + '.xlsx')
             df_work = pd.read_excel(path_bot,'total')
             df_work = df_work.sort_values(by='total_average_fee_percent',axis=0,ascending=False)
+            if has_limit:
+                df_work = df_work[df_work['count'] >= limit_count]
             df_best = df_work.head(3)
             df_worst = df_work.tail(3)
             df_work = pd.concat([df_best,df_worst],axis=0)
