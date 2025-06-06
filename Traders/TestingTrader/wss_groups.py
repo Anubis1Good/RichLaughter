@@ -45,6 +45,7 @@ wssMoexFut1 = [
 
     (STAML2_GOLDENMEAN,(60,2,30,30)),
     (STAML2_NEWAVE,(5,5,0.5,30)),  #MXI B-
+    (STAML2_NEWAVE,(10,5,0.5,30)), #0606
 
     (PTA2_DDCrWork,(80,)), #0106
     (PTA2_LISICA,(100,0.5)),  #0106
@@ -202,6 +203,7 @@ wssMoexFut5 = [
 
     (STAML2_GOLDENMEAN,(60,2,30,30)),
     (STAML2_NEWAVE,(5,5,0.5,30)), #B CNY B GAZP C RMM C MXM C
+    (STAML2_NEWAVE,(10,5,0.5,30)), #0606
 
     (PTA2_DDCrWork,(5,)), #A
     (PTA2_DDCrWork,(30,)), #0106
@@ -336,6 +338,7 @@ wssMoexStocks1 = [
     # (STA_mini,(90,1)),
 
     (STAML2_GOLDENMEAN,(60,2,200,30)),
+    (STAML2_NEWAVE,(60,5,0.5,30)), #0606
 
     (PTA2_LISICA,(60,1)), 
     (PTA2_LISICA,(90,2)), 
@@ -430,7 +433,8 @@ wssMoexStocks5 = [
     (STA2_FAST,(100,10,20,35)), #0506
 
     (STAML2_GOLDENMEAN,(60,2,200,30)),
-
+    (STAML2_NEWAVE,(10,5,0.5,30)), #0606
+    
     (PTA2_LISICA,(70,2)), #0506 
     (PTA2_LISICA,(10,1)), 
     (PTA2_DDCrWork,(20,)),

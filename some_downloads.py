@@ -8,7 +8,7 @@ start = end-week
 # download_bitget_ticks(symbol="DOGEUSDT",start=start,end=end)
 # save_df(symbol="DOGEUSDT",n_parts=500,granularity='1m')
 today = date.today()
-start_date = str(today - timedelta(days=90))
+start_date = str(today - timedelta(days=30))
 # start_date = '2025-02-01'
 fut = True
 fut = False
