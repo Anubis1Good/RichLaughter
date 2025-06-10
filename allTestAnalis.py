@@ -13,7 +13,7 @@ def get_minute_eq(row,kind='total_average_fee_percent'):
     return row[kind]/mult
 
 has_limit = True
-limit_count = 250
+limit_count = 70
 
 folder_name = 'TestResults'
 data_folder = 'data'

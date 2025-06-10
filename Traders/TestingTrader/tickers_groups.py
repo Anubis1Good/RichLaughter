@@ -7,6 +7,8 @@ tickersMoexFut = (
     ('RIM5',True),
     ('RMM5',True),
     ('SiM5',True),
+    ('IMOEXF',True),
+    ('CNYRUBF',True),
 )
 
 tickersMoexStock = (

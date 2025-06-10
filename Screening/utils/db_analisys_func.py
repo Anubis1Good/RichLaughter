@@ -1065,3 +1065,261 @@ def get_top5_stable_by_ncandles(db_path, granularity='1h', n_candles=100):
             
     except Exception as e:
         return pd.DataFrame()
+    
+def get_top5_most_profitable_strategies_all_time(db_path, granularity='1h'):
+    try:
+        query = """
+        WITH strategy_data AS (
+            SELECT 
+                r.name AS bot,
+                t.name AS ticker,
+                r.granularity,
+                SUM(COALESCE(hp.result_fee, 0)) AS total_profit,
+                SUM(hp.fee) AS total_fee,
+                COUNT(*) AS total_trades,
+                MAX(hp.close_timestamp) AS last_trade_time,
+                AVG(CASE WHEN hp.result_fee > 0 THEN 1.0 ELSE 0.0 END) AS win_rate
+            FROM history_positions hp
+            JOIN robots r ON hp.robot_id = r.id
+            JOIN tickers t ON hp.ticker_id = t.id
+            WHERE r.granularity = ?
+            AND r.name NOT LIKE '%SKYNET%'
+            GROUP BY r.name, t.name, r.granularity
+            HAVING total_trades >= 3
+            AND win_rate > 0.3
+        )
+        SELECT 
+            bot,
+            ticker,
+            granularity,
+            total_profit,
+            total_fee,
+            (total_profit - total_fee) AS net_profit,
+            total_trades,
+            last_trade_time,
+            win_rate
+        FROM strategy_data
+        WHERE (total_profit - total_fee) > 0  -- Только прибыльные стратегии
+        ORDER BY net_profit DESC
+        """
+        
+        with sqlite3.connect(db_path) as conn:
+            df = pd.read_sql(query, conn, params=(granularity,))
+
+        if df.empty:
+            return pd.DataFrame()
+
+        # Получаем топ-5 стратегий для каждого тикера
+        top_strategies = df.groupby('ticker').apply(
+            lambda x: x.nlargest(5, 'net_profit')
+        ).reset_index(drop=True)
+        
+        return top_strategies.sort_values(['ticker', 'net_profit'], ascending=[True, False])
+            
+    except Exception as e:
+        print(f"Error: {e}")
+        return pd.DataFrame()
+    
+def get_top5_most_stable_strategies_all_time(db_path, granularity='1h'):
+    try:
+        query = """
+        WITH strategy_data AS (
+            SELECT 
+                r.name AS bot,
+                t.name AS ticker,
+                r.granularity,
+                AVG(COALESCE(hp.result_fee, 0)) AS avg_profit,
+                SUM(COALESCE(hp.result_fee, 0)) AS total_profit,
+                SUM(hp.fee) AS total_fee,
+                COUNT(*) AS total_trades,
+                SQRT(ABS(AVG(hp.result_fee * hp.result_fee) - POWER(AVG(hp.result_fee), 2))) AS profit_stddev,
+                AVG(CASE WHEN hp.result_fee > 0 THEN 1.0 ELSE 0.0 END) AS win_rate,
+                COUNT(CASE WHEN hp.result_fee > 0 THEN 1 END) AS winning_trades,
+                COUNT(CASE WHEN hp.result_fee <= 0 THEN 1 END) AS losing_trades
+            FROM history_positions hp
+            JOIN robots r ON hp.robot_id = r.id
+            JOIN tickers t ON hp.ticker_id = t.id
+            WHERE r.granularity = ?
+            AND r.name NOT LIKE '%SKYNET%'
+            GROUP BY r.name, t.name, r.granularity
+            HAVING total_trades >= 50  
+            AND win_rate > 0.4  
+        )
+        SELECT 
+            bot,
+            ticker,
+            granularity,
+            avg_profit,
+            total_profit,
+            total_fee,
+            (total_profit - total_fee) AS net_profit,
+            total_trades,
+            profit_stddev,
+            win_rate,
+            (winning_trades * 1.0 / total_trades) AS win_ratio,
+            (avg_profit / NULLIF(profit_stddev, 0)) AS sharpe_ratio,  
+            (winning_trades * 1.0 / total_trades) / (losing_trades * 1.0 / total_trades) AS profit_factor  
+        FROM strategy_data
+        WHERE net_profit > 0
+        ORDER BY sharpe_ratio DESC, profit_factor DESC, win_ratio DESC
+        """
+        
+        with sqlite3.connect(db_path) as conn:
+            df = pd.read_sql(query, conn, params=(granularity,))
+
+        if df.empty:
+            return pd.DataFrame()
+
+        # Нормализация метрик стабильности
+        stability_metrics = ['sharpe_ratio', 'profit_factor', 'win_ratio', 'net_profit']
+        df[stability_metrics] = df[stability_metrics].fillna(0)
+        scaler = RobustScaler()
+        df[stability_metrics] = scaler.fit_transform(df[stability_metrics])
+        
+        # Композитный score с упором на стабильность
+        df['stability_score'] = (
+            0.4 * df['sharpe_ratio'] +      # Основной вес у коэффициента Шарпа
+            0.3 * df['profit_factor'] +     # Затем профактор
+            0.2 * df['win_ratio'] +         # Доля прибыльных сделок
+            0.1 * df['net_profit']          # Учитываем и общую прибыль
+        )
+        
+        # Получаем топ-5 самых стабильных стратегий для каждого тикера
+        top_strategies = df.groupby('ticker').apply(
+            lambda x: x.nlargest(5, 'stability_score')
+        ).reset_index(drop=True)
+        
+        return top_strategies.sort_values(['ticker', 'stability_score'], ascending=[True, False])
+            
+    except Exception as e:
+        print(f"Error calculating stable strategies: {e}")
+        return pd.DataFrame()
+    
+
+# import sqlite3
+# import pandas as pd
+# import numpy as np
+# from sklearn.preprocessing import RobustScaler
+# from datetime import datetime
+
+def get_top5_low_drawdown_strategies(db_path, granularity='1h', min_trades=50, min_win_rate=0.35):
+    """
+    Выбирает топ-5 стратегий с лучшим соотношением прибыли и просадки.
+    
+    Параметры:
+    ----------
+    db_path : str
+        Путь к файлу базы данных SQLite
+    granularity : str, optional
+        Таймфрейм стратегий (по умолчанию '1h')
+    min_trades : int, optional
+        Минимальное количество сделок для учета стратегии (по умолчанию 15)
+    min_win_rate : float, optional
+        Минимальный винрейт (по умолчанию 0.35)
+        
+    Возвращает:
+    -----------
+    pd.DataFrame
+        DataFrame с топ-5 стратегиями для каждого тикера, отсортированными по комбинированному score
+    """
+    try:
+        query = """
+        WITH trade_stats AS (
+            SELECT 
+                r.name AS bot,
+                t.name AS ticker,
+                r.granularity,
+                AVG(COALESCE(hp.result_fee, 0)) AS avg_profit,
+                SUM(COALESCE(hp.result_fee, 0)) AS total_profit,
+                SUM(hp.fee) AS total_fee,
+                COUNT(*) AS total_trades,
+                AVG(CASE WHEN hp.result_fee < 0 THEN ABS(hp.result_fee) ELSE 0 END) AS avg_drawdown,
+                MAX(COALESCE(hp.result_fee, 0)) AS max_profit,
+                MIN(COALESCE(hp.result_fee, 0)) AS max_loss,
+                AVG(CASE WHEN hp.result_fee > 0 THEN hp.result_fee ELSE 0 END) AS avg_win,
+                AVG(CASE WHEN hp.result_fee <= 0 THEN hp.result_fee ELSE 0 END) AS avg_loss,
+                COUNT(CASE WHEN hp.result_fee > 0 THEN 1 END) AS winning_trades,
+                COUNT(CASE WHEN hp.result_fee <= 0 THEN 1 END) AS losing_trades
+            FROM history_positions hp
+            JOIN robots r ON hp.robot_id = r.id
+            JOIN tickers t ON hp.ticker_id = t.id
+            WHERE r.granularity = ?
+            AND r.name NOT LIKE '%SKYNET%'
+            GROUP BY r.name, t.name, r.granularity
+            HAVING total_trades >= ?
+            AND (winning_trades * 1.0 / total_trades) >= ?
+        )
+        SELECT 
+            bot,
+            ticker,
+            granularity,
+            avg_profit,
+            total_profit,
+            total_fee,
+            (total_profit - total_fee) AS net_profit,
+            total_trades,
+            avg_drawdown,
+            max_profit,
+            max_loss,
+            avg_win,
+            avg_loss,
+            (winning_trades * 1.0 / total_trades) AS win_rate,
+            (avg_win / NULLIF(ABS(avg_loss), 0)) AS risk_reward_ratio,
+            (avg_profit / NULLIF(avg_drawdown, 0)) AS profit_drawdown_ratio,
+            CASE WHEN avg_drawdown = 0 THEN 100 ELSE (avg_profit / avg_drawdown) END AS profit_dd_ratio
+        FROM trade_stats
+        WHERE net_profit > 0
+        ORDER BY profit_drawdown_ratio DESC
+        """
+        
+        with sqlite3.connect(db_path) as conn:
+            df = pd.read_sql(query, conn, params=(granularity, min_trades, min_win_rate))
+
+        if df.empty:
+            return pd.DataFrame()
+
+        # Рассчет дополнительных метрик
+        df['profit_per_trade'] = df['net_profit'] / df['total_trades']
+        df['drawdown_pct'] = df['avg_drawdown'] / (df['avg_profit'] + df['avg_drawdown'])
+        
+        # Нормализация ключевых метрик
+        metrics = [
+            'profit_drawdown_ratio',  # Основная метрика - отношение прибыли к просадке
+            'risk_reward_ratio',       # Соотношение риск/вознаграждение
+            'win_rate',                # Процент прибыльных сделок
+            'net_profit',              # Общая чистая прибыль
+            'profit_per_trade'         # Прибыль на одну сделку
+        ]
+        
+        scaler = RobustScaler()
+        df[metrics] = scaler.fit_transform(df[metrics])
+        
+        # Композитный score с акцентом на соотношение прибыли к просадке
+        df['performance_score'] = (
+            0.5 * df['profit_drawdown_ratio'] +  # Основной вес у соотношения прибыль/просадка
+            0.2 * df['risk_reward_ratio'] +
+            0.15 * df['win_rate'] +
+            0.1 * df['net_profit'] +
+            0.05 * df['profit_per_trade']
+        )
+        
+        # Получаем топ-5 стратегий для каждого тикера
+        top_strategies = df.groupby('ticker').apply(
+            lambda x: x.nlargest(5, 'performance_score')
+        ).reset_index(drop=True)
+        
+        # Выбираем только нужные колонки для вывода
+        result_cols = [
+            'ticker', 'bot', 'granularity', 'performance_score',
+            'avg_profit', 'avg_drawdown', 'profit_drawdown_ratio',
+            'win_rate', 'net_profit', 'total_trades', 'risk_reward_ratio'
+        ]
+        
+        return top_strategies[result_cols].sort_values(
+            ['ticker', 'performance_score'], 
+            ascending=[True, False]
+        )
+            
+    except Exception as e:
+        print(f"Error in get_top5_low_drawdown_strategies: {e}")
+        return pd.DataFrame()

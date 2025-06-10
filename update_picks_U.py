@@ -13,11 +13,11 @@ archs = (
     Architect(
         'dbs/test_MOEX_FUT.db',
         (1,5),
-        (8,24)),
+        (24,)),
     Architect(
         'dbs/test_MOEX_STOCK.db',
         (1,5),
-        (8,24)),
+        (24,)),
 )
 
 smith = AgentSmith('_')

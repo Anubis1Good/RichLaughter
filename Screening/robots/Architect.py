@@ -4,7 +4,7 @@ import sqlite3
 import pandas as pd
 import numpy as np
 from datetime import datetime,timedelta
-from Screening.utils.db_analisys_func import get_best_strategies_v6,get_top5_strategies,get_top5_best_strategies_stable,get_top5_best_day_strategies,get_top5_best_today_strategies,get_top5_stable_by_ncandles,get_top5_best_today_strategies_filtered,get_top5_best_window_strategies_filtered
+from Screening.utils.db_analisys_func import get_best_strategies_v6,get_top5_strategies,get_top5_best_strategies_stable,get_top5_best_day_strategies,get_top5_best_today_strategies,get_top5_stable_by_ncandles,get_top5_best_today_strategies_filtered,get_top5_best_window_strategies_filtered, get_top5_most_profitable_strategies_all_time,get_top5_most_stable_strategies_all_time, get_top5_low_drawdown_strategies
 
 class Architect:
     def __init__(self,db_path,granularities,hourss):
@@ -14,7 +14,13 @@ class Architect:
         self.folder_picks = 'Screening/strat_picks/'
         if not os.path.exists(self.folder_picks):
             os.mkdir(self.folder_picks)
-
+        for granularity in granularities:
+            strategies = self.get_profitable_alltime(granularity)
+            self.processing_strategies(strategies,'PAT',granularity)
+            strategies = self.get_stable_alltime(granularity)
+            self.processing_strategies(strategies,'SAT',granularity)
+            strategies = self.get_low_drawdown_alltime(granularity)
+            self.processing_strategies(strategies,'LAT',granularity)
 
     def get_fix_count_strategies(self,granularity):
         df = get_best_strategies_v6(self.db_path,granularity,10)
@@ -64,6 +70,51 @@ class Architect:
         result_dict = (
             df_clean.groupby('ticker')
             .apply(lambda x: list(zip(x['bot'], x['score'])))
+            .to_dict()
+        )
+        return result_dict
+    
+    def get_profitable_alltime(self,granularity):
+        df = get_top5_most_profitable_strategies_all_time(self.db_path,granularity)
+        if df is None or df.empty or 'ticker' not in df.columns or 'bot' not in df.columns:
+            return {}
+        # Удаляем строки с пропусками
+        df_clean = df.dropna(subset=['ticker', 'bot', 'net_profit'])
+        
+        # Создаем список кортежей (бот, score) для каждого тикера
+        result_dict = (
+            df_clean.groupby('ticker')
+            .apply(lambda x: list(zip(x['bot'], x['net_profit'])))
+            .to_dict()
+        )
+        return result_dict
+    
+    def get_stable_alltime(self,granularity):
+        df = get_top5_most_stable_strategies_all_time(self.db_path,granularity)
+        if df is None or df.empty or 'ticker' not in df.columns or 'bot' not in df.columns:
+            return {}
+        # Удаляем строки с пропусками
+        df_clean = df.dropna(subset=['ticker', 'bot', 'stability_score'])
+        
+        # Создаем список кортежей (бот, score) для каждого тикера
+        result_dict = (
+            df_clean.groupby('ticker')
+            .apply(lambda x: list(zip(x['bot'], x['stability_score'])))
+            .to_dict()
+        )
+        return result_dict
+    
+    def get_low_drawdown_alltime(self,granularity):
+        df = get_top5_low_drawdown_strategies(self.db_path,granularity)
+        if df is None or df.empty or 'ticker' not in df.columns or 'bot' not in df.columns:
+            return {}
+        # Удаляем строки с пропусками
+        df_clean = df.dropna(subset=['ticker', 'bot', 'performance_score'])
+        
+        # Создаем список кортежей (бот, score) для каждого тикера
+        result_dict = (
+            df_clean.groupby('ticker')
+            .apply(lambda x: list(zip(x['bot'], x['performance_score'])))
             .to_dict()
         )
         return result_dict

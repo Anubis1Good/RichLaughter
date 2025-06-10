@@ -222,6 +222,58 @@ class LTA2_PUBG(BaseTABitget):
             if not can_long:
                 return 'close_long_pw'
             
+class LTA2_DRG(BaseTABitget):
+    """period=100,multiplier=2,period2=10,threshold_enter=40,threshold_exit=20,shift=10,use_stop=1"""
+    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=100,multiplier=2,period2=10,threshold_enter=40,threshold_exit=20,shift=10,use_stop=1):
+        super().__init__(symbol, granularity, productType, n_parts, period)
+        self.period2 = period2
+        self.multiplier = multiplier
+        self.threshold_enter = threshold_enter
+        self.threshold_exit = threshold_exit
+        self.shift = shift
+        self.use_stop = use_stop
+    def preprocessing(self, df):
+        df = add_bollinger(df,self.period,multiplier=self.multiplier)
+        df['bbu'] = df['bbu'].shift(self.shift)
+        df['bbd'] = df['bbd'].shift(self.shift)
+        df['sma'] = df['sma'].shift(self.shift)
+        df = add_donchan_channel(df,self.period2)
+        df = add_rsi(df,self.period2)
+        df = add_enter_price2close(df)
+        df = add_slice_df(df,self.period)
+        return df
+    def __call__(self, row, *args, **kwds):
+        can_long = row['close'] > row['bbd']
+        can_short = row['close'] < row['bbu']
+        nearest_long = row['high'] - row['close'] > row['close'] - row['low'] 
+        if can_long:
+            if can_short:
+                if row['low'] <= row['min_hb']:
+                    if nearest_long:
+                        if can_long and row['rsi'] < self.threshold_enter:
+                            return 'long_pw'
+                    if row['rsi'] < self.threshold_exit:
+                        return 'close_short_pw'
+            else:
+                if row['close'] <= row['avarege']:
+                    return 'long_pw'
+        if can_short:
+            if can_long:
+                if row['high'] >= row['max_hb']:
+                    if not nearest_long :
+                        if can_short and row['rsi'] > 100-self.threshold_enter:
+                            return 'short_pw'
+                        if row['rsi'] > 100-self.threshold_exit:
+                            return 'close_long_pw'
+            else:
+                if row['close'] >= row['avarege']:
+                    return 'short_pw'
+        if self.use_stop:
+            if not can_short:
+                return 'close_short_pw'
+            if not can_long:
+                return 'close_long_pw'
+            
 class LTA2_DRINKER(BaseTABitget):
     """period=100,multiplier=2,period2=10,threshold_enter=40,threshold_exit=20,shift=10,use_stop=1"""
     def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=100,multiplier=2,period2=10,threshold_enter=40,threshold_exit=20,shift=10,use_stop=1):

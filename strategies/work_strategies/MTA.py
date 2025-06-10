@@ -16,7 +16,7 @@ class MTA_SKYNET(BaseTABitget):
     Анализирует по шагам с историей, как otBot
     """
 
-    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=100,pick_file:str='1_1_test_MOEX_FUT',need_log=True):
+    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=100,pick_file:str='1_1_test_MOEX_FUT',need_log=True,alias=None):
         super().__init__(symbol, granularity, productType, n_parts, period)
         self.pick_file = os.path.join('Screening/strat_picks',pick_file+'.json')
         self.tas = (BaseTABitget,(self.period,))
@@ -31,6 +31,11 @@ class MTA_SKYNET(BaseTABitget):
                 os.makedirs(folder)
             self.filename = os.path.join(folder,filename)
         self.name_bot = 'Base'
+        self.need_change = False
+        if alias:
+            self.work_symbol = alias
+        else:
+            self.work_symbol = self.symbol
 
     def write_log(self):
         with open(self.filename,mode='a+') as f:
@@ -47,12 +52,15 @@ class MTA_SKYNET(BaseTABitget):
         if os.path.exists(self.pick_file):
             with open(self.pick_file) as f:
                 ks = json.load(f)
-                if self.symbol in ks:
-                    name_bot = ks[self.symbol]
-                    if name_bot != self.name_bot:
+                if self.work_symbol in ks:
+                    name_bot = ks[self.work_symbol]
+                    self.need_change = name_bot != self.name_bot
+                    if self.need_change:
                         self.name_bot = name_bot
                         if self.need_log:
                             self.write_log()
+                    else:
+                        return
                     if name_bot in self.dc:
                         self.tas = self.dc[name_bot]
                         return
@@ -60,7 +68,9 @@ class MTA_SKYNET(BaseTABitget):
 
     def preprocessing(self, df):
         self.choice_ws()
-        self.strategy = self.tas[0](self.symbol,self.granularity,self.productType,1,*self.tas[1])
+        if self.need_change:
+            self.strategy = self.tas[0](self.work_symbol,self.granularity,self.productType,1,*self.tas[1])
+            self.need_change = False
         df = self.strategy.preprocessing(df)
         return df
 

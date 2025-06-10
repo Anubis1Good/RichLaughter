@@ -345,6 +345,7 @@ class LTA_MISO(BaseTABitget):
             return 'short_pw'
 
 class LTA_OKROSHKA(BaseTABitget):
+    """period=15,period_chop=10"""
     def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=15,period_chop=10):
         super().__init__(symbol, granularity, productType, n_parts, period)
         self.period_chop = period_chop

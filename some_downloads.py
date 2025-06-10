@@ -11,11 +11,11 @@ today = date.today()
 start_date = str(today - timedelta(days=30))
 # start_date = '2025-02-01'
 fut = True
-fut = False
+# fut = False
 from request_functions.download_moex import save_df
 tickers = ['MMM5']
-# tickers = ['GZM5','CRM5','RMM5']
-tickers = ['SBER','ROSN','GAZP',"MTLR","VTBR","NLMK"]
+tickers = ['MMM5','GZM5','CRM5','RMM5']
+# tickers = ['SBER','ROSN','GAZP',"MTLR","VTBR","NLMK"]
 for ticker in tickers:
     print(ticker)
     if fut:

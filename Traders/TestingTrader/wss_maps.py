@@ -47,9 +47,15 @@ def add_skynet(suffix,tradeMap,hourss):
         newMap[g].append((MTA_SKYNET,(100,filename)))
         filename = f"BTDF_{g}_{suffix}"
         newMap[g].append((MTA_SKYNET,(100,filename)))
+        filename = f"LAT_{g}_{suffix}"
+        newMap[g].append((MTA_SKYNET,(100,filename)))
+        filename = f"PAT_{g}_{suffix}"
+        newMap[g].append((MTA_SKYNET,(100,filename)))
+        filename = f"SAT_{g}_{suffix}"
+        newMap[g].append((MTA_SKYNET,(100,filename)))
         newMap[g] = tuple(newMap[g])
     return newMap
 
-bitgetMTAFutMap = add_skynet('test_Bitget_FUT',bitgetFutMap,(8,24))
-moexMTAFutMap = add_skynet('test_MOEX_FUT',moexFutMap,(8,24))
-moexMTAStockMap = add_skynet('test_MOEX_STOCK',moexStockMap,(8,24))
+bitgetMTAFutMap = add_skynet('test_Bitget_FUT',bitgetFutMap,(24,))
+moexMTAFutMap = add_skynet('test_MOEX_FUT',moexFutMap,(24,))
+moexMTAStockMap = add_skynet('test_MOEX_STOCK',moexStockMap,(24,))
