@@ -293,6 +293,16 @@ def add_fractals(df, period=5):
     
     return df
 
+def add_average_fractals(df, period=5):
+    """add 'ave_up', 'ave_down'"""
+    up_points = df[df['fractal_up']]
+    df['ave_up'] = up_points['high'].rolling(window=period).mean()
+    df['ave_up'] = df['ave_up'].ffill()
+    down_points = df[df['fractal_down']]
+    df['ave_down'] = down_points['low'].rolling(window=period).mean()
+    df['ave_down'] = df['ave_down'].ffill()
+    return df
+
 def add_fractal_zones(df, period=5):
     """
     add 'fractal_up_high', 

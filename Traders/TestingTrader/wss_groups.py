@@ -6,6 +6,7 @@ from strategies.work_strategies.STA_ca import STA_mini,STA2,STA2_FAST,STA2_SLOW,
 from strategies.work_strategies.LTA import LTA_OKROSHKA,LTA_PIN,LTA_KARYCH,LTA_OKROSHKA2
 from strategies.work_strategies.LTA2 import LTA2_LOGAN, LTA2_ALKASH, LTA2_DRINKER,LTA2_FENNEC,LTA2_HOTS,LTA2_LYNX,LTA2_PUBG,LTA2_DRG
 from strategies.work_strategies.OGTA import OGTA4_DOG,OGTA4_PUPPY
+from strategies.work_strategies.PSTA0 import PSTA2_GGD
 
 
 wssMoexFut1 = [
@@ -49,6 +50,9 @@ wssMoexFut1 = [
     (STAML2_NEWAVE,(5,5,0.5,30)),  #MXI B-
     (STAML2_NEWAVE,(10,5,0.5,30)), #0606
 
+    (PSTA2_GGD,(60,15,3)), #1206
+    (PSTA2_GGD,(60,10,6)), #1206
+
     (PTA2_DDCrWork,(80,)), #0106
     (PTA2_LISICA,(100,0.5)),  #0106
     (PTA2_LISICA,(10,0.5)),  #0106
@@ -56,22 +60,6 @@ wssMoexFut1 = [
     (PTA2_VOLCHARA,(10,1)),  #MXI B
     (PTA2_DDCrVG,(10,)),  #MXI B+
     (PTA2_DVCr,(20,)),  #MXI B-
-
-    # (PTA2_BDDCr_UNIVERSAL,(7,1,1)), 
-    # (PTA2_BDDCr_UNIVERSAL,(7,1,0)), 
-    # (PTA2_BDDCr_UNIVERSAL,(7,0,1)), 
-
-    # (PTA2_BVGFIX,(7,1,1)), 
-    # (PTA2_BVGFIX,(7,1,0)), 
-    # (PTA2_BVGFIX,(7,0,1)), 
-
-    # (PTA2_BBBU,(14,1,1)), 
-    # (PTA2_BBBU,(14,1,0)), 
-    # (PTA2_BBBU,(14,0,1)), 
-
-    # (PTA2_BBBUr,(7,1,1)), 
-    # (PTA2_BBBUr,(7,1,0)), 
-    # (PTA2_BBBUr,(7,0,1)), 
 
     (PTA4_WDDCrE,(11,30)),  #MXI A
     (PTA4_WDDCrE,(10,20)),  #MXI A
@@ -123,13 +111,6 @@ wssMoexFut1 = [
     (PTA15_ANNA,(5,30)), #MXI B- CNY B-
     (PTA15_ANNA,(40,40)), #0106
 
-    # (PTA15_VALLA,(10,0)), 
-    # (PTA15_VALLA,(10,1)), 
-    # (PTA15_VALLA,(10,-1)), 
-
-    # (PTA15_TRACER,(10,0)), 
-    # (PTA15_TRACER,(10,1)), 
-    # (PTA15_TRACER,(10,-1)), 
 
     (PTA18_GULDAN,(100,7,10,40)),  #MXI A
     (PTA18_DEHAKA,(100,3,45,10)), #0106
@@ -208,6 +189,9 @@ wssMoexFut5 = [
     (STAML2_NEWAVE,(5,5,0.5,30)), #B CNY B GAZP C RMM C MXM C
     (STAML2_NEWAVE,(10,5,0.5,30)), #0606
 
+    (PSTA2_GGD,(60,4,4)), #1206
+    (PSTA2_GGD,(60,3,3)), #1206
+
     (PTA2_DDCrWork,(5,)), #A
     (PTA2_DDCrWork,(30,)), #0106
     (PTA2_LISICA,(10,0.5)), #0106
@@ -219,26 +203,6 @@ wssMoexFut5 = [
     (PTA2_DVCr,(5,)), #A
     (PTA2_DVCr,(50,)), #CNY B GAZP B RMM A+ RTS A Si C
 
-    # (PTA2_BDDCr_UNIVERSAL,(7,1,1)), 
-    # (PTA2_BDDCr_UNIVERSAL,(7,1,0)), 
-    # (PTA2_BDDCr_UNIVERSAL,(7,0,1)), 
-
-    # (PTA2_BVGFIX,(7,1,1)), 
-    # (PTA2_BVGFIX,(7,1,0)), 
-    # (PTA2_BVGFIX,(7,0,1)), 
-
-    # (PTA2_BDDC_FIX,(10,1,1)), 
-    # (PTA2_BDDC_FIX,(10,1,0)), 
-    # (PTA2_BDDC_FIX,(10,0,1)), 
-
-    # (PTA2_BBBU,(14,1,1)), 
-    # (PTA2_BBBU,(14,1,0)), 
-    # (PTA2_BBBU,(14,0,1)), 
-
-    # (PTA2_BBBUr,(7,1,1)), 
-    # (PTA2_BBBUr,(7,1,0)), 
-    # (PTA2_BBBUr,(7,0,1)), 
-
     (PTA4_WDDCrE,(6,30)), #CNY B
     (PTA4_WDDCr,(11,30)), #B MXM B+ RTS B
 
@@ -247,8 +211,6 @@ wssMoexFut5 = [
     # (PTA4_WLISICA,(7,2,30)),
 
     (PTA4_UNIVERSAL,(7,7,30,30,"DC",'rsi',1,1)), #CNY A RTS B
-    # (PTA4_UNIVERSAL,(7,7,60,20,"DC",'rsi',1,0)),
-    # (PTA4_UNIVERSAL,(7,7,20,60,"DC",'rsi',0,1)),
 
     (PTA4_UNIVERSAL,(15,15,50,50,"VC",'uo',1,1)), #A CNY A RMM B RTS C Si B
     (PTA4_UNIVERSAL,(20,10,50,30,"BB",'mfi',1,1)), # GAZP B RMM A+ RTS A
@@ -284,10 +246,7 @@ wssMoexFut5 = [
     (PTA15_VALLA,(10,1)), 
     (PTA15_VALLA,(10,-1)), 
 
-    # (PTA18_ARTAS,(100,5,5,20)), RTS C
-    # (PTA18_KELTHUZAD,(100,5,5,20)), RTS B
-    # (PTA18_REXXAR,(100,5,5,50,20)), RTS B
-    # (PTA18_MISHA,(100,5,5,50,20)), RTS B Si B
+
     (PTA18_CHOGALL,(100,5,5,40)), #C MXM C Si C
     (PTA18_GULDAN,(100,5,5,40)), #D CNY A GAZP B Si B
     # (PTA18_DEHAKA,(100,5,5,20)), 
@@ -312,10 +271,8 @@ wssMoexFut5 = [
     (PTA19_YREL,(100,3,5,40,10,10,0)),  #CNY B RMM B Si C
     (PTA19_YREL,(100,5,10,50,20,30,0)),  #2805
     (PTA19_YREL,(100,7,10,40,10,0,0)),  #2805
-    # (PTA19_YREL,(100,3,5,40,10,10,1)),    
     (PTA19_ZERATUL,(100,3,20,50,50,10,0)), #0106    
-    # (PTA19_ZERATUL,(100,3,15,70,50,10,0)), Si B
-    # (PTA19_ZERATUL,(100,3,15,70,50,10,1)),      
+
 
 ]
 
@@ -340,6 +297,8 @@ wssMoexStocks1 = [
 
     (STAML2_GOLDENMEAN,(60,2,200,30)),
     (STAML2_NEWAVE,(60,5,0.5,30)), #0606
+
+    (PSTA2_GGD,(60,30,2)), #1206
 
     (PTA2_LISICA,(60,1)), 
     (PTA2_LISICA,(90,2)), 
@@ -423,39 +382,21 @@ wssMoexStocks5 = [
     (OGTA4_DOG,(40,30)),
     (OGTA4_PUPPY,(15,30,20)), #0506
 
-    # (STA_mini,(20,0)),
-    # (STA_mini,(20,1)),
-    # (STA2_ULTRA,(100,3,20,35)),
+
     (STA2_SLOW,(100,10,20,30)), #0506
     (STA2_FAST,(100,10,20,35)), #0506
 
     (STAML2_GOLDENMEAN,(60,2,200,30)),
     (STAML2_NEWAVE,(10,5,0.5,30)), #0606
-    
+
+    (PSTA2_GGD,(60,10,3)), #1206
+    (PSTA2_GGD,(60,15,2)), #1206
+
     (PTA2_LISICA,(70,2)), #0506 
     (PTA2_LISICA,(10,1)), 
     (PTA2_DDCrWork,(20,)),
     (PTA2_DDCrWork,(50,)),
 
-    # (PTA2_BDDCr_UNIVERSAL,(30,1,1)), 
-    # (PTA2_BDDCr_UNIVERSAL,(30,1,0)), 
-    # (PTA2_BDDCr_UNIVERSAL,(30,0,1)), 
-
-    # (PTA2_BVGFIX,(30,1,1)), 
-    # (PTA2_BVGFIX,(30,1,0)), 
-    # (PTA2_BVGFIX,(30,0,1)), 
-
-    # (PTA2_BDDC_FIX,(30,1,1)), 
-    # (PTA2_BDDC_FIX,(30,1,0)), 
-    # (PTA2_BDDC_FIX,(30,0,1)), 
-
-    # (PTA2_BBBU,(30,1,1)), 
-    # (PTA2_BBBU,(30,1,0)), 
-    # (PTA2_BBBU,(30,0,1)), 
-
-    # (PTA2_BBBUr,(30,1,1)), 
-    # (PTA2_BBBUr,(30,1,0)), 
-    # (PTA2_BBBUr,(30,0,1)), 
 
     (PTA4_WLISICA,(30,2,30)),
     (PTA4_WDVCr,(21,30)),
