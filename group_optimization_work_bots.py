@@ -10,6 +10,7 @@ from strategies.work_strategies.OGTA import *
 
 from strategies.work_strategies.LTA import *
 from strategies.work_strategies.LTA2 import *
+from strategies.work_strategies.PSTA0 import *
 
 
 def optimization_multi(ws,ts,params,test_folder,min_fee: float = 0.0004,
@@ -395,6 +396,21 @@ group = (
         range(0,31,10),
         (0.5,1,2),
         (0,1)
+    ]),
+    (PSTA3_HADES,[
+        range(10,100,10),
+        range(2,20,2),
+        ('std','mean'),
+    ]),
+    (PSTA3_ZEUS,[
+        range(10,100,10),
+        range(2,20,2),
+        ('std','mean'),
+    ]),
+    (PSTA2_GGD,[
+        (60,),
+        (2,3,4,5,7,10,15,30),
+        (2,3,4,5,10),
     ]),
 )
 

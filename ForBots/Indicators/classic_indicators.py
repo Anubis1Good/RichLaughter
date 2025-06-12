@@ -1188,7 +1188,7 @@ def add_precent_zigzag(df, source='high_low', reversal=0.1, use_pct=True):
     df['zigzag_direction'] = direction
     return df
 
-def dynamic_zigzag(df, source='high_low', n_std=1.5, method='std', period=20):
+def add_dynamic_zigzag(df, source='high_low', n_std=1.5, method='std', period=20):
     """
     ZigZag с динамическим reversal на основе волатильности
     

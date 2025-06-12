@@ -6,7 +6,7 @@ from strategies.test_strategies.universal import universal_test_strategy as ts
 # from strategies.work_strategies.STA_ca import STA2,STA2_FAST,STA2_SLOW,STA2_ULTRA
 # from strategies.work_strategies.STA_ml2 import STAML2_TRADITION,STAML2_CHAOS,STAML2_FLUX,STAML2_LEGACY
 from strategies.work_strategies.LTA2 import LTA2_DRG
-from strategies.work_strategies.PSTA0 import PSTA2_GGD
+from strategies.work_strategies.PSTA0 import PSTA3_HADES
 from strategies.work_strategies.OGTA import OGTA4_PUPPY
 # from strategies.work_strategies.PTA import PTA4_WDDCr2,PTA4_WDDCr2E,PTA1_FEMA,PTA1_FSMA,PTA1_CEMA,PTA1_CSMA
 from strategies.work_strategies.PTAX import PTA19_YREL,PTA19_VALEERA,PTA19_ZERATUL,PTA18_MISHA
@@ -47,10 +47,10 @@ max_fee = 0.0009
 #     (10,20,30,40)
 # ]
 group = (
-    (PSTA2_GGD,[
-        (60,),
-        (2,3,4,5,7,10,15,30),
-        (2,3,4,5,10),
+    (PSTA3_HADES,[
+        range(10,100,10),
+        range(2,20,2),
+        ('std','mean'),
     ]),
 
   

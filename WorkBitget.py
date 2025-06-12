@@ -15,7 +15,7 @@ from strategies.test_strategies.check import check_strategy
 # from strategies.work_strategies.OGTA import OGTA4_DOG as WS
 # from strategies.work_strategies.LTA import LTA_PIN as WS
 # from strategies.work_strategies.LTA2 import LTA2_DRG as WS
-from strategies.work_strategies.PSTA0 import PSTA2_GGD as WS
+from strategies.work_strategies.PSTA0 import PSTA3_ZEUS as WS
 # from strategies.work_strategies.MTA import MTA_LORD as WS
 # from strategies.work_strategies.STA_ml2 import STAML2_NEWAVE as WS
 # from strategies.work_strategies.STA_ml import STAML1_XGBR2_DC as WS
@@ -88,6 +88,7 @@ else:
     plt.grid() 
     
     draw_hb_chart_fast(df)
+    plt.plot(df['zigzag'])
     # plt.plot(df['stair'])
     # plt.plot(df['stair_s'])
     # plt.plot(df['top_kvas'])
@@ -102,8 +103,8 @@ else:
     # # for k in 'top_buff, bottom_buff'.split(', '):
     #     plt.plot(df[k],color='r',linestyle='--')
     # for k in ('stair','top_line','bottom_line'):
-    for k in ('ave_up', 'ave_down'):
-        plt.plot(df[k],color='b',linestyle=':')
+    # for k in ('ave_up', 'ave_down'):
+    #     plt.plot(df[k],color='b',linestyle=':')
     # plt.plot(df['top_zone'],color='r')
     # plt.plot(df['bottom_zone'],color='b')
 

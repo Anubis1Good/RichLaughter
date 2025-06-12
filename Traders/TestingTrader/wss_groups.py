@@ -6,7 +6,7 @@ from strategies.work_strategies.STA_ca import STA_mini,STA2,STA2_FAST,STA2_SLOW,
 from strategies.work_strategies.LTA import LTA_OKROSHKA,LTA_PIN,LTA_KARYCH,LTA_OKROSHKA2
 from strategies.work_strategies.LTA2 import LTA2_LOGAN, LTA2_ALKASH, LTA2_DRINKER,LTA2_FENNEC,LTA2_HOTS,LTA2_LYNX,LTA2_PUBG,LTA2_DRG
 from strategies.work_strategies.OGTA import OGTA4_DOG,OGTA4_PUPPY
-from strategies.work_strategies.PSTA0 import PSTA2_GGD
+from strategies.work_strategies.PSTA0 import PSTA2_GGD,PSTA3_ZEUS,PSTA3_HADES
 
 
 wssMoexFut1 = [
@@ -51,6 +51,10 @@ wssMoexFut1 = [
 
     (PSTA2_GGD,(60,15,3)), #1206
     (PSTA2_GGD,(60,10,6)), #1206
+    (PSTA3_HADES,(70,10,'mean')), #1206
+    (PSTA3_HADES,(80,18,'mean')), #1206
+    (PSTA3_ZEUS,(50,6,'std')), #1206
+    (PSTA3_ZEUS,(10,18,'mean')), #1206
 
     (PTA2_DDCrWork,(80,)), #0106
     (PTA2_LISICA,(100,0.5)),  #0106
@@ -176,6 +180,10 @@ wssMoexFut5 = [
 
     (PSTA2_GGD,(60,4,4)), #1206
     (PSTA2_GGD,(60,3,3)), #1206
+    (PSTA3_HADES,(10,6,'std')), #1206
+    (PSTA3_HADES,(30,6,'mean')), #1206
+    (PSTA3_ZEUS,(10,8,'std')), #1206
+    (PSTA3_ZEUS,(60,4,'std')), #1206
 
     (PTA2_DDCrWork,(5,)), #A
     (PTA2_DDCrWork,(30,)), #0106
@@ -275,6 +283,8 @@ wssMoexStocks1 = [
     (STAML2_NEWAVE,(60,5,0.5,30)), #0606
 
     (PSTA2_GGD,(60,30,2)), #1206
+    (PSTA3_HADES,(90,8,'std')), #1206
+    (PSTA3_HADES,(40,18,'mean')), #1206
 
     (PTA2_LISICA,(60,1)), 
     (PTA2_LISICA,(90,2)), 
@@ -367,6 +377,10 @@ wssMoexStocks5 = [
 
     (PSTA2_GGD,(60,10,3)), #1206
     (PSTA2_GGD,(60,15,2)), #1206
+    (PSTA3_HADES,(70,8,'mean')), #1206
+    (PSTA3_HADES,(20,14,'std')), #1206
+    (PSTA3_ZEUS,(20,8,'mean')), #1206
+    (PSTA3_ZEUS,(40,6,'std')), #1206
 
     (PTA2_LISICA,(70,2)), #0506 
     (PTA2_LISICA,(10,1)), 
@@ -380,8 +394,7 @@ wssMoexStocks5 = [
     (PTA4_WDDCr,(21,30)), #C
 
     (PTA4_UNIVERSAL,(30,15,30,30,"DC",'rsi',1,1)),
-    # (PTA4_UNIVERSAL,(30,15,50,20,"DC",'rsi',1,0)),
-    # (PTA4_UNIVERSAL,(30,15,20,50,"DC",'rsi',0,1)),
+
 
     (PTA4_UNIVERSAL,(30,20,30,20,"BB",'s',1,1)), #0506
     (PTA4_UNIVERSAL,(20,5,20,20,"BB",'mfi',1,1)),
@@ -413,12 +426,9 @@ wssMoexStocks5 = [
     (PTA15_ANNA,(10,30)), #0506
     (PTA15_TRACER,(30,0)), #0506 
     (PTA15_SILVANA,(70,40,20)), #0506 
-    # (PTA15_VALLA,(10,0)), 
-    # (PTA15_VALLA,(10,1)), 
-    # (PTA15_VALLA,(10,-1)), 
+
 
     (PTA18_KELTHUZAD,(100,3,10,40)), #0506 
-    # (PTA18_CHOGALL,(100,10,5,40)), 
     (PTA18_GULDAN,(100,10,5,40)), 
     (PTA18_DIABLO,(100,10,20,30)), #0506 
     (PTA18_DEHAKA,(100,10,10,20)), 
