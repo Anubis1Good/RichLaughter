@@ -1095,3 +1095,204 @@ def add_pivot_points_by_bars(df, bars=5):
         df.loc[start_idx:end_idx, 'S2'] = grouped.loc[group_id, 'S2']
     
     return df
+
+# GOOD INDICATOR
+def add_precent_zigzag(df, source='high_low', reversal=0.1, use_pct=True):
+    """
+    Рабочий индикатор ZigZag с правильным отображением линий
+    
+    Параметры:
+    df - DataFrame с колонками: high, low, close
+    source - 'high_low' (по экстремумам) или 'close' (по ценам закрытия)
+    reversal - величина разворота (в % если use_pct=True, в пунктах если False)
+    use_pct - использовать проценты или абсолютные значения для разворота
+    """
+    df = df.copy()
+    
+    # Выбор источника данных
+    if source == 'high_low':
+        prices = df[['high', 'low']].values
+    elif source == 'close':
+        prices = df[['close', 'close']].values
+    else:
+        raise ValueError("source должен быть 'high_low' или 'close'")
+    
+    highs = prices[:, 0]
+    lows = prices[:, 1]
+    size = len(df)
+    
+    # Инициализация массивов
+    zz = np.full(size, np.nan)
+    direction = np.zeros(size, dtype=np.int8)  # 1=up, -1=down
+    
+    # Начальные условия
+    direction[0] = 1
+    last_pivot = highs[0]
+    last_pivot_idx = 0
+    zz[0] = last_pivot
+    
+    for i in range(1, size):
+        high = highs[i]
+        low = lows[i]
+        
+        if direction[i-1] == 1:  # Предыдущее направление - вверх
+            # Обновляем максимум
+            if high > last_pivot:
+                zz[last_pivot_idx] = np.nan  # Удаляем старый максимум
+                last_pivot = high
+                last_pivot_idx = i
+                zz[i] = last_pivot
+            
+            # Проверяем разворот
+            threshold = last_pivot * (1 - reversal/100) if use_pct else last_pivot - reversal
+            if low <= threshold:
+                direction[i] = -1
+                last_pivot = low
+                last_pivot_idx = i
+                zz[i] = last_pivot
+            else:
+                direction[i] = 1
+                
+        else:  # Предыдущее направление - вниз
+            # Обновляем минимум
+            if low < last_pivot:
+                zz[last_pivot_idx] = np.nan  # Удаляем старый минимум
+                last_pivot = low
+                last_pivot_idx = i
+                zz[i] = last_pivot
+            
+            # Проверяем разворот
+            threshold = last_pivot * (1 + reversal/100) if use_pct else last_pivot + reversal
+            if high >= threshold:
+                direction[i] = 1
+                last_pivot = high
+                last_pivot_idx = i
+                zz[i] = last_pivot
+            else:
+                direction[i] = -1
+    
+    # Соединяем точки линиями
+    zz_final = np.full(size, np.nan)
+    start_idx = None
+    start_val = np.nan
+    
+    for i in range(size):
+        if not np.isnan(zz[i]):
+            if start_idx is not None:
+                # Линейная интерполяция между точками
+                zz_final[start_idx:i+1] = np.linspace(start_val, zz[i], i - start_idx + 1)
+            start_idx = i
+            start_val = zz[i]
+    
+    df['zigzag'] = zz_final
+    df['zigzag_direction'] = direction
+    return df
+
+def dynamic_zigzag(df, source='high_low', n_std=1.5, method='std', period=20):
+    """
+    ZigZag с динамическим reversal на основе волатильности
+    
+    Параметры:
+    df - DataFrame с колонками: high, low, close
+    source - 'high_low' (по экстремумам) или 'close' (по ценам закрытия)
+    n_std - множитель для std или среднего (1.5 по умолчанию)
+    method - 'std' (стандартное отклонение) или 'mean' (средний диапазон)
+    period - период для расчета волатильности
+    """
+    df = df.copy()
+    
+    # Проверка на достаточное количество данных
+    if len(df) < period:
+        raise ValueError(f"Недостаточно данных. Требуется минимум {period} баров")
+    
+    # Выбор источника данных
+    if source == 'high_low':
+        prices = df[['high', 'low']].values
+    elif source == 'close':
+        prices = df[['close', 'close']].values
+    else:
+        raise ValueError("source должен быть 'high_low' или 'close'")
+    
+    highs = prices[:, 0]
+    lows = prices[:, 1]
+    size = len(df)
+    
+    # Расчет динамического порога разворота
+    if method == 'std':
+        rolling_std = df['close'].rolling(period).std().bfill()
+        reversal_values = rolling_std * n_std
+    elif method == 'mean':
+        ranges = df['high'] - df['low']
+        reversal_values = ranges.rolling(period).mean().bfill() * n_std
+    else:
+        raise ValueError("method должен быть 'std' или 'mean'")
+    
+    # Инициализация массивов
+    zz = np.full(size, np.nan)
+    direction = np.zeros(size, dtype=np.int8)  # 1=up, -1=down
+    
+    # Начальные условия (используем первые доступные значения)
+    first_valid = max(1, period-1)  # Первый валидный индекс после заполнения rolling
+    direction[:first_valid] = 1
+    last_pivot = highs[first_valid]
+    last_pivot_idx = first_valid
+    zz[first_valid] = last_pivot
+    
+    for i in range(first_valid+1, size):
+        high = highs[i]
+        low = lows[i]
+        reversal = reversal_values.iloc[i]  # Используем iloc для безопасного доступа
+        
+        if direction[i-1] == 1:  # Предыдущее направление - вверх
+            # Обновляем максимум
+            if high > last_pivot:
+                zz[last_pivot_idx] = np.nan  # Удаляем старый максимум
+                last_pivot = high
+                last_pivot_idx = i
+                zz[i] = last_pivot
+            
+            # Проверяем разворот
+            threshold = last_pivot - reversal
+            if low <= threshold:
+                direction[i] = -1
+                last_pivot = low
+                last_pivot_idx = i
+                zz[i] = last_pivot
+            else:
+                direction[i] = 1
+                
+        else:  # Предыдущее направление - вниз
+            # Обновляем минимум
+            if low < last_pivot:
+                zz[last_pivot_idx] = np.nan  # Удаляем старый минимум
+                last_pivot = low
+                last_pivot_idx = i
+                zz[i] = last_pivot
+            
+            # Проверяем разворот
+            threshold = last_pivot + reversal
+            if high >= threshold:
+                direction[i] = 1
+                last_pivot = high
+                last_pivot_idx = i
+                zz[i] = last_pivot
+            else:
+                direction[i] = -1
+    
+    # Соединяем точки линиями
+    zz_final = np.full(size, np.nan)
+    start_idx = None
+    start_val = np.nan
+    
+    for i in range(size):
+        if not np.isnan(zz[i]):
+            if start_idx is not None:
+                # Линейная интерполяция между точками
+                zz_final[start_idx:i+1] = np.linspace(start_val, zz[i], i - start_idx + 1)
+            start_idx = i
+            start_val = zz[i]
+    
+    df['zigzag'] = zz_final
+    df['zigzag_direction'] = direction
+    df['reversal_threshold'] = reversal_values
+    return df

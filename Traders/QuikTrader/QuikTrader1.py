@@ -71,13 +71,13 @@ class QuikTrader1:
             if pos < 0:
                 # print('B',self.quantity + abs(pos))
                 self._send_open('B',self.quantity + abs(pos))
-            if pos == 0:
+            elif pos == 0:
                 self._send_open('B',self.quantity)
         elif 'short' in action:
             if pos > 0 :
                 # print('S',self.quantity + pos)
                 self._send_open('S',self.quantity + pos)
-            if pos == 0:
+            elif pos == 0:
                 self._send_open('S',self.quantity)
         elif 'close_all' in action:
             if pos < 0 :
