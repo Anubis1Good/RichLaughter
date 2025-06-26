@@ -96,6 +96,7 @@ class QuikTrader1:
             else:
                 df = self._get_df()
                 row = self.ws.get_test_row(df)
+                # print(self.sec_code,self.ws)
                 action = self.ws(row)
                 pos = self._check_position()
                 if time_mode == -1:

@@ -17,7 +17,8 @@ def process_history_position(result,suffix,db_path):
 
     result = result.drop(['avg_close_price','total_fee','total_result_fee','total_with_average_fee','total_with_max_fee'],axis=1)
     
-    result = result.sort_values(by=['ticker','t_min_fp'],axis=0,ascending=[True,False])
+    # result = result.sort_values(by=['ticker','t_min_fp'],axis=0,ascending=[True,False])
+    result = result.sort_values(by=['ticker','avgt'],axis=0,ascending=[True,False])
     result = result.reset_index(drop=True)
 
     ranks = ['total_trades','total_per','t_min_fp','t_avg_fp','t_max_fp','avgdd','maxdd','avgt','maxp','win_rate']
@@ -28,7 +29,8 @@ def process_history_position(result,suffix,db_path):
         result["rank_"+r] = result.groupby("ticker")[r].rank(ascending=False, method="min")
     avg_rank = result.groupby("bot")[rank_names].mean().sort_values('rank_t_avg_fp').round(2)
     result2 = pd.concat([avg_rank, data_sum], axis=1)
-    result2 = result2.sort_values('rank_t_min_fp')
+    # result2 = result2.sort_values('rank_t_min_fp')
+    result2 = result2.sort_values('rank_avgt')
     result2 = result2.reset_index()
     # print(result2)
     # print(avg_rank)
@@ -111,18 +113,18 @@ def analisys_db(db_path:str):
             SUM(hp.result_fee) AS total_result_fee,
             -- Расчет просадок на лету
             ROUND(AVG(CASE 
-                    WHEN hp.result < 0 
-                    THEN ABS(hp.result) * 100.0 / NULLIF(hp.open_price, 0) 
+                    WHEN hp.result_fee < 0 
+                    THEN ABS(hp.result_fee) * 100.0 / NULLIF(hp.open_price, 0) 
                     ELSE 0 
                     END), 2) AS avgdd,
             ROUND(MAX(CASE 
-                    WHEN hp.result < 0 
-                    THEN ABS(hp.result) * 100.0 / NULLIF(hp.open_price, 0) 
+                    WHEN hp.result_fee < 0 
+                    THEN ABS(hp.result_fee) * 100.0 / NULLIF(hp.open_price, 0) 
                     ELSE 0 
                     END), 2) AS maxdd,
-            ROUND(AVG(hp.result * 100.0 / NULLIF(hp.open_price, 0)), 2) AS avgt,
-            ROUND(MAX(hp.result * 100.0 / NULLIF(hp.open_price, 0)), 2) AS maxp,
-            ROUND(AVG(CASE WHEN hp.result >= 0 THEN 1.0 ELSE 0.0 END) * 100, 2) AS win_rate
+            ROUND(AVG(hp.result_fee * 100.0 / NULLIF(hp.open_price, 0)), 2) AS avgt,
+            ROUND(MAX(hp.result_fee * 100.0 / NULLIF(hp.open_price, 0)), 2) AS maxp,
+            ROUND(AVG(CASE WHEN hp.result_fee >= 0 THEN 1.0 ELSE 0.0 END) * 100, 2) AS win_rate
         FROM 
             history_positions hp
         JOIN 
@@ -154,18 +156,18 @@ def analisys_db_last(db_path:str):
         -- Расчет метрик просадки и прибыли
         -- Расчет просадок на лету
         ROUND(AVG(CASE 
-                WHEN hp.result < 0 
-                THEN ABS(hp.result) * 100.0 / NULLIF(hp.open_price, 0) 
+                WHEN hp.result_fee < 0 
+                THEN ABS(hp.result_fee) * 100.0 / NULLIF(hp.open_price, 0) 
                 ELSE 0 
                 END), 2) AS avgdd,
         ROUND(MAX(CASE 
-                WHEN hp.result < 0 
-                THEN ABS(hp.result) * 100.0 / NULLIF(hp.open_price, 0) 
+                WHEN hp.result_fee < 0 
+                THEN ABS(hp.result_fee) * 100.0 / NULLIF(hp.open_price, 0) 
                 ELSE 0 
                 END), 2) AS maxdd,
-        ROUND(AVG(hp.result * 100.0 / NULLIF(hp.open_price, 0)), 2) AS avgt,
-        ROUND(MAX(hp.result * 100.0 / NULLIF(hp.open_price, 0)), 2) AS maxp,
-        ROUND(AVG(CASE WHEN hp.result >= 0 THEN 1.0 ELSE 0.0 END) * 100, 2) AS win_rate
+        ROUND(AVG(hp.result_fee * 100.0 / NULLIF(hp.open_price, 0)), 2) AS avgt,
+        ROUND(MAX(hp.result_fee * 100.0 / NULLIF(hp.open_price, 0)), 2) AS maxp,
+        ROUND(AVG(CASE WHEN hp.result_fee >= 0 THEN 1.0 ELSE 0.0 END) * 100, 2) AS win_rate
     FROM 
         history_positions hp
     JOIN 

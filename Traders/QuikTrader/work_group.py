@@ -30,10 +30,10 @@ bot_on_ticker = (
     (
         (MTA_KING,(100,'KING_5_MOEX_FUT')),
         (
-            ('MMM5','SPBFUT','M5',1),
-            ('RMM5','SPBFUT','M5',1),
-            ('CRM5','SPBFUT','M5',1),
-            ('GZM5','SPBFUT','M5',1),
+            ('MMU5','SPBFUT','M5',1),
+            ('RMU5','SPBFUT','M5',1),
+            ('CRU5','SPBFUT','M5',1),
+            ('GZU5','SPBFUT','M5',1),
         )
     ),
 )
