@@ -1,6 +1,6 @@
 stock_groups= { 
     'LI':(
-        'CRM5',
+        'CRU5',
         'ROSN',
         'MAGN',
         'CHMF',

@@ -159,20 +159,20 @@ wssMoexFut5 = [
     (LTA2_LYNX,(150,1,10,0,1,0)), #2805
     (LTA2_LYNX,(60,2,5,0,2,0)), #CNY RMM B Si A
     (LTA2_LYNX,(60,2,5,0,2,1)), #CNY RMM B Si B+
-    (LTA2_PUBG,(150,2,20,40,20,0,0)), #0106
+    # (LTA2_PUBG,(150,2,20,40,20,0,0)), #0106
     (LTA2_DRG,(150,2,15,40,10,0,0)),#1106
     (LTA2_DRG,(60,2,10,40,20,0,0)),#1106
 
 
-    (OGTA4_DOG,(40,30)), #C
+    # (OGTA4_DOG,(40,30)), #C
     (OGTA4_DOG,(10,40)), #CNY C RMM B
-    (OGTA4_DOG,(30,50)), #2104 RMM B MXM C
+    # (OGTA4_DOG,(30,50)), #2104 RMM B MXM C
     (OGTA4_PUPPY,(5,30,20)), #CNY B RMM C RTS C Si B
 
 
-    (STA2_FAST,(50,5,45,10)),
-    (STA2_FAST,(50,7,30,15)),
-    (STA2_SLOW,(50,7,30,15)),
+    # (STA2_FAST,(50,5,45,10)),
+    # (STA2_FAST,(50,7,30,15)),
+    # (STA2_SLOW,(50,7,30,15)),
 
     (STAML2_GOLDENMEAN,(60,2,30,30)),
     (STAML2_NEWAVE,(5,5,0.5,30)), #B CNY B GAZP C RMM C MXM C
@@ -182,8 +182,8 @@ wssMoexFut5 = [
     (PSTA2_GGD,(60,3,3)), #1206
     (PSTA3_HADES,(10,6,'std')), #1206
     (PSTA3_HADES,(30,6,'mean')), #1206
-    (PSTA3_ZEUS,(10,8,'std')), #1206
-    (PSTA3_ZEUS,(60,4,'std')), #1206
+    # (PSTA3_ZEUS,(10,8,'std')), #1206
+    # (PSTA3_ZEUS,(60,4,'std')), #1206
 
     (PTA2_DDCrWork,(5,)), #A
     (PTA2_DDCrWork,(30,)), #0106
@@ -210,16 +210,16 @@ wssMoexFut5 = [
 
     (PTA8_WDOBBY_FREEr,(6,0.5,30)), #C CNY B RMM C RTS C
 
-    (PTA10_MAGIC,(70,100,12)), #0106
+    # (PTA10_MAGIC,(70,100,12)), #0106
     (PTA10_WIZARD,(20,55,12,25,20)), #A RMM B #SBER B MXM B
     (PTA10_WIZARD,(30,55,3,15,20)), #A RMM B MXM B RTS C
     (PTA10_WIZARD,(30,60,6,20,20)), #0106
 
     (PTA11_KUSURUKEN,(10,9,30,40,'c')), #A MXM B RTS C
     (PTA11_KUSURUKEN,(10,12,10,40,'hl')), #RMM C
-    (PTA11_KUSURUKEN,(50,3,20,10,'c')), #B RTS B
+    # (PTA11_KUSURUKEN,(50,3,20,10,'c')), #B RTS B
     (PTA11_KUSURUKEN,(50,15,10,20,'c')), #0106
-    (PTA11_KUSURUKEN,(10,3,30,20,'c')), #0106
+    # (PTA11_KUSURUKEN,(10,3,30,20,'c')), #0106
 
     (PTA12_SWDDCr,(20,40,1,10,5)), #B RMM B MXM B RTS B Si B
 
@@ -228,18 +228,18 @@ wssMoexFut5 = [
     (PTA14_RWDDCr,(20,50,50,80)), #GAZP B RMM B RTS B Si B
 
     (PTA15_WIDOWMAKER,(5,30)), #CNY B
-    (PTA15_SILVANA,(40,40,20)), #0106
+    # (PTA15_SILVANA,(40,40,20)), #0106
     (PTA15_ANNA,(5,30)), #CNY A RMM B
     (PTA15_ANNA,(10,40)), #0106
 
     (PTA15_VALLA,(10,0)), #B GAZP B RMM A MXM B RTS A
-    (PTA15_VALLA,(10,1)), 
-    (PTA15_VALLA,(10,-1)), 
+    # (PTA15_VALLA,(10,1)), 
+    # (PTA15_VALLA,(10,-1)), 
 
 
     (PTA18_CHOGALL,(100,5,5,40)), #C MXM C Si C
     (PTA18_GULDAN,(100,5,5,40)), #D CNY A GAZP B Si B
-    (PTA18_DIABLO,(100,7,15,20)), #0106
+    # (PTA18_DIABLO,(100,7,15,20)), #0106
     (PTA18_BLAZE,(30,10,101,50,10,0)), #CNY B  RMM C
     (PTA18_BLAZE,(10,5,101,50,40,0)),  #CNY B    
   
