@@ -457,223 +457,327 @@ wssMoexStocks5 = [
 ]
 
 wssBitgetFut1 = [
+    (LTA_PIN,(10,12,20,5)),
+    (LTA2_HOTS,(60,0.5,20,40,20,0,0)),
+    (LTA2_HOTS,(60,0.5,15,30,10,30,0)),
+    (LTA2_DRINKER,(150,1,30,40,10,10,0)),
+    (LTA2_DRG,(150,0.5,35,40,10,0,0)),
+    (LTA2_PUBG,(90,2,20,30,10,30,0)),
 
-    (OGTA4_DOG,(45,15)),
+    (OGTA4_DOG,(60,20)),
 
-    (STA_mini,(14,1)),
-    (STA_mini,(14,0)),
+    (STA2_ULTRA,(100,7,40,40)),
+    (STA2_SLOW,(100,5,55,35)),
 
     (STAML2_GOLDENMEAN,(60,2,200,30)),
-    (STAML2_SID,(200,10,5,30,0.2)),
+    (STAML2_NEWAVE,(10,5,0.5,30)),
+    (STAML2_NEWAVE,(5,5,2,30)),
 
-    (PTA2_BDDCr_UNIVERSAL,(14,1,1)), 
-    (PTA2_BDDCr_UNIVERSAL,(14,1,0)), 
-    (PTA2_BDDCr_UNIVERSAL,(14,0,1)), 
+    (PSTA2_GGD,(60,30,4)),
+    (PSTA3_ZEUS,(40,6,'std')),
+    (PSTA3_HADES,(20,10,'std')),
 
-    (PTA2_BVGFIX,(14,1,1)), 
-    (PTA2_BVGFIX,(14,1,0)), 
-    (PTA2_BVGFIX,(14,0,1)), 
 
-    (PTA2_BDDC_FIX,(40,1,1)), 
-    (PTA2_BDDC_FIX,(40,1,0)), 
-    (PTA2_BDDC_FIX,(40,0,1)), 
 
-    (PTA2_BBBU,(28,1,1)), 
-    (PTA2_BBBU,(28,1,0)), 
-    (PTA2_BBBU,(28,0,1)), 
+    (PTA4_UNIVERSAL,(30,50,20,20,'BB','mfi',1,1)),
 
-    (PTA2_BBBUr,(14,1,1)), 
-    (PTA2_BBBUr,(14,1,0)), 
-    (PTA2_BBBUr,(14,0,1)), 
+    (PTA10_WIZARD,(20,100,9,20,30)),
 
-    (PTA4_WDDC,(30,30)), #C
-    (PTA4_UNIVERSAL,(14,14,30,30,"DC",'rsi',1,1)),
-    (PTA4_UNIVERSAL,(14,14,50,20,"DC",'rsi',1,0)),
-    (PTA4_UNIVERSAL,(14,14,20,50,"DC",'rsi',0,1)),
+    (PTA11_KUSURUKEN,(70,15,25,20,'hl')),
 
-    (PTA10_WIZARD,(50,55,12,10,30)),
-    (PTA10_WIZARD,(30,55,3,15,20)),
-    (PTA10_WIZARD,(20,55,12,25,20)),
+    (PTA12_SWDDCr,(30,20,1,5,25)),
+    (PTA13_DWDDCr,(10,30,30)), #A
+    (PTA14_RWDDCr,(50,30,80,50)), #A
 
-    (PTA11_KUSURUKEN,(50,3,20,10,'c')), #F
+    (PTA18_ARTAS,(100,3,45,20)), 
+    (PTA18_VARIAN,(100,3,45,20,30)), 
+    (PTA18_REXXAR,(100,3,45,50,20)), 
+    (PTA18_KELTHUZAD,(100,10,45,20)), 
+    (PTA18_DEHAKA,(100,10,40,10)), 
+    (PTA18_GULDAN,(100,3,25,40)), 
+    (PTA18_MISHA,(100,5,20,40,10)), 
+    (PTA18_BLAZE,(90,35,56,50,10,0)), 
 
-    (PTA12_SWDDCr,(15,30,0.25,5,20)), #A
+    (PTA19_ANUBARAK,(10,20,40,20,10,0)),
+    (PTA19_JOHANNA,(100,3,30,10,40,10,0)),
+    (PTA19_TYRAEL,(100,7,30,30,40,10,0)),
+    (PTA19_YREL,(100,3,35,40,10,0,0)),
+    (PTA19_VALEERA,(100,5,35,40,10,20,0)),
+    (PTA19_ZERATUL,(100,7,35,50,40,10,0)),
 
-    (PTA15_VALLA,(70,0)), 
-    (PTA15_VALLA,(70,1)), 
-    (PTA15_VALLA,(70,-1)), 
-
-    (PTA15_TRACER,(20,0)), 
-    (PTA15_TRACER,(20,1)), 
-    (PTA15_TRACER,(20,-1)), 
 ]
 
 wssBitgetFut5 = [
-    (LTA_KARYCH,(30,35)),
+    (LTA_PIN,(20,15,30,3)),
+    (LTA_OKROSHKA,(20,30)),
+    (LTA2_HOTS,(150,1,30,50,20,20,0)),
+    (LTA2_DRINKER,(90,0.5,25,40,20,20,0)),
+    (LTA2_FENNEC,(150,2,35,40,10,0,0.5,0)),
+    (LTA2_LYNX,(90,0.5,35,30,0.5,0)),
+    (LTA2_DRG,(90,1,35,40,10,10,0)),
+    (LTA2_PUBG,(150,2,30,30,20,0,0)),
 
-    (STA_mini,(14,1)),
-    (STA_mini,(14,0)),
+    (OGTA4_DOG,(30,40)),
+    (OGTA4_PUPPY,(45,40,40)),
+
+    (STA2_SLOW,(100,5,45,30)),
+    (STA2_FAST,(100,5,45,30)),
 
     (STAML2_GOLDENMEAN,(60,2,200,30)),
-    (STAML2_SID,(200,10,5,30,0.2)),
-
-    (PTA2_BDDCr_UNIVERSAL,(14,1,1)), 
-    (PTA2_BDDCr_UNIVERSAL,(14,1,0)), 
-    (PTA2_BDDCr_UNIVERSAL,(14,0,1)), 
-
-    (PTA2_BVGFIX,(14,1,1)), 
-    (PTA2_BVGFIX,(14,1,0)), 
-    (PTA2_BVGFIX,(14,0,1)), 
-
-    (PTA2_BDDC_FIX,(40,1,1)), 
-    (PTA2_BDDC_FIX,(40,1,0)), 
-    (PTA2_BDDC_FIX,(40,0,1)), 
-
-    (PTA2_BBBU,(28,1,1)), 
-    (PTA2_BBBU,(28,1,0)), 
-    (PTA2_BBBU,(28,0,1)), 
-
-    (PTA2_BBBUr,(14,1,1)), 
-    (PTA2_BBBUr,(14,1,0)), 
-    (PTA2_BBBUr,(14,0,1)), 
-
-    (PTA4_UNIVERSAL,(14,14,30,30,"DC",'rsi',1,1)),
-    (PTA4_UNIVERSAL,(14,14,50,20,"DC",'rsi',1,0)),
-    (PTA4_UNIVERSAL,(14,14,20,50,"DC",'rsi',0,1)),
-
-    (PTA10_WIZARD,(50,55,12,10,30)),
-    (PTA10_WIZARD,(30,55,3,15,20)),
-    (PTA10_WIZARD,(20,55,12,25,20)),
-
-    (PTA11_KUSURUKEN,(70,9,5,10,'c')), #S
-    (PTA11_KUSURUKEN,(50,9,10,10,'c')), #S
-
-    (PTA11_KUSURUKEN,(70,15,35,10,'c')), #A
+    (STAML2_NEWAVE,(5,5,0.5,30)),
+    (STAML2_NEWAVE,(5,5,2,30)),
     
-    (PTA12_SWDDCr,(5,10,0.25,10,5)), #A
-    (PTA12_SWDDCr,(15,30,0.25,5,20)), #A
+    (PSTA2_GGD,(60,10,3)),
+    (PSTA2_GGD,(60,5,4)),
+    (PSTA3_ZEUS,(60,6,'std')),
+    (PSTA3_ZEUS,(10,18,'std')),
+    (PSTA3_HADES,(20,10,'mean')),
+    (PSTA3_HADES,(10,12,'mean')),
 
-    (PTA14_RWDDCr,(10,10,20,25)), #A
+    (PTA4_UNIVERSAL,(40,60,20,20,'BB','s',1,1)),
+    (PTA4_UNIVERSAL,(50,10,40,40,'VG','uo',1,1)),
 
-    (PTA15_SILVANA,(35,40,50)), 
-    (PTA15_TRACER,(20,0)), 
-    (PTA15_TRACER,(20,1)), 
-    (PTA15_TRACER,(20,-1)), 
+    (PTA10_WIZARD,(40,50,3,20,40)),
 
+    (PTA11_KUSURUKEN,(100,12,15,20,'hl')),
+    (PTA11_KUSURUKEN,(50,6,15,20,'c')),
+    
+    (PTA12_SWDDCr,(20,30,1,15,5)),
+
+    (PTA13_DWDDCr,(100,40,30)),
+
+    (PTA14_RWDDCr,(20,30,80,50)),
+    (PTA14_RWDDCr,(90,40,40,10)),
+
+    (PTA15_WIDOWMAKER,(10,20)), 
+    (PTA15_SILVANA,(100,30,50)), 
+    (PTA15_ANNA,(20,20)), 
+
+    (PTA18_ARTAS,(100,10,35,20)), 
+    (PTA18_REXXAR,(100,10,35,50,20)), 
+    (PTA18_VARIAN,(100,10,55,30,10)), 
+    (PTA18_KELTHUZAD,(100,7,40,10)), 
+    (PTA18_DEHAKA,(100,10,55,30)), 
+    (PTA18_GULDAN,(100,7,35,40)), 
+    (PTA18_CHOGALL,(100,7,10,20)), 
+    (PTA18_MISHA,(100,10,20,50,20)), 
+    (PTA18_BLAZE,(70,35,101,50,30,0)), 
+
+    (PTA19_ANUBARAK,(50,30,50,20,40,0)),
+    (PTA19_JOHANNA,(100,3,30,90,50,20,0)),
+    (PTA19_TYRAEL,(100,3,30,90,40,30,0)),
+    (PTA19_YREL,(100,7,30,50,20,20,0)),
+    (PTA19_YREL,(100,10,35,40,10,30,1)),
+    (PTA19_VALEERA,(100,10,25,30,30,30,0)),
+    (PTA19_ZERATUL,(100,3,20,90,30,20,0)),
 ]
 wssBitgetFut15 = [
 
-    (STA_mini,(14,1)),
-    (STA_mini,(14,0)),
+    (LTA_OKROSHKA,(10,30)),
+    (LTA_OKROSHKA2,(10,10)),
+    (LTA_PIN,(10,15,50,5)),
+    (LTA2_HOTS,(150,1,20,40,10,20,0)),
+    (LTA2_HOTS,(60,0.5,35,50,20,30,0)),
+    (LTA2_DRINKER,(150,1,35,40,20,0,0)),
+    (LTA2_FENNEC,(150,2,10,30,10,30,1,0)),
+    (LTA2_LYNX,(90,1,20,20,0.5,0)),
+    (LTA2_DRG,(60,2,15,40,20,30,0)),
+    (LTA2_PUBG,(90,2,15,40,20,20,0)),
+
+    (OGTA4_DOG,(30,20)),
+    (OGTA4_PUPPY,(15,30,30)),
+
+    (STA2_FAST,(100,3,35,30)),
+    (STA2_SLOW,(100,3,25,25)),
+    (STA2_ULTRA,(100,5,50,30)),
+    (STA2,(100,5,50)),
 
     (STAML2_GOLDENMEAN,(60,2,200,30)),
-    (STAML2_SID,(200,10,5,30,0.2)),
+    (STAML2_NEWAVE,(5,5,0.5,30)),
 
-    (PTA2_BDDCr_UNIVERSAL,(7,1,1)), 
-    (PTA2_BDDCr_UNIVERSAL,(7,1,0)), 
-    (PTA2_BDDCr_UNIVERSAL,(7,0,1)), 
-    (PTA2_BVGFIX,(7,1,1)), 
-    (PTA2_BVGFIX,(7,1,0)), 
-    (PTA2_BVGFIX,(7,0,1)), 
+    (PSTA2_GGD,(60,30,2)),
+    (PSTA2_GGD,(60,5,10)),
+    (PSTA3_ZEUS,(10,12,'mean')),
+    (PSTA3_HADES,(70,6,'std')),
+    (PSTA3_HADES,(90,4,'mean')),
 
-    (PTA2_BDDC_FIX,(20,1,1)), 
-    (PTA2_BDDC_FIX,(20,1,0)), 
-    (PTA2_BDDC_FIX,(20,0,1)), 
+    (PTA2_BDDCr_UNIVERSAL,(60,1,1)), 
+    (PTA2_BVGFIX,(90,1,1)), 
+    (PTA2_BBBUr,(70,1,1)), 
 
-    (PTA2_BBBU,(14,1,1)), 
-    (PTA2_BBBU,(14,1,0)), 
-    (PTA2_BBBU,(14,0,1)), 
+    (PTA2_LISICA,(30,1)), 
+    (PTA2_DDCrWork,(30,)), 
 
-    (PTA2_BBBUr,(7,1,1)), 
-    (PTA2_BBBUr,(7,1,0)), 
-    (PTA2_BBBUr,(7,0,1)), 
+    (PTA4_UNIVERSAL,(10,10,40,20,"DC",'rsi',1,1)),
+    (PTA4_UNIVERSAL,(20,20,40,20,"DC",'s',1,1)),
 
-    (PTA4_UNIVERSAL,(7,7,30,30,"DC",'rsi',1,1)),
-    (PTA4_UNIVERSAL,(7,7,50,20,"DC",'rsi',1,0)),
-    (PTA4_UNIVERSAL,(7,7,20,50,"DC",'rsi',0,1)),
+    (PTA10_WIZARD,(20,40,9,20,20)),
+    (PTA10_WIZARD,(30,80,9,30,30)),
+    (PTA11_KUSURUKEN,(40,15,35,30,'hl')),
+    (PTA11_KUSURUKEN,(100,9,15,40,'c')),
+    (PTA11_KUSURUKEN,(90,12,20,30,'c')),
 
-    (PTA8_OBBY,(21,0.5)), #S
+    (PTA12_SWDDCr,(20,30,1,10,5)),
+    (PTA13_DWDDCr,(80,40,20)),
+    (PTA14_RWDDCr,(20,30,100,90)),
 
-    (PTA12_SWDDCr,(20,30,0.25,15,5)), #A
-    (PTA12_SWDDCr,(5,10,0.25,10,20)), #A
+    (PTA15_SILVANA,(90,30,30)), 
+    (PTA15_ANNA,(10,30)), 
+    (PTA15_WIDOWMAKER,(10,30)), 
 
-    (PTA15_SILVANA,(45,40,35)), 
-    
-    (PTA15_VALLA,(45,0)), 
-    (PTA15_VALLA,(45,1)), 
-    (PTA15_VALLA,(45,-1)), 
-    (PTA15_TRACER,(20,0)), 
-    (PTA15_TRACER,(20,1)), 
-    (PTA15_TRACER,(20,-1)), 
+    (PTA18_ARTAS,(100,5,10,20)), 
+    (PTA18_REXXAR,(100,5,10,50,20)), 
+    (PTA18_VARIAN,(100,5,10,10,40)), 
+    (PTA18_KELTHUZAD,(100,5,15,10)), 
+    (PTA18_DEHAKA,(100,3,45,20)), 
+    (PTA18_GULDAN,(100,3,5,20)), 
+    (PTA18_CHOGALL,(100,5,10,30)), 
+    (PTA18_MISHA,(100,3,20,50,10)), 
+    (PTA18_BLAZE,(10,25,26,50,20,0)), 
+    (PTA18_BLAZE,(10,15,86,40,10,0)), 
 
+    (PTA19_ANUBARAK,(30,15,40,10,30,0)),
+    (PTA19_JOHANNA,(100,10,15,10,40,10,1)),
+    (PTA19_JOHANNA,(100,3,20,10,50,10,0)),
+    (PTA19_TYRAEL,(100,3,15,30,40,10,0)),
+    (PTA19_YREL,(100,3,20,40,10,20,0)),
+    (PTA19_VALEERA,(100,7,10,30,10,10,0)),
+    (PTA19_ZERATUL,(100,5,35,50,40,20,0)),
 ]
 wssBitgetFut30 = [
-    (STA_mini,(7,1)),
-    (STA_mini,(7,0)),
+    (LTA_OKROSHKA2,(20,80)),
+    (LTA_PIN,(10,15,30,3)),
+    (LTA2_HOTS,(60,0.5,15,50,10,10,0)),
+    (LTA2_DRINKER,(60,1,15,40,10,10,0)),
+    (LTA2_DRINKER,(150,2,5,40,10,20,0)),
+    (LTA2_FENNEC,(150,2,5,30,10,30,2,0)),
+    (LTA2_LYNX,(90,1,25,0,2,0)),
+    (LTA2_ALKASH,(60,0.5,30,0,0)),
+    (LTA2_DRG,(90,2,15,40,30,30,0)),
+    (LTA2_PUBG,(90,2,15,40,30,30,0)),
+
+    (OGTA4_PUPPY,(5,20,20)),
+
+    (STA2_SLOW,(100,3,35,15)),
+    (STA2_FAST,(100,3,35,15)),
+    (STA2_ULTRA,(100,3,25,20)),
+    (STA2,(100,3,25)),
 
     (STAML2_GOLDENMEAN,(60,2,200,30)),
-    (STAML2_SID,(200,10,5,30,0.2)),
+    (STAML2_NEWAVE,(5,5,0.5,30)),
 
-    (PTA2_BDDCr_UNIVERSAL,(7,1,1)), 
-    (PTA2_BDDCr_UNIVERSAL,(7,1,0)), 
-    (PTA2_BDDCr_UNIVERSAL,(7,0,1)), 
-    (PTA2_BVGFIX,(7,1,1)), 
-    (PTA2_BVGFIX,(7,1,0)), 
-    (PTA2_BVGFIX,(7,0,1)), 
+    (PSTA2_GGD,(60,4,4)),
+    (PSTA3_ZEUS,(30,8,'std')),
+    (PSTA3_HADES,(70,8,'std')),
+    (PSTA3_HADES,(90,6,'std')),
 
-    (PTA2_BDDC_FIX,(20,1,1)), 
-    (PTA2_BDDC_FIX,(20,1,0)), 
-    (PTA2_BDDC_FIX,(20,0,1)), 
+    (PTA2_BDDCr_UNIVERSAL,(90,1,1)), 
+    (PTA2_BVGFIX,(90,1,1)), 
+    (PTA2_BBBUr,(100,1,1)), 
+    (PTA2_BBBU,(70,1,1)), 
+    (PTA2_BDDC_FIX,(90,1,1)), 
 
-    (PTA2_BBBU,(14,1,1)), 
-    (PTA2_BBBU,(14,1,0)), 
-    (PTA2_BBBU,(14,0,1)), 
+    (PTA2_LISICA,(10,1)), 
 
-    (PTA2_BBBUr,(7,1,1)), 
-    (PTA2_BBBUr,(7,1,0)), 
-    (PTA2_BBBUr,(7,0,1)), 
-    (PTA4_UNIVERSAL,(7,7,30,30,"DC",'rsi',1,1)),
-    (PTA4_UNIVERSAL,(7,7,50,20,"DC",'rsi',1,0)),
-    (PTA4_UNIVERSAL,(7,7,20,50,"DC",'rsi',0,1)),
+    (PTA4_UNIVERSAL,(10,10,20,20,"DC",'rsi',1,1)),
+    (PTA4_UNIVERSAL,(10,10,20,40,'DC','s',1,1)),
+    (PTA4_UNIVERSAL,(20,10,30,20,"DC",'rsi',1,1)),
     
-    (PTA15_WIDOWMAKER,(10,30)), #A
-    (PTA15_ANNA,(10,30)), #A
-    (PTA15_TRACER,(10,0)), 
-    (PTA15_TRACER,(10,1)), 
-    (PTA15_TRACER,(10,-1)), 
+    (PTA10_WIZARD,(30,40,3,20,50)),
+    (PTA10_WIZARD,(10,30,12,20,40)),
+    (PTA10_MAGIC,(100,90,15)),
+    
+    (PTA11_KUSURUKEN,(60,6,5,20,'hl')),
+    (PTA11_KUSURUKEN,(60,12,10,20,'c')),
+
+    (PTA12_SWDDCr,(10,20,1,15,15)),
+    (PTA13_DWDDCr,(100,30,10)),
+    (PTA14_RWDDCr,(10,30,50,40)),
+    (PTA14_RWDDCr,(10,20,40,40)),
+
+    (PTA15_SILVANA,(70,30,30)),
+
+    (PTA18_REXXAR,(100,3,5,50,30)), 
+    (PTA18_ARTAS,(100,3,5,30)), 
+    (PTA18_VARIAN,(100,10,50,20,15)), 
+    (PTA18_GULDAN,(100,3,15,40)), 
+    (PTA18_DEHAKA,(100,3,50,30)), 
+    (PTA18_DIABLO,(100,7,50,30)), 
+    (PTA18_KELTHUZAD,(100,3,5,10)), 
+    (PTA18_CHOGALL,(100,7,5,20)), 
+    (PTA18_MISHA,(100,3,5,50,20)), 
+    (PTA18_BLAZE,(70,10,101,30,10,0)), 
+    (PTA18_BLAZE,(90,15,41,50,10,0)), 
+
+    (PTA19_ANUBARAK,(50,15,40,10,10,0)),
+    (PTA19_JOHANNA,(100,3,10,50,40,10,0)),
+    (PTA19_TYRAEL,(100,3,15,30,40,10,0)),
+    (PTA19_TYRAEL,(100,7,5,10,30,10,0)),
+    (PTA19_YREL,(100,3,10,30,10,30,0)),
+    (PTA19_VALEERA,(100,3,10,30,10,30,0)),
+    (PTA19_VALEERA,(100,3,25,40,10,30,0)),
+    (PTA19_ZERATUL,(100,3,15,30,40,10,0)),
 
 ]
 wssBitgetFut60 = (
-    (STA_mini,(10,1)),
-    (STA_mini,(10,0)),
-    (PTA2_BDDCr_UNIVERSAL,(7,1,1)), 
-    (PTA2_BDDCr_UNIVERSAL,(7,1,0)), 
-    (PTA2_BDDCr_UNIVERSAL,(7,0,1)), 
-    (PTA2_BVGFIX,(7,1,1)), 
-    (PTA2_BVGFIX,(7,1,0)), 
-    (PTA2_BVGFIX,(7,0,1)), 
+    (LTA2_HOTS,(60,0.5,5,30,10,0,0)),
+    (LTA2_HOTS,(60,1,25,50,10,20,0)),
+    (LTA2_DRINKER,(60,1,5,50,10,0,0)),
+    (LTA2_DRINKER,(60,0.5,15,50,10,10,0)),
+    (LTA2_FENNEC,(150,2,5,30,10,0,1,1)),
+    (LTA2_FENNEC,(150,2,25,50,20,0,0.5,1)),
+    (LTA2_LYNX,(150,2,25,0,0.5,1)),
+    (LTA2_LYNX,(90,2,25,0,1,1)),
+    (LTA2_ALKASH,(60,0.5,5,20,0)),
+    (LTA2_DRG,(90,2,15,30,30,0,0)),
+    (LTA2_PUBG,(90,2,5,30,10,10,0)),
 
-    (PTA2_BDDC_FIX,(20,1,1)), 
-    (PTA2_BDDC_FIX,(20,1,0)), 
-    (PTA2_BDDC_FIX,(20,0,1)), 
+    (OGTA4_DOG,(20,30)),
+    (OGTA4_PUPPY,(15,30,30)),
 
-    (PTA2_BBBU,(14,1,1)), 
-    (PTA2_BBBU,(14,1,0)), 
-    (PTA2_BBBU,(14,0,1)), 
+    (STA2_SLOW,(100,10,5,40)),
+    (STA2_FAST,(100,10,40,25)),
 
-    (PTA2_BBBUr,(7,1,1)), 
-    (PTA2_BBBUr,(7,1,0)), 
-    (PTA2_BBBUr,(7,0,1)), 
-    (PTA4_UNIVERSAL,(7,7,30,30,"DC",'rsi',1,1)),
-    (PTA4_UNIVERSAL,(7,7,50,20,"DC",'rsi',1,0)),
-    (PTA4_UNIVERSAL,(7,7,20,50,"DC",'rsi',0,1)),
+    (STAML2_NEWAVE,(5,5,0.5,30)),
 
-    (PTA15_KERRIGAN,(10,)), #A
-    (PTA15_WIDOWMAKER,(5,40)), #A
-    (PTA15_ANNA,(5,40)), #A
-    (PTA15_NOVA,(45,)), #A
-    (PTA15_TRACER,(5,0)), 
-    (PTA15_TRACER,(5,1)), 
-    (PTA15_TRACER,(5,-1)), 
+    (PSTA2_GGD,(60,2,2)),
+    (PSTA3_ZEUS,(10,12,'std')),
+    (PSTA3_ZEUS,(30,6,'std')),
+    (PSTA3_HADES,(60,8,'std')),
+
+    (PTA2_BBBU,(100,1,1)),
+    (PTA2_BVGFIX,(70,1,1)), 
+    (PTA2_BDDCr_UNIVERSAL,(50,1,1)), 
+    (PTA2_BBBUr,(60,1,1)), 
+
+    (PTA2_LISICA,(30,0.5)), 
+
+    (PTA10_MAGIC,(70,40,15)),
+    (PTA10_WIZARD,(100,30,15,30,20)),
+
+    (PTA11_KUSURUKEN,(10,6,30,30,'c')),
+    (PTA11_KUSURUKEN,(30,6,10,20,'hl')),
+
+    (PTA12_SWDDCr,(10,20,1,15,25)),
+    (PTA13_DWDDCr,(90,30,10)),
+    (PTA14_RWDDCr,(10,20,10,10)),
+
+    (PTA18_VARIAN,(100,10,5,30,10)), 
+    (PTA18_DIABLO,(100,10,5,10)), 
+    (PTA18_GULDAN,(100,10,5,30)), 
+    (PTA18_DEHAKA,(100,5,20,20)), 
+    (PTA18_KELTHUZAD,(100,3,30,10)), 
+    (PTA18_REXXAR,(100,10,5,30,10)), 
+    (PTA18_ARTAS,(100,10,5,10)), 
+    (PTA18_MISHA,(100,5,5,40,10)), 
+    (PTA18_BLAZE,(30,5,56,30,10,0)), 
+
+    (PTA19_ANUBARAK,(30,5,30,10,20,0)),
+    (PTA19_JOHANNA,(100,3,15,70,30,10,1)),
+    (PTA19_JOHANNA,(100,3,5,10,30,10,0)),
+    (PTA19_TYRAEL,(100,5,5,50,30,10,0)),
+    (PTA19_YREL,(100,3,25,40,10,20,0)),
+    (PTA19_VALEERA,(100,3,10,40,10,10,1)),
+    (PTA19_ZERATUL,(100,5,35,30,40,20,1)),
 )
 
