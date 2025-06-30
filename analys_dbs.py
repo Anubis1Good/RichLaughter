@@ -16,9 +16,6 @@ def process_history_position(result:pd.DataFrame,suffix,db_path):
     result['t_max_fp'] = ((result['total_with_max_fee']/result['avg_close_price'])*100).round(2)
 
     result = result.drop(['avg_close_price','total_fee','total_result_fee','total_with_average_fee','total_with_max_fee'],axis=1)
-    result_old = result.copy()
-    result_old = result_old.sort_values(by=['ticker','t_min_fp'],axis=0,ascending=[True,False])
-    result_old = result_old.reset_index(drop=True)
     result = result.sort_values(by=['ticker','avgt'],axis=0,ascending=[True,False])
     result = result.reset_index(drop=True)
 
@@ -29,6 +26,9 @@ def process_history_position(result:pd.DataFrame,suffix,db_path):
         # print(r)
         result["rank_"+r] = result.groupby("ticker")[r].rank(ascending=False, method="min")
     avg_rank = result.groupby("bot")[rank_names].mean().sort_values('rank_t_avg_fp').round(2)
+    result_old = result.copy()
+    result_old = result_old.sort_values(by=['ticker','t_min_fp'],axis=0,ascending=[True,False])
+    result_old = result_old.reset_index(drop=True)
     result2 = pd.concat([avg_rank, data_sum], axis=1)
     result2_old = result2.copy()
     result2_old = result2_old.sort_values('rank_t_min_fp')
@@ -69,7 +69,7 @@ def process_history_position(result:pd.DataFrame,suffix,db_path):
                 #     'format': workbook.add_format({'bg_color': '#FFC7CE', 'font_color': '#9C0006'})
                 # })
         results2 = (result2,result2_old)
-        for idx,result2 in enumerate(results):
+        for idx,result2 in enumerate(results2):
             name_sheet = 'bots_info_' + str(idx)
             result2.to_excel(writer,sheet_name=name_sheet)
             workbook = writer.book
