@@ -23,10 +23,10 @@ granularity = '5'
 get_all = False
 get_all = True
 # print(df.head())
-db_path = 'dbs/test_MOEX_FUT.db'
-db_path = 'dbs/test_MOEXM_FUT.db'
-# db_path = 'dbs/test_MOEX_STOCK.db'
-# db_path = 'dbs/test_MOEXM_STOCK.db'
+# db_path = 'dbs/test_MOEX_FUT.db'
+# db_path = 'dbs/test_MOEXM_FUT.db'
+db_path = 'dbs/test_MOEX_STOCK.db'
+db_path = 'dbs/test_MOEXM_STOCK.db'
 
 
 # 2. Загрузка сделок из базы данных

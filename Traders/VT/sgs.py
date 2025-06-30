@@ -14,17 +14,11 @@ stock_groups= {
         'GMKN'
     ),
     'TS': (
-        'CHMF',
-        'NVTK',
-        'CBOM',
-        'LSRG',
-        'FESH',
-        'MAGN',
-        'NLMK',
-        'HYDR',
-        'VTBR',
-        'IRAO',
-        'PIKK',
-        'MTLR'
+        'MTLR2'
+        'VTBR2',
+        'PIKK2',
+        'RUAL2',
+        'FESH2',
+        'NMTP2',
     )
 }
