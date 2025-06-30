@@ -51,6 +51,12 @@ tickersMoexStock = (
     ('YDEX',False),
 )
 
+tickersMoexSpecial = []
+for ticker in tickersMoexStock:
+    item = (ticker[0]+'2',False)
+    tickersMoexSpecial.append(item)
+tickersMoexSpecial = tuple(tickersMoexSpecial)
+
 tickersBitgetFut = (
     ("DOGEUSDT",True),
 )

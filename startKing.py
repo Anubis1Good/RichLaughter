@@ -3,7 +3,7 @@ import json
 import pandas as pd
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QApplication,QWidget,QListWidget,QPushButton,QHBoxLayout,QVBoxLayout,QDialog,QLabel,QTextBrowser
-from Traders.TestingTrader.tickers_groups import tickersBitgetFut,tickersMoexFut,tickersMoexStock
+from Traders.TestingTrader.tickers_groups import tickersBitgetFut,tickersMoexFut,tickersMoexStock,tickersMoexSpecial
 from Traders.TestingTrader.wss_maps import moexFutMap,bitgetFutMap,moexStockMap,moexMTAFutMap,moexMTAStockMap,bitgetMTAFutMap
 from strategies.work_strategies.HelpTA import CloseTA,BaseTABitget
 from Screening.utils.keys_strategies import get_dict_strategies
@@ -32,7 +32,8 @@ moexStockDC = get_dict_strategies(allMoexStockMap)
 tickersExchange = (
     tickersBitgetFut,
     tickersMoexFut,
-    tickersMoexStock
+    tickersMoexStock,
+    tickersMoexSpecial
 )
 wss_maps = (
     bitgetFutMap,
