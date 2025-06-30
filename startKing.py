@@ -42,12 +42,14 @@ wss_maps = (
 allDC = {
     0:bitgetFutDC,
     1:moexFutDC,
-    2:moexStockDC
+    2:moexStockDC,
+    3:moexStockDC,
 }
 exchages = (
     'Bitget_FUT',
     'MOEX_FUT',
     'MOEX_STOCK',
+    'MOEX_SPECIAL',
 )
 
 dbs_base = (
