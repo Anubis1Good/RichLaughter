@@ -369,8 +369,8 @@ wssMoexStocks5 = [
     (OGTA4_PUPPY,(15,30,20)), #0506
 
 
-    (STA2_SLOW,(100,10,20,30)), #0506
-    (STA2_FAST,(100,10,20,35)), #0506
+    # (STA2_SLOW,(100,10,20,30)), #0506
+    # (STA2_FAST,(100,10,20,35)), #0506
 
     (STAML2_GOLDENMEAN,(60,2,200,30)),
     (STAML2_NEWAVE,(10,5,0.5,30)), #0606
@@ -379,8 +379,8 @@ wssMoexStocks5 = [
     (PSTA2_GGD,(60,15,2)), #1206
     (PSTA3_HADES,(70,8,'mean')), #1206
     (PSTA3_HADES,(20,14,'std')), #1206
-    (PSTA3_ZEUS,(20,8,'mean')), #1206
-    (PSTA3_ZEUS,(40,6,'std')), #1206
+    # (PSTA3_ZEUS,(20,8,'mean')), #1206
+    # (PSTA3_ZEUS,(40,6,'std')), #1206
 
     (PTA2_LISICA,(70,2)), #0506 
     (PTA2_LISICA,(10,1)), 
@@ -425,12 +425,12 @@ wssMoexStocks5 = [
     (PTA15_ANNA,(5,30)), 
     (PTA15_ANNA,(10,30)), #0506
     (PTA15_TRACER,(30,0)), #0506 
-    (PTA15_SILVANA,(70,40,20)), #0506 
+    # (PTA15_SILVANA,(70,40,20)), #0506 
 
 
     (PTA18_KELTHUZAD,(100,3,10,40)), #0506 
     (PTA18_GULDAN,(100,10,5,40)), 
-    (PTA18_DIABLO,(100,10,20,30)), #0506 
+    # (PTA18_DIABLO,(100,10,20,30)), #0506 
     (PTA18_DEHAKA,(100,10,10,20)), 
     (PTA18_MISHA,(100,3,5,40,10)), #0506
     (PTA18_BLAZE,(30,5,26,40,10,0)),    
@@ -453,7 +453,7 @@ wssMoexStocks5 = [
     (PTA19_YREL,(100,3,15,40,10,10,0)), #0506
     (PTA19_YREL,(100,3,25,50,10,10,0)), #0506
     (PTA19_ZERATUL,(100,10,10,30,30,10,0)), #0506    
-    (PTA19_ZERATUL,(100,10,15,50,40,10,1)), #0506   
+    # (PTA19_ZERATUL,(100,10,15,50,40,10,1)), #0506   
 ]
 
 wssBitgetFut1 = [
@@ -471,7 +471,7 @@ wssBitgetFut1 = [
 
     (STAML2_GOLDENMEAN,(60,2,200,30)),
     (STAML2_NEWAVE,(10,5,0.5,30)),
-    (STAML2_NEWAVE,(5,5,2,30)),
+    (STAML2_NEWAVE,(5,5,1,30)),
 
     (PSTA2_GGD,(60,30,4)),
     (PSTA3_ZEUS,(40,6,'std')),
@@ -525,7 +525,7 @@ wssBitgetFut5 = [
 
     (STAML2_GOLDENMEAN,(60,2,200,30)),
     (STAML2_NEWAVE,(5,5,0.5,30)),
-    (STAML2_NEWAVE,(5,5,2,30)),
+    (STAML2_NEWAVE,(5,5,1,30)),
     
     (PSTA2_GGD,(60,10,3)),
     (PSTA2_GGD,(60,5,4)),
