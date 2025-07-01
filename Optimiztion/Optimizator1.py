@@ -17,7 +17,7 @@ def generate_combinations(ps):
     return combinations
 
 class Optimizator1:
-    def __init__(self,ws,ts,params,min_fee=0.0004,max_fee=0.0012):
+    def __init__(self,ws,ts,params,min_fee=0.0004,max_fee=0.0012,need_plot=False):
         self.ws = ws
         self.ts = ts
         self.configs = generate_combinations(params)
@@ -25,6 +25,7 @@ class Optimizator1:
         self.max_fee = max_fee
         self.average_fee = (max_fee+min_fee)/2
         self.name_bot = str(type(ws())).split('.')[-1][:-2]
+        self.need_plot = need_plot
     
     def run(self,raw_file:str):
         data_folder,images_folder = self.create_folders(raw_file)
@@ -58,10 +59,11 @@ class Optimizator1:
                 data['count'].append(trades['count'])
                 for i,el in enumerate(conf):
                     data['param'+str(i)].append(el)
-                full_name_img = os.path.join(images_folder,name_file +'.png')
-                plt.plot(equity,color='blue')
-                plt.savefig(full_name_img)
-                plt.close()
+                if self.need_plot:
+                    full_name_img = os.path.join(images_folder,name_file +'.png')
+                    plt.plot(equity,color='blue')
+                    plt.savefig(full_name_img)
+                    plt.close()
         full_name_doc = os.path.join(data_folder,self.name_bot +'.xlsx')
         df = pd.DataFrame(data)
         with pd.ExcelWriter(full_name_doc) as writer:  
@@ -153,10 +155,11 @@ class Optimizator2(Optimizator1):
                     data[f'param{i}'].append(el)
                 
                 # Сохранение графика
-                full_name_img = os.path.join(images_folder, name_file + '.png')
-                plt.plot(result['equity'], color='blue')
-                plt.savefig(full_name_img)
-                plt.close()
+                if self.need_plot:
+                    full_name_img = os.path.join(images_folder, name_file + '.png')
+                    plt.plot(result['equity'], color='blue')
+                    plt.savefig(full_name_img)
+                    plt.close()
         
         # Сохранение результатов в Excel
         full_name_doc = os.path.join(data_folder, self.name_bot + '.xlsx')

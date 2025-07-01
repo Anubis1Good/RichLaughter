@@ -1296,3 +1296,122 @@ def add_dynamic_zigzag(df, source='high_low', n_std=1.5, method='std', period=20
     df['zigzag_direction'] = direction
     df['reversal_threshold'] = reversal_values
     return df
+
+def dynamic_zigzag_picks(df, source='high_low', n_std=1.5, method='std', period=20):
+    """
+    ZigZag с динамическим reversal на основе волатильности
+    
+    Параметры:
+    df - DataFrame с колонками: high, low, close
+    source - 'high_low' (по экстремумам) или 'close' (по ценам закрытия)
+    n_std - множитель для std или среднего (1.5 по умолчанию)
+    method - 'std' (стандартное отклонение) или 'mean' (средний диапазон)
+    period - период для расчета волатильности
+    
+    Возвращает:
+    df с колонками:
+        zigzag - линейно интерполированные значения зигзага
+        zigzag_peaks - точки перелома (пики/впадины)
+        zigzag_direction - направление (1=up, -1=down)
+        reversal_threshold - порог разворота
+    """
+    df = df.copy()
+    
+    # Проверка на достаточное количество данных
+    if len(df) < period:
+        raise ValueError(f"Недостаточно данных. Требуется минимум {period} баров")
+    
+    # Выбор источника данных
+    if source == 'high_low':
+        prices = df[['high', 'low']].values
+    elif source == 'close':
+        prices = df[['close', 'close']].values
+    else:
+        raise ValueError("source должен быть 'high_low' или 'close'")
+    
+    highs = prices[:, 0]
+    lows = prices[:, 1]
+    size = len(df)
+    
+    # Расчет динамического порога разворота
+    if method == 'std':
+        rolling_std = df['close'].rolling(period).std().bfill()
+        reversal_values = rolling_std * n_std
+    elif method == 'mean':
+        ranges = df['high'] - df['low']
+        reversal_values = ranges.rolling(period).mean().bfill() * n_std
+    else:
+        raise ValueError("method должен быть 'std' или 'mean'")
+    
+    # Инициализация массивов
+    zz = np.full(size, np.nan)  # Точки разворота
+    direction = np.zeros(size, dtype=np.int8)  # 1=up, -1=down
+    
+    # Начальные условия
+    first_valid = max(1, period-1)  # Первый валидный индекс после заполнения rolling
+    direction[:first_valid] = 1
+    last_pivot = highs[first_valid]
+    last_pivot_idx = first_valid
+    zz[first_valid] = last_pivot  # Первая точка
+    
+    for i in range(first_valid+1, size):
+        high = highs[i]
+        low = lows[i]
+        reversal = reversal_values.iloc[i]  # Безопасный доступ по индексу
+        
+        if direction[i-1] == 1:  # Предыдущее направление - вверх
+            if high > last_pivot:  # Обновляем максимум
+                # Удаляем старый максимум
+                zz[last_pivot_idx] = np.nan
+                last_pivot = high
+                last_pivot_idx = i
+                zz[i] = last_pivot  # Новая точка экстремума
+            
+            # Проверка разворота вниз
+            if low <= last_pivot - reversal:
+                direction[i] = -1
+                last_pivot = low
+                last_pivot_idx = i
+                zz[i] = last_pivot  # Точка разворота
+            else:
+                direction[i] = 1
+                
+        else:  # Предыдущее направление - вниз
+            if low < last_pivot:  # Обновляем минимум
+                # Удаляем старый минимум
+                zz[last_pivot_idx] = np.nan
+                last_pivot = low
+                last_pivot_idx = i
+                zz[i] = last_pivot  # Новая точка экстремума
+            
+            # Проверка разворота вверх
+            if high >= last_pivot + reversal:
+                direction[i] = 1
+                last_pivot = high
+                last_pivot_idx = i
+                zz[i] = last_pivot  # Точка разворота
+            else:
+                direction[i] = -1
+    
+    # Сохраняем точки перелома до интерполяции
+    df['zigzag_peaks'] = zz.copy()  # Только ключевые точки
+    
+    # Линейная интерполяция между точками для непрерывного зигзага
+    zz_final = np.full(size, np.nan)
+    start_idx = None
+    start_val = np.nan
+    
+    for i in range(size):
+        if not np.isnan(zz[i]):
+            if start_idx is not None:
+                # Заполняем промежуток между точками
+                zz_final[start_idx:i+1] = np.linspace(start_val, zz[i], i - start_idx + 1)
+            start_idx = i
+            start_val = zz[i]
+    
+    # Добавляем результаты в датафрейм
+    df['zigzag'] = zz_final          # Интерполированная линия
+    df['zigzag_direction'] = direction
+    df['reversal_threshold'] = reversal_values
+    
+    return df

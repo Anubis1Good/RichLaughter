@@ -9,12 +9,12 @@ from strategies.work_strategies.LTA2 import LTA2_DRG
 from strategies.work_strategies.PSTA0 import PSTA3_HADES
 from strategies.work_strategies.OGTA import OGTA4_PUPPY
 # from strategies.work_strategies.PTA import PTA4_WDDCr2,PTA4_WDDCr2E,PTA1_FEMA,PTA1_FSMA,PTA1_CEMA,PTA1_CSMA
-from strategies.work_strategies.PTAX import PTA19_YREL,PTA19_VALEERA,PTA19_ZERATUL,PTA18_MISHA
+from strategies.work_strategies.PTAX import PTA14_RANGER,PTA14_ANGER,PTA19_CASSIA,PTA19_IMPERIUS
 
 def optimization_multi(ws,ts,params,test_folder,min_fee: float = 0.0004,
     max_fee: float = 0.0012):
     list_dir = os.listdir(test_folder)
-    optim = Optimizator2(ws,ts,params,min_fee=min_fee,max_fee=max_fee)
+    optim = Optimizator2(ws,ts,params,min_fee=min_fee,max_fee=max_fee,need_plot=True)
     for rw in list_dir:
         raw_file = os.path.join(test_folder,rw)
         print(rw)
@@ -26,43 +26,51 @@ def optimization_multi(ws,ts,params,test_folder,min_fee: float = 0.0004,
 
 test_folder = 'DataForTests\DataFromBitget'
 test_folder = 'DataForTests\DataFromMOEX'
+test_folder = 'DataForTests\DataFromMoexFast'
 # test_folder = 'DataForTests\DataFromMOEXto5'
 min_fee: float = 0.0004
 max_fee: float = 0.0012
 min_fee = 0.0002
 max_fee = 0.0009
-# params1 = [
-#     [3,4] + list(range(5,26,5)),
-#     (0.5,1,2,3)
-# ]
-# params2 = [
-#     (3,4,5,7,10,15,20,30,40,50,60,80,100)
-# ]
-# params3 = [
-#     (3,4,5,6,7,8,9,10,15,20,30,40,50,60,80,100),
-#     (3,4,5,6,7,8,9,10,15,20,30,40,50,60,80,100)
-# ]
-# params4 = [
-#     (3,4,5,10,15,20,30,60,100),
-#     (10,20,30,40)
-# ]
-group = (
-    (PSTA3_HADES,[
-        range(10,100,10),
-        range(2,20,2),
-        ('std','mean'),
-    ]),
 
+group = (
+    # (PTA14_RANGER,[
+    #     range(10,200,30),
+    #     (20,30,40),
+    #     range(10,200,30),
+    #     (5,10,15,20,30),
+    #     (30,40,50,60),
+    #     (20,30,40),
+    # ]),
+    # (PTA14_ANGER,[
+    #     range(10,200,30),
+    #     range(10,200,30),
+    #     (5,10,15,20,30),
+    #     (30,40,50,60),
+    #     (20,30,40),
+    # ]),
+    (PTA19_CASSIA,[
+        (100,),
+        (3,5,7,10),
+        range(5,36,5),
+        range(10,106,20),
+        (30,40,50),
+        (10,20,30,40),
+        (0,1)
+    ]),
+    (PTA19_IMPERIUS,[
+        (100,),
+        (3,5,7,10),
+        range(5,36,5),
+        range(10,106,20),
+        (30,40,50),
+        (10,20,30,40),
+        (0,1)
+    ]),
   
 )
 
-# group = (
-#     (PTA2_BDDC,params),
-#     (PTA2_BDDCde,params),
-#     (PTA2_BDDCr,params),
-#     (PTA2_DDCr,params),
-#     (PTA2_DDCde,params),
-# )
+
 if __name__ == '__main__':
     for part in group:
         print(part[0])

@@ -221,6 +221,62 @@ class PTA14_RWDDCr(BaseTABitget):
                 if row['rsi'] > 100-self.threshold:
                     return 'short_pw'
                 
+class PTA14_RANGER(BaseTABitget):
+    """period=100,threshold_rsi=30,period2=100, period3=20, threshold_chop=60, threshold_adx=30"""
+    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=100,threshold_rsi=30,period2=100, period3=20, threshold_chop=60, threshold_adx=30):
+        super().__init__(symbol, granularity, productType, n_parts, period)
+        self.threshold_rsi = threshold_rsi
+        self.threshold_chop = threshold_chop
+        self.threshold_adx = threshold_adx
+        self.period2 = period2
+        self.period3 = period3
+    def preprocessing(self, df):
+        df = add_donchan_channel(df,self.period3)
+        df = add_rsi(df,self.period3)
+        df = add_chop(df,self.period2)
+        df = add_adx(df,self.period)
+        df = add_enter_price2close(df)
+        df = add_slice_df(df,period=self.period)
+        return df
+    def __call__(self, row, *args, **kwds):
+        ranger = row['chop'] > self.threshold_chop and row['adx'] < self.threshold_adx
+        if not ranger: 
+            return 'close_all_pw'
+        else:
+            nearest_long = row['high'] - row['close'] > row['close'] - row['low'] 
+            if row['low'] <= row['min_hb']:
+                if nearest_long:
+                    if row['rsi'] < self.threshold_rsi:
+                        return 'long_pw'
+            if row['high'] >= row['max_hb']:
+                if row['rsi'] > 100-self.threshold_rsi:
+                    return 'short_pw'
+                
+class PTA14_ANGER(BaseTABitget):
+    """period=100, period2=100, period3=20, threshold_chop=60, threshold_adx=30"""
+    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=100, period2=100, period3=20, threshold_chop=60, threshold_adx=30):
+        super().__init__(symbol, granularity, productType, n_parts, period)
+        self.threshold_chop = threshold_chop
+        self.threshold_adx = threshold_adx
+        self.period2 = period2
+        self.period3 = period3
+    def preprocessing(self, df):
+        df = add_donchan_channel(df,self.period3)
+        df = add_chop(df,self.period2)
+        df = add_adx(df,self.period)
+        df = add_enter_price2close(df)
+        df = add_slice_df(df,period=self.period)
+        return df
+    def __call__(self, row, *args, **kwds):
+        anger = row['chop'] < self.threshold_chop and row['adx'] > self.threshold_adx
+        if not anger: 
+            return 'close_all_pw'
+        else:
+            if row['low'] <= row['min_hb']:
+                    return 'short_pw'
+            if row['high'] >= row['max_hb']:
+                    return 'long_pw'
+                
 class PTA15_NOVA(BaseTABitget):
     """period=20"""
     def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=20):
@@ -1280,3 +1336,90 @@ class PTA19_ZERATUL(BaseTABitget):
             if not can_long:
                 return 'close_long_pw'
         
+class PTA19_CASSIA(BaseTABitget):
+    """period=100,n_stairs=3,period2=10,period3=20,threshold_enter=40,threshold_exit=20,use_stop=1"""
+    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=100,n_stairs=3,period2=10,period3=20,threshold_enter=40,threshold_exit=20,use_stop=1):
+        super().__init__(symbol, granularity, productType, n_parts, period)
+        self.n_stairs = n_stairs
+        self.period2 = period2
+        self.period3 = period3
+        self.threshold_enter = threshold_enter
+        self.threshold_exit = threshold_exit
+        self.threshold_middle = (threshold_enter + threshold_exit) // 2
+        self.use_stop = use_stop
+    def preprocessing(self, df):
+        df = add_cascade_channel(df,self.n_stairs,self.period2,self.period3)
+        df = add_donchan_channel(df,self.period2)
+        df = add_rsi(df,self.period2)
+        df = add_enter_price2close(df)
+        df = add_slice_df(df,self.period)
+        return df
+    def __call__(self, row, *args, **kwds):
+        can_long = row['close'] > row['bottom_line']
+        can_short = row['close'] < row['top_line']
+        nearest_long = row['high'] - row['close'] > row['close'] - row['low'] 
+        threshold_enter = self.threshold_middle if can_long and can_short else self.threshold_enter
+        threshold_exit = self.threshold_middle if can_long and can_short else self.threshold_exit
+        if row['low'] <= row['min_hb']:
+            if nearest_long:
+                if can_long and row['rsi'] < threshold_enter:
+                    return 'long_pw'
+                if row['rsi'] < threshold_exit:
+                    return 'close_short_pw'
+        if row['high'] >= row['max_hb']:
+            if not nearest_long :
+                if can_short and row['rsi'] > 100-threshold_enter:
+                    return 'short_pw'
+                if row['rsi'] > 100-threshold_exit:
+                    return 'close_long_pw'
+        if self.use_stop:
+            if not can_short:
+                return 'close_short_pw'
+            if not can_long:
+                return 'close_long_pw'
+            
+class PTA19_IMPERIUS(BaseTABitget):
+    """period=100,n_stairs=3,period2=10,period3=20,threshold_enter=40,threshold_exit=20,use_stop=1"""
+    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=100,n_stairs=3,period2=10,period3=20,threshold_enter=40,threshold_exit=20,use_stop=1):
+        super().__init__(symbol, granularity, productType, n_parts, period)
+        self.n_stairs = n_stairs
+        self.period2 = period2
+        self.period3 = period3
+        self.threshold_enter = threshold_enter
+        self.threshold_exit = threshold_exit
+        self.threshold_middle = (threshold_enter + threshold_exit) // 2
+        self.use_stop = use_stop
+    def preprocessing(self, df):
+        df = add_cascade_channel(df,self.n_stairs,self.period2,self.period3)
+        df = add_donchan_channel(df,self.period2)
+        df = add_rsi(df,self.period2)
+        df = add_enter_price2close(df)
+        df = add_slice_df(df,self.period)
+        return df
+    def __call__(self, row, *args, **kwds):
+        can_long = row['close'] > row['bottom_line']
+        can_short = row['close'] < row['top_line']
+        nearest_long = row['high'] - row['close'] > row['close'] - row['low'] 
+        threshold_enter = self.threshold_middle if can_long and can_short else self.threshold_enter
+        threshold_exit = self.threshold_middle if can_long and can_short else self.threshold_exit
+        if nearest_long:
+            if can_long and not can_short and row['close'] <= row['avarege']:
+                return 'long_pw'        
+            if row['low'] <= row['min_hb']:
+                if can_long and row['rsi'] < threshold_enter:
+                    return 'long_pw'
+                if row['rsi'] < threshold_exit:
+                    return 'close_short_pw'
+        if not nearest_long :
+            if can_short and not can_long and row['close'] >= row['avarege']:
+                return 'short_pw'  
+            if row['high'] >= row['max_hb']:
+                if can_short and row['rsi'] > 100-threshold_enter:
+                    return 'short_pw'
+                if row['rsi'] > 100-threshold_exit:
+                    return 'close_long_pw'
+        if self.use_stop:
+            if not can_short:
+                return 'close_short_pw'
+            if not can_long:
+                return 'close_long_pw'

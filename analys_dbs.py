@@ -8,13 +8,15 @@ from datetime import datetime
 
 
 def process_history_position(result:pd.DataFrame,suffix,db_path):
+    result['tf'] = result['bot'].str.split('_').str[0]
+    tf = result.pop('tf')
+    result.insert(2,'tf',tf)
     result['total_with_average_fee'] = result['total_result'] - result['total_fee'] * 2
     result['total_with_max_fee'] = result['total_result'] - result['total_fee'] * 3
     result['total_per'] = ((result['total_result']/result['avg_close_price'])*100).round(2)
     result['t_min_fp'] = ((result['total_result_fee']/result['avg_close_price'])*100).round(2)
     result['t_avg_fp'] = ((result['total_with_average_fee']/result['avg_close_price'])*100).round(2)
     result['t_max_fp'] = ((result['total_with_max_fee']/result['avg_close_price'])*100).round(2)
-
     result = result.drop(['avg_close_price','total_fee','total_result_fee','total_with_average_fee','total_with_max_fee'],axis=1)
     result = result.sort_values(by=['ticker','avgt'],axis=0,ascending=[True,False])
     result = result.reset_index(drop=True)
@@ -30,6 +32,9 @@ def process_history_position(result:pd.DataFrame,suffix,db_path):
     result_old = result_old.sort_values(by=['ticker','t_min_fp'],axis=0,ascending=[True,False])
     result_old = result_old.reset_index(drop=True)
     result2 = pd.concat([avg_rank, data_sum], axis=1)
+    result2['tf'] = result2.index.str.split('_').str[0]
+    tf = result2.pop('tf')
+    result2.insert(0,'tf',tf)
     result2_old = result2.copy()
     result2_old = result2_old.sort_values('rank_t_min_fp')
     result2_old = result2.reset_index()
