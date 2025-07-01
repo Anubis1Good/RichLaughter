@@ -47,6 +47,7 @@ wssMoexFut1 = [
 
     (STAML2_GOLDENMEAN,(60,2,30,30)),
     (STAML2_NEWAVE,(5,5,0.5,30)),  #MXI B-
+    (STAML2_NEWAVE,(5,5,1,30)),  #0207
     (STAML2_NEWAVE,(10,5,0.5,30)), #0606
 
     (PSTA2_GGD,(60,15,3)), #1206
@@ -184,6 +185,7 @@ wssMoexFut5 = [
 
     (STAML2_GOLDENMEAN,(60,2,30,30)),
     (STAML2_NEWAVE,(5,5,0.5,30)), #B CNY B GAZP C RMM C MXM C
+    (STAML2_NEWAVE,(5,5,1,30)), #0207
     (STAML2_NEWAVE,(10,5,0.5,30)), #0606
 
     (PSTA2_GGD,(60,4,4)), #1206
@@ -496,7 +498,7 @@ wssBitgetFut1 = [
     (STA2_SLOW,(100,5,55,35)),
 
     (STAML2_GOLDENMEAN,(60,2,200,30)),
-    (STAML2_NEWAVE,(10,5,0.5,30)),
+    # (STAML2_NEWAVE,(10,5,0.5,30)),
     (STAML2_NEWAVE,(5,5,1,30)),
 
     (PSTA2_GGD,(60,30,4)),
@@ -550,7 +552,7 @@ wssBitgetFut5 = [
     (STA2_FAST,(100,5,45,30)),
 
     (STAML2_GOLDENMEAN,(60,2,200,30)),
-    (STAML2_NEWAVE,(5,5,0.5,30)),
+    # (STAML2_NEWAVE,(5,5,0.5,30)),
     (STAML2_NEWAVE,(5,5,1,30)),
     
     (PSTA2_GGD,(60,10,3)),
@@ -619,7 +621,7 @@ wssBitgetFut15 = [
     (STA2,(100,5,50)),
 
     (STAML2_GOLDENMEAN,(60,2,200,30)),
-    (STAML2_NEWAVE,(5,5,0.5,30)),
+    (STAML2_NEWAVE,(5,5,1,30)),
 
     (PSTA2_GGD,(60,30,2)),
     (PSTA2_GGD,(60,5,10)),
@@ -690,7 +692,7 @@ wssBitgetFut30 = [
     (STA2,(100,3,25)),
 
     (STAML2_GOLDENMEAN,(60,2,200,30)),
-    (STAML2_NEWAVE,(5,5,0.5,30)),
+    (STAML2_NEWAVE,(5,5,1,30)),
 
     (PSTA2_GGD,(60,4,4)),
     (PSTA3_ZEUS,(30,8,'std')),
@@ -765,6 +767,7 @@ wssBitgetFut60 = (
     (STA2_FAST,(100,10,40,25)),
 
     (STAML2_NEWAVE,(5,5,0.5,30)),
+    (STAML2_NEWAVE,(5,5,1,30)),
 
     (PSTA2_GGD,(60,2,2)),
     (PSTA3_ZEUS,(10,12,'std')),
