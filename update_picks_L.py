@@ -2,6 +2,8 @@ import traceback
 from time import time,sleep
 from Screening.robots.Architect import Architect
 
+print('Start Local Update Picks')
+
 archs = (
     # Architect(
     #     'dbs/test_Bitget_FUT.db',
@@ -18,14 +20,16 @@ archs = (
         (24,)),
 )
 
-
+first_start = True
+start = time()
 while True:
-    # start=time()
     try:
         for arch in archs:
             arch.run()
+        if first_start:
+            print('time:',time()-start)
+            first_start = False
         sleep(60*10)
     except Exception:
         traceback.print_exc()
         sleep(60)
-    # print('time:',time()-start)

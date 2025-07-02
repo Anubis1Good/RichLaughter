@@ -44,7 +44,7 @@ def init_trader() -> list[QuikTrader1]:
     for ws,data_tickers in bot_on_ticker:
         for dt in data_tickers:
             print(dt[0],ws)
-            bot = QuikTrader1(*dt,ws)
+            bot = QuikTrader1(*dt,ws,True)
             bots.append(bot)
     return bots
 

@@ -265,7 +265,7 @@ def add_delta_2v(df:pd.DataFrame,top='max_hb',bottom='min_hb'):
     df['delta_2v'] = df[top] - df[bottom]
     return df
 
-def add_fractals(df, period=5):
+def add_fractals(df:pd.DataFrame, period=5):
     """
     add 'fractal_up','fractal_down'\n
     Добавляет фракталы Билла Вильямса в DataFrame с данными свечей.
@@ -293,7 +293,7 @@ def add_fractals(df, period=5):
     
     return df
 
-def add_average_fractals(df, period=5):
+def add_average_fractals(df:pd.DataFrame, period=5):
     """add 'ave_up', 'ave_down'"""
     up_points = df[df['fractal_up']]
     df['ave_up'] = up_points['high'].rolling(window=period).mean()
@@ -303,7 +303,17 @@ def add_average_fractals(df, period=5):
     df['ave_down'] = df['ave_down'].ffill()
     return df
 
-def add_fractal_zones(df, period=5):
+def add_extremes_fractals(df:pd.DataFrame, period=5):
+    """add 'ext_up', 'ext_down'"""
+    up_points = df[df['fractal_up']]
+    df['ext_up'] = up_points['high'].rolling(window=period).max()
+    df['ext_up'] = df['ext_up'].ffill()
+    down_points = df[df['fractal_down']]
+    df['ext_down'] = down_points['low'].rolling(window=period).min()
+    df['ext_down'] = df['ext_down'].ffill()
+    return df
+
+def add_fractal_zones(df:pd.DataFrame, period=5):
     """
     add 'fractal_up_high', 
         'fractal_down_low',
@@ -360,7 +370,7 @@ def add_fractal_zones(df, period=5):
     df['fractal_middle'] = (df['fractal_up_high'] - df['fractal_down_low'])/2 + df['fractal_down_low']
     return df
 
-def add_rsi(df, period=14,kind='close'):
+def add_rsi(df:pd.DataFrame, period=14,kind='close'):
     """
     add 'rsi'\n
     Вычисляет RSI для DataFrame с данными о ценах.
@@ -384,7 +394,7 @@ def add_rsi(df, period=14,kind='close'):
     
     return df
 
-def add_rsi_tw(df, period=14, kind='close'):
+def add_rsi_tw(df:pd.DataFrame, period=14, kind='close'):
     """
     Добавляет колонку 'rsi_tw' в DataFrame с данными о ценах.
     
@@ -412,28 +422,8 @@ def add_rsi_tw(df, period=14, kind='close'):
     
     return df
 
-# def add_ema(df, period=20, kind='close'):
-#     """
-#     add 'ema'\n
-#     Вычисляет EMA для DataFrame с данными о ценах.
-    
-#     :param data: DataFrame с колонкой 'Close' (цены закрытия)
-#     :param period: Период EMA (по умолчанию 20)
-#     :param column: Название колонки с ценами (по умолчанию 'Close')
-#     :return: DataFrame с добавленной колонкой 'EMA'
-#     """
-#     # Вычисляем коэффициент сглаживания
-#     alpha = 2 / (period + 1)
-    
-#     # Вычисляем SMA для первой точки
-#     df['ema'] = df[kind].rolling(window=period).mean()
-    
-#     # Вычисляем EMA для остальных точек
-#     for i in range(period, len(df)):
-#         df.loc[df.index[i], 'ema'] = (df[kind].iloc[i] * alpha) + (df['ema'].iloc[i - 1] * (1 - alpha))
-    
-#     return df
-def add_ema(df, period=20, kind='close'):
+
+def add_ema(df:pd.DataFrame, period=20, kind='close'):
     """
     Вычисляет EMA для DataFrame с данными о ценах.
     
@@ -454,7 +444,7 @@ def add_ema(df, period=20, kind='close'):
     return df
 
 
-def add_stochastic(df, k_period=14, d_period=3,kind='close'):
+def add_stochastic(df:pd.DataFrame, k_period=14, d_period=3,kind='close'):
     """add 'lowest_so','highest_so','%k','%d' """
     df['lowest_so'] = df[kind].rolling(window=k_period).min()
     df['highest_so'] = df[kind].rolling(window=k_period).max()
@@ -462,7 +452,7 @@ def add_stochastic(df, k_period=14, d_period=3,kind='close'):
     df['%d'] = df['%k'].rolling(window=d_period).mean()
     return df
 
-def add_atr(df, period=5,kind='close'):
+def add_atr(df:pd.DataFrame, period=5,kind='close'):
     '''"atr"'''
     df['high_low'] = df['high'] - df['low']
     df['high_close'] = np.abs(df['high'] - df[kind].shift(1))
@@ -471,12 +461,12 @@ def add_atr(df, period=5,kind='close'):
     df['atr'] = df['tr'].rolling(window=period).mean()
     return df
 
-def add_local_extrema(df, window=5):
+def add_local_extrema(df:pd.DataFrame, window=5):
     df['local_max'] = df['close'].rolling(window=window).max()
     df['local_min'] = df['close'].rolling(window=window).min()
     return df
 # что-то не то
-def add_supertrend(df, period=10, multiplier=3):
+def add_supertrend(df:pd.DataFrame, period=10, multiplier=3):
     """
     Рассчитывает индикатор SuperTrend.
     """
@@ -506,7 +496,7 @@ def add_supertrend(df, period=10, multiplier=3):
     
     return df
 
-def add_macd(data, short_window=12, long_window=26, signal_window=9):
+def add_macd(data:pd.DataFrame, short_window=12, long_window=26, signal_window=9):
     """add 'ema_1','ema_2','macd','signal_line'"""
     data['ema_1'] = data['close'].ewm(span=short_window, adjust=False).mean()
     data['ema_2'] = data['close'].ewm(span=long_window, adjust=False).mean()
@@ -514,7 +504,7 @@ def add_macd(data, short_window=12, long_window=26, signal_window=9):
     data['signal_line'] = data['macd'].ewm(span=signal_window, adjust=False).mean()
     return data
 
-def add_adx(df,adx_period=14):
+def add_adx(df:pd.DataFrame,adx_period=14):
     """
     'adx'
     Расчет индикатора ADX (Average Directional Index).
@@ -557,7 +547,7 @@ def add_adx(df,adx_period=14):
 
     return df
 
-def add_kama(df, period=30,fast_ema=2,slow_ema=30):
+def add_kama(df:pd.DataFrame, period=30,fast_ema=2,slow_ema=30):
     """
     Расчет индикатора KAMA (Kaufman Adaptive Moving Average).
     :param df: DataFrame с данными
@@ -580,7 +570,7 @@ def add_kama(df, period=30,fast_ema=2,slow_ema=30):
         )
     return df
 
-def add_chop(df,chop_period=14):
+def add_chop(df:pd.DataFrame,chop_period=14):
     """
     'chop'
     Расчет индикатора CHOP (Choppiness Index).
@@ -607,7 +597,7 @@ def add_chop(df,chop_period=14):
     df['chop'] = 100 * np.log10(df['tr_sum'] / (df['high_max'] - df['low_min'])) / np.log10(chop_period)
     return df
 
-def add_cci(df, period=20, kind='close'):
+def add_cci(df:pd.DataFrame, period=20, kind='close'):
     """
     Добавляет колонку 'cci' в DataFrame с данными о ценах.
     
@@ -632,7 +622,7 @@ def add_cci(df, period=20, kind='close'):
     
     return df
 
-def add_williams_r(df, period=14, kind='close'):
+def add_williams_r(df:pd.DataFrame, period=14, kind='close'):
     """
     Добавляет колонку 'williams_r' в DataFrame с данными о ценах.
     
@@ -650,7 +640,7 @@ def add_williams_r(df, period=14, kind='close'):
     
     return df
 
-def add_mfi(df, period=14):
+def add_mfi(df:pd.DataFrame, period=14):
     """
     Добавляет колонку 'mfi' в DataFrame с данными о ценах и объемах.
     
@@ -680,7 +670,7 @@ def add_mfi(df, period=14):
     
     return df
 
-def add_awesome_oscillator(df, short_period=5, long_period=34):
+def add_awesome_oscillator(df:pd.DataFrame, short_period=5, long_period=34):
     """
     Добавляет колонку 'ao' в DataFrame с данными о ценах.
     
@@ -708,7 +698,7 @@ def add_awesome_oscillator(df, short_period=5, long_period=34):
     
     return df
 
-def add_roc(df, period=12, kind='close'):
+def add_roc(df:pd.DataFrame, period=12, kind='close'):
     """
     Добавляет колонку 'roc' в DataFrame с данными о ценах.
     
@@ -722,7 +712,7 @@ def add_roc(df, period=12, kind='close'):
     
     return df
 
-def add_ultimate_oscillator(df, short_period=7, medium_period=14, long_period=28):
+def add_ultimate_oscillator(df:pd.DataFrame, short_period=7, medium_period=14, long_period=28):
     """
     Добавляет колонку 'ultimate_oscillator' в DataFrame с данными о ценах.
     
@@ -762,7 +752,7 @@ def add_ultimate_oscillator(df, short_period=7, medium_period=14, long_period=28
     
     return df
 
-def add_cmo(df, period=14, kind='close'):
+def add_cmo(df:pd.DataFrame, period=14, kind='close'):
     """
     Добавляет колонку 'cmo' в DataFrame с данными о ценах.
     
@@ -788,7 +778,7 @@ def add_cmo(df, period=14, kind='close'):
     return df
 
 
-def add_keltner_channel(df, period=20, multiplier=2):
+def add_keltner_channel(df:pd.DataFrame, period=20, multiplier=2):
     """
     Добавляет колонки 'keltner_upper', 'keltner_middle', 'keltner_lower' в DataFrame.
     
@@ -813,7 +803,7 @@ def add_keltner_channel(df, period=20, multiplier=2):
     
     return df
 # Слишком большой канал
-def add_ma_envelope(df, period=20, deviation=0.05):
+def add_ma_envelope(df:pd.DataFrame, period=20, deviation=0.05):
     """
     Добавляет колонки 'envelope_upper', 'envelope_lower' в DataFrame.
     
@@ -827,7 +817,7 @@ def add_ma_envelope(df, period=20, deviation=0.05):
     df['envelope_lower'] = df['sma'] * (1 - deviation)
     return df
 
-def add_std_dev_channel(df, period=20, multiplier=2):
+def add_std_dev_channel(df:pd.DataFrame, period=20, multiplier=2):
     """
     Добавляет колонки 'std_upper', 'std_lower' в DataFrame.
     
@@ -845,7 +835,7 @@ def add_std_dev_channel(df, period=20, multiplier=2):
 
 
 
-def add_linear_regression_channel(df, period=20, multiplier=2):
+def add_linear_regression_channel(df:pd.DataFrame, period=20, multiplier=2):
     """
     Добавляет колонки 'regression_upper', 'regression_lower','regression_middle' в DataFrame.
     
@@ -871,7 +861,7 @@ def add_linear_regression_channel(df, period=20, multiplier=2):
     
     return df
 
-def add_lrchl(df, period=20):
+def add_lrchl(df:pd.DataFrame, period=20):
     """
     Добавляет колонки 'regression_upper', 'regression_lower' в DataFrame.
     
@@ -892,7 +882,7 @@ def add_lrchl(df, period=20):
     
     return df
 
-def add_atr_channel(df, period=20, multiplier=2):
+def add_atr_channel(df:pd.DataFrame, period=20, multiplier=2):
     """
     Добавляет колонки 'atr_upper', 'atr_lower' в DataFrame.
     
@@ -911,7 +901,7 @@ def add_atr_channel(df, period=20, multiplier=2):
     df['atr_lower'] = df['close'] - (multiplier * atr)
     return df
 
-def add_volatility_bands(df, period=20, multiplier=2):
+def add_volatility_bands(df:pd.DataFrame, period=20, multiplier=2):
     """
     Добавляет колонки 'volatility_upper', 'volatility_lower' в DataFrame.
     
@@ -926,7 +916,7 @@ def add_volatility_bands(df, period=20, multiplier=2):
     df['volatility_lower'] = df['sma'] - (multiplier * std_dev)
     return df
 
-def add_parabolic_sar(df, acceleration=0.02, maximum=0.2):
+def add_parabolic_sar(df:pd.DataFrame, acceleration=0.02, maximum=0.2):
     """
     Добавляет колонку 'parabolic_sar' в DataFrame.
     
@@ -972,7 +962,7 @@ def add_parabolic_sar(df, acceleration=0.02, maximum=0.2):
     df['parabolic_sar'] = sar
     return df
 
-def add_volume_profile(df, period=14):
+def add_volume_profile(df:pd.DataFrame, period=14):
     """
     Добавляет Volume Profile в DataFrame.
     
@@ -1030,7 +1020,7 @@ def add_volume_profile(df, period=14):
     
     return df
 
-def add_rvi(df, period=14):
+def add_rvi(df:pd.DataFrame, period=14):
     """
     Добавляет колонку 'rvi' в DataFrame с данными о ценах.
     
@@ -1052,7 +1042,7 @@ def add_rvi(df, period=14):
     
     return df
 
-def add_pivot_points_by_bars(df, bars=5):
+def add_pivot_points_by_bars(df:pd.DataFrame, bars=5):
     """
     Добавляет Pivot Points, которые визуально растягиваются на весь период действия.
     Уровни выглядят как плоские линии, а не "сдвигаются" к началу группы.
@@ -1097,7 +1087,7 @@ def add_pivot_points_by_bars(df, bars=5):
     return df
 
 # GOOD INDICATOR
-def add_precent_zigzag(df, source='high_low', reversal=0.1, use_pct=True):
+def add_precent_zigzag(df:pd.DataFrame, source='high_low', reversal=0.1, use_pct=True):
     """
     Рабочий индикатор ZigZag с правильным отображением линий
     
@@ -1188,7 +1178,7 @@ def add_precent_zigzag(df, source='high_low', reversal=0.1, use_pct=True):
     df['zigzag_direction'] = direction
     return df
 
-def add_dynamic_zigzag(df, source='high_low', n_std=1.5, method='std', period=20):
+def add_dynamic_zigzag(df:pd.DataFrame, source='high_low', n_std=1.5, method='std', period=20):
     """
     ZigZag с динамическим reversal на основе волатильности
     
@@ -1297,7 +1287,7 @@ def add_dynamic_zigzag(df, source='high_low', n_std=1.5, method='std', period=20
     df['reversal_threshold'] = reversal_values
     return df
 
-def dynamic_zigzag_picks(df, source='high_low', n_std=1.5, method='std', period=20):
+def add_dzz_picks(df:pd.DataFrame, source='high_low', n_std=1.5, method='std', period=20):
     """
     ZigZag с динамическим reversal на основе волатильности
     
@@ -1394,6 +1384,7 @@ def dynamic_zigzag_picks(df, source='high_low', n_std=1.5, method='std', period=
                 direction[i] = -1
     
     # Сохраняем точки перелома до интерполяции
+    zz[-1] = np.nan
     df['zigzag_peaks'] = zz.copy()  # Только ключевые точки
     
     # Линейная интерполяция между точками для непрерывного зигзага
@@ -1413,5 +1404,177 @@ def dynamic_zigzag_picks(df, source='high_low', n_std=1.5, method='std', period=
     df['zigzag'] = zz_final          # Интерполированная линия
     df['zigzag_direction'] = direction
     df['reversal_threshold'] = reversal_values
+    
+    return df
+
+def add_dzz_level_channel(df:pd.DataFrame):
+    """add 'upper_channel','lower_channel'"""
+    points = df[~pd.isna(df['zigzag_peaks'])].iloc[:-1]
+    df['upper_channel'] = points[points['zigzag_direction'] == 1]['zigzag_peaks']
+    df['lower_channel'] = points[points['zigzag_direction'] == -1]['zigzag_peaks']
+
+    df['upper_channel'] = df['upper_channel'].ffill()
+    df['lower_channel'] = df['lower_channel'].ffill()
+    return df
+
+def add_dzz_line_channel(df:pd.DataFrame, source='high_low', n_std=1.5, method='std', period=20):
+    """
+    ZigZag с динамическим reversal и линиями канала
+    
+    Параметры:
+    df - DataFrame с колонками: high, low, close
+    source - 'high_low' (по экстремумам) или 'close' (по ценам закрытия)
+    n_std - множитель для std или среднего (1.5 по умолчанию)
+    method - 'std' (стандартное отклонение) или 'mean' (средний диапазон)
+    period - период для расчета волатильности
+    
+    Возвращает:
+    df с колонками:
+        zigzag - линейно интерполированные значения зигзага
+        zigzag_peaks - точки перелома
+        upper_channel - верхняя линия канала
+        lower_channel - нижняя линия канала
+        reversal_threshold - порог разворота
+    """
+    df = df.copy()
+    
+    # Проверка на достаточное количество данных
+    if len(df) < period:
+        raise ValueError(f"Недостаточно данных. Требуется минимум {period} баров")
+    
+    # Выбор источника данных
+    if source == 'high_low':
+        prices = df[['high', 'low']].values
+    elif source == 'close':
+        prices = df[['close', 'close']].values
+    else:
+        raise ValueError("source должен быть 'high_low' или 'close'")
+    
+    highs = prices[:, 0]
+    lows = prices[:, 1]
+    size = len(df)
+    
+    # Расчет динамического порога разворота
+    if method == 'std':
+        rolling_std = df['close'].rolling(period).std().bfill()
+        reversal_values = rolling_std * n_std
+    elif method == 'mean':
+        ranges = df['high'] - df['low']
+        reversal_values = ranges.rolling(period).mean().bfill() * n_std
+    else:
+        raise ValueError("method должен быть 'std' или 'mean'")
+    
+    # Инициализация массивов
+    zz = np.full(size, np.nan)  # Точки разворота
+    direction = np.zeros(size, dtype=np.int8)  # 1=up, -1=down
+    
+    # Начальные условия
+    first_valid = max(1, period-1)
+    direction[:first_valid] = 1
+    last_pivot = highs[first_valid]
+    last_pivot_idx = first_valid
+    zz[first_valid] = last_pivot
+    
+    for i in range(first_valid+1, size):
+        high = highs[i]
+        low = lows[i]
+        reversal = reversal_values.iloc[i]
+        
+        if direction[i-1] == 1:  # Предыдущее направление - вверх
+            if high > last_pivot:
+                zz[last_pivot_idx] = np.nan
+                last_pivot = high
+                last_pivot_idx = i
+                zz[i] = last_pivot
+            
+            threshold = last_pivot - reversal
+            if low <= threshold:
+                direction[i] = -1
+                last_pivot = low
+                last_pivot_idx = i
+                zz[i] = last_pivot
+            else:
+                direction[i] = 1
+                
+        else:  # Предыдущее направление - вниз
+            if low < last_pivot:
+                zz[last_pivot_idx] = np.nan
+                last_pivot = low
+                last_pivot_idx = i
+                zz[i] = last_pivot
+            
+            threshold = last_pivot + reversal
+            if high >= threshold:
+                direction[i] = 1
+                last_pivot = high
+                last_pivot_idx = i
+                zz[i] = last_pivot
+            else:
+                direction[i] = -1
+    zz[-1] = np.nan
+    # Сохраняем точки перелома
+    df['zigzag_peaks'] = zz.copy()
+    
+    # Линейная интерполяция для зигзага
+    zz_final = np.full(size, np.nan)
+    start_idx = None
+    start_val = np.nan
+    
+    for i in range(size):
+        if not np.isnan(zz[i]):
+            if start_idx is not None:
+                zz_final[start_idx:i+1] = np.linspace(start_val, zz[i], i - start_idx + 1)
+            start_idx = i
+            start_val = zz[i]
+    
+    df['zigzag'] = zz_final
+    df['zigzag_direction'] = direction
+    df['reversal_threshold'] = reversal_values
+    
+    # Собираем верхние и нижние точки
+    upper_points = []
+    lower_points = []
+    
+    for i in range(size):
+        if not np.isnan(zz[i]):
+            if direction[i] == -1:
+                upper_points.append((i, zz[i]))
+            else:
+                lower_points.append((i, zz[i]))
+    
+    # Инициализация каналов
+    upper_channel = np.full(size, np.nan)
+    lower_channel = np.full(size, np.nan)
+    
+    # Функция для построения канала
+    def build_channel(points, channel_array):
+        if len(points) < 2:
+            return
+        
+        # Для всех точек, начиная со второй
+        for i in range(1, len(points)):
+            prev_idx, prev_val = points[i-1]
+            curr_idx, curr_val = points[i]
+            
+            # Рассчитываем наклон между предыдущими точками
+            slope = (curr_val - prev_val) / (curr_idx - prev_idx)
+            
+            # Определяем конечный индекс сегмента
+            if i < len(points) - 1:
+                end_idx = points[i+1][0]
+            else:
+                end_idx = size - 1  # До конца графика
+            
+            # Строим линию от текущей точки до конца сегмента
+            for k in range(curr_idx, min(end_idx + 1, size)):
+                channel_array[k] = curr_val + slope * (k - curr_idx)
+    
+    # Строим каналы
+    build_channel(upper_points, upper_channel)
+    build_channel(lower_points, lower_channel)
+    
+    # Добавляем каналы в датафрейм
+    df['upper_channel'] = upper_channel
+    df['lower_channel'] = lower_channel
     
     return df

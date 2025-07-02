@@ -259,6 +259,7 @@ class MainWindow(QWidget):
         self.picks = {} 
         self.locks = {}
         self.qllws = [] #locks
+        del allDC[3] #исправить
         for dc in allDC:
             qlsw = QListWidget()
             tickers = prepare_tickers(tickersExchange[dc])

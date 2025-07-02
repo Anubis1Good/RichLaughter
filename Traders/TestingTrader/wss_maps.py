@@ -56,6 +56,6 @@ def add_skynet(suffix,tradeMap,hourss):
         newMap[g] = tuple(newMap[g])
     return newMap
 
-bitgetMTAFutMap = add_skynet('test_Bitget_FUT',bitgetFutMap,(24,))
+bitgetMTAFutMap = add_skynet('test_Bitget_FUT',bitgetFutMap,(24,100))
 moexMTAFutMap = add_skynet('test_MOEX_FUT',moexFutMap,(24,))
 moexMTAStockMap = add_skynet('test_MOEX_STOCK',moexStockMap,(24,))

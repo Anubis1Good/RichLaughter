@@ -10,23 +10,23 @@ from utils.draw_utils import draw_hb_chart_fast
 board = "RFUD"
 market = "forts"
 engine= "futures"
-ticker = 'MMM5'
-ticker = 'CRM5'
+ticker = 'MMU5'
+# ticker = 'CRM5'
 # ticker = 'GZM5'
 # ticker = 'RMM5'
-bot_id = 73
+# bot_id = 73
 granularity = '5'
 # granularity = '1'
 # start = str(date.today() - timedelta(days=2))
 # end = None
 
 get_all = False
-get_all = True
+# get_all = True
 # print(df.head())
-# db_path = 'dbs/test_MOEX_FUT.db'
+db_path = 'dbs/test_MOEX_FUT.db'
 # db_path = 'dbs/test_MOEXM_FUT.db'
-db_path = 'dbs/test_MOEX_STOCK.db'
-db_path = 'dbs/test_MOEXM_STOCK.db'
+# db_path = 'dbs/test_MOEX_STOCK.db'
+# db_path = 'dbs/test_MOEXM_STOCK.db'
 
 
 # 2. Загрузка сделок из базы данных
