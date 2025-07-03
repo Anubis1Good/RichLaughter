@@ -1,64 +1,9 @@
 import numpy as np
+import pandas as pd
 from request_functions.download_bitget import get_df
-from ForBots.Indicators.classic_indicators import add_bollinger,add_big_volume,add_attached_bb,add_over_bb,add_dynamics_ma,add_slice_df,add_simple_dynamics_ma,add_sma,add_enter_price,add_enter_price2close,add_awesome_oscillator,add_rsi,add_ema,add_adx, add_atr
+from ForBots.Indicators.classic_indicators import add_bollinger,add_big_volume,add_attached_bb,add_over_bb,add_dynamics_ma,add_slice_df,add_simple_dynamics_ma,add_sma,add_enter_price,add_enter_price2close,add_awesome_oscillator,add_rsi,add_ema,add_adx, add_atr,add_precent_zigzag
 from ForBots.Indicators.pva_indicators import add_pc_stair_fast
 from strategies.work_strategies.BaseTA import BaseTABitget
-
-
-# class STA1e:
-#     def __init__(self,symbol="BTCUSDT",granularity="1m",productType="usdt-futures",n_parts=1,period=20,multiplier=2,slope=5):
-#         self.period = period
-#         self.multiplier = multiplier
-#         self.symbol = symbol
-#         self.granularity = granularity
-#         self.productType = productType
-#         self.n_parts = n_parts
-#         self.bbu_attached = False
-#         self.bbd_attached = False
-#         self.slope = slope
-
-#     def preprocessing(self,df):
-#         df = add_bollinger(df,self.period,multiplier=self.multiplier)
-#         df = add_big_volume(df,self.period)
-#         df = add_over_bb(df)
-#         df = add_attached_bb(df)
-#         df = add_dynamics_ma(df,period=self.period//2)
-#         df = add_slice_df(df,period=self.period)
-#         return df
-    
-#     def get_test_df(self,df):
-#         df = self.preprocessing(df)
-#         return df
-    
-#     def get_row(self):
-#         limit = self.period*2
-#         df = get_df(self.symbol,self.granularity,self.productType,limit)
-#         df = self.preprocessing(df)
-#         return df.iloc[-1]
-    
-#     def __call__(self, row, *args, **kwds):
-#         if row['attached_change']:
-#             if row['bbu_attached'] != self.bbu_attached:
-#                 return 'close_long'
-#             if row['bbd_attached'] != self.bbd_attached:
-#                 return 'close_short'
-#         self.bbu_attached = row['bbu_attached']
-#         self.bbd_attached = row['bbd_attached']
-#         if row['dynamics_ma'] > self.slope:
-#             if row['low'] < row['sma']:
-#                 return 'long'
-#         if row['dynamics_ma'] < -self.slope:
-#             if row['high'] > row['sma']:
-#                 return 'short'
-#         if row['is_big']:
-#             if row['bbu_attached']:
-#                 return 'close_long'
-#             if row['bbd_attached']:
-#                 return 'close_short'
-#         if row['over_bbu']:
-#             return 'close_long'
-#         if row['over_bbd']:
-#             return 'close_short'
 
 class STA1_LITE(BaseTABitget):
     def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=20,multiplier=2,slope=0.5,period2=10):
@@ -296,3 +241,105 @@ class STA2_ULTRA(BaseTABitget):
             if row['high'] > row['sma']and not go_long and row['dynamic_sma'] < 0:
                 return 'short_pw'
     
+class STA3(BaseTABitget):
+    """period=60,divider_percent=5,mult_bb=2,mult_bv=3,period_rsi=30,threshold=10,period_sma=30"""
+    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=60,divider_percent=5,mult_bb=2,mult_bv=3,period_rsi=30,threshold=10,period_sma=30):
+        super().__init__(symbol, granularity, productType, n_parts, period)
+        self.divider_percent = divider_percent
+        self.mult_bb = mult_bb
+        self.mult_bv = mult_bv
+        self.period_rsi = period_rsi
+        self.threshold = threshold
+        self.period_sma = period_sma
+    def preprocessing(self, df:pd.DataFrame):
+        df_slice = df.copy().iloc[-200:] if len(df.index) > 200 else df.copy()
+        cur_percent = ((df_slice['high'].max() - df_slice['low'].min()) / df_slice['low'].min() * 100) / self.divider_percent
+        df = add_precent_zigzag(df,reversal=cur_percent)
+        df = add_bollinger(df,self.period,multiplier=self.mult_bb)
+        df = add_big_volume(df,self.period,self.mult_bv)
+        df = add_over_bb(df)
+        df = add_rsi(df,self.period_rsi)
+        df['ma'] = df['close'].rolling(self.period_sma).mean()
+        df = add_enter_price2close(df)
+        df = add_slice_df(df,self.period)
+        return df
+    def __call__(self, row, *args, **kwds):
+        go_long = row['zigzag_direction'] == 1
+        if row['high'] > row['bbu']:
+            if row['is_big'] or row['over_bbu'] or row['rsi'] > 100-self.threshold:
+                return 'close_long_pw'
+        if row['low'] < row['bbd']:
+            if row['is_big'] or row['over_bbd'] or row['rsi'] < self.threshold:
+                return 'close_short_pw'
+        if row['low'] < row['ma'] and go_long:
+            return 'long_pw'
+        if row['high'] > row['ma']and not go_long:
+            return 'short_pw'
+        
+class STA3_LITE(BaseTABitget):
+    """period=60,divider_percent=5,mult_bb=2,mult_bv=3,period_sma=30"""
+    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=60,divider_percent=5,mult_bb=2,mult_bv=3,period_sma=30):
+        super().__init__(symbol, granularity, productType, n_parts, period)
+        self.divider_percent = divider_percent
+        self.mult_bb = mult_bb
+        self.mult_bv = mult_bv
+        self.period_sma = period_sma
+    def preprocessing(self, df:pd.DataFrame):
+        df_slice = df.copy().iloc[-200:] if len(df.index) > 200 else df.copy()
+        cur_percent = ((df_slice['high'].max() - df_slice['low'].min()) / df_slice['low'].min() * 100) / self.divider_percent
+        df = add_precent_zigzag(df,reversal=cur_percent)
+        df = add_bollinger(df,self.period,multiplier=self.mult_bb)
+        df = add_big_volume(df,self.period,self.mult_bv)
+        df = add_over_bb(df)
+        df['ma'] = df['close'].rolling(self.period_sma).mean()
+        df = add_enter_price2close(df)
+        df = add_slice_df(df,self.period)
+        return df
+    def __call__(self, row, *args, **kwds):
+        go_long = row['zigzag_direction'] == 1
+        if row['high'] > row['bbu']:
+            if row['is_big'] or row['over_bbu']:
+                return 'close_long_pw'
+        if row['low'] < row['bbd']:
+            if row['is_big'] or row['over_bbd']:
+                return 'close_short_pw'
+        if row['low'] < row['ma'] and go_long:
+            return 'long_pw'
+        if row['high'] > row['ma']and not go_long:
+            return 'short_pw'
+        
+class STA3_FORCE(BaseTABitget):
+    """period=60,divider_percent=5,mult_bb=2,mult_bv=3,period_adx=30,threshold=30,period_sma=30"""
+    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=60,divider_percent=5,mult_bb=2,mult_bv=3,period_adx=30,threshold=30,period_sma=30):
+        super().__init__(symbol, granularity, productType, n_parts, period)
+        self.divider_percent = divider_percent
+        self.mult_bb = mult_bb
+        self.mult_bv = mult_bv
+        self.period_adx = period_adx
+        self.threshold = threshold
+        self.period_sma = period_sma
+    def preprocessing(self, df:pd.DataFrame):
+        df_slice = df.copy().iloc[-200:] if len(df.index) > 200 else df.copy()
+        cur_percent = ((df_slice['high'].max() - df_slice['low'].min()) / df_slice['low'].min() * 100) / self.divider_percent
+        df = add_precent_zigzag(df,reversal=cur_percent)
+        df = add_bollinger(df,self.period,multiplier=self.mult_bb)
+        df = add_big_volume(df,self.period,self.mult_bv)
+        df = add_over_bb(df)
+        df = add_adx(df,self.period_adx)
+        df['ma'] = df['close'].rolling(self.period_sma).mean()
+        df = add_enter_price2close(df)
+        df = add_slice_df(df,self.period)
+        return df
+    def __call__(self, row, *args, **kwds):
+        go_long = row['zigzag_direction'] == 1
+        if row['high'] > row['bbu']:
+            if row['is_big'] or row['over_bbu']:
+                return 'close_long_pw'
+        if row['low'] < row['bbd']:
+            if row['is_big'] or row['over_bbd']:
+                return 'close_short_pw'
+        if row['adx'] > self.threshold:
+            if row['low'] < row['ma'] and go_long:
+                return 'long_pw'
+            if row['high'] > row['ma']and not go_long:
+                return 'short_pw'

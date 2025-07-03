@@ -10,9 +10,9 @@ from utils.draw_utils import draw_lite_chart,draw_chart_channel,draw_hb_chart,dr
 # from ForBots.Indicators.classic_indicators import add_donchan_channel,add_vangerchik,add_sma, add_slice_df,add_bollinger,add_over_bb,add_attached_bb,add_big_volume,add_dynamics_ma
 from strategies.test_strategies.check import check_strategy
 # from strategies.work_strategies.PTA import PTA4_WDDCrE as WS
-from strategies.work_strategies.PTAX import PTA19_CASSIA as WS
+# from strategies.work_strategies.PTAX import PTA19_CASSIA as WS
 # from strategies.work_strategies.PTAX import PTA19_JOHANNA as WS
-# from strategies.work_strategies.STA_ca import STA2_SLOW as WS
+from strategies.work_strategies.STA_ca import STA3_FORCE as WS
 # from strategies.work_strategies.OGTA import OGTA4_DOG as WS
 # from strategies.work_strategies.LTA import LTA_PIN as WS
 # from strategies.work_strategies.LTA2 import LTA2_DRG as WS
@@ -45,9 +45,9 @@ symbol = "DOGEUSDT"
 granularity = "5m"
 slope = 4
 #  (PTA18_REXXAR,(100,5,10,50,30)),   
-bot = WS(symbol,granularity,'e',1,100,7,10,10,40,10,0)
+# bot = WS(symbol,granularity,'e',1,100,7,10,10,40,10,0)
 # bot = WS(symbol,granularity,'e',1,use_stop=1)
-# bot = WS(symbol,granularity,'e',1)
+bot = WS(symbol,granularity,'e',1)
 
 # conf = (20,55,12,25,20)
 # bot = WS(symbol,granularity,"usdt-futures",1,*conf)
@@ -99,13 +99,13 @@ else:
         plt.scatter(shorts[:,0],shorts[:,1],marker='v',color='black')
     if len(closes.shape) > 1:
         plt.scatter(closes[:,0],closes[:,1],marker='x',color='black')
-    for k in 'max_hb, min_hb, avarege'.split(', '):
+    # for k in 'max_hb, min_hb, avarege'.split(', '):
     # # for k in 'max_hb, min_hb'.split(', '):
     # # for k in 'top_buff, bottom_buff'.split(', '):
-        plt.plot(df[k],color='r',linestyle='--')
-    for k in ('stair','top_line','bottom_line'):
+    #     plt.plot(df[k],color='r',linestyle='--')
+    # for k in ('stair','top_line','bottom_line'):
     # for k in ('ave_up', 'ave_down'):
-        plt.plot(df[k],color='b',linestyle=':')
+        # plt.plot(df[k],color='b',linestyle=':')
     # plt.plot(df['top_zone'],color='r')
     # plt.plot(df['bottom_zone'],color='b')
 

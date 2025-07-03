@@ -164,5 +164,46 @@ class Optimizator2(Optimizator1):
         # Сохранение результатов в Excel
         full_name_doc = os.path.join(data_folder, self.name_bot + '.xlsx')
         df = pd.DataFrame(data)
-        df = df.sort_values('total_min_fee_percent',axis=0,ascending=False)
-        df.to_excel(full_name_doc, sheet_name='total', engine='openpyxl')
+        df = df.sort_values('total_min_fee_percent',axis=0,ascending=False).reset_index(drop=True)
+        df = df.drop(['total_min_fee','total_max_fee','total_average_fee'],axis=1)
+        with pd.ExcelWriter(full_name_doc, engine='xlsxwriter') as writer:  
+            df.to_excel(writer, sheet_name='total')
+            worksheet = writer.sheets['total']
+            for i, col in enumerate(df.columns,start=1):
+                width = max(df[col].apply(lambda x: len(str(x))).max(), len(col))
+                worksheet.set_column(i, i, width)
+            # Создаем список для хранения результатов
+            influence_results = []
+
+            # Анализируем влияние каждого параметра
+            for i in range(len(result['conf'])):  # param0-param6
+                param_name = f'param{i}'
+                grouped = df.groupby(param_name)['total_min_fee_percent'].agg(['mean','median']).reset_index()
+                grouped.columns = ['param_value', 'mean_tmfp','median_tmfp']
+                grouped['parameter'] = param_name
+                influence_results.append(grouped)
+
+            # Объединяем все результаты в один датафрейм
+            influence_df = pd.concat(influence_results, ignore_index=True)
+
+            # Сортируем для наглядности
+            influence_df = influence_df.sort_values(['parameter', 'mean_tmfp'], 
+                                                ascending=[True, False])
+            influence_df.to_excel(writer, sheet_name='params')
+            worksheet = writer.sheets['params']
+            workbook = writer.book
+            for i, col in enumerate(influence_df.columns,start=1):
+                width = max(influence_df[col].apply(lambda x: len(str(x))).max(), len(col))
+                worksheet.set_column(i, i, width)
+                worksheet.conditional_format(1, i, len(influence_df), i, {
+                    'type': 'cell',
+                    'criteria': 'less than',
+                    'value': 0,
+                    'format': workbook.add_format({'bg_color': '#FFC7CE', 'font_color': '#9C0006'})
+                })
+                worksheet.conditional_format(1, i, len(influence_df), i, {
+                        'type': '3_color_scale',
+                        'min_color': '#DA9694',
+                        'mid_color': '#FFFFFF',
+                        'max_color': '#00B0F0'
+                    })
