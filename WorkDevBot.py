@@ -12,7 +12,8 @@ from strategies.test_strategies.check import check_strategy
 # from strategies.work_strategies.PTA import PTA4_WDDCrE as WS
 # from strategies.work_strategies.PTAX import PTA19_CASSIA as WS
 # from strategies.work_strategies.PTAX import PTA19_JOHANNA as WS
-from strategies.work_strategies.STA_ca import STA3_FORCE as WS
+# from strategies.work_strategies.STA_ca import STA3_FORCE as WS
+from strategies.work_strategies.GLTA import GLTA_ALFA as WS
 # from strategies.work_strategies.OGTA import OGTA4_DOG as WS
 # from strategies.work_strategies.LTA import LTA_PIN as WS
 # from strategies.work_strategies.LTA2 import LTA2_DRG as WS
@@ -47,11 +48,11 @@ slope = 4
 #  (PTA18_REXXAR,(100,5,10,50,30)),   
 # bot = WS(symbol,granularity,'e',1,100,7,10,10,40,10,0)
 # bot = WS(symbol,granularity,'e',1,use_stop=1)
-bot = WS(symbol,granularity,'e',1)
+bot = WS(symbol,granularity,'e',1,policy='alfa1.json')
 
 # conf = (20,55,12,25,20)
 # bot = WS(symbol,granularity,"usdt-futures",1,*conf)
-
+# df = df.iloc[-50:]
 df = bot.get_test_df(df)
 # df.info()
 # print(df.tail()['chop'])
