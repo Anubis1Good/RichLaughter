@@ -13,7 +13,7 @@ from strategies.test_strategies.check import check_strategy
 # from strategies.work_strategies.PTAX import PTA19_CASSIA as WS
 # from strategies.work_strategies.PTAX import PTA19_JOHANNA as WS
 # from strategies.work_strategies.STA_ca import STA3_FORCE as WS
-from strategies.work_strategies.GLTA import GLTA_ALFA as WS
+from strategies.work_strategies.GLTA import GLTA_BETA as WS
 # from strategies.work_strategies.OGTA import OGTA4_DOG as WS
 # from strategies.work_strategies.LTA import LTA_PIN as WS
 # from strategies.work_strategies.LTA2 import LTA2_DRG as WS
@@ -48,7 +48,7 @@ slope = 4
 #  (PTA18_REXXAR,(100,5,10,50,30)),   
 # bot = WS(symbol,granularity,'e',1,100,7,10,10,40,10,0)
 # bot = WS(symbol,granularity,'e',1,use_stop=1)
-bot = WS(symbol,granularity,'e',1,policy='alfa1.json')
+bot = WS(symbol,granularity,'e',1,95,75,40,policy='beta1.json')
 
 # conf = (20,55,12,25,20)
 # bot = WS(symbol,granularity,"usdt-futures",1,*conf)
@@ -86,7 +86,7 @@ if see_equity:
     plt.plot(equity,color='red')
     pass
 else:
-    # plt.subplot(2,1,1)
+    plt.subplot(2,1,1)
     plt.grid() 
     
     draw_hb_chart_fast(df)
@@ -106,7 +106,8 @@ else:
     #     plt.plot(df[k],color='r',linestyle='--')
     # for k in ('stair','top_line','bottom_line'):
     # for k in ('ave_up', 'ave_down'):
-        # plt.plot(df[k],color='b',linestyle=':')
+    for k in ('bbu', 'bbd', 'sma', 'sma2'):
+        plt.plot(df[k],color='b',linestyle=':')
     # plt.plot(df['top_zone'],color='r')
     # plt.plot(df['bottom_zone'],color='b')
 
@@ -123,15 +124,16 @@ else:
     # plt.plot(df['bbu'],linestyle='--')
     # for k in ('bbd','sma'):
     #     plt.plot(df[k])
-    # ax1 = plt.gca()
-    # plt.subplot(2,1,2,sharex=ax1)
+    ax1 = plt.gca()
+    plt.subplot(2,1,2,sharex=ax1)
+    plt.grid() 
+    plt.plot(df['rsi'])
     # plt.grid() 
     # for k in ('chop',):
     #     plt.plot(df[k])
     # draw_lite_chart(df)
-    # plt.subplot(2,1,1)
+    
     # # plt.subplot(3,1,1)
-    # plt.grid() 
     # # df.apply(draw_hb_chart,axis=1)
     # draw_hb_chart_fast(df)
     # for k in ('stop_long','stop_short','ema'):

@@ -10,6 +10,7 @@ from strategies.work_strategies.PSTA0 import PSTA3_HADES
 from strategies.work_strategies.OGTA import OGTA4_PUPPY
 from strategies.work_strategies.PTA import PTA2_LISICA
 from strategies.work_strategies.PTAX import PTA14_RANGER,PTA14_ANGER,PTA19_CASSIA,PTA19_IMPERIUS
+from strategies.work_strategies.GLTA import GLTA_BETA
 
 def optimization_multi(ws,ts,params,test_folder,min_fee: float = 0.0004,
     max_fee: float = 0.0012):
@@ -33,30 +34,21 @@ max_fee: float = 0.0012
 min_fee = 0.0002
 max_fee = 0.0009
 
+
+
 group = (
     # (PTA2_LISICA,[
     #     range(10,101,10),
     #     (0.5,1,1.5,2),
     # ]),
 
-    # (PTA19_CASSIA,[
-    #     (100,),
-    #     (3,5,7,10),
-    #     range(5,36,5),
-    #     range(10,106,20),
-    #     (30,40,50),
-    #     (10,20,30,40),
-    #     (0,1)
-    # ]),
-    # (PTA19_IMPERIUS,[
-    #     (100,),
-    #     (3,5,7,10),
-    #     range(5,36,5),
-    #     range(10,106,20),
-    #     (30,40,50),
-    #     (10,20,30,40),
-    #     (0,1)
-    # ]),
+    (GLTA_BETA,(
+        range(5,100,5),
+        range(5,100,10),
+        range(15,41,5),
+        ('beta1.json',)
+    )),
+
   
 )
 
