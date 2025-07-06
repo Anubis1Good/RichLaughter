@@ -13,7 +13,7 @@ from strategies.test_strategies.check import check_strategy
 # from strategies.work_strategies.PTAX import PTA19_CASSIA as WS
 # from strategies.work_strategies.PTAX import PTA19_JOHANNA as WS
 # from strategies.work_strategies.STA_ca import STA3_FORCE as WS
-from strategies.work_strategies.GLTA import GLTA_BETA as WS
+from strategies.work_strategies.GLTA import GLTA_GAMMA as WS
 # from strategies.work_strategies.OGTA import OGTA4_DOG as WS
 # from strategies.work_strategies.LTA import LTA_PIN as WS
 # from strategies.work_strategies.LTA2 import LTA2_DRG as WS
@@ -27,6 +27,7 @@ from strategies.work_strategies.GLTA import GLTA_BETA as WS
 from strategies.test_strategies.universal import universal_test_strategy as TS
 # raw_file = 'DataForTests\DataFromBitget\DOGEUSDT_1m_1739873922.csv'
 raw_file = 'DataForTests\DataFromMOEX\MMM5_1_1749581140.csv'
+raw_file = 'DataForTests/DataFromMoexFast/5MMM5_1_1749581140.csv'
 # raw_file = 'DataForTests\oldMoex\SiM5_1_1745579847.csv'
 # raw_file = 'DataForTests\oldBitget\DOGEUSDT_1m_1741087742_big.csv'
 # raw_file = 'DataForTests\DataFromTicksBitget\DOGEUSDT_1m_from_ticks.csv'
@@ -48,7 +49,7 @@ slope = 4
 #  (PTA18_REXXAR,(100,5,10,50,30)),   
 # bot = WS(symbol,granularity,'e',1,100,7,10,10,40,10,0)
 # bot = WS(symbol,granularity,'e',1,use_stop=1)
-bot = WS(symbol,granularity,'e',1,95,75,40,policy='beta1.json')
+bot = WS(symbol,granularity,'e',1,30,100,30,60,30,50,policy='BP_1751841463.6270704.json')
 
 # conf = (20,55,12,25,20)
 # bot = WS(symbol,granularity,"usdt-futures",1,*conf)
@@ -100,14 +101,14 @@ else:
         plt.scatter(shorts[:,0],shorts[:,1],marker='v',color='black')
     if len(closes.shape) > 1:
         plt.scatter(closes[:,0],closes[:,1],marker='x',color='black')
-    # for k in 'max_hb, min_hb, avarege'.split(', '):
+    for k in 'max_hb, min_hb, avarege'.split(', '):
     # # for k in 'max_hb, min_hb'.split(', '):
     # # for k in 'top_buff, bottom_buff'.split(', '):
-    #     plt.plot(df[k],color='r',linestyle='--')
+        plt.plot(df[k],color='r',linestyle='--')
     # for k in ('stair','top_line','bottom_line'):
     # for k in ('ave_up', 'ave_down'):
-    for k in ('bbu', 'bbd', 'sma', 'sma2'):
-        plt.plot(df[k],color='b',linestyle=':')
+    # for k in ('bbu', 'bbd', 'sma', 'sma2'):
+        # plt.plot(df[k],color='b',linestyle=':')
     # plt.plot(df['top_zone'],color='r')
     # plt.plot(df['bottom_zone'],color='b')
 

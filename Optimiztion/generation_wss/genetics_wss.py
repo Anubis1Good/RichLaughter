@@ -169,9 +169,9 @@ class Evolutionist:
         self.policy["A"] = best_policy
         t = str(time())
         json_name = 'BP_' + t + '.json'
-        with open(os.path.join(self.path,json_name),'w') as f:
+        with open(os.path.join(self.path_bp,json_name),'w') as f:
             json.dump(self.policy,f)
-        doc_name = os.path.join(self.path, 'Data_'+ t + '.xlsx')
+        doc_name = os.path.join(self.path_data, 'Data_'+ t + '.xlsx')
         with pd.ExcelWriter(doc_name, engine='xlsxwriter') as writer:
             df.to_excel(writer, sheet_name='total')
             worksheet = writer.sheets['total']
@@ -182,7 +182,7 @@ class Evolutionist:
         for i in range(self.generation.shape[0]//10):
             individuals[i] = self.generation[i].tolist()
         json_name = 'G_' + t + '.json'
-        with open(os.path.join(self.path,json_name),'w') as f:
+        with open(os.path.join(self.path_g,json_name),'w') as f:
             json.dump(individuals,f)
     
     def evolution(self,epoch=10):
