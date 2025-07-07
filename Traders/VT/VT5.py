@@ -19,11 +19,13 @@ class VT5:
             chart:tuple,
             position:tuple,
             name:str,
-            ws:tuple=(BaseTABitget,(20,))
+            ws:tuple=(BaseTABitget,(20,)),
+            close18:bool=False
             ):
         self.glass_region = glass
         self.chart_region = chart
         self.position_region = position
+        self.close18 = close18
         self.name = name
         self.trader_name = 'VT5'
         conf = ws[1]
@@ -164,9 +166,6 @@ class VT5:
         dir_df['middle'] = dir_df.apply(lambda row: (row['high'] + row['low'])//2,axis=1)
         dir_df['spred'] = dir_df.apply(lambda row:row['low']-row['high'],axis=1)
         dir_df = dir_df.reset_index(drop=True)
-        # dir_df['high'] = dir_df['high'] - 1
-        # dir_df['low'] = dir_df['low'] + 1
-        # dir_df['volume'] = dir_df['volume'] - 1
         offset = dir_df['volume'].max() + 1
         for k in ('high','low','volume','middle'):
             dir_df[k] = -dir_df[k] + offset
@@ -220,7 +219,8 @@ class VT5:
             df = self._get_df(img)
             row = self.ws.get_test_row(df)
             action = self.ws(row)
-            action = only_close(action,18,10)
+            if self.close18:
+                action = only_close(action,18,10)
             action = only_close(action,23,10)
             pos = self._check_position(img)
             if pos == -1:

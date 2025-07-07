@@ -3,10 +3,10 @@ stock_groups= {
         'CRU5',
         'ROSN',
         'MAGN',
-        'CHMF',
-        'NVTK',
+        'LSRG',
+        'CBOM',
         'ALRS',
-        'SELG',
+        'NMTP',
         'TATN',
         'RUAL',
         'MTLR',
@@ -16,9 +16,10 @@ stock_groups= {
     'TS': (
         'MTLR2'
         'VTBR2',
-        'PIKK2',
+        'LSRG2',
         'RUAL2',
         'FESH2',
         'NMTP2',
+        'CBOM2'
     )
 }

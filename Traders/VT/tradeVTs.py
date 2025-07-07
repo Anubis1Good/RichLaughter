@@ -35,8 +35,11 @@ class TradeWorker(QThread):
             pass
         self.work_traders:list[VT5] = []
         sg = stock_groups[self.sg_key]
+            
         for s in sg:
             ws = init_trader(s)
+            if self.sg_key == 'TS':
+                s = s[:-1]
             trader = VT5(*self.param_bots,s,ws)
             self.work_traders.append(trader)
         self.msleep(3000)
