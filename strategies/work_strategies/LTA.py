@@ -2,8 +2,9 @@ import numpy as np
 import  matplotlib.pyplot as plt
 from sklearn.cluster import KMeans
 from strategies.work_strategies.BaseTA import BaseTABitget
-from ForBots.Indicators.classic_indicators import add_slice_df,add_enter_price,add_ema,add_stochastic,add_atr,add_local_extrema,add_enter_price2close,add_supertrend,add_rsi,add_chop,add_rsi_tw,add_cci,add_williams_r,add_mfi,add_ultimate_oscillator,add_cmo
-from ForBots.Indicators.price_funcs import get_universal_r,get_universal
+from ForBots.Indicators.classic_indicators import add_slice_df,add_enter_price,add_ema,add_stochastic,add_atr,add_local_extrema,add_enter_price2close,add_supertrend,add_rsi,add_chop,add_rsi_tw,add_cci,add_williams_r,add_mfi,add_ultimate_oscillator,add_cmo,add_fractals
+# from ForBots.Indicators.price_funcs import get_universal_r,get_universal
+from ForBots.Indicators.pva_indicators import add_mean_on_fractals,add_ext_on_fractals
 from utils.help_trades import reverse_action
 #D Похоже на WDDCr
 class LTA_LAKSA(BaseTABitget):
@@ -593,3 +594,131 @@ class LTA_PIN(BaseTABitget):
             return 'short_pw'
         
         
+class LTA_BIBI(BaseTABitget):
+    """period=15, period_fractal=10, period_mean=5, kind='rsi'
+    'cmo','rsi','rsi_tw','williams_r','mfi','ultimate_oscillator','cci','%d'
+    """
+    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=15, period_fractal=10, period_mean=5, kind='rsi'):
+        super().__init__(symbol, granularity, productType, n_parts, period)
+        self.kind = kind
+        self.period_fractal = period_fractal
+        self.period_mean = period_mean
+    def preprocessing(self, df):
+        if self.kind == 'rsi':
+            df = add_rsi(df,self.period)
+        if self.kind == 'rsi_tw':
+            df = add_rsi_tw(df,self.period)
+        if self.kind == 'williams_r':
+            df = add_williams_r(df,self.period)
+        if self.kind == 'mfi':
+            df = add_mfi(df,self.period)
+        if self.kind == 'ultimate_oscillator':
+            df = add_ultimate_oscillator(df,self.period//3,self.period//2,self.period)
+        if self.kind == 'cmo':
+            df = add_cmo(df,self.period)
+        if self.kind == 'cci':
+            df = add_cci(df,self.period)
+        if self.kind == '%d':
+            df = add_stochastic(df,self.period,self.period//2)
+        df = add_fractals(df,self.period_fractal)
+        df = add_mean_on_fractals(df,self.period_mean,self.kind)
+        df = add_enter_price2close(df)  
+        df['oversold'] = df[self.kind] < df['bottom_mean']
+        df['overbought'] = df[self.kind] > df['top_mean']
+        df = add_slice_df(df, self.period) 
+        return df
+
+    def __call__(self, row, *args, **kwds):
+        if row['top_mean'] > row['bottom_mean']:
+            if row['oversold']:  
+                return 'long_pw'
+            if row['overbought']:  
+                return 'short_pw'
+        else:
+            if row['oversold']:
+                return 'close_short_pw'
+            if row['overbought']:
+                return 'close_long_pw'
+            
+class LTA_IGOGOSHA(BaseTABitget):
+    """period=15, period_fractal=10, period_mean=5, kind='rsi'
+    'cmo','rsi','rsi_tw','williams_r','mfi','ultimate_oscillator','cci','%d'
+    """
+    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=15, period_fractal=10, period_mean=5, kind='rsi'):
+        super().__init__(symbol, granularity, productType, n_parts, period)
+        self.kind = kind
+        self.period_fractal = period_fractal
+        self.period_mean = period_mean
+    def preprocessing(self, df):
+        if self.kind == 'rsi':
+            df = add_rsi(df,self.period)
+        if self.kind == 'rsi_tw':
+            df = add_rsi_tw(df,self.period)
+        if self.kind == 'williams_r':
+            df = add_williams_r(df,self.period)
+        if self.kind == 'mfi':
+            df = add_mfi(df,self.period)
+        if self.kind == 'ultimate_oscillator':
+            df = add_ultimate_oscillator(df,self.period//3,self.period//2,self.period)
+        if self.kind == 'cmo':
+            df = add_cmo(df,self.period)
+        if self.kind == 'cci':
+            df = add_cci(df,self.period)
+        if self.kind == '%d':
+            df = add_stochastic(df,self.period,self.period//2)
+        df = add_fractals(df,self.period_fractal)
+        df = add_ext_on_fractals(df,self.period_mean,self.kind)
+        df = add_mean_on_fractals(df,self.period_mean,self.kind)
+        df = add_enter_price2close(df)  
+        df['oversold1'] = df[self.kind] < df['bottom_mean']
+        df['overbought1'] = df[self.kind] > df['top_mean']
+        df['oversold2'] = df[self.kind] < df['bottom_ext']
+        df['overbought2'] = df[self.kind] > df['top_ext']
+        df = add_slice_df(df, self.period) 
+        return df
+
+    def __call__(self, row, *args, **kwds):
+        if row['top_ext'] > row['bottom_ext']:
+            if row['oversold2']:  
+                return 'long_pw'
+            if row['overbought2']:  
+                return 'short_pw'
+        if row['oversold1']:
+            return 'close_short_pw'
+        if row['overbought1']:
+            return 'close_long_pw'
+
+
+class LTA_IRONANNY(BaseTABitget):
+    """period=15, period_fractal=10, period_mean=5, solution=5"""
+    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=15, period_fractal=10, period_mean=5, solution=5):
+        super().__init__(symbol, granularity, productType, n_parts, period)
+        self.solution = solution
+        self.period_fractal = period_fractal
+        self.period_mean = period_mean
+    def preprocessing(self, df):
+        df = add_rsi(df,self.period)
+        df = add_rsi_tw(df,self.period)
+        df = add_williams_r(df,self.period)
+        df = add_mfi(df,self.period)
+        df = add_ultimate_oscillator(df,self.period//3,self.period//2,self.period)
+        df = add_cmo(df,self.period)
+        df = add_cci(df,self.period)
+        df = add_stochastic(df,self.period,self.period//2)
+        df = add_fractals(df,self.period_fractal)
+        inds = ('cmo','rsi','rsi_tw','williams_r','mfi','ultimate_oscillator','cci','%d')
+        df['oversold'] = 0
+        df['overbought'] = 0
+        for i, ind in enumerate(inds):
+            df = add_mean_on_fractals(df,self.period_mean,ind)
+            df['oversold'] += df[ind] < df['bottom_mean']
+            df['overbought'] += df[ind] > df['top_mean']
+        df = add_enter_price2close(df)  
+        df = add_slice_df(df, self.period) 
+        return df
+
+    def __call__(self, row, *args, **kwds):
+        if row['oversold'] > self.solution:  
+            return 'long_pw'
+        if row['overbought'] > self.solution:  
+            return 'short_pw'

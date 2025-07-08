@@ -9,13 +9,13 @@ from Loader.BitgetLoader import bitget_loader
 from utils.draw_utils import draw_lite_chart,draw_chart_channel,draw_hb_chart,draw_bollinger,draw_dynamics,draw_rails,draw_hb_chart_fast
 # from ForBots.Indicators.classic_indicators import add_donchan_channel,add_vangerchik,add_sma, add_slice_df,add_bollinger,add_over_bb,add_attached_bb,add_big_volume,add_dynamics_ma
 from strategies.test_strategies.check import check_strategy
-# from strategies.work_strategies.PTA import PTA4_WDDCrE as WS
+from strategies.work_strategies.PTA import PTA4_U3 as WS
 # from strategies.work_strategies.PTAX import PTA19_CASSIA as WS
-from strategies.work_strategies.PTAXX import PTA20_HANZO as WS
+# from strategies.work_strategies.PTAXX import PTA20_HANZO as WS
 # from strategies.work_strategies.STA_ca import STA3_FORCE as WS
 # from strategies.work_strategies.GLTA import GLTA_GAMMA as WS
 # from strategies.work_strategies.OGTA import OGTA4_DOG as WS
-# from strategies.work_strategies.LTA import LTA_PIN as WS
+# from strategies.work_strategies.LTA import LTA_IRONANNY as WS
 # from strategies.work_strategies.LTA2 import LTA2_DRG as WS
 # from strategies.work_strategies.PSTA0 import PSTA3_ZEUS as WS
 # from strategies.work_strategies.MTA import MTA_LORD as WS
@@ -104,11 +104,11 @@ else:
     # for k in 'max_hb, min_hb, avarege'.split(', '):
     # # for k in 'max_hb, min_hb'.split(', '):
     # # for k in 'top_buff, bottom_buff'.split(', '):
-    for k in ('smab', 'bbub','bbdb','mub','mdb'):
-        plt.plot(df[k],color='r',linestyle='--')
+    # for k in ('smab', 'bbub','bbdb','mub','mdb'):
+    #     plt.plot(df[k],color='r',linestyle='--')
     # for k in ('stair','top_line','bottom_line'):
-    for k in ('bbu', 'bbd', 'sma'):
-        plt.plot(df[k],color='b',linestyle=':')
+    # for k in ('bbu', 'bbd', 'sma'):
+    #     plt.plot(df[k],color='b',linestyle=':')
     # plt.plot(df['top_zone'],color='r')
     # plt.plot(df['bottom_zone'],color='b')
 

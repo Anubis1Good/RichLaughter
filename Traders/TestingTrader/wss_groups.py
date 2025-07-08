@@ -1,10 +1,10 @@
-from strategies.work_strategies.PTA import PTA4_WDDCr,PTA4_WDDCrE,PTA4_WDDCrVG,PTA4_WDVCr,PTA4_WLISICA,PTA8_WDOBBY_FREEr,PTA4_UNIVERSAL,PTA2_LISICA,PTA2_DDCrWork,PTA2_BDDCr_UNIVERSAL,PTA2_BDDC_FIX,PTA2_BVGFIX,PTA2_BBBU,PTA2_BBBUr,PTA2_DDCrVG,PTA2_DVCr,PTA2_VOLCHARA
+from strategies.work_strategies.PTA import PTA4_WDDCr,PTA4_WDDCrE,PTA4_WDDCrVG,PTA4_WDVCr,PTA4_WLISICA,PTA8_WDOBBY_FREEr,PTA4_UNIVERSAL,PTA2_LISICA,PTA2_DDCrWork,PTA2_BDDCr_UNIVERSAL,PTA2_BDDC_FIX,PTA2_BVGFIX,PTA2_BBBU,PTA2_BBBUr,PTA2_DDCrVG,PTA2_DVCr,PTA2_VOLCHARA,PTA4_U3
 from strategies.work_strategies.PTAX import PTA10_WIZARD,PTA11_KUSURUKEN,PTA12_SWDDCr,PTA14_RWDDCr,PTA15_WIDOWMAKER,PTA15_TRACER,PTA10_MAGIC,PTA13_DWDDCr,PTA15_SILVANA,PTA15_VALLA,PTA15_ANNA,PTA18_GULDAN,PTA18_DIABLO,PTA18_ARTAS,PTA18_CHOGALL,PTA18_DEHAKA,PTA18_KELTHUZAD,PTA18_REXXAR,PTA18_VARIAN,PTA18_BLAZE,PTA19_JOHANNA,PTA19_TYRAEL,PTA19_ANUBARAK,PTA18_MISHA,PTA19_VALEERA,PTA19_YREL,PTA19_ZERATUL,PTA14_ANGER,PTA14_RANGER,PTA19_CASSIA,PTA19_IMPERIUS
 from strategies.work_strategies.PTAXX import PTA20_HOGGER,PTA20_HANZO
 
 from strategies.work_strategies.STA_ml2 import STAML2_NEWAVE,STAML2_GOLDENMEAN
 from strategies.work_strategies.STA_ca import STA2,STA2_FAST,STA2_SLOW,STA2_ULTRA,STA3_LITE,STA3_FORCE
-from strategies.work_strategies.LTA import LTA_OKROSHKA,LTA_PIN,LTA_OKROSHKA2
+from strategies.work_strategies.LTA import LTA_OKROSHKA,LTA_PIN,LTA_OKROSHKA2,LTA_BIBI,LTA_IGOGOSHA,LTA_IRONANNY
 from strategies.work_strategies.LTA2 import LTA2_LOGAN, LTA2_ALKASH, LTA2_DRINKER,LTA2_FENNEC,LTA2_HOTS,LTA2_LYNX,LTA2_PUBG,LTA2_DRG
 from strategies.work_strategies.GLTA import GLTA_BETA
 from strategies.work_strategies.OGTA import OGTA4_DOG,OGTA4_PUPPY
@@ -15,6 +15,10 @@ wssMoexFut1 = [
     (LTA_OKROSHKA,(10,80)), #MXI B
     (LTA_OKROSHKA2,(10,60)), #MXI C CNY B+
     (LTA_PIN,(10,6,40,5)), #MXI A CNY B
+    (LTA_BIBI,(90,15,2,'rsi_tw')), #0807
+    (LTA_IGOGOSHA,(60,15,2,'%d')), #0807
+    (LTA_IRONANNY,(30,15,2,6)), #0807
+
     (LTA2_LOGAN,(10,100,30)),  #MXI B- CNY B-
     (LTA2_LOGAN,(30,100,30)), #MXI B+ CNY B+
     (LTA2_ALKASH,(60,2,20,0,0)), #MXI A CNY B-
@@ -86,6 +90,9 @@ wssMoexFut1 = [
     (PTA4_UNIVERSAL,(20,20,20,20,"VG",'mfi',1,1)), #0106
     (PTA4_UNIVERSAL,(10,40,30,40,"BB",'mfi',1,1)), #0106
 
+    (PTA4_U3, (15,90,15,2,'VC','rsi_tw')), #0807
+    (PTA4_U3, (30,5,15,5,'BB','rsi')), #0807
+
     (PTA8_WDOBBY_FREEr,(6,0.5,30)), #MXI B
 
     (PTA10_WIZARD,(20,55,12,25,20)), #MXI C CNY B
@@ -151,6 +158,12 @@ wssMoexFut5 = [
     (LTA_OKROSHKA,(10,80)), #RMM A RTS B Si C
     (LTA_PIN,(10,6,40,5)), #RMM A RTS B Si B
     (LTA_PIN,(20,3,40,3)), #CNY C RMM B RTS A Si B
+
+    (LTA_BIBI,(30,10,2,'rsi_tw')), #0807
+    (LTA_IGOGOSHA,(60,10,3,'ultimate_oscillator')), #0807
+    (LTA_IRONANNY,(30,10,3,4)), #0807
+    (LTA_IRONANNY,(90,10,2,6)), #0807 CNY
+
     (LTA2_LOGAN,(10,100,30)), #CNY B RMM C
     (LTA2_LOGAN,(30,10,20)), #0106
     (LTA2_ALKASH,(150,2,35,30,0)),
@@ -217,6 +230,9 @@ wssMoexFut5 = [
     (PTA4_UNIVERSAL,(15,15,50,50,"VC",'uo',1,1)), #A CNY A RMM B RTS C Si B
     (PTA4_UNIVERSAL,(20,10,50,30,"BB",'mfi',1,1)), # GAZP B RMM A+ RTS A
     (PTA4_UNIVERSAL,(20,20,20,30,"BB",'s',1,1)), #0106
+
+    (PTA4_U3, (5,90,10,2,'DC','uo')), #0807
+    (PTA4_U3, (10,90,15,2,'BB','uo')), #0807 CNY
 
     (PTA8_WDOBBY_FREEr,(6,0.5,30)), #C CNY B RMM C RTS C
 
@@ -287,6 +303,10 @@ wssMoexFut5 = [
 wssMoexStocks1 = [
     (LTA_OKROSHKA,(20,10)),
     (LTA_PIN,(60,12,40,3)),
+    (LTA_BIBI,(60,15,3,'%d')), #0907
+    (LTA_IGOGOSHA,(90,15,2,'%d')), #0907
+    (LTA_IRONANNY,(90,15,3,7)), #0907
+
     (LTA2_LOGAN,(100,100,30)),
     (LTA2_DRINKER,(60,1,10,30,10,0,0)),
     (LTA2_DRINKER,(60,2,25,30,20,0,0)), #1006
@@ -326,7 +346,9 @@ wssMoexStocks1 = [
     (PTA4_UNIVERSAL,(40,40,30,30,"VC",'mfi',1,1)),
     (PTA4_UNIVERSAL,(60,30,30,30,"VG",'rsi',1,1)),
 
-    
+    (PTA4_U3,(30,90,10,2,'VG','s')), #0907
+    (PTA4_U3,(90,90,15,10,'BB','mfi')), #0907
+
     (PTA10_WIZARD,(60,70,12,20,30)), #1006
     (PTA10_WIZARD,(20,50,3,20,40)), #1006
 
@@ -375,6 +397,13 @@ wssMoexStocks5 = [
     (LTA_OKROSHKA,(10,30)),
     (LTA_OKROSHKA,(10,60)), #0506
     (LTA_PIN,(40,9,40,3)),
+    (LTA_BIBI,(90,10,2,'ultimate_oscillator')), #0907
+    (LTA_BIBI,(90,5,10,'%d')), #0907
+    (LTA_BIBI,(60,10,3,'%d')), #0907
+    (LTA_IGOGOSHA,(90,15,3,'%d')), #0907
+    (LTA_IRONANNY,(60,10,2,6)), #0907
+    (LTA_IRONANNY,(10,15,10,7)), #0907
+
     (LTA2_LOGAN,(20,100,30)),
     (LTA2_ALKASH,(90,0.5,30,10,0)), #0506
     (LTA2_ALKASH,(90,0.5,10,30,0)), #
@@ -393,6 +422,8 @@ wssMoexStocks5 = [
     (LTA2_DRG,(60,2,30,40,10,10,0)),#1106
     (LTA2_DRG,(90,2,15,30,10,10,0)),#1106
 
+    (GLTA_BETA,(60,45,35,'beta1.json')), #0907
+
     (OGTA4_DOG,(40,30)),
     (OGTA4_PUPPY,(15,30,20)), #0506
 
@@ -408,8 +439,6 @@ wssMoexStocks5 = [
     (PSTA2_GGD,(60,15,2)), #1206
     (PSTA3_HADES,(70,8,'mean')), #1206
     (PSTA3_HADES,(20,14,'std')), #1206
-    # (PSTA3_ZEUS,(20,8,'mean')), #1206
-    # (PSTA3_ZEUS,(40,6,'std')), #1206
 
     (PTA2_LISICA,(70,2)), #0506 
     (PTA2_LISICA,(10,1)), 
@@ -423,13 +452,15 @@ wssMoexStocks5 = [
     (PTA4_WDDCr,(21,30)), #C
 
     (PTA4_UNIVERSAL,(30,15,30,30,"DC",'rsi',1,1)),
-
-
     (PTA4_UNIVERSAL,(30,20,30,20,"BB",'s',1,1)), #0506
     (PTA4_UNIVERSAL,(20,5,20,20,"BB",'mfi',1,1)),
     (PTA4_UNIVERSAL,(20,10,30,30,"WC",'rsi',1,1)),
     (PTA4_UNIVERSAL,(20,5,30,30,"VG",'mfi',1,1)),
     (PTA4_UNIVERSAL,(10,10,20,40,"VG",'rsi',1,1)), #0506
+
+    (PTA4_U3,(5,15,15,5,'WC','uo')), #0907
+    (PTA4_U3,(30,60,5,30,'DC','s')), #0907
+    (PTA4_U3,(30,15,15,10,'BB','s')), #0907
 
     (PTA10_WIZARD,(20,50,12,30,20)),
     (PTA10_WIZARD,(20,70,3,30,20)), #0506
@@ -458,18 +489,13 @@ wssMoexStocks5 = [
     (PTA15_ANNA,(5,30)), 
     (PTA15_ANNA,(10,30)), #0506
     (PTA15_TRACER,(30,0)), #0506 
-    # (PTA15_SILVANA,(70,40,20)), #0506 
-
 
     (PTA18_KELTHUZAD,(100,3,10,40)), #0506 
     (PTA18_GULDAN,(100,10,5,40)), 
-    # (PTA18_DIABLO,(100,10,20,30)), #0506 
     (PTA18_DEHAKA,(100,10,10,20)), 
     (PTA18_MISHA,(100,3,5,40,10)), #0506
     (PTA18_BLAZE,(30,5,26,40,10,0)),    
     (PTA18_BLAZE,(30,10,26,50,10,0)), #0506    
-
-
 
     (PTA19_ANUBARAK,(30,10,40,10,10,0)), #0506    
     (PTA19_ANUBARAK,(30,5,50,10,20,0)), #0506    
@@ -485,8 +511,7 @@ wssMoexStocks5 = [
     (PTA19_YREL,(100,7,10,30,10,30,0)), #0506
     (PTA19_YREL,(100,3,15,40,10,10,0)), #0506
     (PTA19_YREL,(100,3,25,50,10,10,0)), #0506
-    (PTA19_ZERATUL,(100,10,10,30,30,10,0)), #0506    
-    # (PTA19_ZERATUL,(100,10,15,50,40,10,1)), #0506   
+    (PTA19_ZERATUL,(100,10,10,30,30,10,0)), #0506      
 ]
 
 wssBitgetFut1 = [

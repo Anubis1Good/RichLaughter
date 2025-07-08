@@ -344,3 +344,73 @@ def add_hope_channel(df: pd.DataFrame, n=3, period=100,shift=10):
     df['top_line'] = df['top_line'].ffill()
     df['bottom_line'] = df['bottom_line'].ffill()
     return df
+
+def add_delta_fractals(df: pd.DataFrame, period=1, period_fractals=5):
+    """Оптимизированная версия с расчетом верхних и нижних фракталов"""
+    
+    # Создаем копии для безопасного изменения
+    df = df.copy()
+    
+    # Обработка верхних фракталов
+    up_mask = df['fractal_up']
+    df['h_up'] = df.loc[up_mask, 'high'].reindex(df.index).ffill()
+    
+    up_points = df[up_mask].copy()
+    up_deltas = (up_points['high'].diff() / up_points.index.to_series().diff()).rolling(period).mean()
+    df['delta_up'] = up_deltas.reindex(df.index)
+    
+    # Кумулятивная сумма с reset по новым delta_up
+    df['cum_temp_up'] = df['delta_up'].ffill()
+    df['cum_temp_up'] = df.groupby(df['delta_up'].notna().cumsum())['cum_temp_up'].cumsum()
+    df['fd_up'] = (df['h_up'] + df['cum_temp_up']).shift(period_fractals)
+    
+    # Обработка нижних фракталов
+    down_mask = df['fractal_down']
+    df['l_down'] = df.loc[down_mask, 'low'].reindex(df.index).ffill()
+    
+    down_points = df[down_mask].copy()
+    down_deltas = (down_points['low'].diff() / down_points.index.to_series().diff()).rolling(period).mean()
+    df['delta_down'] = down_deltas.reindex(df.index)
+    
+    # Кумулятивная сумма с reset по новым delta_down
+    df['cum_temp_down'] = df['delta_down'].ffill()
+    df['cum_temp_down'] = df.groupby(df['delta_down'].notna().cumsum())['cum_temp_down'].cumsum()
+    df['fd_down'] = (df['l_down'] + df['cum_temp_down']).shift(period_fractals)
+    
+    # Удаляем промежуточные колонки
+    cols_to_drop = ['h_up', 'l_down', 'delta_up', 'delta_down', 'cum_temp_up', 'cum_temp_down']
+    return df.drop(columns=cols_to_drop)
+
+# good indicator
+def add_std_fractals_channel(df:pd.DataFrame, period=5,period_sma=10):
+    """add 'std_up', 'std_down', 'sma'"""
+    df['sma'] = df['middle'].rolling(period_sma).mean()
+    up_points = df[df['fractal_up']]
+    df['std_up'] = up_points['high'].rolling(window=period).std()
+    df['std_up'] = df['std_up'].ffill() + df['sma']
+    down_points = df[df['fractal_down']]
+    df['std_down'] = down_points['low'].rolling(window=period).std()
+    df['std_down'] = df['sma'] - df['std_down'].ffill() 
+    return df
+
+#good indicator
+def add_mean_on_fractals(df,period=5,kind='rsi'):
+    """add 'top_mean', bottom_mean'"""
+    ups = df[df['fractal_up']]
+    df['top_mean'] = ups[kind].rolling(period).mean()
+    df['top_mean'] = df['top_mean'].ffill()
+    downs = df[df['fractal_down']]
+    df['bottom_mean'] = downs[kind].rolling(period).mean()
+    df['bottom_mean'] = df['bottom_mean'].ffill()
+    return df
+
+#good indicator
+def add_ext_on_fractals(df,period=5,kind='rsi'):
+    """add 'top_ext', bottom_ext'"""
+    ups = df[df['fractal_up']]
+    df['top_ext'] = ups[kind].rolling(period).max()
+    df['top_ext'] = df['top_ext'].ffill()
+    downs = df[df['fractal_down']]
+    df['bottom_ext'] = downs[kind].rolling(period).min()
+    df['bottom_ext'] = df['bottom_ext'].ffill()
+    return df

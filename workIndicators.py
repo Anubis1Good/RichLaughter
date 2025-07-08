@@ -17,77 +17,79 @@ raw_file = 'DataForTests\DataFromMoexFast\MMM5_1_1749581140.csv'
 # raw_file = 'DataForTests\oldMoex\SiM5_1_1745579847.csv'
 period = 10
 df = bitget_loader(raw_file)
-df = df.iloc[-200:]
+# df = df.iloc[-200:]
 # df = df.iloc[10:510]
 
 
 
-df = add_dzz_picks(df,method='mean',n_std=3)
+df = add_fractals(df,10)
+df = add_rsi(df,10)
 
-df = add_dzz_level_channel(df)
-# p1v = p1['high'].diff()
-# p1i = p1.index.to_series().diff()
-# delta_zzt = p1v / p1i
-# df['delta_zzt'] = delta_zzt.shift(1) * p1i
+def add_mean_on_fractals(df,period=5,kind='rsi'):
+    """add 'top_mean', bottom_mean'"""
+    ups = df[df['fractal_up']]
+    df['top_mean'] = ups[kind].rolling(period).mean()
+    df['top_mean'] = df['top_mean'].ffill()
+    downs = df[df['fractal_down']]
+    df['bottom_mean'] = downs[kind].rolling(period).mean()
+    df['bottom_mean'] = df['bottom_mean'].ffill()
+    return df
 
-# df['delta_zzti'] = p1i.interpolate(method='linear')
-# df['delta_zzb'] = p2['low'].diff()
-# df['cur_high'] = p1['high']
-# df['cur_high'] = df['cur_high'].ffill()
-# df['delta_zzt'] = df['delta_zzt'].ffill()
-# df['delta_zzti'] = df['delta_zzti'].ffill()
-# df['delta_zzt1'] = df['delta_zzt'] * df['delta_zzti']
-# df['delta_zzb'] = df['delta_zzb'].ffill()
-# df['line1'] = (df['cur_high'] + df['delta_zzt']).interpolate(method='linear')
-# df['line1'] = df['cur_high'] + df['delta_zzt1']
-# df['line2'] = df['zigzag'] + df['delta_zzb']
-# print(df.iloc[:-50].head())
-# Пример использования
-# df = pd.read_csv('your_data.csv')
-# print(df[['high', 'low', 'direction', 'last_extreme']].head())
+df = add_mean_on_fractals(df)
+print(df.tail(10))
 
 
-# plt.subplot(2,1,1)
-plt.grid() 
-draw_hb_chart_fast(df)
-# plt.plot(df['zigzag_line'])
-plt.plot(df['upper_channel'])
-plt.plot(df['lower_channel'])
-# plt.plot(df['line2'])
-# plt.plot(df['bottom_line'])
-# plt.plot(df['regression_line'])
-# plt.plot(df['stair'])
-# plt.plot(df['trend'])
-plt.plot(df['zigzag'])
-# plt.plot(df['stair_up'])
-# df['points'] = np.where((df['zigzag_direction'] != df['zigzag_direction'].shift(1)), df['middle'], np.nan)
 
-# points = df[~pd.isna(df['points'])]
-# print(points)
-# plt.scatter(points.index,points['middle'])
-plt.scatter(df.index, df['zigzag_peaks'], color='red', label='Peaks')
-# for k in ('fractal_up','fractal_down'):
-#     plt.plot(df[k])
-# for k in 'max_hb, min_hb, avarege'.split(', '):
-# ax1 = plt.gca()
-# plt.subplot(2,1,2,sharex=ax1)
-# plt.grid() 
-# plt.plot(df['delta_zz'])
-# plt.plot(df['ami_filter'])
-# plt.plot(df['ii'])
-# plt.plot(df['market_mode'])
+plot = True
+# plot = False
+if plot:
+    plt.subplot(2,1,1)
+    plt.grid() 
+    draw_hb_chart_fast(df)
+    # plt.plot(df['zigzag_line'])
+    # plt.plot(df['upper_channel'])
+    # plt.plot(df['fd_up'])
+    # plt.plot(df['fd_down'])
+    # plt.plot(df['lower_channel'])
+    # plt.plot(df['top_line'])
+    # plt.plot(df['bottom_line'])
+    # plt.plot(df['regression_line'])
+    # plt.plot(df['stair'])
+    # plt.plot(df['trend'])
+    # plt.plot(df['zigzag'])
+    # plt.plot(df['stair_up'])
+    # df['points'] = np.where((df['zigzag_direction'] != df['zigzag_direction'].shift(1)), df['middle'], np.nan)
+
+    # points = df[~pd.isna(df['points'])]
+    # print(points)
+    # plt.scatter(points.index,points['middle'])
+    # plt.scatter(df.index, df['zigzag_peaks'], color='red', label='Peaks')
+    # for k in ('fractal_up','fractal_down'):
+    # for k in ('std_up', 'std_down', 'sma'):
+    #     plt.plot(df[k])
+    # for k in 'max_hb, min_hb, avarege'.split(', '):
+
+    ax1 = plt.gca()
+    plt.subplot(2,1,2,sharex=ax1)
+    plt.grid() 
+    plt.plot(df['top_mean'])
+    plt.plot(df['bottom_mean'])
+    # plt.plot(df['delta_zz'])
+    # plt.plot(df['ami_filter'])
+    # plt.plot(df['ii'])
+    # plt.plot(df['market_mode'])
 
 
-# for k in ( 'trend_up','trend_down'):
-# # for k in 'PP, R1, R2, S1, S2'.split(', '):
-# #     plt.plot(df[k],color='g')
-# for k in 'max_hb, min_hb, avarege'.split(', '):
-#     plt.plot(df[k],color='b')
-# for k in df.columns:
-#     if  'zigzag' in k:
-#         plt.plot(df[k])
-# for k in 'trend_up_slope, trend_down_slope'.split(', '):
-# for k in ('regression_slope',):
-# plt.plot(df['rsi'])
-print(df.tail())
-plt.show()
+    # for k in ( 'trend_up','trend_down'):
+    # # for k in 'PP, R1, R2, S1, S2'.split(', '):
+    # #     plt.plot(df[k],color='g')
+    # for k in 'max_hb, min_hb, avarege'.split(', '):
+    #     plt.plot(df[k],color='b')
+    # for k in df.columns:
+    #     if  'zigzag' in k:
+    #         plt.plot(df[k])
+    # for k in 'trend_up_slope, trend_down_slope'.split(', '):
+    # for k in ('regression_slope',):
+    # plt.plot(df['rsi'])
+    
+    plt.show()
