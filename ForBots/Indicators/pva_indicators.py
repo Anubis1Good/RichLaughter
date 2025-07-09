@@ -414,3 +414,38 @@ def add_ext_on_fractals(df,period=5,kind='rsi'):
     df['bottom_ext'] = downs[kind].rolling(period).min()
     df['bottom_ext'] = df['bottom_ext'].ffill()
     return df
+
+#good indicator
+def add_analys_dzz(df, period_sma=3):
+    """add 'trend','trend_sma'"""
+    # Создаем явную копию DataFrame
+    df = df.copy()
+    df['trend'] = np.nan
+    
+    # Создаем копию для работы с пиками
+    peacks = df[~df['zigzag_peaks'].isna()].copy()  # Явное копирование
+    
+    if len(peacks) < 4:
+        df['trend'] = 0
+        df['trend_sma'] = 0
+        return df
+    
+    # Условия для тренда
+    up_condition = (peacks['zigzag_peaks'] > peacks['zigzag_peaks'].shift(2)) & \
+                  (peacks['zigzag_peaks'].shift(1) > peacks['zigzag_peaks'].shift(3))
+    down_condition = (peacks['zigzag_peaks'] < peacks['zigzag_peaks'].shift(2)) & \
+                    (peacks['zigzag_peaks'].shift(1) < peacks['zigzag_peaks'].shift(3))
+    
+    # Используем .loc для безопасного присвоения
+    peacks.loc[:, 'trend'] = 0  # Инициализация через .loc
+    peacks.loc[up_condition, 'trend'] = 1
+    peacks.loc[down_condition, 'trend'] = -1
+    
+    # Считаем SMA
+    peacks.loc[:, 'trend_sma'] = peacks['trend'].rolling(period_sma).mean()
+    
+    # Заполняем основной DataFrame
+    df['trend'] = peacks['trend'].reindex(df.index).ffill().fillna(0)
+    df['trend_sma'] = peacks['trend_sma'].reindex(df.index).ffill().fillna(0)
+    
+    return df

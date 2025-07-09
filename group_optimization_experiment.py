@@ -3,16 +3,16 @@ import traceback
 from Optimiztion.Optimizator1 import Optimizator2
 from strategies.test_strategies.universal import universal_test_strategy as ts
 
-from strategies.work_strategies.STA_ca import STA3,STA3_LITE,STA3_FORCE
+from strategies.work_strategies.STA_ca import *
 # from strategies.work_strategies.STA_ml2 import STAML2_TRADITION,STAML2_CHAOS,STAML2_FLUX,STAML2_LEGACY
-from strategies.work_strategies.LTA import LTA_BIBI,LTA_IGOGOSHA,LTA_IRONANNY
-from strategies.work_strategies.LTA2 import LTA2_DRG
-from strategies.work_strategies.PSTA0 import PSTA3_HADES
-from strategies.work_strategies.OGTA import OGTA4_PUPPY
-from strategies.work_strategies.PTA import PTA2_LISICA,PTA4_U3
-from strategies.work_strategies.PTAX import PTA14_RANGER,PTA14_ANGER,PTA19_CASSIA,PTA19_IMPERIUS
-from strategies.work_strategies.PTAXX import PTA20_HANZO,PTA20_HOGGER
-from strategies.work_strategies.GLTA import GLTA_BETA,GLTA_GAMMA
+from strategies.work_strategies.LTA import *
+from strategies.work_strategies.LTA2 import *
+from strategies.work_strategies.PSTA0 import *
+from strategies.work_strategies.OGTA import *
+from strategies.work_strategies.PTA import *
+from strategies.work_strategies.PTAX import *
+from strategies.work_strategies.PTAXX import *
+from strategies.work_strategies.GLTA import *
 
 def optimization_multi(ws,ts,params,test_folder,min_fee: float = 0.0004,
     max_fee: float = 0.0012):
@@ -32,7 +32,7 @@ def optimization_multi(ws,ts,params,test_folder,min_fee: float = 0.0004,
 test_folder = 'DataForTests\DataFromBitget'
 test_folder = 'DataForTests\DataFromMOEX'
 test_folder = 'DataForTests\DataFromMoexFast'
-test_folder = 'DataForTests\DataFromMoexFastStock'
+# test_folder = 'DataForTests\DataFromMoexFastStock'
 # test_folder = 'DataForTests\DataFromMOEXto5'
 min_fee: float = 0.0004
 max_fee: float = 0.0012
@@ -46,61 +46,24 @@ group = (
     #     range(10,101,10),
     #     (0.5,1,1.5,2),
     # ]),
-    (PTA4_U3,(
-        (5,10,15,30,60,90),
-        (5,10,15,30,60,90),
-        (5,10,15),
-        (2,3,5,10,30),
-        ("DC","VG","BB","VC","WC"),
-        ("rsi","rsi_tw","mfi","s","uo"),
-    )),
     (
-        LTA_BIBI, (
+        PTA21_WHITEMANE,(
             (5,10,15,30,60,90),
-            (5,10,15),
-            (2,3,5,10,30),
-            ('cmo','rsi','rsi_tw','williams_r','mfi','ultimate_oscillator','cci','%d')
+            (5,10,15,30,60,90),
+            (5,10),
+            (2,3,5),
+            (1.5,3),
+            (3,5),
+            (0,0.25,0.5),
+            (0,1)
         )
     ),
-    (
-        LTA_IGOGOSHA, (
-            (5,10,15,30,60,90),
-            (5,10,15),
-            (2,3,5,10,30),
-            ('cmo','rsi','rsi_tw','williams_r','mfi','ultimate_oscillator','cci','%d')
-        )
-    ),
-    (
-        LTA_IRONANNY, (
-            (5,10,15,30,60,90),
-            (5,10,15),
-            (2,3,5,10,30),
-            (3,4,5,6,7)
-        )
-    ),
-
-    (PTA20_HOGGER, (
-        (30,60,90,120,150),
-        (5,10,15,30,45,60),
-        (0.5,1,2),
-        (0.5,1,2),
-        (20,30,40,50),
-        (10,20,30,40)
-    )
-     ),
-    (PTA20_HANZO, (
-        (30,60,90,120,150),
-        (5,10,15,30,45,60),
-        (0.5,1,2),
-        (0.5,1,2),
-    )
-     ),
-    (GLTA_BETA,(
-        range(5,100,5),
-        range(5,100,10),
-        range(15,41,5),
-        ('beta1.json',)
-    )),
+    # (GLTA_BETA,(
+    #     range(5,100,5),
+    #     range(5,100,10),
+    #     range(15,41,5),
+    #     ('beta1.json',)
+    # )),
     # (GLTA_GAMMA,(
     #     (5,10,15,30,60),
     #     range(10,100,20),

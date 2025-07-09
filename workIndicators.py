@@ -17,27 +17,16 @@ raw_file = 'DataForTests\DataFromMoexFast\MMM5_1_1749581140.csv'
 # raw_file = 'DataForTests\oldMoex\SiM5_1_1745579847.csv'
 period = 10
 df = bitget_loader(raw_file)
-# df = df.iloc[-200:]
+df = df.iloc[-200:]
 # df = df.iloc[10:510]
 
 
 
-df = add_fractals(df,10)
-df = add_rsi(df,10)
+df = add_dzz_peaks(df,period=20)
 
-def add_mean_on_fractals(df,period=5,kind='rsi'):
-    """add 'top_mean', bottom_mean'"""
-    ups = df[df['fractal_up']]
-    df['top_mean'] = ups[kind].rolling(period).mean()
-    df['top_mean'] = df['top_mean'].ffill()
-    downs = df[df['fractal_down']]
-    df['bottom_mean'] = downs[kind].rolling(period).mean()
-    df['bottom_mean'] = df['bottom_mean'].ffill()
-    return df
-
-df = add_mean_on_fractals(df)
-print(df.tail(10))
-
+df = add_analys_dzz(df)
+# print(df.tail(10))
+# df.info()
 
 
 plot = True
@@ -56,7 +45,7 @@ if plot:
     # plt.plot(df['regression_line'])
     # plt.plot(df['stair'])
     # plt.plot(df['trend'])
-    # plt.plot(df['zigzag'])
+    plt.plot(df['zigzag'])
     # plt.plot(df['stair_up'])
     # df['points'] = np.where((df['zigzag_direction'] != df['zigzag_direction'].shift(1)), df['middle'], np.nan)
 
@@ -72,9 +61,10 @@ if plot:
     ax1 = plt.gca()
     plt.subplot(2,1,2,sharex=ax1)
     plt.grid() 
-    plt.plot(df['top_mean'])
-    plt.plot(df['bottom_mean'])
-    # plt.plot(df['delta_zz'])
+    # plt.plot(df['top_mean'])
+    # plt.plot(df['bottom_mean'])
+    plt.plot(df['trend'])
+    plt.plot(df['trend_sma'])
     # plt.plot(df['ami_filter'])
     # plt.plot(df['ii'])
     # plt.plot(df['market_mode'])

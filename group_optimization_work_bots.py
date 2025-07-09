@@ -6,10 +6,12 @@ from strategies.test_strategies.universal import universal_test_strategy as ts
 from strategies.work_strategies.STA_ca import *
 from strategies.work_strategies.PTA import *
 from strategies.work_strategies.PTAX import *
+from strategies.work_strategies.PTAXX import *
 from strategies.work_strategies.OGTA import *
 
 from strategies.work_strategies.LTA import *
 from strategies.work_strategies.LTA2 import *
+from strategies.work_strategies.GLTA import *
 from strategies.work_strategies.PSTA0 import *
 
 
@@ -122,6 +124,22 @@ old_group = (
     #     range(2,20,2),
     #     ('std','mean'),
     # ]),
+    # (PTA20_HOGGER, (
+    #     (30,60,90,120,150),
+    #     (5,10,15,30,45,60),
+    #     (0.5,1,2),
+    #     (0.5,1,2),
+    #     (20,30,40,50),
+    #     (10,20,30,40)
+    # )
+    #  ),
+    # (PTA20_HANZO, (
+    #     (30,60,90,120,150),
+    #     (5,10,15,30,45,60),
+    #     (0.5,1,2),
+    #     (0.5,1,2),
+    # )
+    #  ),
 )
 
 group = (
@@ -469,6 +487,44 @@ group = (
         (90,60,10),
         (20,30,40),
         (10,30,60),
+    )),
+        (PTA4_U3,(
+        (5,10,15,30,60,90),
+        (5,10,15,30,60,90),
+        (5,10),
+        (2,3,5),
+        ("DC","VG","BB","VC","WC"),
+        ("rsi","rsi_tw","mfi","s","uo"),
+    )),
+    (
+        LTA_BIBI, (
+            (5,10,15,30,60,90),
+            (5,10,15),
+            (2,3,5,10,30),
+            ('cmo','rsi','rsi_tw','williams_r','mfi','ultimate_oscillator','cci','%d')
+        )
+    ),
+    (
+        LTA_IGOGOSHA, (
+            (5,10,15,30,60,90),
+            (5,10,15),
+            (2,3,5,10,30),
+            ('cmo','rsi','rsi_tw','williams_r','mfi','ultimate_oscillator','cci','%d')
+        )
+    ),
+    (
+        LTA_IRONANNY, (
+            (5,10,15,30,60,90),
+            (5,10,15),
+            (2,3,5,10,30),
+            (3,4,5,6,7)
+        )
+    ),
+    (GLTA_BETA,(
+        range(5,100,5),
+        range(5,100,10),
+        range(15,41,5),
+        ('beta1.json',)
     )),
 )
 

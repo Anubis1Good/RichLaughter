@@ -18,26 +18,54 @@ def process_history_position(result:pd.DataFrame,suffix,db_path):
     result['t_avg_fp'] = ((result['total_with_average_fee']/result['avg_close_price'])*100).round(2)
     result['t_max_fp'] = ((result['total_with_max_fee']/result['avg_close_price'])*100).round(2)
     result = result.drop(['avg_close_price','total_fee','total_result_fee','total_with_average_fee','total_with_max_fee'],axis=1)
+
+    has_days = 'days' in result.columns.tolist()
+
+    if has_days:
+        result['cd'] = round(result['total_trades'] / result['days'],2)
+        result['pred'] = result['avgt'] * result['cd']
+        result['trd'] = result['total_result'] / result['days']
     result = result.sort_values(by=['ticker','avgt'],axis=0,ascending=[True,False])
     result = result.reset_index(drop=True)
 
     ranks = ['total_trades','total_per','t_min_fp','t_avg_fp','t_max_fp','avgdd','maxdd','avgt','maxp','win_rate']
+    if has_days:
+        ranks += ['cd','pred','trd','days']
     data_sum = result.groupby('bot')[ranks].mean().sort_values('t_avg_fp',ascending=False).round(2)
     rank_names = ["rank_"+r for r in ranks]
     for r in ranks:
         # print(r)
         result["rank_"+r] = result.groupby("ticker")[r].rank(ascending=False, method="min")
     avg_rank = result.groupby("bot")[rank_names].mean().sort_values('rank_t_avg_fp').round(2)
+
     result_old = result.copy()
     result_old = result_old.sort_values(by=['ticker','t_min_fp'],axis=0,ascending=[True,False])
     result_old = result_old.reset_index(drop=True)
+    if has_days:
+        result_pred = result.copy()
+        result_pred = result_pred.sort_values(by=['ticker','pred'],axis=0,ascending=[True,False])
+        result_pred = result_pred.reset_index(drop=True)
+
     result2 = pd.concat([avg_rank, data_sum], axis=1)
     result2['tf'] = result2.index.str.split('_').str[0]
     tf = result2.pop('tf')
     result2.insert(0,'tf',tf)
+    to_end = ('rank_total_per','rank_t_min_fp','rank_t_avg_fp','rank_t_max_fp')
+    # Все остальные колонки (кроме тех, что в to_end)
+    other_columns = [col for col in result2.columns if col not in to_end]
+
+    # Новый порядок: сначала остальные, потом to_end
+    new_order = other_columns + list(to_end)
+
+    # Переупорядочиваем DataFrame
+    result2 = result2[new_order]
     result2_old = result2.copy()
     result2_old = result2_old.sort_values('rank_t_min_fp')
     result2_old = result2.reset_index()
+    if has_days:
+        result2_pred = result2.copy()
+        result2_pred = result2_pred.sort_values('rank_pred')
+        result2_pred = result2_pred.reset_index()
     result2 = result2.sort_values('rank_avgt')
     result2 = result2.reset_index()
     # print(result2)
@@ -46,7 +74,9 @@ def process_history_position(result:pd.DataFrame,suffix,db_path):
     file_name = f'TestOtTrades/Total_{suffix}_Test_Result_{prefix}.xlsx'
 
     with pd.ExcelWriter(file_name, engine='xlsxwriter') as writer:  
-        results = (result,result_old)
+        results = [result,result_old]
+        if has_days:
+            results += [result_pred]
         for idx,result in enumerate(results):
             name_sheet = 'total_' + str(idx)
             result.to_excel(writer,sheet_name=name_sheet)
@@ -73,7 +103,9 @@ def process_history_position(result:pd.DataFrame,suffix,db_path):
                 #     'value': 'MTA',
                 #     'format': workbook.add_format({'bg_color': '#FFC7CE', 'font_color': '#9C0006'})
                 # })
-        results2 = (result2,result2_old)
+        results2 = [result2,result2_old]
+        if has_days:
+            results2 += [result2_pred]
         for idx,result2 in enumerate(results2):
             name_sheet = 'bots_info_' + str(idx)
             result2.to_excel(writer,sheet_name=name_sheet)
@@ -150,9 +182,27 @@ def analisys_db(db_path:str):
         ORDER BY 
             r.name, t.name
         '''
-    result = pd.read_sql_query(query, conn)
+    df = pd.read_sql_query(query, conn)
     conn.close()
-    process_history_position(result,'All',db_path)
+    df['last_trade_date'] = pd.to_datetime(df['last_trade_date'])
+    df['start_trade_date'] = pd.to_datetime(df['start_trade_date'])
+    df['days'] = (df['last_trade_date'] - df['start_trade_date']).dt.days + 1
+    # Получаем список всех столбцов
+    cols = df.columns.tolist()
+
+    # Находим индекс 'last_trade_date'
+    idx = cols.index('last_trade_date')
+    cols.remove('days')  # (если он был где-то ещё)
+
+
+    # Вставляем 'days' после 'last_trade_date'
+    cols.insert(idx + 1, 'days')
+
+    # Удаляем старый 'days' (если он уже был в другом месте)
+
+    # Переупорядочиваем DataFrame
+    df = df[cols]
+    process_history_position(df,'All',db_path)
 
 def analisys_db_last(db_path:str):
     conn = sqlite3.connect(db_path)
@@ -326,6 +376,7 @@ need_last = False
 need_last = True
 
 if __name__ == '__main__':
+    print('analys start...')
     folder = 'dbs'
     files = os.listdir(folder)
     for file in files:
@@ -341,7 +392,7 @@ if __name__ == '__main__':
             except Exception as e:
                 traceback.print_exc()
                 print(file,'have problems...')
-    
+    print('analys end!')
     # get_equity_charts_db('dbs/test_MOEX_FUT.db',queryDayChart,'LastDay')
     # get_equity_charts_db('dbs/test_MOEX_STOCK.db',queryDayChart,'LastDay')
     # get_equity_charts_db('dbs/test_offline.db',queryDayChart,'LastDay')

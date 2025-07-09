@@ -1287,7 +1287,8 @@ def add_dynamic_zigzag(df:pd.DataFrame, source='high_low', n_std=1.5, method='st
     df['reversal_threshold'] = reversal_values
     return df
 
-def add_dzz_picks(df:pd.DataFrame, source='high_low', n_std=1.5, method='std', period=20):
+# Good variant
+def add_dzz_peaks(df: pd.DataFrame, source='high_low', n_std=1.5, method='std', period=20):
     """
     ZigZag с динамическим reversal на основе волатильности
     
@@ -1347,45 +1348,48 @@ def add_dzz_picks(df:pd.DataFrame, source='high_low', n_std=1.5, method='std', p
     for i in range(first_valid+1, size):
         high = highs[i]
         low = lows[i]
-        reversal = reversal_values.iloc[i]  # Безопасный доступ по индексу
+        reversal = reversal_values.iloc[i]
+        prev_dir = direction[i-1]
         
-        if direction[i-1] == 1:  # Предыдущее направление - вверх
-            if high > last_pivot:  # Обновляем максимум
+        if prev_dir == 1:  # Предыдущее направление - вверх
+            # Сначала проверяем обновление максимума
+            if high > last_pivot:
                 # Удаляем старый максимум
                 zz[last_pivot_idx] = np.nan
                 last_pivot = high
                 last_pivot_idx = i
-                zz[i] = last_pivot  # Новая точка экстремума
-            
-            # Проверка разворота вниз
-            if low <= last_pivot - reversal:
+                zz[i] = last_pivot
+                direction[i] = 1  # Подтверждаем текущее направление
+            # Затем проверяем разворот (только если не обновили максимум)
+            elif low <= last_pivot - reversal:
                 direction[i] = -1
                 last_pivot = low
                 last_pivot_idx = i
-                zz[i] = last_pivot  # Точка разворота
+                zz[i] = last_pivot
             else:
                 direction[i] = 1
                 
         else:  # Предыдущее направление - вниз
-            if low < last_pivot:  # Обновляем минимум
+            # Сначала проверяем обновление минимума
+            if low < last_pivot:
                 # Удаляем старый минимум
                 zz[last_pivot_idx] = np.nan
                 last_pivot = low
                 last_pivot_idx = i
-                zz[i] = last_pivot  # Новая точка экстремума
-            
-            # Проверка разворота вверх
-            if high >= last_pivot + reversal:
+                zz[i] = last_pivot
+                direction[i] = -1  # Подтверждаем текущее направление
+            # Затем проверяем разворот (только если не обновили минимум)
+            elif high >= last_pivot + reversal:
                 direction[i] = 1
                 last_pivot = high
                 last_pivot_idx = i
-                zz[i] = last_pivot  # Точка разворота
+                zz[i] = last_pivot
             else:
                 direction[i] = -1
     
     # Сохраняем точки перелома до интерполяции
     zz[-1] = np.nan
-    df['zigzag_peaks'] = zz.copy()  # Только ключевые точки
+    df['zigzag_peaks'] = zz.copy()
     
     # Линейная интерполяция между точками для непрерывного зигзага
     zz_final = np.full(size, np.nan)
@@ -1395,13 +1399,11 @@ def add_dzz_picks(df:pd.DataFrame, source='high_low', n_std=1.5, method='std', p
     for i in range(size):
         if not np.isnan(zz[i]):
             if start_idx is not None:
-                # Заполняем промежуток между точками
                 zz_final[start_idx:i+1] = np.linspace(start_val, zz[i], i - start_idx + 1)
             start_idx = i
             start_val = zz[i]
     
-    # Добавляем результаты в датафрейм
-    df['zigzag'] = zz_final          # Интерполированная линия
+    df['zigzag'] = zz_final
     df['zigzag_direction'] = direction
     df['reversal_threshold'] = reversal_values
     

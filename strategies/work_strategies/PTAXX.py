@@ -1,8 +1,8 @@
 import numpy as np
 import pandas as pd
 from request_functions.download_bitget import get_df
-from ForBots.Indicators.classic_indicators import add_donchan_channel,add_slice_df,add_big_volume,add_dynamics_ma,add_bollinger,add_over_bb,add_enter_price,add_buffer_add,add_buffer_sub,add_vangerchik,add_simple_dynamics_ma,add_vodka_channel,add_rsi,add_enter_price2close,add_macd,add_rsi_tw,add_adx,add_chop,add_kusuruken_channel,add_awesome_oscillator
-from ForBots.Indicators.pva_indicators import add_benefit,add_velcro_indicator,add_pc_stair_fast,add_integrity_index,add_cascade_channel,add_assessment_motion_index,add_hope_channel
+from ForBots.Indicators.classic_indicators import add_donchan_channel,add_slice_df,add_big_volume,add_dynamics_ma,add_bollinger,add_over_bb,add_enter_price,add_buffer_add,add_buffer_sub,add_vangerchik,add_simple_dynamics_ma,add_vodka_channel,add_rsi,add_enter_price2close,add_macd,add_rsi_tw,add_adx,add_chop,add_kusuruken_channel,add_awesome_oscillator,add_dzz_peaks,add_fractals
+from ForBots.Indicators.pva_indicators import add_benefit,add_velcro_indicator,add_pc_stair_fast,add_integrity_index,add_cascade_channel,add_assessment_motion_index,add_hope_channel,add_analys_dzz,add_mean_on_fractals
 from ForBots.Indicators.help_pva_indicators import get_all_enter_exit_DC,get_all_lup
 from utils.help_trades import reverse_action,chep
 from strategies.work_strategies.BaseTA import BaseTABitget
@@ -91,3 +91,47 @@ class PTA20_HOGGER(BaseTABitget):
                     return 'short_pw'
             if row['sma'] < row['smab']:
                 return 'close_long_pw'
+
+
+class PTA21_WHITEMANE(BaseTABitget):
+    '''
+    period=20,period_rsi=20,period_fractal=10,period_mean=5,n_std=1.5,period_sma=3,threshold_trend=0.5,use_stop=0
+    '''
+    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=20,period_rsi=20,period_fractal=10,period_mean=5,n_std=1.5,period_sma=3,threshold_trend=0.5,use_stop=0):
+        super().__init__(symbol, granularity, productType, n_parts, period)
+        self.period_fractal = period_fractal
+        self.period_mean = period_mean
+        self.period_rsi = period_rsi
+        self.period_sma = period_sma
+        self.n_std = n_std
+        self.threshold_trend = threshold_trend
+        self.use_stop = use_stop
+
+    def preprocessing(self, df):
+        df = add_donchan_channel(df,self.period)
+        df = add_rsi(df,self.period_rsi)
+        df = add_fractals(df,self.period_fractal)
+        df = add_mean_on_fractals(df,self.period_mean,'rsi')
+        df['oversold'] = df['rsi'] < df['bottom_mean']
+        df['overbought'] = df['rsi'] > df['top_mean']
+        df = add_dzz_peaks(df,n_std=self.n_std)
+        df = add_analys_dzz(df,self.period_sma)
+        df = add_enter_price2close(df)
+        df = add_slice_df(df,period=self.period)
+        return df
+    def __call__(self, row, *args, **kwds):
+        if row['low'] <= row['min_hb'] and row['oversold']:
+            if row['trend_sma'] >= -self.threshold_trend:
+                return 'long_pw'
+            else:
+                return 'close_short_pw'
+        if row['high'] >= row['max_hb'] and row['overbought']:
+            if row['trend_sma'] <= self.threshold_trend:
+                return 'short_pw'
+            else:
+                return 'close_long_pw'
+        if self.use_stop:
+            if row['trend_sma'] < -0.8:
+                return 'close_long_pw'
+            if row['trend_sma'] > 0.8:
+                return 'close_short_pw'
