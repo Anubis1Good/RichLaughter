@@ -94,6 +94,9 @@ class QuikTrader1:
                 elif pos == 0:
                     self._send_open('B',self.quantity)
                     self._action_debug_log(pos,action)
+                elif pos < self.quantity:
+                    self._send_open('B',self.quantity - pos)
+                    self._action_debug_log(pos,action)
             elif 'short' in action:
                 if pos > 0 :
                     # print('S',self.quantity + pos)
@@ -101,6 +104,9 @@ class QuikTrader1:
                     self._action_debug_log(pos,action)
                 elif pos == 0:
                     self._send_open('S',self.quantity)
+                    self._action_debug_log(pos,action)
+                elif pos > -self.quantity:
+                    self._send_open('S',self.quantity - abs(pos))
                     self._action_debug_log(pos,action)
             elif 'close_all' in action:
                 if pos < 0 :
