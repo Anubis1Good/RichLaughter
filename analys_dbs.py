@@ -187,6 +187,7 @@ def analisys_db(db_path:str):
     df['last_trade_date'] = pd.to_datetime(df['last_trade_date'])
     df['start_trade_date'] = pd.to_datetime(df['start_trade_date'])
     df['days'] = (df['last_trade_date'] - df['start_trade_date']).dt.days + 1
+    df['days'] = df['days'] - ((df['days']//7)*2)
     # Получаем список всех столбцов
     cols = df.columns.tolist()
 

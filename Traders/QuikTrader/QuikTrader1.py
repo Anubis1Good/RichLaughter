@@ -3,7 +3,7 @@ import traceback
 from time import sleep
 from datetime import datetime
 import pandas as pd
-from Traders.QuikTrader.QuikFuncs import get_bars,get_best_glass,get_pos_futures,close_active_order,send_transaction
+from Traders.QuikTrader.QuikFuncs import get_bars,get_best_glass,get_pos_futures,close_active_order,send_transaction,get_code_orders
 from strategies.work_strategies.BaseTA import BaseTABitget
 
 class QuikTrader1:
@@ -129,6 +129,98 @@ class QuikTrader1:
                 if time_mode == -1:
                     action = 'close_all'
                 self._work_action(action,pos)
+
+        except Exception as err:
+            print(f"!!!! {type(err).__name__}: {err} !!!!")
+            with open(self.error_log,'a',encoding="utf-8") as f:
+                f.write(str(datetime.now()) + "\n")
+                f.write('\n')
+                f.write(traceback.format_exc() + "\n")
+
+class QuikTrader2(QuikTrader1):
+    def __init__(self, sec_code, class_code='SPBFUT', granularity='M5', quantity=1, ws = (BaseTABitget, (20, )), need_debug=False):
+        super().__init__(sec_code, class_code, granularity, quantity, ws, need_debug)
+        folder_error = 'logs/error_logsQT2'
+        folder_debug = 'logs/debug_logsQT2'
+        self.error_log = os.path.join(folder_error,'QT2' + '_' + self.sec_code + '.txt')
+        if need_debug:
+            self.debug_log = os.path.join(folder_debug,'QT2_' + self.sec_code + '.txt')
+        if not os.path.exists(folder_error):
+            os.makedirs(folder_error)
+        if not os.path.exists(folder_debug):
+            os.makedirs(folder_debug)
+        self.start_pos = self._check_position()
+        now = datetime.now()
+        self.start_time = {
+            'day': now.day,
+            'hour': now.hour,
+            'min': now.minute,
+            'month': now.month,
+            'sec': now.second,
+            'year': now.year
+        }
+
+    def _check_today(self,order):
+        date_order = order['datetime']
+        if date_order['year'] != self.start_time['year']:
+            return False
+        if date_order['month'] != self.start_time['month']:
+            return False
+        if date_order['day'] != self.start_time['day']:
+            return False
+        if date_order['hour'] > self.start_time['hour']:
+            return True
+        if date_order['hour'] < self.start_time['hour']:
+            return False
+        if date_order['hour'] == self.start_time['hour']:
+            if date_order['min'] < self.start_time['min']:
+                return False
+            if date_order['min'] == self.start_time['min'] and date_order['sec'] < self.start_time['sec']:
+                return False
+        return True
+    
+    def _check_pos_on_orders(self):
+        orders = get_code_orders(self.sec_code)
+        pos = self.start_pos
+        for order in orders:
+            flags = bin(order['flags'])
+            if flags[-1] == '0':
+                if flags[-2] == '0':
+                    delta = order['qty']
+                else:
+                    delta = order['qty'] - order['balance']
+                if self._check_today(order):
+                    if flags[-3] == '1':
+                        pos -= delta
+                    else:
+                        pos += delta
+        return int(pos)
+    
+    def _debug_diff_pos(self,pos_old,pos_new):
+        now = datetime.now()
+        with open(self.debug_log,'a',encoding="utf-8") as f:
+            f.write('POS_PROBLEM__' + str(now) + '__POS_PROBLEM' + '\n')
+            f.write('pos_old: '+ str(pos_old) + '\n')
+            f.write('pos_new: '+ str(pos_new) + '\n')
+
+    def run(self):
+        try:
+            time_mode = self._check_time()
+            if time_mode == 0:
+                sleep(60*5)
+                return
+            else:
+                df = self._get_df()
+                row = self.ws.get_test_row(df)
+                action = self.ws(row)
+                pos_old = self._check_position()
+                pos_new = self._check_pos_on_orders()
+                # print(self.sec_code,self.ws,self.start_pos,pos_old,pos_new)
+                if pos_old != pos_new and self.need_debug:
+                    self._debug_diff_pos(pos_old,pos_new)
+                if time_mode == -1:
+                    action = 'close_all'
+                self._work_action(action,pos_new)
 
         except Exception as err:
             print(f"!!!! {type(err).__name__}: {err} !!!!")

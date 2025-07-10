@@ -11,7 +11,7 @@ from utils.draw_utils import draw_lite_chart,draw_chart_channel,draw_hb_chart,dr
 from strategies.test_strategies.check import check_strategy
 # from strategies.work_strategies.PTA import PTA4_U3 as WS
 # from strategies.work_strategies.PTAX import PTA19_CASSIA as WS
-from strategies.work_strategies.PTAXX import PTA21_WHITEMANE as WS
+from strategies.work_strategies.PTAXX import PTA21_AURIEL as WS
 # from strategies.work_strategies.STA_ca import STA3_FORCE as WS
 # from strategies.work_strategies.GLTA import GLTA_GAMMA as WS
 # from strategies.work_strategies.OGTA import OGTA4_DOG as WS

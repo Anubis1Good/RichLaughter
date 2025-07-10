@@ -11,7 +11,7 @@ from strategies.work_strategies.MTA_KING import MTA_KING
 
 from Optimiztion.Optimizator1 import generate_combinations
 
-from Traders.QuikTrader.QuikTrader1 import QuikTrader1
+from Traders.QuikTrader.QuikTrader1 import QuikTrader1,QuikTrader2
 # wss_u = []
 # configs = generate_combinations((
 #     (6,11),
@@ -39,12 +39,12 @@ bot_on_ticker = (
     ),
 )
 
-def init_trader() -> list[QuikTrader1]:
+def init_trader() -> list[QuikTrader2]:
     bots = []
     for ws,data_tickers in bot_on_ticker:
         for dt in data_tickers:
             print(dt[0],ws)
-            bot = QuikTrader1(*dt,ws,True)
+            bot = QuikTrader2(*dt,ws,True)
             bots.append(bot)
     return bots
 

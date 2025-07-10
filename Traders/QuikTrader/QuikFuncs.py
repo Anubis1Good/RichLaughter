@@ -62,6 +62,7 @@ def send_transaction(qp_provider:QuikPy,sec_code,price,direction='B',quantity = 
             'TYPE': 'L'
         }
         qp_provider.send_transaction(transaction)
+        
 
 
 @provider
@@ -72,6 +73,15 @@ def get_active_order(qp_provider:QuikPy,sec_code):
         if order['sec_code'] == sec_code and order['flags'] % 2 == 1:
             active_orders.append(order)
     return active_orders
+
+@provider
+def get_code_orders(qp_provider:QuikPy,sec_code):
+    orders = qp_provider.get_all_orders()['data'] 
+    code_orders = []
+    for order in orders:
+        if order['sec_code'] == sec_code:
+            code_orders.append(order)
+    return code_orders
 
 @provider
 def help_close_active_order(qp_provider:QuikPy,active_orders,sec_code):

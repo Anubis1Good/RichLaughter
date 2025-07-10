@@ -135,3 +135,40 @@ class PTA21_WHITEMANE(BaseTABitget):
                 return 'close_long_pw'
             if row['trend_sma'] > 0.8:
                 return 'close_short_pw'
+            
+class PTA21_AURIEL(BaseTABitget):
+    '''
+    period=20,period_fractal=10,period_mean=5,n_std=1.5,period_sma=3,threshold_trend=0.5
+    '''
+    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=20,period_fractal=10,period_mean=5,n_std=1.5,period_sma=3,threshold_trend=0.5):
+        super().__init__(symbol, granularity, productType, n_parts, period)
+        self.period_fractal = period_fractal
+        self.period_mean = period_mean
+        self.period_sma = period_sma
+        self.n_std = n_std
+        self.threshold_trend = threshold_trend
+
+
+    def preprocessing(self, df):
+        df = add_rsi(df,self.period)
+        df = add_fractals(df,self.period_fractal)
+        df = add_mean_on_fractals(df,self.period_mean,'rsi')
+        df['oversold'] = df['rsi'] < df['bottom_mean']
+        df['overbought'] = df['rsi'] > df['top_mean']
+        df = add_dzz_peaks(df,n_std=self.n_std)
+        df = add_analys_dzz(df,self.period_sma)
+        df = add_enter_price2close(df)
+        df = add_slice_df(df,period=self.period)
+        return df
+    def __call__(self, row, *args, **kwds):
+        if row['oversold']:
+            if row['trend_sma'] >= -self.threshold_trend:
+                return 'long_pw'
+            else:
+                return 'close_short_pw'
+        if row['overbought']:
+            if row['trend_sma'] <= self.threshold_trend:
+                return 'short_pw'
+            else:
+                return 'close_long_pw'
+
