@@ -184,16 +184,15 @@ class QuikTrader2(QuikTrader1):
         pos = self.start_pos
         for order in orders:
             flags = bin(order['flags'])
-            if flags[-1] == '0':
-                if flags[-2] == '0':
-                    delta = order['qty']
+            if flags[-1] == '0' and flags[-2] == '0':
+                delta = order['qty']
+            else:
+                delta = order['qty'] - order['balance']
+            if self._check_today(order):
+                if flags[-3] == '1':
+                    pos -= delta
                 else:
-                    delta = order['qty'] - order['balance']
-                if self._check_today(order):
-                    if flags[-3] == '1':
-                        pos -= delta
-                    else:
-                        pos += delta
+                    pos += delta
         return int(pos)
     
     def _debug_diff_pos(self,pos_old,pos_new):

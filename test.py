@@ -2,7 +2,7 @@ from datetime import datetime
 from Traders.QuikTrader.QuikFuncs import *
 from pprint import pprint
 sec_code = 'SRU5'
-sec_code = 'MMU5'
+# sec_code = 'MMU5'
 # sec_code = 'IMOEXF'
 # sec_code = 'CRU5'
 # sec_code = 'GZU5'
@@ -65,17 +65,22 @@ for order in orders:
     # if order['order_num'] == 2033125311905973848:
     #     pprint(order)
     flags = bin(order['flags'])
-    if flags[-1] == '0':
-        if flags[-2] == '0':
-            delta = order['qty']
+    if flags[-1] == '0' and flags[-2] == '0':
+        delta = order['qty']
+    else:
+        # if order['balance'] > 0:
+        delta = order['qty'] - order['balance']
+    date_order = order['datetime']
+    if date_order['day'] == now.day and date_order['month'] == now.month and date_order['year'] == now.year:
+        if flags[-3] == '1':
+            pos -= delta
         else:
-            delta = order['qty'] - order['balance']
-        date_order = order['datetime']
-        if date_order['day'] == now.day and date_order['month'] == now.month and date_order['year'] == now.year:
-            if flags[-3] == '1':
-                pos -= delta
-            else:
-                pos += delta
+            pos += delta
+    # if flags[-1] == '0':
+    #     if flags[-2] == '0':
+    #         delta = order['qty']
+    #     else:
+    #         delta = order['qty'] - order['balance']
 print(sec_code,pos)
 #     # print(bin(int(flags)))
 #     if flags[-1] == '1':
@@ -89,4 +94,4 @@ print(sec_code,pos)
 #     else:
 #         print(order['order_num'],'покупка')
 
-pprint(orders[0])
+# pprint(orders[0])
