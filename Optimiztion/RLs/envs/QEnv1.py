@@ -57,9 +57,10 @@ class QEnv1(EnvBase):
         reward = 0
         cur_price = self.prices[self.i]
         fee = self.fee * cur_price  # fee абсолютное значение
-        
+        r_for_action = 0.05
 
         if action == 1:  # long
+            reward += r_for_action
             if self.pos != 1:
                 if self.pos == 0:
                     self.open_price = cur_price
@@ -73,6 +74,7 @@ class QEnv1(EnvBase):
                 self.count += 1
 
         elif action == 2:  # short
+            reward += r_for_action
             if self.pos != -1:
                 if self.pos == 0:
                     self.open_price = cur_price
@@ -99,6 +101,7 @@ class QEnv1(EnvBase):
                 reward = ((delta - fee) / cur_price) * 100 
                 self.pos = 0
 
+            
         self.total_per_fee += reward
         return reward
 

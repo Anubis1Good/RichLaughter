@@ -13,7 +13,9 @@ from strategies.test_strategies.check import check_strategy
 # from strategies.work_strategies.PTAX import PTA19_CASSIA as WS
 # from strategies.work_strategies.PTAXX import PTA21_AURIEL as WS
 # from strategies.work_strategies.STA_ca import STA3_FORCE as WS
-from strategies.work_strategies.GLTA import GLTA2_BETA as WS
+# from strategies.work_strategies.GLTA import GLTA2_ALPHA as WS
+# from strategies.work_strategies.GLTA import GLTA2_BETA as WS
+from strategies.work_strategies.GLTA import GLTA2_GAMMA as WS
 # from strategies.work_strategies.OGTA import OGTA4_DOG as WS
 # from strategies.work_strategies.LTA import LTA_IRONANNY as WS
 # from strategies.work_strategies.LTA2 import LTA2_DRG as WS
@@ -49,7 +51,9 @@ slope = 4
 #  (PTA18_REXXAR,(100,5,10,50,30)),   
 # bot = WS(symbol,granularity,'e',1,100,7,10,10,40,10,0)
 # bot = WS(symbol,granularity,'e',1)
-bot = WS(symbol,granularity,'e',1,95,35,30,'P_1752334518.json')
+# bot = WS(symbol,granularity,'e',1,20,10,'LP_1752352674.json')
+# bot = WS(symbol,granularity,'e',1,95,35,30,'LP_1752340591.json')
+bot = WS(symbol,granularity,'e',1,30,100,30,60,30,50,'LP_1752353219.json')
 # bot = WS(symbol,granularity,'e',1,30,100,30,60,30,50,policy='BP_1751841463.6270704.json')
 
 # conf = (20,55,12,25,20)

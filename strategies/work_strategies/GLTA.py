@@ -21,8 +21,18 @@ def get_action5(action):
     actions = (None,'long_pw','short_pw','close_long_pw','close_short_pw')
     return actions[action]
 
+"""
+Всегда проверяйте: print(2^n_features) перед созданием Q-таблицы
+n_features = 20
+n_states = 2**n_features
+print(n_states)
+n_actions = 5  # Например: купить/продать/ждать и т.д.
+memory_mb = (n_states * n_actions * 4) / (1024**2)  # Для float32
+print(f"Q-таблица займет {memory_mb:.2f} MB")
+"""
+
 class GLTA_ALPHA(BaseTABitget):
-    """period=20,policy=None"""
+    """period=20,period2=10,policy=None"""
     flags = [
             'C_sma',
             'C_sma2',
@@ -198,6 +208,19 @@ class GLTA_GAMMA(BaseTABitget):
             except:
                 return None
     
+class GLTA2_ALPHA(GLTA_ALPHA):
+    def __call__(self, row, *args, **kwds):
+        s = row.loc[self.flags].to_numpy()
+        if self.policy:
+            S = self.policy['S']
+            A = self.policy['A']
+            try:
+                index_state = np.where((S == s).all(axis=1))[0][0]
+                a = get_action5(A[index_state])
+                # print(a)
+                return a
+            except:
+                return None
 
 class GLTA2_BETA(GLTA_BETA):
     def __call__(self, row, *args, **kwds):

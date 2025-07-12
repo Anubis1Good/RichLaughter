@@ -95,5 +95,9 @@
 # #         print(order['order_num'],'покупка')
 
 # # pprint(orders[0])
-import cupy as cp
-print(cp.show_config())  # Должен показать CUDA 12.9
+n_features = 20
+n_states = 2**n_features
+print(n_states)
+n_actions = 5  # Например: купить/продать/ждать и т.д.
+memory_mb = (n_states * n_actions * 4) / (1024**2)  # Для float32
+print(f"Q-таблица займет {memory_mb:.2f} MB")

@@ -50,30 +50,77 @@ class QAgent1:
 
 
     def select_action(self,state,epsilon):
+        if np.random.rand() < 0.05:  # 5% chance
+            return np.random.choice([1, 2])
         if np.random.random() > epsilon:
             return np.argmax(self.q[state])
         return np.random.randint(len(self.q[state]))
 
-    def update_q(self, e, states, actions, rewards, next_states, dones):
+    # def update_q(self, e, states, actions, rewards, next_states, dones):
+    #     """
+    #     Векторизованное обновление с поддержкой:
+    #     - Индивидуальных alpha для каждого эпизода (self.alphas[e])
+    #     - Одиночных примеров (если переданы скаляры)
+    #     """
+    #     # Поддержка как одиночных примеров, так и батчей
+    #     states = np.asarray([states]).flatten()
+    #     actions = np.asarray([actions]).flatten()
+    #     rewards = np.asarray([rewards]).flatten()
+    #     next_states = np.asarray([next_states]).flatten()
+    #     dones = np.asarray([dones]).flatten()
+        
+    #     next_values = self.q[next_states].max(axis=1)
+    #     targets = rewards + self.gamma * next_values * (~dones)
+    #     td_errors = targets - self.q[states, actions]
+        
+    #     # Используем alpha для текущего эпизода
+    #     self.q[states, actions] += self.alphas[e] * td_errors
+    def update_q(self, e, states, actions, rewards, next_states, dones, lambda_=0.01, clip_grad=False):
         """
-        Векторизованное обновление с поддержкой:
-        - Индивидуальных alpha для каждого эпизода (self.alphas[e])
-        - Одиночных примеров (если переданы скаляры)
+        Векторизованное обновление Q-таблицы с L2-регуляризацией и дополнительными оптимизациями
+
+        Параметры:
+            e: Номер эпизода (для alphas[e])
+            states: Текущие состояния (скаляр или массив)
+            actions: Выбранные действия (скаляр или массив)
+            rewards: Полученные награды (скаляр или массив)
+            next_states: Следующие состояния (скаляр или массив)
+            dones: Флаги завершения эпизода (скаляр или массив)
+            lambda_: Коэффициент L2-регуляризации (по умолчанию 0.01)
+            clip_grad: Ограничивать ли градиенты (по умолчанию False)
         """
-        # Поддержка как одиночных примеров, так и батчей
+        # Конвертация в numpy массивы
         states = np.asarray([states]).flatten()
         actions = np.asarray([actions]).flatten()
         rewards = np.asarray([rewards]).flatten()
         next_states = np.asarray([next_states]).flatten()
         dones = np.asarray([dones]).flatten()
-        
+
+        # Вычисление целевых значений
         next_values = self.q[next_states].max(axis=1)
         targets = rewards + self.gamma * next_values * (~dones)
+        
+        # Ошибка временной разницы
         td_errors = targets - self.q[states, actions]
         
-        # Используем alpha для текущего эпизода
-        self.q[states, actions] += self.alphas[e] * td_errors
-
+        # L2-регуляризация (добавляем штраф за большие Q-значения)
+        l2_penalty = lambda_ * self.q[states, actions]
+        
+        # Основное обновление с регуляризацией
+        updates = self.alphas[e] * (td_errors - l2_penalty)
+        
+        # Опциональное ограничение обновлений
+        if clip_grad:
+            updates = np.clip(updates, -0.1, 0.1)
+        
+        # Применяем обновления
+        self.q[states, actions] += updates
+        
+        # Опциональное ограничение абсолютных значений Q
+        self.q[states, actions] = np.clip(self.q[states, actions], 
+                                        -self.q_max, 
+                                        self.q_max) if hasattr(self, 'q_max') else self.q[states, actions]
+        
     def save_files(self,prefix=''):
         t = str(int(time()))  # Целочисленная временная метка
         json_name = prefix+'P_' + t + '.json'
