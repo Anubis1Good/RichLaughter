@@ -49,7 +49,7 @@ slope = 4
 #  (PTA18_REXXAR,(100,5,10,50,30)),   
 # bot = WS(symbol,granularity,'e',1,100,7,10,10,40,10,0)
 # bot = WS(symbol,granularity,'e',1)
-bot = WS(symbol,granularity,'e',1,95,35,30,'P_1752317047.4470954.json')
+bot = WS(symbol,granularity,'e',1,95,35,30,'P_1752334518.json')
 # bot = WS(symbol,granularity,'e',1,30,100,30,60,30,50,policy='BP_1751841463.6270704.json')
 
 # conf = (20,55,12,25,20)
@@ -64,7 +64,8 @@ df = bot.get_test_df(df)
 
 
 # fee_base = 0.0004
-fee_base = 0.0012
+# fee_base = 0.0012
+fee_base = 0.0002
 # trades,longs,shorts,closes,equity = check_strategy(df,get_action_STA1e,bot)
 trades,longs,shorts,closes,equity = check_strategy(df,TS,bot)
 print(trades)

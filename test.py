@@ -95,10 +95,5 @@
 # #         print(order['order_num'],'покупка')
 
 # # pprint(orders[0])
-
-import numpy as np
-
-q = np.load('TestNewResults\QLearning\GLTA2_BETA\QTables\QTable_1752317047.4470954.npy')
-print(q)
-q = np.load('TestNewResults\QLearning\GLTA2_BETA\QTables\QTable_1752317237.9735148.npy')
-print(q)
+import cupy as cp
+print(cp.show_config())  # Должен показать CUDA 12.9

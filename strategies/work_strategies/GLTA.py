@@ -17,6 +17,9 @@ def get_action(action):
 def get_action6(action):
     actions = (None,'long_pw','short_pw','close_long_pw','close_short_pw','close_all_pw')
     return actions[action]
+def get_action5(action):
+    actions = (None,'long_pw','short_pw','close_long_pw','close_short_pw')
+    return actions[action]
 
 class GLTA_ALPHA(BaseTABitget):
     """period=20,policy=None"""
@@ -204,7 +207,21 @@ class GLTA2_BETA(GLTA_BETA):
             A = self.policy['A']
             try:
                 index_state = np.where((S == s).all(axis=1))[0][0]
-                a = get_action6(A[index_state])
+                a = get_action5(A[index_state])
+                # print(a)
+                return a
+            except:
+                return None
+            
+class GLTA2_GAMMA(GLTA_GAMMA):
+    def __call__(self, row, *args, **kwds):
+        s = row.loc[self.flags].to_numpy()
+        if self.policy:
+            S = self.policy['S']
+            A = self.policy['A']
+            try:
+                index_state = np.where((S == s).all(axis=1))[0][0]
+                a = get_action5(A[index_state])
                 # print(a)
                 return a
             except:
