@@ -622,7 +622,7 @@ class PTA2_LISICA(BaseTABitget):
         df = add_slice_df(df,self.period)
         return df
     def __call__(self, row, *args, **kwds):
-        nearest_long = row['high'] - row['close'] > row['close'] - row['low'] 
+        nearest_long = row['high'] - row['close'] > row['close'] - row['low']
         if row['low'] < row['bottom_buff']:
             if nearest_long:
                 return 'long_pw'

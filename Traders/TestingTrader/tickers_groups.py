@@ -9,6 +9,10 @@ tickersMoexFut = (
     ('SiU5',True),
     ('IMOEXF',True),
     ('CNYRUBF',True),
+    ('NGN5',True),
+    ('BRQ5',True),
+    ('EDU5',True),
+    ('EURRUBF',True),
 )
 
 tickersMoexStock = (
