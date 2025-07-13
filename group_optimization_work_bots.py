@@ -29,7 +29,7 @@ def optimization_multi(ws,ts,params,test_folder,min_fee: float = 0.0004,
             print(rw,'not stocks')
 
 test_folder = 'DataForTests\DataFromBitget'
-# test_folder = 'DataForTests\DataFromMOEX'
+test_folder = 'DataForTests\DataFromMOEX'
 # test_folder = 'DataForTests\DataFromMOEXto5'
 # test_folder = 'DataForTests\otherMOEX'
 min_fee: float = 0.0004

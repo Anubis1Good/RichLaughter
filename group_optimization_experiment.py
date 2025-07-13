@@ -1,6 +1,6 @@
 import os
 import traceback
-from Optimiztion.Optimizator1 import Optimizator2
+from Optimiztion.Optimizator1 import Optimizator2,Optimizator3
 from strategies.test_strategies.universal import universal_test_strategy as ts
 
 from strategies.work_strategies.STA_ca import *
@@ -20,6 +20,7 @@ def optimization_multi(ws,ts,params,test_folder,min_fee: float = 0.0004,
     need_plot=False
     # need_plot=True
     optim = Optimizator2(ws,ts,params,min_fee=min_fee,max_fee=max_fee,need_plot=need_plot)
+    # optim = Optimizator3(ws,ts,params,min_fee=min_fee,max_fee=max_fee,need_plot=need_plot)
     for rw in list_dir:
         raw_file = os.path.join(test_folder,rw)
         print(rw)
@@ -32,7 +33,7 @@ def optimization_multi(ws,ts,params,test_folder,min_fee: float = 0.0004,
 test_folder = 'DataForTests\DataFromBitget'
 test_folder = 'DataForTests\DataFromMOEX'
 test_folder = 'DataForTests\DataFromMoexFast'
-test_folder = 'DataForTests\DataFromMoexFastStock'
+# test_folder = 'DataForTests\DataFromMoexFastStock'
 # test_folder = 'DataForTests\DataFromMOEXto5'
 min_fee: float = 0.0004
 max_fee: float = 0.0012
@@ -56,18 +57,18 @@ group = (
             (0,0.25,0.5),
         )
     ),
-    # (
-    #     PTA21_WHITEMANE,(
-    #         (5,10,15,30,60,90),
-    #         (5,10,15,30,60,90),
-    #         (5,10),
-    #         (2,3,5),
-    #         (1.5,3),
-    #         (3,5),
-    #         (0,0.25,0.5),
-    #         (0,1)
-    #     )
-    # ),
+    (
+        PTA21_WHITEMANE,(
+            (5,10,15,30,60,90),
+            (5,10,15,30,60,90),
+            (5,10),
+            (2,3,5),
+            (1.5,3),
+            (3,5),
+            (0,0.25,0.5),
+            (0,1)
+        )
+    ),
     # (GLTA_BETA,(
     #     range(5,100,5),
     #     range(5,100,10),

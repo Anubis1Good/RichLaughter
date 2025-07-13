@@ -709,6 +709,7 @@ class PTA8_DOBBY_FREEr(PTA8_DOBBY_FREE):
             return 'long_pw'
 #D  
 class PTA8_WDOBBY_FREEr(BaseTABitget):
+    """period=20,multiplier=2,threshold=30"""
     def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=20,multiplier=2,threshold=30):
         super().__init__(symbol, granularity, productType, n_parts, period)
         self.threshold = threshold
