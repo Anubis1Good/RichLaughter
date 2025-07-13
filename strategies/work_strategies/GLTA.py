@@ -223,6 +223,7 @@ class GLTA2_ALPHA(GLTA_ALPHA):
                 return None
 
 class GLTA2_BETA(GLTA_BETA):
+    """period=20,period2=10,threshold=30,policy:str|dict|None=None"""
     def __call__(self, row, *args, **kwds):
         s = row.loc[self.flags].to_numpy()
         if self.policy:
@@ -237,6 +238,7 @@ class GLTA2_BETA(GLTA_BETA):
                 return None
             
 class GLTA2_GAMMA(GLTA_GAMMA):
+    """period=20,period2=100,threshold=30,period3=60,threshold_adx=30,threshold_chop=50,policy"""
     def __call__(self, row, *args, **kwds):
         s = row.loc[self.flags].to_numpy()
         if self.policy:
