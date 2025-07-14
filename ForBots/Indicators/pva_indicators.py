@@ -404,6 +404,28 @@ def add_mean_on_fractals(df,period=5,kind='rsi'):
     df['bottom_mean'] = df['bottom_mean'].ffill()
     return df
 
+#?good indicator
+def add_diffmean_fractals_channel(df,period=2,kind='sma'):
+    """add 'dmu', 'dmd'"""
+    ups = df[df['fractal_up']]
+    top_mean = ups[kind].rolling(period).mean()
+    df['dmu'] = top_mean - ups['high']
+    df['dmu'] = df['dmu'].ffill()
+    df['dmu'] = df[kind] - df['dmu'] 
+    downs = df[df['fractal_down']]
+    bottom_mean = downs[kind].rolling(period).mean()
+    df['dmd'] = bottom_mean - downs['low']
+    df['dmd'] = df['dmd'].ffill()
+    df['dmd'] = df[kind] - df['dmd'] 
+    return df
+#?good indicator
+def add_sdiffmean_fractals_channel(df,period=2,kind='sma',period_smooth=20):
+    """add 'sdmu', 'sdmd'"""
+    df = add_diffmean_fractals_channel(df,period,kind)
+    df['sdmu'] = df['dmu'].rolling(period_smooth).mean()
+    df['sdmd'] = df['dmd'].rolling(period_smooth).mean()
+    return df
+
 #good indicator
 def add_ext_on_fractals(df,period=5,kind='rsi'):
     """add 'top_ext', bottom_ext'"""

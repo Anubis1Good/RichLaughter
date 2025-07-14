@@ -32,6 +32,7 @@ class QAgent1:
             self.q += 1e-6
         self.alphas = decay_schedule(init_alpha,min_alpha,alpha_decay_ratio,n_episodes)
         self.epsilons = decay_schedule(init_epsilon,min_epsilon,epsilon_decay_ratio,n_episodes)
+        self.epsilons[n_episodes-1] = 0.0
         self.policy = {
             "S": self.env.combs.tolist(),
             "A": np.argmax(self.q, axis=1).astype(np.int8).tolist()  # Единый формат хранения
@@ -56,25 +57,6 @@ class QAgent1:
             return np.argmax(self.q[state])
         return np.random.randint(len(self.q[state]))
 
-    # def update_q(self, e, states, actions, rewards, next_states, dones):
-    #     """
-    #     Векторизованное обновление с поддержкой:
-    #     - Индивидуальных alpha для каждого эпизода (self.alphas[e])
-    #     - Одиночных примеров (если переданы скаляры)
-    #     """
-    #     # Поддержка как одиночных примеров, так и батчей
-    #     states = np.asarray([states]).flatten()
-    #     actions = np.asarray([actions]).flatten()
-    #     rewards = np.asarray([rewards]).flatten()
-    #     next_states = np.asarray([next_states]).flatten()
-    #     dones = np.asarray([dones]).flatten()
-        
-    #     next_values = self.q[next_states].max(axis=1)
-    #     targets = rewards + self.gamma * next_values * (~dones)
-    #     td_errors = targets - self.q[states, actions]
-        
-    #     # Используем alpha для текущего эпизода
-    #     self.q[states, actions] += self.alphas[e] * td_errors
     def update_q(self, e, states, actions, rewards, next_states, dones, lambda_=0.01, clip_grad=False):
         """
         Векторизованное обновление Q-таблицы с L2-регуляризацией и дополнительными оптимизациями
@@ -141,7 +123,7 @@ class QAgent1:
             start = time()
             state, done = self.env.reset(), False
             episode_rewards = 0
-            
+
             while not done:
                 action = self.select_action(state, self.epsilons[e])
                 next_state, reward, done = self.env.step(action)

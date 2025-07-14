@@ -17,25 +17,32 @@ raw_file = 'DataForTests\DataFromMoexFast\MMM5_1_1749581140.csv'
 # raw_file = 'DataForTests\oldMoex\SiM5_1_1745579847.csv'
 period = 10
 df = bitget_loader(raw_file)
-df = df.iloc[-200:]
+# df = df.iloc[-200:]
 # df = df.iloc[10:510]
 
 
+df = add_fractals(df,10)
+df = add_sma(df,20)
+# df['up_diff'] = df['high'] - df['sma']
+df = add_diffmean_fractals_channel(df)
 
-df = add_dzz_peaks(df,period=20)
+# df['down_diff'] = df['low'] - df['sma']
+# df = add_dzz_peaks(df,period=20)
 
-df = add_analys_dzz(df)
-# print(df.tail(10))
+# df = add_analys_dzz(df)
+print(df.tail(10))
 # df.info()
 
 
 plot = True
 # plot = False
 if plot:
-    plt.subplot(2,1,1)
+    # plt.subplot(2,1,1)
     plt.grid() 
     draw_hb_chart_fast(df)
-    # plt.plot(df['zigzag_line'])
+    plt.plot(df['dmu'],color='b')
+    plt.plot(df['dmd'],color='r')
+    plt.plot(df['sma'],color='g')
     # plt.plot(df['upper_channel'])
     # plt.plot(df['fd_up'])
     # plt.plot(df['fd_down'])
@@ -45,7 +52,7 @@ if plot:
     # plt.plot(df['regression_line'])
     # plt.plot(df['stair'])
     # plt.plot(df['trend'])
-    plt.plot(df['zigzag'])
+    # plt.plot(df['zigzag'])
     # plt.plot(df['stair_up'])
     # df['points'] = np.where((df['zigzag_direction'] != df['zigzag_direction'].shift(1)), df['middle'], np.nan)
 
@@ -58,13 +65,13 @@ if plot:
     #     plt.plot(df[k])
     # for k in 'max_hb, min_hb, avarege'.split(', '):
 
-    ax1 = plt.gca()
-    plt.subplot(2,1,2,sharex=ax1)
-    plt.grid() 
+    # ax1 = plt.gca()
+    # plt.subplot(2,1,2,sharex=ax1)
+    # plt.grid() 
     # plt.plot(df['top_mean'])
     # plt.plot(df['bottom_mean'])
-    plt.plot(df['trend'])
-    plt.plot(df['trend_sma'])
+    # plt.plot(df['trend'])
+    # plt.plot(df['trend_sma'])
     # plt.plot(df['ami_filter'])
     # plt.plot(df['ii'])
     # plt.plot(df['market_mode'])

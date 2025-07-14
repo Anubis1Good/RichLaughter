@@ -513,7 +513,7 @@ class Evolutionist2:
         """Сохранение результатов и чекпоинта"""
         # Сохранение лучшей политики
         best_idx = df['name'].iloc[0]
-        self.policy["A"] = self.generation[best_idx].tolist()
+        self.policy["A"] = self.generation[best_idx].astype(np.int8).tolist()
         
         t = str(int(time()))
         

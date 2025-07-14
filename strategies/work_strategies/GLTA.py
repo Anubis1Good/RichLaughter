@@ -31,6 +31,13 @@ memory_mb = (n_states * n_actions * 4) / (1024**2)  # Для float32
 print(f"Q-таблица займет {memory_mb:.2f} MB")
 """
 
+folder_policies = 'modelML/Policies'
+files_policies = os.listdir(folder_policies)
+all_policies = {}
+for file in files_policies:
+    with open(os.path.join(folder_policies,file)) as f:
+        all_policies[file]= json.load(f)
+
 class GLTA_ALPHA(BaseTABitget):
     """period=20,period2=10,policy=None"""
     flags = [
@@ -44,12 +51,13 @@ class GLTA_ALPHA(BaseTABitget):
         self.period2 = period2
         if policy:
             if isinstance(policy,str):
-                try:
-                    with open(os.path.join('modelML/Policies',policy)) as f:
-                        self.policy = json.load(f)
-                except:
-                    print('err')
-                    self.policy = None
+                self.policy = all_policies[policy]
+                # try:
+                #     with open(os.path.join('modelML/Policies',policy)) as f:
+                #         self.policy = json.load(f)
+                # except:
+                #     print('err')
+                #     self.policy = None
             if isinstance(policy,dict):
                 self.policy = policy
         else:
@@ -97,12 +105,7 @@ class GLTA_BETA(BaseTABitget):
         self.threshold = threshold
         if policy:
             if isinstance(policy,str):
-                try:
-                    with open(os.path.join('modelML/Policies',policy)) as f:
-                        self.policy = json.load(f)
-                except:
-                    print('err')
-                    self.policy = None
+                self.policy = all_policies[policy]
             if isinstance(policy,dict):
                 self.policy = policy
         else:
@@ -161,12 +164,7 @@ class GLTA_GAMMA(BaseTABitget):
         self.threshold = threshold
         if policy:
             if isinstance(policy,str):
-                try:
-                    with open(os.path.join('modelML/Policies',policy)) as f:
-                        self.policy = json.load(f)
-                except:
-                    print('err')
-                    self.policy = None
+                self.policy = all_policies[policy]
             if isinstance(policy,dict):
                 self.policy = policy
         else:

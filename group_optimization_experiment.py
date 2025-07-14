@@ -73,7 +73,7 @@ group = (
         (5,10,100),
         (5,10,100),
         (10,16,30,45),
-        ('beta2.json','beta2_evo.json')
+        ('GA_beta2_1.json','Q_beta2_000.json','Q_beta2_001.json','Q_beta2_002.json','QGA10_beta2_001.json','QGA20_beta2_001.json')
     )),
     # (GLTA2_GAMMA,(
     #     (5,10,15,30,60,100),

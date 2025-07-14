@@ -53,7 +53,7 @@ slope = 4
 # bot = WS(symbol,granularity,'e',1)
 # bot = WS(symbol,granularity,'e',1,25,5,2,3,5,0.5)
 # bot = WS(symbol,granularity,'e',1,20,10,'LP_1752352674.json')
-bot = WS(symbol,granularity,'e',1,96,100,10,'beta2.json')
+bot = WS(symbol,granularity,'e',1,25,9,12,'QGA20_beta2_001.json')
 # bot = WS(symbol,granularity,'e',1,30,100,30,60,30,50,'LP_1752353219.json')
 # bot = WS(symbol,granularity,'e',1,30,100,30,60,30,50,policy='BP_1751841463.6270704.json')
 
