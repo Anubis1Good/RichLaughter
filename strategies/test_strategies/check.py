@@ -16,7 +16,7 @@ def check_strategy(df,test_strategy,work_strategy):
     equity = []
     df.apply(lambda row: test_strategy(row,trades,shorts,longs,closes,equity,work_strategy),axis=1)
     return trades,longs,shorts,closes,equity
-
+#No use
 def work_action(action,trades,cur_price,fee,fees,equity,equity_fee,pos,open_price):
     """actions = (None,'long_pw','short_pw','close_long_pw','close_short_pw','close_all_pw')"""
     reward = 0
@@ -169,26 +169,29 @@ from numba import jit  # Ускорение вычислений (опциона
 
 #TODO trades['total_fee_per'] считается неправильно
 # Ускоренная версия work_action (если нужно)
-@jit(nopython=True)
-def work_action_numba(action, trades, cur_price, fee, fees, equity, equity_fee, pos, open_price):
+# @jit(nopython=True)
+def work_action_v2(action, trades, cur_price, fee, fees, equity, equity_fee, pos, open_price,open_fee):
     """actions = (None,'long_pw','short_pw','close_long_pw','close_short_pw','close_all_pw')"""
     reward = 0
-    feei = fee * cur_price  # fee абсолютное значение
+    feei = (fee * cur_price) / 100  # fee абсолютное значение
+    # print(feei)
     if action == 1:  # long
         if pos != 1:
             if pos == 0:
                 open_price = cur_price
-                reward = -fee * 100  # комиссия за открытие
+                reward = -fee  # комиссия за открытие
                 fees += feei
-                equity_fee.append(equity_fee[-1] - feei)
+                # equity_fee.append(equity_fee[-1] - feei)
+                open_fee = feei
             else:  # был шорт, закрываем его и открываем лонг
                 delta = open_price - cur_price  # прибыль по шорту (как при action=4)
                 trades['total'] += delta
-                reward = ((delta - fee * 2) / cur_price) * 100   # комиссия за закрытие + открытие
+                reward = ((delta  / cur_price) * 100) - fee*2   # комиссия за закрытие + открытие
                 open_price = cur_price  # новая цена для лонга
                 fees += feei * 2
                 equity.append(equity[-1] + delta)
-                equity_fee.append(equity_fee[-1] + delta - feei * 2)
+                equity_fee.append(equity_fee[-1] + delta - feei * 2 - open_fee)
+                open_fee = 0
             pos = 1
             trades['count'] += 1
 
@@ -196,17 +199,19 @@ def work_action_numba(action, trades, cur_price, fee, fees, equity, equity_fee, 
         if pos != -1:
             if pos == 0:
                 open_price = cur_price
-                reward = -fee * 100  # комиссия за открытие
+                reward = -fee  # комиссия за открытие
                 fees += feei
-                equity_fee.append(equity_fee[-1] - feei)
+                open_fee = feei
+                # equity_fee.append(equity_fee[-1] - feei)
             else:  # был лонг, закрываем его и открываем шорт
                 delta = cur_price - open_price  # прибыль по лонгу (как при action=3)
                 trades['total'] += delta
-                reward = ((delta - fee * 2) / cur_price) * 100  # комиссия за закрытие + открытие
+                reward = ((delta  / cur_price) * 100) - fee*2  # комиссия за закрытие + открытие
                 open_price = cur_price  # новая цена для шорта
                 fees += feei * 2
                 equity.append(equity[-1] + delta)
-                equity_fee.append(equity_fee[-1] + delta - feei * 2)
+                equity_fee.append(equity_fee[-1] + delta - feei * 2 - open_fee)
+                open_fee = 0
             pos = -1
             trades['count'] += 1
 
@@ -214,41 +219,45 @@ def work_action_numba(action, trades, cur_price, fee, fees, equity, equity_fee, 
         if pos == 1:
             delta = cur_price - open_price
             trades['total'] += delta
-            reward = ((delta - fee) / cur_price) * 100 
+            reward = ((delta  / cur_price) * 100) - fee 
             pos = 0
             fees += feei
             equity.append(equity[-1] + delta)
-            equity_fee.append(equity_fee[-1] + delta - feei)
+            equity_fee.append(equity_fee[-1] + delta - feei - open_fee)
+            open_fee = 0
 
     elif action == 4:  # close short
         if pos == -1:
             delta = open_price - cur_price
             trades['total'] += delta
-            reward = ((delta - fee) / cur_price) * 100 
+            reward = ((delta  / cur_price) * 100) - fee 
             pos = 0
             fees += feei
             equity.append(equity[-1] + delta)
-            equity_fee.append(equity_fee[-1] + delta - feei)
+            equity_fee.append(equity_fee[-1] + delta - feei - open_fee)
+            open_fee = 0
     elif action == 5:
         if pos == 1:
             delta = cur_price - open_price
             trades['total'] += delta
-            reward = ((delta - fee) / cur_price) * 100 
+            reward = ((delta  / cur_price) * 100) - fee
             pos = 0
             fees += feei
             equity.append(equity[-1] + delta)
-            equity_fee.append(equity_fee[-1] + delta - feei)
+            equity_fee.append(equity_fee[-1] + delta - feei - open_fee)
+            open_fee = 0
         elif pos == -1:
             delta = open_price - cur_price
             trades['total'] += delta
-            reward = ((delta - fee) / cur_price) * 100 
+            reward = ((delta  / cur_price) * 100) - fee
             pos = 0
             fees += feei
             equity.append(equity[-1] + delta)
-            equity_fee.append(equity_fee[-1] + delta - feei)
+            equity_fee.append(equity_fee[-1] + delta - feei - open_fee)
+            open_fee = 0
         
     trades['total_fee_per'] += reward
-    return pos,open_price,fees
+    return pos,open_price,fees,open_fee
 
 def check_strategy_v3(df: pd.DataFrame, work_strategy, fee=0.0002):
     """
@@ -268,9 +277,11 @@ def check_strategy_v3(df: pd.DataFrame, work_strategy, fee=0.0002):
     signals = np.where(signals[:, None] == actions_array)[1]  # Ваш метод конвертации в индексы
     
     prices = df['close'].values
+    fee_one_p = (fee / 2) * 100
+    open_fee = 0
     for i in range(len(signals)):
-        pos, open_price, fees = work_action(
-            signals[i], trades, prices[i], fee, fees, equity, equity_fee, pos, open_price
+        pos, open_price, fees, open_fee = work_action_v2(
+            signals[i], trades, prices[i], fee_one_p, fees, equity, equity_fee, pos, open_price,open_fee
         )
     
 

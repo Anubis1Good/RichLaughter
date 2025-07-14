@@ -68,7 +68,7 @@ class QEnv1(EnvBase):
                 else:  # был шорт, закрываем его и открываем лонг
                     delta = self.open_price - cur_price  # прибыль по шорту (как при action=4)
                     self.total += delta
-                    reward = ((delta - fee * 2) / cur_price) * 100   # комиссия за закрытие + открытие
+                    reward = (delta  / cur_price) * 100 - fee * 2  # комиссия за закрытие + открытие
                     self.open_price = cur_price  # новая цена для лонга
                 self.pos = 1
                 self.count += 1
@@ -82,7 +82,7 @@ class QEnv1(EnvBase):
                 else:  # был лонг, закрываем его и открываем шорт
                     delta = cur_price - self.open_price  # прибыль по лонгу (как при action=3)
                     self.total += delta
-                    reward = ((delta - fee * 2) / cur_price) * 100  # комиссия за закрытие + открытие
+                    reward = (delta  / cur_price) * 100 - fee * 2  # комиссия за закрытие + открытие
                     self.open_price = cur_price  # новая цена для шорта
                 self.pos = -1
                 self.count += 1
@@ -91,14 +91,14 @@ class QEnv1(EnvBase):
             if self.pos == 1:
                 delta = cur_price - self.open_price
                 self.total += delta
-                reward = ((delta - fee) / cur_price) * 100 
+                reward = (delta  / cur_price) * 100 - fee 
                 self.pos = 0
 
         elif action == 4:  # close short
             if self.pos == -1:
                 delta = self.open_price - cur_price
                 self.total += delta
-                reward = ((delta - fee) / cur_price) * 100 
+                reward = (delta  / cur_price) * 100 - fee
                 self.pos = 0
 
             

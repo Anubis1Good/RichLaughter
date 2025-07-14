@@ -8,14 +8,14 @@ from time import time
 from Loader.BitgetLoader import bitget_loader
 from utils.draw_utils import draw_lite_chart,draw_chart_channel,draw_hb_chart,draw_bollinger,draw_dynamics,draw_rails,draw_hb_chart_fast
 # from ForBots.Indicators.classic_indicators import add_donchan_channel,add_vangerchik,add_sma, add_slice_df,add_bollinger,add_over_bb,add_attached_bb,add_big_volume,add_dynamics_ma
-from strategies.test_strategies.check import check_strategy,check_strategy_v2
-from strategies.work_strategies.PTA import PTA8_WDOBBY_FREEr as WS
+from strategies.test_strategies.check import check_strategy,check_strategy_v3
+# from strategies.work_strategies.PTA import PTA8_WDOBBY_FREEr as WS
 # from strategies.work_strategies.PTAX import PTA19_CASSIA as WS
 # from strategies.work_strategies.PTAXX import PTA21_AURIEL as WS
 # from strategies.work_strategies.STA_ca import STA3_FORCE as WS
 # from strategies.work_strategies.GLTA import GLTA2_ALPHA as WS
 # from strategies.work_strategies.GLTA import GLTA2_BETA as WS
-# from strategies.work_strategies.GLTA import GLTA2_GAMMA as WS
+from strategies.work_strategies.GLTA import GLTA2_GAMMA as WS
 # from strategies.work_strategies.OGTA import OGTA4_DOG as WS
 # from strategies.work_strategies.LTA import LTA_IRONANNY as WS
 # from strategies.work_strategies.LTA2 import LTA2_DRG as WS
@@ -51,10 +51,10 @@ slope = 4
 #  (PTA18_REXXAR,(100,5,10,50,30)),   
 # bot = WS(symbol,granularity,'e',1,100,7,10,10,40,10,0)
 # bot = WS(symbol,granularity,'e',1)
-bot = WS(symbol,granularity,'e',1,5,1.2,27)
+# bot = WS(symbol,granularity,'e',1,25,5,2,3,5,0.5)
 # bot = WS(symbol,granularity,'e',1,20,10,'LP_1752352674.json')
 # bot = WS(symbol,granularity,'e',1,95,35,30,'LP_1752340591.json')
-# bot = WS(symbol,granularity,'e',1,30,100,30,60,30,50,'LP_1752353219.json')
+bot = WS(symbol,granularity,'e',1,30,100,30,60,30,50,'LP_1752353219.json')
 # bot = WS(symbol,granularity,'e',1,30,100,30,60,30,50,policy='BP_1751841463.6270704.json')
 
 # conf = (20,55,12,25,20)
@@ -72,7 +72,8 @@ df = bot.get_test_df(df)
 # fee_base = 0.0012
 fee_base = 0.0002
 # trades,longs,shorts,closes,equity = check_strategy(df,get_action_STA1e,bot)
-# trades,equity,equity_fee = check_strategy_v2(df,bot)
+trades,equity,equity_fee = check_strategy_v3(df,bot)
+
 trades,longs,shorts,closes,equity = check_strategy(df,TS,bot)
 print(trades)
 try:

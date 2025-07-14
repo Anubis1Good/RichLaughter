@@ -342,7 +342,7 @@ class Evolutionist2:
                 else:  # был шорт, закрываем его и открываем лонг
                     delta = open_price - cur_price  # прибыль по шорту (как при action=4)
                     test_result['total'] += delta
-                    reward = ((delta - fee * 2) / cur_price) * 100   # комиссия за закрытие + открытие
+                    reward = ((delta  / cur_price) * 100) - fee*2  # комиссия за закрытие + открытие
                     open_price = cur_price  # новая цена для лонга
                 pos = 1
                 test_result['count'] += 1
@@ -355,7 +355,7 @@ class Evolutionist2:
                 else:  # был лонг, закрываем его и открываем шорт
                     delta = cur_price - open_price  # прибыль по лонгу (как при action=3)
                     test_result['total'] += delta
-                    reward = ((delta - fee * 2) / cur_price) * 100  # комиссия за закрытие + открытие
+                    reward = ((delta  / cur_price) * 100) - fee*2 # комиссия за закрытие + открытие
                     open_price = cur_price  # новая цена для шорта
                 pos = -1
                 test_result['count'] += 1
@@ -364,14 +364,14 @@ class Evolutionist2:
             if pos == 1:
                 delta = cur_price - open_price
                 test_result['total'] += delta
-                reward = ((delta - fee) / cur_price) * 100 
+                reward = ((delta  / cur_price) * 100) - fee
                 pos = 0
 
         elif action == 4:  # close short
             if pos == -1:
                 delta = open_price - cur_price
                 test_result['total'] += delta
-                reward = ((delta - fee) / cur_price) * 100 
+                reward = ((delta  / cur_price) * 100) - fee
                 pos = 0
 
             

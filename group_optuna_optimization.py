@@ -214,10 +214,11 @@ def process_group(part, test_folder, n_trials, n_jobs, need_plot, min_fee):
     with Pool(processes=num_processes) as pool:
         try:
             # Используем imap_unordered для более эффективной работы
-            for result in tqdm(pool.imap_unordered(worker, files),
-                            total=len(files),
-                            desc=f"Processing {part[0]}",
-                            unit="file"):
+            for result in pool.imap_unordered(worker, files):
+            # for result in tqdm(pool.imap_unordered(worker, files),
+            #                 total=len(files),
+            #                 desc=f"Processing {part[0]}",
+            #                 unit="file"):
                 if result:
                     success_count += 1
         except Exception as e:
