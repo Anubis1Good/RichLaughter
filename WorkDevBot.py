@@ -14,8 +14,8 @@ from strategies.test_strategies.check import check_strategy,check_strategy_v3
 # from strategies.work_strategies.PTAXX import PTA21_AURIEL as WS
 # from strategies.work_strategies.STA_ca import STA3_FORCE as WS
 # from strategies.work_strategies.GLTA import GLTA2_ALPHA as WS
-# from strategies.work_strategies.GLTA import GLTA2_BETA as WS
-from strategies.work_strategies.GLTA import GLTA2_GAMMA as WS
+from strategies.work_strategies.GLTA import GLTA2_BETA as WS
+# from strategies.work_strategies.GLTA import GLTA2_GAMMA as WS
 # from strategies.work_strategies.OGTA import OGTA4_DOG as WS
 # from strategies.work_strategies.LTA import LTA_IRONANNY as WS
 # from strategies.work_strategies.LTA2 import LTA2_DRG as WS
@@ -29,7 +29,7 @@ from strategies.work_strategies.GLTA import GLTA2_GAMMA as WS
 from strategies.test_strategies.universal import universal_test_strategy as TS
 # raw_file = 'DataForTests\DataFromBitget\DOGEUSDT_1m_1739873922.csv'
 raw_file = 'DataForTests\DataFromMOEX\MMM5_1_1749581140.csv'
-raw_file = 'DataForTests/DataFromMoexFast/5MMM5_1_1749581140.csv'
+# raw_file = 'DataForTests/DataFromMoexFast/5MMM5_1_1749581140.csv'
 # raw_file = 'DataForTests\oldMoex\SiM5_1_1745579847.csv'
 # raw_file = 'DataForTests\oldBitget\DOGEUSDT_1m_1741087742_big.csv'
 # raw_file = 'DataForTests\DataFromTicksBitget\DOGEUSDT_1m_from_ticks.csv'
@@ -53,8 +53,8 @@ slope = 4
 # bot = WS(symbol,granularity,'e',1)
 # bot = WS(symbol,granularity,'e',1,25,5,2,3,5,0.5)
 # bot = WS(symbol,granularity,'e',1,20,10,'LP_1752352674.json')
-# bot = WS(symbol,granularity,'e',1,95,35,30,'LP_1752340591.json')
-bot = WS(symbol,granularity,'e',1,30,100,30,60,30,50,'LP_1752353219.json')
+bot = WS(symbol,granularity,'e',1,96,100,10,'beta2.json')
+# bot = WS(symbol,granularity,'e',1,30,100,30,60,30,50,'LP_1752353219.json')
 # bot = WS(symbol,granularity,'e',1,30,100,30,60,30,50,policy='BP_1751841463.6270704.json')
 
 # conf = (20,55,12,25,20)
@@ -72,7 +72,7 @@ df = bot.get_test_df(df)
 # fee_base = 0.0012
 fee_base = 0.0002
 # trades,longs,shorts,closes,equity = check_strategy(df,get_action_STA1e,bot)
-trades,equity,equity_fee = check_strategy_v3(df,bot)
+# trades,equity,equity_fee = check_strategy_v3(df,bot)
 
 trades,longs,shorts,closes,equity = check_strategy(df,TS,bot)
 print(trades)
@@ -85,13 +85,13 @@ except:
 
 
 
-# longs = np.array(longs)
-# shorts = np.array(shorts)
-# closes = np.array(closes)
+longs = np.array(longs)
+shorts = np.array(shorts)
+closes = np.array(closes)
 equity = np.array(equity)
 
 see_equity = True
-# see_equity = False
+see_equity = False
 if see_equity:
     plt.plot(equity,color='red')
     # plt.plot(equity_fee,color='blue')

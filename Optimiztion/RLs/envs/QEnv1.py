@@ -24,7 +24,7 @@ class QEnv1(EnvBase):
         self.n_actions = len(self.actions)
         self.ws = ws
         n_features = ws.n_features
-        self.fee = fee
+        self.fee = fee / 2 
         combs = list(itertools.product(variation_state,repeat=n_features))
         self.combs = np.array(combs)
         self.n_states = self.combs.shape[0]
@@ -56,15 +56,16 @@ class QEnv1(EnvBase):
         """actions = (None, 'long_pw', 'short_pw', 'close_long_pw', 'close_short_pw')"""
         reward = 0
         cur_price = self.prices[self.i]
-        fee = self.fee * cur_price  # fee абсолютное значение
-        r_for_action = 0.05
+        fee = self.fee * 100 # fee в %
+        r_for_action = 0.01
+        # r_for_action = 0
 
         if action == 1:  # long
             reward += r_for_action
             if self.pos != 1:
                 if self.pos == 0:
                     self.open_price = cur_price
-                    reward = -self.fee * 100  # комиссия за открытие
+                    reward = -fee  # комиссия за открытие
                 else:  # был шорт, закрываем его и открываем лонг
                     delta = self.open_price - cur_price  # прибыль по шорту (как при action=4)
                     self.total += delta
@@ -78,7 +79,7 @@ class QEnv1(EnvBase):
             if self.pos != -1:
                 if self.pos == 0:
                     self.open_price = cur_price
-                    reward = -self.fee * 100  # комиссия за открытие
+                    reward = -fee # комиссия за открытие
                 else:  # был лонг, закрываем его и открываем шорт
                     delta = cur_price - self.open_price  # прибыль по лонгу (как при action=3)
                     self.total += delta

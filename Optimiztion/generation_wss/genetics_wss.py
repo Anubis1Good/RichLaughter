@@ -115,7 +115,7 @@ class Evolutionist:
         df = pd.DataFrame(data)
         df = pd.concat([old_top,df],axis=0)
         df = df.drop_duplicates(subset=['total'], keep='first')
-        df = df.sort_values('total_min_fee',axis=0,ascending=False).reset_index(drop=True)
+        df = df.sort_values('total_min_fee',ascending=False).reset_index(drop=True)
         df = df.head(len(df.index)//4)
         best_individuals = df['name'].to_numpy()
         return best_individuals,df
@@ -247,14 +247,14 @@ class Evolutionist2:
         # Настройки генетического алгоритма
         self.elite_size = max(1, int(n_individuals * 0.1))
         self.mutation_rate = 0.15
-        self.diversity_threshold = 0.25
+        self.diversity_threshold = 0.5
         self.fitness_scores = {}
         
         # Инициализация политики
         self._initialize_policy(init_policy)
         
         # Настройки комиссий
-        self.fee = fee
+        self.fee = fee / 2
         
         # Генерация популяции
         self.generation = self._initialize_population()
@@ -331,14 +331,14 @@ class Evolutionist2:
         """actions = (None, 'long_pw', 'short_pw', 'close_long_pw', 'close_short_pw')"""
         reward = 0
         
-        fee = self.fee * cur_price  # fee абсолютное значение
+        fee = self.fee * 100  # fee в %
 
 
         if action == 1:  # long
             if pos != 1:
                 if pos == 0:
                     open_price = cur_price
-                    reward = -self.fee * 100  # комиссия за открытие
+                    reward = -fee  # комиссия за открытие
                 else:  # был шорт, закрываем его и открываем лонг
                     delta = open_price - cur_price  # прибыль по шорту (как при action=4)
                     test_result['total'] += delta
@@ -351,7 +351,7 @@ class Evolutionist2:
             if pos != -1:
                 if pos == 0:
                     open_price = cur_price
-                    reward = -self.fee * 100  # комиссия за открытие
+                    reward = -fee  # комиссия за открытие
                 else:  # был лонг, закрываем его и открываем шорт
                     delta = cur_price - open_price  # прибыль по лонгу (как при action=3)
                     test_result['total'] += delta
@@ -401,6 +401,7 @@ class Evolutionist2:
         """Оценка одной особи"""
         idx, individual, self_ref, start_idx = args
         if idx < start_idx:
+            # print(idx,start_idx)
             return None
             
         self = self_ref  # получаем ссылку на экземпляр класса
@@ -408,7 +409,6 @@ class Evolutionist2:
         param[-1]["A"] = individual
         bot = self.ws('BTCUSDT', "1m", "usdt-futures", 1, *param)
         trades = self.check_strategy(bot)
-        
         if trades['count'] == 0:
             return None
             
@@ -417,7 +417,8 @@ class Evolutionist2:
     
     def calculate_fitness(self, result: Dict) -> float:
         """Расчет fitness-функции"""
-        return result['total_fee_per'] * 0.8 + np.log(result['count'] + 1) * 0.1
+        return result['total_fee_per']
+        # return result['total_fee_per'] * 0.8 + np.log(result['count'] + 1) * 0.1
         
     
     def population_diversity(self) -> float:
@@ -432,8 +433,7 @@ class Evolutionist2:
         args = [(idx, individual, self, start_index) 
                for idx, individual in enumerate(self.generation)]
         
-        num_processes = min(max(1, psutil.cpu_count(logical=False) - self.n_save_cores), 
-                           len(self.generation))
+        num_processes = min(max(1, psutil.cpu_count(logical=False) - self.n_save_cores), len(self.generation))
         
         with Pool(processes=num_processes) as pool:
             results = []
@@ -452,8 +452,8 @@ class Evolutionist2:
         df = pd.DataFrame(data)
         df = pd.concat([old_top, df], axis=0).drop_duplicates(subset=['total'], keep='first')
         df = df.sort_values('total_fee_per', ascending=False).reset_index(drop=True)
-        
-        return df.head(len(df.index)//4)['name'].to_numpy(), df
+        df = df.head(len(df.index)//4)
+        return df.head()['name'].to_numpy(), df
     
     def crossover(self, ind1: np.ndarray, ind2: np.ndarray) -> np.ndarray:
         """Улучшенное скрещивание с несколькими точками"""
@@ -467,56 +467,43 @@ class Evolutionist2:
         return child
     
     def mutate(self, ind: np.ndarray) -> np.ndarray:
-        """Адаптивная мутация"""
         mutation_rate = self.mutation_rate * (1 - self.current_generation/self.total_generations)
         new_ind = ind.copy()
         
         for i in range(len(new_ind)):
             if random.random() < mutation_rate:
                 if random.random() < 0.7:  # Небольшие изменения
-                    new_ind[i] += np.random.choice([-1,1])
-                    if new_ind[i] < 0:
-                        new_ind[i] = 4
-                    if new_ind[i] > 4:
-                        new_ind[i] = 0
+                    new_ind[i] += random.choice([-1, 1])
+                    new_ind[i] = max(0, min(4, new_ind[i]))  # Ограничение 0-4
                 else:  # Полностью новое значение
-                    new_ind[i] = random.choice([[0,1,2,3,4]])
-        
+                    new_ind[i] = random.choice([0, 1, 2, 3, 4])  # ВАЖНО: выбор числа, а не списка
         return new_ind
     
     def update_generation(self, best_individuals: np.ndarray):
         """Обновление поколения с элитизмом и турнирным отбором"""
         # Сохраняем элиту
-        elite = self.generation[best_individuals[:self.elite_size]]
+        best = self.generation[best_individuals].tolist()
+        part = self.n_individuals//4
+        halfbloods = []
+        mutants = []
+        for i in range(part):
+            ind1 = random.choice(best)
+            ind2 = random.choice(best)
+            halfbloods.append(self.crossover(ind1,ind2))
+            mutants.append(self.mutate(ind1))
         
-        # Турнирный отбор родителей
-        parents = []
-        tournament_size = 3
-        for _ in range(self.n_individuals - self.elite_size):
-            candidates = random.sample(best_individuals.tolist(), tournament_size)
-            winner = max(candidates, key=lambda x: self.fitness_scores.get(x, 0))
-            if winner >= len(self.generation):
-                winner = len(self.generation) - 1
-            parents.append(self.generation[winner])
+        new_generation = best + halfbloods + mutants
+        deficit = self.n_individuals - len(new_generation)
+        if deficit > 0:
+            newbloods = self.generate_random_policies(deficit).tolist()
+            new_generation += newbloods
         
-        # Генерация потомков
-        offspring = []
-        for i in range(0, len(parents)-1, 2):
-            child1 = self.crossover(parents[i], parents[i+1])
-            child2 = self.crossover(parents[i+1], parents[i])
-            offspring.extend([child1, child2])
-        
-        # Контроль разнообразия
-        if self.population_diversity() < self.diversity_threshold:
-            num_new = int(self.n_individuals * 0.3)
-            offspring = offspring[:-num_new] + self.generate_random_policies(num_new).tolist()
-        
-        # Формирование нового поколения
-        self.generation = np.concatenate([elite, np.array(offspring)])
+        self.generation = np.array(new_generation) 
         self.current_generation += 1
         
         # Адаптация параметров
         self._adapt_parameters()
+
     
     def _adapt_parameters(self):
         """Адаптация параметров алгоритма"""
@@ -619,12 +606,12 @@ class Evolutionist2:
                 
                 # Обновление поколения
                 self.update_generation(best_individuals)
-                
                 # Логирование
                 best = df.iloc[0]
                 print(f"Best: ID={best['name']} | Percent={best['total_fee_per']:.2f} | Count={best['count']} | Total={best['total']}")
                 print(f"Diversity: {self.population_diversity():.2f} | "
                       f"Mutation: {self.mutation_rate:.3f}")
+                df['name'] = df.index
                 
         except KeyboardInterrupt:
             print("\nEvolution interrupted by user!")
