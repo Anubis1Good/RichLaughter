@@ -6,7 +6,11 @@ end = int(time())*1000
 week = 60*60*24*7*1000 - 1000
 start = end-week
 # download_bitget_ticks(symbol="DOGEUSDT",start=start,end=end)
-save_df(symbol="DOGEUSDT",n_parts=1500,granularity='1H')
+ts = ('1m','5m','15m','30m','1H')
+for t in ts:
+    print(t,'start')
+    save_df(symbol="DOGEUSDT",n_parts=100,granularity=t)
+    print(t,'done')
 today = date.today()
 start_date = str(today - timedelta(days=30))
 # start_date = '2025-02-01'

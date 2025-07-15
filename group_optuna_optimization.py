@@ -150,25 +150,6 @@ if not os.path.exists(main_folder):
 optuna.logging.disable_default_handler()
 optuna.logging.set_verbosity(optuna.logging.ERROR)
 
-# raw_file = 'DataForTests/DataFromMoexFast/5MMM5_1_1749581140.csv'
-# strategy_config = (
-#         PTA4_U3,(
-#         (5,10,15,30,60,90),
-#         (5,10,15,30,60,90),
-#         (5,10),
-#         (2,3,5),
-#         ("DC","VG","BB","VC","WC"),
-#         ("rsi","rsi_tw","mfi","s","uo"),
-#     )
-# )
-# print(res)
-# import optuna.visualization as vis
-
-# # График истории оптимизации
-# vis.plot_optimization_history(study).show()
-
-# # Важность параметров
-# vis.plot_param_importances(study).show()
 
 def process_file(raw_file, part, n_trials, n_jobs, need_plot, min_fee):
     """Обработка одного файла в отдельном процессе"""
@@ -230,11 +211,14 @@ def process_group(part, test_folder, n_trials, n_jobs, need_plot, min_fee):
 if __name__ == '__main__':
 
 
-    from group_optimization_experiment import group
+    # from group_optimization_experiment import group
+    from Optimiztion.optimizations_groups.optuna_groups import group
     # test_folder = 'DataForTests\DataFromMOEX'
-    test_folder = 'DataForTests\DataFromMoexFast'
+    # test_folder = 'DataForTests\DataFromMoexFast'
     # test_folder = 'DataForTests\DataFromMoexFastStock'
-    min_fee: float = 0.0002
+    test_folder = 'DataForTests\DataFromBitget'
+    # min_fee: float = 0.0002
+    min_fee: float = 0.0004
     need_plot=True
     n_trials = 100
     n_jobs = 1
