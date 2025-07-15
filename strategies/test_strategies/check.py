@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+# from numba import jit  # Ускорение вычислений (опционально)
 def check_strategy(df,test_strategy,work_strategy):
     """
     trades,longs,shorts,closes,equity
@@ -165,7 +166,7 @@ def check_strategy_fast(df:pd.DataFrame, test_strategy, work_strategy):
     return trades
 
 
-from numba import jit  # Ускорение вычислений (опционально)
+
 
 #TODO trades['total_fee_per'] считается неправильно
 # Ускоренная версия work_action (если нужно)
