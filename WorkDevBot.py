@@ -8,11 +8,11 @@ from time import time
 from Loader.BitgetLoader import bitget_loader
 from utils.draw_utils import draw_lite_chart,draw_chart_channel,draw_hb_chart,draw_bollinger,draw_dynamics,draw_rails,draw_hb_chart_fast
 # from ForBots.Indicators.classic_indicators import add_donchan_channel,add_vangerchik,add_sma, add_slice_df,add_bollinger,add_over_bb,add_attached_bb,add_big_volume,add_dynamics_ma
-from strategies.test_strategies.check import check_strategy,check_strategy_v3
+from strategies.test_strategies.check import check_strategy,check_strategy_v3,check_strategy_v4,check_strategy_v5
 # from strategies.work_strategies.PTA import PTA8_WDOBBY_FREEr as WS
 # from strategies.work_strategies.PTAX import PTA19_CASSIA as WS
-# from strategies.work_strategies.PTAXX import PTA21_WHITEMANE as WS
-from strategies.work_strategies.STA_ca import STA3_LITE as WS
+from strategies.work_strategies.PTAXX import PTA21_AURIEL as WS
+# from strategies.work_strategies.STA_ca import STA3_LITE as WS
 # from strategies.work_strategies.GLTA import GLTA2_ALPHA as WS
 # from strategies.work_strategies.GLTA import GLTA2_BETA as WS
 # from strategies.work_strategies.GLTA import GLTA2_GAMMA as WS
@@ -27,9 +27,9 @@ from strategies.work_strategies.STA_ca import STA3_LITE as WS
 # from strategies.work_strategies.experiments import ExpBot as WS
 
 from strategies.test_strategies.universal import universal_test_strategy as TS
-raw_file = 'DataForTests\DataFromBitget\DOGEUSDT_1H_1752589488.csv'
+# raw_file = 'DataForTests\DataFromBitget\DOGEUSDT_1H_1752589488.csv'
 # raw_file = 'DataForTests\DataFromMOEX\MMM5_1_1749581140.csv'
-# raw_file = 'DataForTests/DataFromMoexFast/5MMM5_1_1749581140.csv'
+raw_file = 'DataForTests/DataFromMoexFast/5MMM5_1_1749581140.csv'
 # raw_file = 'DataForTests\oldMoex\SiM5_1_1745579847.csv'
 # raw_file = 'DataForTests\oldBitget\DOGEUSDT_1m_1741087742_big.csv'
 # raw_file = 'DataForTests\DataFromTicksBitget\DOGEUSDT_1m_from_ticks.csv'
@@ -39,7 +39,9 @@ raw_file = 'DataForTests\DataFromBitget\DOGEUSDT_1H_1752589488.csv'
 # raw_file = 'DataForTests\DataFromBitget\DOGEUSDT_30m_1738929225.csv'
 # raw_file = 'DataForTests\oldBitget\DOGEUSDT_1H_1739872800.csv'
 # raw_file = 'DataForTests\oldBitget\DOGEUSDT_4H_1739873240.csv'
-
+longs = []
+shorts = []
+closes = []
 start = time()
 
 df = bitget_loader(raw_file)
@@ -51,12 +53,16 @@ slope = 4
 #  (PTA18_REXXAR,(100,5,10,50,30)),   
 # bot = WS(symbol,granularity,'e',1,100,7,10,10,40,10,0)
 # bot = WS(symbol,granularity,'e',1)
-bot = WS(symbol,granularity,'e',1,101,9,0.65,9,79)
+bot = WS(symbol,granularity,'e',1,25,10,2,3,6,0.5)
 # bot = WS(symbol,granularity,'e',1,20,10,'LP_1752352674.json')
 # bot = WS(symbol,granularity,'e',1,25,9,12,'QGA20_beta2_001.json')
 # bot = WS(symbol,granularity,'e',1,30,100,30,60,30,50,'LP_1752353219.json')
 # bot = WS(symbol,granularity,'e',1,30,100,30,60,30,50,policy='BP_1751841463.6270704.json')
-
+# trades,equity3,equity_fee = check_strategy_v5(df.copy(),bot,close_2330=True)
+# print(trades)
+# trades,equity1,equity_fee,longs1,shorts1,closes1 = check_strategy_v4(df.copy(),bot)
+# print(trades)
+# trades,equity,equity_fee = check_strategy_v5(df,bot)
 # conf = (20,55,12,25,20)
 # bot = WS(symbol,granularity,"usdt-futures",1,*conf)
 # df = df.iloc[-50:]
@@ -68,12 +74,12 @@ df = bot.get_test_df(df)
 
 
 
-fee_base = 0.0004
+# fee_base = 0.0004
 # fee_base = 0.0012
-# fee_base = 0.0002
+fee_base = 0.0002
 # trades,longs,shorts,closes,equity = check_strategy(df,get_action_STA1e,bot)
-trades,equity,equity_fee = check_strategy_v3(df,bot,fee_base)
-print(trades)
+# trades,equity2,equity_fee = check_strategy_v3(df,bot,fee_base)
+# print(trades)
 trades,longs,shorts,closes,equity = check_strategy(df,TS,bot)
 print(trades)
 try:
@@ -90,10 +96,18 @@ shorts = np.array(shorts)
 closes = np.array(closes)
 equity = np.array(equity)
 
+# print(longs.shape,longs1.shape)
+# print(shorts.shape,shorts1.shape)
+# print(closes.shape,closes1.shape)
+
 see_equity = True
-see_equity = False
+# see_equity = False
 if see_equity:
     plt.plot(equity,color='red')
+    # plt.plot(equity1,color='blue')
+    # plt.plot(equity2,color='green')
+    # plt.plot(equity3,color='yellow')
+
     # plt.plot(equity_fee,color='blue')
     pass
 else:
@@ -105,6 +119,12 @@ else:
     # plt.plot(df['stair'])
     # plt.plot(df['stair_s'])
     # plt.plot(df['top_kvas'])
+    # if len(longs1.shape) > 1:
+    #     plt.scatter(longs1[:,0]-period-1,longs1[:,1],marker='h',color='green',s=100)
+    # if len(shorts1.shape) > 1:
+    #     plt.scatter(shorts1[:,0]-period-1,shorts1[:,1],marker='8',color='green',s=100)
+    # if len(closes1.shape) > 1:
+    #     plt.scatter(closes1[:,0]-period-1,closes1[:,1],marker='s',color='green',s=100)
     if len(longs.shape) > 1:
         plt.scatter(longs[:,0],longs[:,1],marker='^',color='black')
     if len(shorts.shape) > 1:

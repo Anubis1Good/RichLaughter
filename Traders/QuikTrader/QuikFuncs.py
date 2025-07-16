@@ -120,3 +120,9 @@ def get_best_glass(sec_code,class_code='SPBFUT'):
     bbid = glass['bid'][-1]['price']
     bask = glass['offer'][0]['price']
     return bbid,bask
+
+@provider
+def get_ticks(qp_provider:QuikPy,sec_code,class_code='SPBFUT'):
+    """тики за 2 дня"""
+    ticks = qp_provider.get_trade(class_code,sec_code)
+    return ticks
