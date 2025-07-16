@@ -95,3 +95,14 @@
 # #         print(order['order_num'],'покупка')
 
 # # pprint(orders[0])
+import json
+import pandas as pd
+
+with open('debug.json','r') as f:
+    tr = json.load(f)
+
+df = pd.DataFrame(tr)
+writer = pd.ExcelWriter('debug.xlsx')
+df.to_excel(writer)
+writer._save()
+print(df.head())

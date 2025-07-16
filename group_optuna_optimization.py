@@ -53,7 +53,7 @@ def objective(trial, df, ws, param_options, fee=0.0002):
     result,_,_ = check_strategy_v3(df, strategy,fee)
     
     # 4. Возвращаем метрику (например, Sharpe Ratio)
-    return result["total_fee_per"]
+    return result['total_abs_fee']
 
 def get_optimization_results_table(study, df, strategy_class, param_options, need_plot=False, ticker='MXI',fee=0.0002):
     results = []
@@ -94,15 +94,17 @@ def get_optimization_results_table(study, df, strategy_class, param_options, nee
         
         # Добавляем результаты
         result_row = {
-            "Trial": trial.number,
+            # "Trial": trial.number,
             "Name": name_file,
-            "Total": trades["total"],
-            "TradesCount": trades["count"],
-            "TotalFeePer": trades["total_fee_per"]
+            # "Total": trades["total"],
+            # "TradesCount": trades["count"],
+            # "TotalFeePer": trades["total_fee_per"],  
         }
-        
+        result_row = result_row | trades
         # Добавляем параметры в результат
         for i, param_value in enumerate(params):
+            if isinstance(param_value,float):
+                param_value = round(param_value,2)
             result_row[f"Param_{i}"] = param_value
         
         results.append(result_row)
@@ -119,8 +121,8 @@ def get_optimization_results_table(study, df, strategy_class, param_options, nee
             plt.close()
     
     # Сортируем результаты
-    df_results = pd.DataFrame(results).sort_values("TotalFeePer", ascending=False)
-    df_results = df_results.drop_duplicates(subset=['TotalFeePer'])
+    df_results = pd.DataFrame(results).sort_values('total_abs_fee', ascending=False)
+    df_results = df_results.drop_duplicates(subset=['total_abs_fee'])
     df_results = df_results.reset_index(drop=True)
     full_name_doc = os.path.join(file_folder, name_doc + '.xlsx')
     with pd.ExcelWriter(full_name_doc, engine='xlsxwriter') as writer:  
@@ -211,14 +213,14 @@ def process_group(part, test_folder, n_trials, n_jobs, need_plot, min_fee):
 if __name__ == '__main__':
 
 
-    # from group_optimization_experiment import group
-    from Optimiztion.optimizations_groups.optuna_groups import group
+    from group_optimization_experiment import group
+    # from Optimiztion.optimizations_groups.optuna_groups import group
     # test_folder = 'DataForTests\DataFromMOEX'
-    # test_folder = 'DataForTests\DataFromMoexFast'
+    test_folder = 'DataForTests\DataFromMoexFast'
     # test_folder = 'DataForTests\DataFromMoexFastStock'
-    test_folder = 'DataForTests\DataFromBitget'
-    # min_fee: float = 0.0002
-    min_fee: float = 0.0004
+    # test_folder = 'DataForTests\DataFromBitget'
+    min_fee: float = 0.0002
+    # min_fee: float = 0.0004
     need_plot=True
     n_trials = 100
     n_jobs = 1

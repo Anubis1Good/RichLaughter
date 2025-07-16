@@ -174,6 +174,7 @@ def check_strategy_fast(df:pd.DataFrame, test_strategy, work_strategy):
 def work_action_v2(action, trades, cur_price, fee, fees, equity, equity_fee, pos, open_price,open_fee):
     """actions = (None,'long_pw','short_pw','close_long_pw','close_short_pw','close_all_pw')"""
     reward = 0
+    delta = 0
     feei = (fee * cur_price) / 100  # fee абсолютное значение
     # print(feei)
     if action == 1:  # long
@@ -256,8 +257,22 @@ def work_action_v2(action, trades, cur_price, fee, fees, equity, equity_fee, pos
             equity.append(equity[-1] + delta)
             equity_fee.append(equity_fee[-1] + delta - feei - open_fee)
             open_fee = 0
-        
     trades['total_fee_per'] += reward
+    # if reward != 0:
+    #     delta_per = (delta  / cur_price) * 100
+    #     debug['delta'].append(delta)
+    #     debug['delta_per'].append(delta_per)
+    #     debug['fee'].append(fee)
+    #     debug['reward'].append(reward)
+    #     debug['d_p-r'].append(delta_per-reward)
+    #     debug['total_per'].append(trades['total_fee_per'])
+    #     debug['cur_price'].append(cur_price)
+    #     debug['eq'].append(equity[-1])
+    #     debug['eq_f'].append(equity_fee[-1])
+    #     print(len(debug['delta']))
+    #     # if delta_per-reward < 0:
+    #     #     print(delta,delta_per,fee,reward,delta_per-reward)
+    #     #     print(trades['total_fee_per'])
     return pos,open_price,fees,open_fee
 
 def check_strategy_v3(df: pd.DataFrame, work_strategy, fee=0.0002):
@@ -280,16 +295,45 @@ def check_strategy_v3(df: pd.DataFrame, work_strategy, fee=0.0002):
     prices = df['close'].values
     fee_one_p = (fee / 2) * 100
     open_fee = 0
+    # from collections import defaultdict
+    # debug = defaultdict(list)
     for i in range(len(signals)):
         pos, open_price, fees, open_fee = work_action_v2(
             signals[i], trades, prices[i], fee_one_p, fees, equity, equity_fee, pos, open_price,open_fee
         )
-    
+    # with open('debug.json','w') as f:
+    #     import json
+    #     json.dump(debug,f)
+    df_eq = pd.DataFrame({'eq':equity,'eq_fee':equity_fee})
+    df_eq['diff_eq'] = df_eq['eq'].diff()
+    df_eq['diff_eq_fee'] = df_eq['eq_fee'].diff()
+    mean_eq = df_eq['diff_eq'].mean()
+    median_eq = df_eq['diff_eq'].median()
+    min_eq = df_eq['diff_eq'].min()
+    max_eq = df_eq['diff_eq'].max()
+    mean_eqf = df_eq['diff_eq_fee'].mean()
+    median_eqf = df_eq['diff_eq_fee'].median()
+    min_eqf = df_eq['diff_eq_fee'].min()
+    max_eqf = df_eq['diff_eq_fee'].max()
+    wins = len(df_eq[df_eq['diff_eq'] > 0].index)
+    loss = len(df_eq[df_eq['diff_eq'] < 0].index)
+    win_rate = round((wins / (wins + loss)) * 100,2)
 
-    
+    trades['total_fee_per'] = round(trades['total_fee_per'],2)
     trades.update({
-        'total_pnl': trades['total'],
+        'total_abs_fee': equity_fee[-1],
+        'win_rate_wf': win_rate,
         'total_fee': fees,
+        'mean_eq':mean_eq,
+        'median_eq':median_eq,
+        'max_eq':max_eq,
+        'min_eq':min_eq,
+        'balance_eq':max_eq+min_eq,
+        'mean_eqf':mean_eqf,
+        'median_eqf':median_eqf,
+        'max_eqf':max_eqf,
+        'min_eqf':min_eqf,
+        'balance_eqf':max_eqf+min_eqf
     })
     
     return trades,equity,equity_fee

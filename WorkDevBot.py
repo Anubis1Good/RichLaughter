@@ -11,10 +11,10 @@ from utils.draw_utils import draw_lite_chart,draw_chart_channel,draw_hb_chart,dr
 from strategies.test_strategies.check import check_strategy,check_strategy_v3
 # from strategies.work_strategies.PTA import PTA8_WDOBBY_FREEr as WS
 # from strategies.work_strategies.PTAX import PTA19_CASSIA as WS
-# from strategies.work_strategies.PTAXX import PTA21_AURIEL as WS
-# from strategies.work_strategies.STA_ca import STA3_FORCE as WS
+# from strategies.work_strategies.PTAXX import PTA21_WHITEMANE as WS
+from strategies.work_strategies.STA_ca import STA3_LITE as WS
 # from strategies.work_strategies.GLTA import GLTA2_ALPHA as WS
-from strategies.work_strategies.GLTA import GLTA2_BETA as WS
+# from strategies.work_strategies.GLTA import GLTA2_BETA as WS
 # from strategies.work_strategies.GLTA import GLTA2_GAMMA as WS
 # from strategies.work_strategies.OGTA import OGTA4_DOG as WS
 # from strategies.work_strategies.LTA import LTA_IRONANNY as WS
@@ -27,8 +27,8 @@ from strategies.work_strategies.GLTA import GLTA2_BETA as WS
 # from strategies.work_strategies.experiments import ExpBot as WS
 
 from strategies.test_strategies.universal import universal_test_strategy as TS
-# raw_file = 'DataForTests\DataFromBitget\DOGEUSDT_1m_1739873922.csv'
-raw_file = 'DataForTests\DataFromMOEX\MMM5_1_1749581140.csv'
+raw_file = 'DataForTests\DataFromBitget\DOGEUSDT_1H_1752589488.csv'
+# raw_file = 'DataForTests\DataFromMOEX\MMM5_1_1749581140.csv'
 # raw_file = 'DataForTests/DataFromMoexFast/5MMM5_1_1749581140.csv'
 # raw_file = 'DataForTests\oldMoex\SiM5_1_1745579847.csv'
 # raw_file = 'DataForTests\oldBitget\DOGEUSDT_1m_1741087742_big.csv'
@@ -51,9 +51,9 @@ slope = 4
 #  (PTA18_REXXAR,(100,5,10,50,30)),   
 # bot = WS(symbol,granularity,'e',1,100,7,10,10,40,10,0)
 # bot = WS(symbol,granularity,'e',1)
-# bot = WS(symbol,granularity,'e',1,25,5,2,3,5,0.5)
+bot = WS(symbol,granularity,'e',1,101,9,0.65,9,79)
 # bot = WS(symbol,granularity,'e',1,20,10,'LP_1752352674.json')
-bot = WS(symbol,granularity,'e',1,25,9,12,'QGA20_beta2_001.json')
+# bot = WS(symbol,granularity,'e',1,25,9,12,'QGA20_beta2_001.json')
 # bot = WS(symbol,granularity,'e',1,30,100,30,60,30,50,'LP_1752353219.json')
 # bot = WS(symbol,granularity,'e',1,30,100,30,60,30,50,policy='BP_1751841463.6270704.json')
 
@@ -68,12 +68,12 @@ df = bot.get_test_df(df)
 
 
 
-# fee_base = 0.0004
+fee_base = 0.0004
 # fee_base = 0.0012
-fee_base = 0.0002
+# fee_base = 0.0002
 # trades,longs,shorts,closes,equity = check_strategy(df,get_action_STA1e,bot)
-# trades,equity,equity_fee = check_strategy_v3(df,bot)
-
+trades,equity,equity_fee = check_strategy_v3(df,bot,fee_base)
+print(trades)
 trades,longs,shorts,closes,equity = check_strategy(df,TS,bot)
 print(trades)
 try:
