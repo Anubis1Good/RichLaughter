@@ -11,7 +11,7 @@ from utils.draw_utils import draw_lite_chart,draw_chart_channel,draw_hb_chart,dr
 from strategies.test_strategies.check import check_strategy,check_strategy_v3,check_strategy_v4,check_strategy_v5
 # from strategies.work_strategies.PTA import PTA8_WDOBBY_FREEr as WS
 # from strategies.work_strategies.PTAX import PTA19_CASSIA as WS
-from strategies.work_strategies.PTAXX import PTA21_AURIEL as WS
+from strategies.work_strategies.PTAXX import PTA22_BERSERK as WS
 # from strategies.work_strategies.STA_ca import STA3_LITE as WS
 # from strategies.work_strategies.GLTA import GLTA2_ALPHA as WS
 # from strategies.work_strategies.GLTA import GLTA2_BETA as WS
@@ -52,8 +52,8 @@ granularity = "5m"
 slope = 4
 #  (PTA18_REXXAR,(100,5,10,50,30)),   
 # bot = WS(symbol,granularity,'e',1,100,7,10,10,40,10,0)
-# bot = WS(symbol,granularity,'e',1)
-bot = WS(symbol,granularity,'e',1,25,10,2,3,6,0.5)
+bot = WS(symbol,granularity,'e',1)
+# bot = WS(symbol,granularity,'e',1,25,10,2,3,6,0.5)
 # bot = WS(symbol,granularity,'e',1,20,10,'LP_1752352674.json')
 # bot = WS(symbol,granularity,'e',1,25,9,12,'QGA20_beta2_001.json')
 # bot = WS(symbol,granularity,'e',1,30,100,30,60,30,50,'LP_1752353219.json')
@@ -101,7 +101,7 @@ equity = np.array(equity)
 # print(closes.shape,closes1.shape)
 
 see_equity = True
-# see_equity = False
+see_equity = False
 if see_equity:
     plt.plot(equity,color='red')
     # plt.plot(equity1,color='blue')

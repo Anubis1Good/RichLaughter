@@ -6,7 +6,7 @@ import cv2
 import pandas as pd
 import numpy as np
 import numpy.typing as npt
-import pyautogui as pag
+# import pyautogui as pag
 import pydirectinput as pdi
 from Traders.VT.settingsPB import ColorsBtnBGR,TemplateCandle
 from Traders.VT.utils import only_close
@@ -63,7 +63,7 @@ class VT5:
         return 0
     
     def _send_open(self,direction):
-        pag.moveTo(self.glass_region[0]+11,self.glass_region[1]+11)
+        pdi.moveTo(self.glass_region[0]+11,self.glass_region[1]+11)
         pdi.press('f')
         if direction == 'long':
             button = 'a'
@@ -80,7 +80,7 @@ class VT5:
         pdi.press('z')
 
     def _reverse_pos(self,direction):
-        pag.moveTo(self.glass_region[0]+11,self.glass_region[1]+11)
+        pdi.moveTo(self.glass_region[0]+11,self.glass_region[1]+11)
         pdi.press('f')
         if direction == 'long':
             button = 'a'
@@ -94,7 +94,7 @@ class VT5:
         pdi.press(button)
 
     def _reset_req(self):
-        pag.moveTo(self.glass_region[0]+11,self.glass_region[1]+11)
+        pdi.moveTo(self.glass_region[0]+11,self.glass_region[1]+11)
         pdi.press('f')
 
     def _get_chart(self,img,region):

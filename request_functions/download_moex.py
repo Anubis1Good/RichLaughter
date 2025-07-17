@@ -29,7 +29,7 @@ def create_df(df:pd.DataFrame):
     df = df.drop(['index'],axis=1)
     return df
 
-def save_df(ticker,interval,start,end=None,board: str = "TQBR",market:str="shares", engine:str = "stock"):
+def save_df(ticker,interval,start,end=None,board: str = "TQBR",market:str="shares", engine:str = "stock",folder_save='DataForTests/DataFromMOEX'):
     """K-line particle size
         1 - 1 минута
         10 - 10 минут
@@ -41,5 +41,5 @@ def save_df(ticker,interval,start,end=None,board: str = "TQBR",market:str="share
     """
     df = download_moex(ticker,interval,start,end,board,market,engine)
     df = create_df(df)
-    path = os.path.join('DataForTests/DataFromMOEX',ticker+"_"+str(interval)+'_'+str(time()).split(".")[0]+'.csv')
+    path = os.path.join(folder_save,ticker+"_"+str(interval)+'_'+str(time()).split(".")[0]+'.csv')
     df.to_csv(path)

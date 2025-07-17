@@ -172,3 +172,50 @@ class PTA21_AURIEL(BaseTABitget):
             else:
                 return 'close_long_pw'
 
+class PTA22_BERSERK(BaseTABitget):
+    """period=100,period_fractal=10,period_mean=5,n_std=1.5,period_sma=3,threshold_trend=0.5,period2=100, period3=20,threshold_chop=60, threshold_adx=30"""
+    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=100,period_fractal=10,period_mean=5,n_std=1.5,period_sma=3,threshold_trend=0.5,period2=100, period3=20,threshold_chop=60, threshold_adx=30):
+        super().__init__(symbol, granularity, productType, n_parts, period)
+        self.period_fractal = period_fractal
+        self.period_mean = period_mean
+        self.period_sma = period_sma
+        self.n_std = n_std
+        self.threshold_trend = threshold_trend
+        self.threshold_chop = threshold_chop
+        self.threshold_adx = threshold_adx
+        self.period2 = period2
+        self.period3 = period3
+    def preprocessing(self, df):
+        df = add_donchan_channel(df,self.period3)
+        df = add_rsi(df,self.period3)
+        df = add_chop(df,self.period2)
+        df = add_adx(df,self.period)
+        df = add_fractals(df,self.period_fractal)
+        df = add_mean_on_fractals(df,self.period_mean,'rsi')
+        df['oversold'] = df['rsi'] < df['bottom_mean']
+        df['overbought'] = df['rsi'] > df['top_mean']
+        df = add_dzz_peaks(df,n_std=self.n_std)
+        df = add_analys_dzz(df,self.period_sma)
+        df = add_enter_price2close(df)
+        df = add_slice_df(df,period=self.period)
+        return df
+    def __call__(self, row, *args, **kwds):
+        ranger = row['chop'] > self.threshold_chop and row['adx'] < self.threshold_adx
+        if ranger: 
+            if row['low'] <= row['min_hb']:
+                if row['oversold']:
+                    return 'long_pw'
+            if row['high'] >= row['max_hb']:
+                if row['overbought']:
+                    return 'short_pw'
+        else:
+            if row['oversold']:
+                if row['trend_sma'] >= -self.threshold_trend:
+                    return 'long_pw'
+                else:
+                    return 'close_short_pw'
+            if row['overbought']:
+                if row['trend_sma'] <= self.threshold_trend:
+                    return 'short_pw'
+                else:
+                    return 'close_long_pw'

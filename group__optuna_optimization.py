@@ -78,6 +78,8 @@ def get_optimization_results_table(study, df, strategy_class, param_options, nee
         for i, options in enumerate(param_options):
             param_name = f"param_{i}"
             param_value = trial.params[param_name]
+            if isinstance(param_value,float):
+                param_value = round(param_value,2)
             params.append(param_value)
             param_values.append(str(param_value))  # Для имени файла
 
@@ -91,11 +93,13 @@ def get_optimization_results_table(study, df, strategy_class, param_options, nee
         # Формируем имя файла
         name_doc = f"{ticker}_{name_bot}"
         name_file = f"{name_doc}_{'_'.join(param_values)}"
+        params_tuple = f"({','.join(param_values)})"
         
         # Добавляем результаты
         result_row = {
             # "Trial": trial.number,
-            "Name": name_file,
+            "name": name_file,
+            "p_t":params_tuple
             # "Total": trades["total"],
             # "TradesCount": trades["count"],
             # "TotalFeePer": trades["total_fee_per"],  
@@ -103,8 +107,6 @@ def get_optimization_results_table(study, df, strategy_class, param_options, nee
         result_row = result_row | trades
         # Добавляем параметры в результат
         for i, param_value in enumerate(params):
-            if isinstance(param_value,float):
-                param_value = round(param_value,2)
             result_row[f"Param_{i}"] = param_value
         
         results.append(result_row)
@@ -217,7 +219,7 @@ if __name__ == '__main__':
     # from Optimiztion.optimizations_groups.optuna_groups import group
     # test_folder = 'DataForTests\DataFromMOEX'
     test_folder = 'DataForTests\DataFromMoexFast'
-    # test_folder = 'DataForTests\DataFromMoexFastStock'
+    test_folder = 'DataForTests\DataFromMoexFastStock'
     # test_folder = 'DataForTests\DataFromBitget'
     min_fee: float = 0.0002
     # min_fee: float = 0.0004
@@ -225,17 +227,6 @@ if __name__ == '__main__':
     n_trials = 100
     n_jobs = 1
     # need_plot=True
-    # for part in group:
-    #     print(part[0])
-    #     list_dir = os.listdir(test_folder)
-    #     for rw in list_dir:
-    #         raw_file = os.path.join(test_folder,rw)
-    #         print(rw)
-    #         try:
-    #             optimization_optuna(raw_file,part,n_trials,n_jobs,need_plot,min_fee)
-    #         except Exception as err:
-    #             traceback.print_exc()
-    #             print(rw,'not stocks')
 
     for part in group:
         process_group(part, test_folder, n_trials, n_jobs, need_plot, min_fee)

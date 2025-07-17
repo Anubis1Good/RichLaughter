@@ -95,3 +95,9 @@
 # #         print(order['order_num'],'покупка')
 
 # # pprint(orders[0])
+import pyautogui as pag
+import pydirectinput as pdi
+from time import sleep
+pag.moveTo(100,100)
+sleep(2)
+pdi.moveTo(100,100)
