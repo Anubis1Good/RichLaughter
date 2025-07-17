@@ -9,8 +9,8 @@ from multiprocessing import Pool
 from functools import partial
 from strategies.test_strategies.check import check_strategy_v5
 from Loader.BitgetLoader import bitget_loader
-from strategies.work_strategies.PTA import PTA4_WDDCr,PTA4_WDDCrE,PTA4_WDDCrVG,PTA4_WDVCr,PTA4_WLISICA,PTA8_WDOBBY_FREEr,PTA4_UNIVERSAL,PTA2_LISICA,PTA2_DDCrWork,PTA2_BDDCr_UNIVERSAL,PTA2_BDDC_FIX,PTA2_BVGFIX,PTA2_BBBU,PTA2_BBBUr,PTA2_DDCrVG,PTA2_DVCr,PTA2_VOLCHARA,PTA4_U3
-# from Traders.TestingTrader.wss_groups import wssMoexFut5 as wss
+# from strategies.work_strategies.PTA import PTA4_WDDCr,PTA4_WDDCrE,PTA4_WDDCrVG,PTA4_WDVCr,PTA4_WLISICA,PTA8_WDOBBY_FREEr,PTA4_UNIVERSAL,PTA2_LISICA,PTA2_DDCrWork,PTA2_BDDCr_UNIVERSAL,PTA2_BDDC_FIX,PTA2_BVGFIX,PTA2_BBBU,PTA2_BBBUr,PTA2_DDCrVG,PTA2_DVCr,PTA2_VOLCHARA,PTA4_U3
+from Traders.TestingTrader.wss_groups import wssMoexFut5 as wss
 
 phys_cores = psutil.cpu_count(logical=False) 
 
@@ -21,12 +21,13 @@ save_cores = 2
 fee = 0.0002
 close_2330 = True
 need_plot = True
-test_folder = 'DataForTests\DataFromMoexFast'
+# test_folder = 'DataForTests\DataFromMoexFast'
+test_folder = 'DataForTests\DataFromMoexForStepTests'
 list_dir = os.listdir(test_folder)
-wss = (
-    (PTA2_LISICA,(10,1)), 
-    (PTA2_DDCrWork,(20,)),
-)
+# wss = (
+#     (PTA2_LISICA,(10,1)), 
+#     (PTA2_DDCrWork,(20,)),
+# )
 
 def create_folder(variant_folder):
     image_folder = os.path.join(variant_folder,'images')
