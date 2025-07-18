@@ -10,4 +10,4 @@ work = True
 while work:
     for bot in bots:
         bot.run()
-    sleep(30)
+    sleep(15)

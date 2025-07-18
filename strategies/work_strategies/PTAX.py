@@ -251,6 +251,34 @@ class PTA14_RANGER(BaseTABitget):
             if row['high'] >= row['max_hb']:
                 if row['rsi'] > 100-self.threshold_rsi:
                     return 'short_pw'
+class PTA14_RENEGADE(BaseTABitget):
+    """period=100,threshold_rsi=30,period2=100, period3=20, threshold_chop=60, threshold_adx=30"""
+    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=100,threshold_rsi=30,period2=100, period3=20, threshold_chop=60, threshold_adx=30):
+        super().__init__(symbol, granularity, productType, n_parts, period)
+        self.threshold_rsi = threshold_rsi
+        self.threshold_chop = threshold_chop
+        self.threshold_adx = threshold_adx
+        self.period2 = period2
+        self.period3 = period3
+    def preprocessing(self, df):
+        df = add_donchan_channel(df,self.period3)
+        df = add_rsi(df,self.period3)
+        df = add_chop(df,self.period2)
+        df = add_adx(df,self.period)
+        df = add_enter_price2close(df)
+        df = add_slice_df(df,period=self.period)
+        return df
+    def __call__(self, row, *args, **kwds):
+        ranger = row['chop'] > self.threshold_chop and row['adx'] < self.threshold_adx
+        if ranger: 
+            nearest_long = row['high'] - row['close'] > row['close'] - row['low'] 
+            if row['low'] <= row['min_hb']:
+                if nearest_long:
+                    if row['rsi'] < self.threshold_rsi:
+                        return 'long_pw'
+            if row['high'] >= row['max_hb']:
+                if row['rsi'] > 100-self.threshold_rsi:
+                    return 'short_pw'
                               
 class PTA14_ANGER(BaseTABitget):
     """period=100, period2=100, period3=20, threshold_chop=60, threshold_adx=30"""
