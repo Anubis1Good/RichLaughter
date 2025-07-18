@@ -17,8 +17,8 @@ start_date = str(today - timedelta(days=30))
 fut = True
 # fut = False
 from request_functions.download_moex import save_df
-tickers = ['MMU5','IMOEXF','CRU5','RMU5','GZU5']
-# tickers = ['MMM5','GZM5','CRM5','RMM5']
+# tickers = ['MMU5','IMOEXF','CRU5','RMU5','GZU5']
+tickers = ['SRU5','SiU5','CNYRUBF','NGN5','BRQ5','EDU5','EURRUBF']
 # # tickers = ['SBER','ROSN','GAZP',"MTLR","VTBR","NLMK"]
 for ticker in tickers:
     print(ticker)

@@ -93,22 +93,22 @@ def get_optimization_results_table(study, df, strategy_class, param_options, nee
         # Формируем имя файла
         name_doc = f"{ticker}_{name_bot}"
         name_file = f"{name_doc}_{'_'.join(param_values)}"
-        params_tuple = f"({','.join(param_values)})"
+        params_tuple = f"({name_bot},({','.join(param_values)})),"
         
         # Добавляем результаты
         result_row = {
             # "Trial": trial.number,
             "name": name_file,
-            "p_t":params_tuple
+            "ws":params_tuple
             # "Total": trades["total"],
             # "TradesCount": trades["count"],
             # "TotalFeePer": trades["total_fee_per"],  
         }
         result_row = result_row | trades
         # Добавляем параметры в результат
+        result_row['origin'] = ticker
         for i, param_value in enumerate(params):
             result_row[f"Param_{i}"] = param_value
-        
         results.append(result_row)
 
         # Сохраняем график если нужно
@@ -216,10 +216,11 @@ if __name__ == '__main__':
 
 
     from group_optimization_experiment import group
-    # from Optimiztion.optimizations_groups.optuna_groups import group
+    from Optimiztion.optimizations_groups.optuna_groups import group
     # test_folder = 'DataForTests\DataFromMOEX'
-    test_folder = 'DataForTests\DataFromMoexFast'
-    test_folder = 'DataForTests\DataFromMoexFastStock'
+    # test_folder = 'DataForTests\DataFromMoexFast'
+    # test_folder = 'DataForTests\DataFromMoexFastStock'
+    test_folder = 'DataForTests\DataFromMoexForStepTests'
     # test_folder = 'DataForTests\DataFromBitget'
     min_fee: float = 0.0002
     # min_fee: float = 0.0004

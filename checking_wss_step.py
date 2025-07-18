@@ -10,8 +10,8 @@ from functools import partial
 from strategies.test_strategies.check import check_strategy_v5
 from Loader.BitgetLoader import bitget_loader
 # from strategies.work_strategies.PTA import PTA4_WDDCr,PTA4_WDDCrE,PTA4_WDDCrVG,PTA4_WDVCr,PTA4_WLISICA,PTA8_WDOBBY_FREEr,PTA4_UNIVERSAL,PTA2_LISICA,PTA2_DDCrWork,PTA2_BDDCr_UNIVERSAL,PTA2_BDDC_FIX,PTA2_BVGFIX,PTA2_BBBU,PTA2_BBBUr,PTA2_DDCrVG,PTA2_DVCr,PTA2_VOLCHARA,PTA4_U3
-from Traders.TestingTrader.wss_groups import wssMoexFut5 as wss
-
+# from Traders.TestingTrader.wss_groups import wssMoexFut5 as wss
+from testing.wss_step_test import wss_br,wss_cny,wss_ed,wss_euf,wss_ng,wss_si,wss_sr
 phys_cores = psutil.cpu_count(logical=False) 
 
 main_folder = 'TestNewResults/StepTest'
@@ -28,6 +28,16 @@ list_dir = os.listdir(test_folder)
 #     (PTA2_LISICA,(10,1)), 
 #     (PTA2_DDCrWork,(20,)),
 # )
+map_wss = {
+    '5BRQ5_1':wss_br,
+    '5CNYRUBF_1':wss_cny,
+    '5EDU5_1':wss_ed,
+    '5EURRUBF_1':wss_euf,
+    '5NGN5_1':wss_ng,
+    '5SiU5_1':wss_si,
+    '5SRU5_1':wss_sr,
+    'default':wss_cny
+}
 
 def create_folder(variant_folder):
     image_folder = os.path.join(variant_folder,'images')
@@ -85,6 +95,10 @@ def process_rw(variant_name,variant_folder,clear_df):
                     clear_df)
     
     # Запускаем в мультипроцессинге с прогресс-баром
+    if variant_name in map_wss:
+        wss = map_wss[variant_name]
+    else:
+        wss = map_wss['default']
     with Pool(num_processes) as pool:
         results = list(tqdm(pool.imap(worker, wss), total=len(wss)))
     success = 0

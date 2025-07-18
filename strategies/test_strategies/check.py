@@ -301,36 +301,56 @@ def check_strategy_v3(df: pd.DataFrame, work_strategy, fee=0.0002):
     #     import json
     #     json.dump(debug,f)
     df_eq = pd.DataFrame({'eq':equity,'eq_fee':equity_fee})
-    df_eq['diff_eq'] = df_eq['eq'].diff()
-    df_eq['diff_eq_fee'] = df_eq['eq_fee'].diff()
-    mean_eq = df_eq['diff_eq'].mean()
-    median_eq = df_eq['diff_eq'].median()
-    min_eq = df_eq['diff_eq'].min()
-    max_eq = df_eq['diff_eq'].max()
-    mean_eqf = df_eq['diff_eq_fee'].mean()
-    median_eqf = df_eq['diff_eq_fee'].median()
-    min_eqf = df_eq['diff_eq_fee'].min()
-    max_eqf = df_eq['diff_eq_fee'].max()
-    wins = len(df_eq[df_eq['diff_eq'] > 0].index)
-    loss = len(df_eq[df_eq['diff_eq'] < 0].index)
-    win_rate = round((wins / (wins + loss)) * 100,2)
-
-    trades['total_fee_per'] = round(trades['total_fee_per'],2)
-    trades.update({
-        'total_abs_fee': equity_fee[-1],
-        'win_rate_wf': win_rate,
+    if df_eq.empty:
+        trades.update({
+        'total_abs_fee': 0,
+        'win_rate_wf': 0,
         'total_fee': fees,
-        'mean_eq':mean_eq,
-        'median_eq':median_eq,
-        'max_eq':max_eq,
-        'min_eq':min_eq,
-        'balance_eq':max_eq+min_eq,
-        'mean_eqf':mean_eqf,
-        'median_eqf':median_eqf,
-        'max_eqf':max_eqf,
-        'min_eqf':min_eqf,
-        'balance_eqf':max_eqf+min_eqf
-    })
+        'mean_eq':0,
+        'median_eq':0,
+        'max_eq':0,
+        'min_eq':0,
+        'balance_eq':0,
+        'mean_eqf':0,
+        'median_eqf':0,
+        'max_eqf':0,
+        'min_eqf':0,
+        'balance_eqf':0
+        })
+    else:
+        df_eq['diff_eq'] = df_eq['eq'].diff()
+        df_eq['diff_eq_fee'] = df_eq['eq_fee'].diff()
+        mean_eq = df_eq['diff_eq'].mean()
+        median_eq = df_eq['diff_eq'].median()
+        min_eq = df_eq['diff_eq'].min()
+        max_eq = df_eq['diff_eq'].max()
+        mean_eqf = df_eq['diff_eq_fee'].mean()
+        median_eqf = df_eq['diff_eq_fee'].median()
+        min_eqf = df_eq['diff_eq_fee'].min()
+        max_eqf = df_eq['diff_eq_fee'].max()
+        wins = len(df_eq[df_eq['diff_eq'] > 0].index)
+        loss = len(df_eq[df_eq['diff_eq'] < 0].index)
+        if loss > 0:
+            win_rate = round((wins / (wins + loss)) * 100,2)
+        else:
+            win_rate = 0
+
+        trades['total_fee_per'] = round(trades['total_fee_per'],2)
+        trades.update({
+            'total_abs_fee': equity_fee[-1],
+            'win_rate_wf': win_rate,
+            'total_fee': fees,
+            'mean_eq':mean_eq,
+            'median_eq':median_eq,
+            'max_eq':max_eq,
+            'min_eq':min_eq,
+            'balance_eq':max_eq+min_eq,
+            'mean_eqf':mean_eqf,
+            'median_eqf':median_eqf,
+            'max_eqf':max_eqf,
+            'min_eqf':min_eqf,
+            'balance_eqf':max_eqf+min_eqf
+        })
     
     return trades,equity,equity_fee
 
@@ -519,42 +539,56 @@ def check_strategy_v4(df: pd.DataFrame, work_strategy, fee=0.0002):
             # print('-------')
 
     df_eq = pd.DataFrame({'eq':equity,'eq_fee':equity_fee})
-    df_eq['diff_eq'] = df_eq['eq'].diff()
-    df_eq['diff_eq_fee'] = df_eq['eq_fee'].diff()
-    mean_eq = df_eq['diff_eq'].mean()
-    median_eq = df_eq['diff_eq'].median()
-    min_eq = df_eq['diff_eq'].min()
-    max_eq = df_eq['diff_eq'].max()
-    mean_eqf = df_eq['diff_eq_fee'].mean()
-    median_eqf = df_eq['diff_eq_fee'].median()
-    min_eqf = df_eq['diff_eq_fee'].min()
-    max_eqf = df_eq['diff_eq_fee'].max()
-    wins = len(df_eq[df_eq['diff_eq'] > 0].index)
-    loss = len(df_eq[df_eq['diff_eq'] < 0].index)
-    if loss > 0:
-        win_rate = round((wins / (wins + loss)) * 100,2)
-    else:
-        win_rate = 0
-    longs = np.array(longs)
-    shorts = np.array(shorts)
-    closes = np.array(closes)
-
-    trades['total_fee_per'] = round(trades['total_fee_per'],2)
-    trades.update({
-        'total_abs_fee': equity_fee[-1],
-        'win_rate_wf': win_rate,
+    if df_eq.empty:
+        trades.update({
+        'total_abs_fee': 0,
+        'win_rate_wf': 0,
         'total_fee': fees,
-        'mean_eq':mean_eq,
-        'median_eq':median_eq,
-        'max_eq':max_eq,
-        'min_eq':min_eq,
-        'balance_eq':max_eq+min_eq,
-        'mean_eqf':mean_eqf,
-        'median_eqf':median_eqf,
-        'max_eqf':max_eqf,
-        'min_eqf':min_eqf,
-        'balance_eqf':max_eqf+min_eqf
-    })
+        'mean_eq':0,
+        'median_eq':0,
+        'max_eq':0,
+        'min_eq':0,
+        'balance_eq':0,
+        'mean_eqf':0,
+        'median_eqf':0,
+        'max_eqf':0,
+        'min_eqf':0,
+        'balance_eqf':0
+        })
+    else:
+        df_eq['diff_eq'] = df_eq['eq'].diff()
+        df_eq['diff_eq_fee'] = df_eq['eq_fee'].diff()
+        mean_eq = df_eq['diff_eq'].mean()
+        median_eq = df_eq['diff_eq'].median()
+        min_eq = df_eq['diff_eq'].min()
+        max_eq = df_eq['diff_eq'].max()
+        mean_eqf = df_eq['diff_eq_fee'].mean()
+        median_eqf = df_eq['diff_eq_fee'].median()
+        min_eqf = df_eq['diff_eq_fee'].min()
+        max_eqf = df_eq['diff_eq_fee'].max()
+        wins = len(df_eq[df_eq['diff_eq'] > 0].index)
+        loss = len(df_eq[df_eq['diff_eq'] < 0].index)
+        if loss > 0:
+            win_rate = round((wins / (wins + loss)) * 100,2)
+        else:
+            win_rate = 0
+
+        trades['total_fee_per'] = round(trades['total_fee_per'],2)
+        trades.update({
+            'total_abs_fee': equity_fee[-1],
+            'win_rate_wf': win_rate,
+            'total_fee': fees,
+            'mean_eq':mean_eq,
+            'median_eq':median_eq,
+            'max_eq':max_eq,
+            'min_eq':min_eq,
+            'balance_eq':max_eq+min_eq,
+            'mean_eqf':mean_eqf,
+            'median_eqf':median_eqf,
+            'max_eqf':max_eqf,
+            'min_eqf':min_eqf,
+            'balance_eqf':max_eqf+min_eqf
+        })
     
     return trades,equity,equity_fee,longs,shorts,closes
 
@@ -687,38 +721,55 @@ def check_strategy_v5(df: pd.DataFrame, work_strategy, fee=0.0002,close_2330=Fal
             )
 
     df_eq = pd.DataFrame({'eq':equity,'eq_fee':equity_fee})
-    df_eq['diff_eq'] = df_eq['eq'].diff()
-    df_eq['diff_eq_fee'] = df_eq['eq_fee'].diff()
-    mean_eq = df_eq['diff_eq'].mean()
-    median_eq = df_eq['diff_eq'].median()
-    min_eq = df_eq['diff_eq'].min()
-    max_eq = df_eq['diff_eq'].max()
-    mean_eqf = df_eq['diff_eq_fee'].mean()
-    median_eqf = df_eq['diff_eq_fee'].median()
-    min_eqf = df_eq['diff_eq_fee'].min()
-    max_eqf = df_eq['diff_eq_fee'].max()
-    wins = len(df_eq[df_eq['diff_eq'] > 0].index)
-    loss = len(df_eq[df_eq['diff_eq'] < 0].index)
-    if loss > 0:
-        win_rate = round((wins / (wins + loss)) * 100,2)
-    else:
-        win_rate = 0
-
-    trades['total_fee_per'] = round(trades['total_fee_per'],2)
-    trades.update({
-        'total_abs_fee': equity_fee[-1],
-        'win_rate_wf': win_rate,
+    if df_eq.empty:
+        trades.update({
+        'total_abs_fee': 0,
+        'win_rate_wf': 0,
         'total_fee': fees,
-        'mean_eq':mean_eq,
-        'median_eq':median_eq,
-        'max_eq':max_eq,
-        'min_eq':min_eq,
-        'balance_eq':max_eq+min_eq,
-        'mean_eqf':mean_eqf,
-        'median_eqf':median_eqf,
-        'max_eqf':max_eqf,
-        'min_eqf':min_eqf,
-        'balance_eqf':max_eqf+min_eqf
-    })
+        'mean_eq':0,
+        'median_eq':0,
+        'max_eq':0,
+        'min_eq':0,
+        'balance_eq':0,
+        'mean_eqf':0,
+        'median_eqf':0,
+        'max_eqf':0,
+        'min_eqf':0,
+        'balance_eqf':0
+        })
+    else:
+        df_eq['diff_eq'] = df_eq['eq'].diff()
+        df_eq['diff_eq_fee'] = df_eq['eq_fee'].diff()
+        mean_eq = df_eq['diff_eq'].mean()
+        median_eq = df_eq['diff_eq'].median()
+        min_eq = df_eq['diff_eq'].min()
+        max_eq = df_eq['diff_eq'].max()
+        mean_eqf = df_eq['diff_eq_fee'].mean()
+        median_eqf = df_eq['diff_eq_fee'].median()
+        min_eqf = df_eq['diff_eq_fee'].min()
+        max_eqf = df_eq['diff_eq_fee'].max()
+        wins = len(df_eq[df_eq['diff_eq'] > 0].index)
+        loss = len(df_eq[df_eq['diff_eq'] < 0].index)
+        if loss > 0:
+            win_rate = round((wins / (wins + loss)) * 100,2)
+        else:
+            win_rate = 0
+
+        trades['total_fee_per'] = round(trades['total_fee_per'],2)
+        trades.update({
+            'total_abs_fee': equity_fee[-1],
+            'win_rate_wf': win_rate,
+            'total_fee': fees,
+            'mean_eq':mean_eq,
+            'median_eq':median_eq,
+            'max_eq':max_eq,
+            'min_eq':min_eq,
+            'balance_eq':max_eq+min_eq,
+            'mean_eqf':mean_eqf,
+            'median_eqf':median_eqf,
+            'max_eqf':max_eqf,
+            'min_eqf':min_eqf,
+            'balance_eqf':max_eqf+min_eqf
+        })
     
     return trades,equity,equity_fee
