@@ -129,6 +129,8 @@ class TestingTrader1:
             if self.check_time2:
                 self.output('Time:',time()-start)
                 self.check_time2 = False
+            if 'Bitget' in self.exchange:
+                sleep(15)
 
     def close_all_pos(self):
         self.output('Close all position...')

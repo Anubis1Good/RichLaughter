@@ -93,7 +93,7 @@ def get_optimization_results_table(study, df, strategy_class, param_options, nee
         # Формируем имя файла
         name_doc = f"{ticker}_{name_bot}"
         name_file = f"{name_doc}_{'_'.join(param_values)}"
-        params_tuple = f"({name_bot},({','.join(param_values)})),"
+        params_tuple = f"({name_bot},({','.join(param_values)},)),"
         
         # Добавляем результаты
         result_row = {
@@ -215,12 +215,12 @@ def process_group(part, test_folder, n_trials, n_jobs, need_plot, min_fee):
 if __name__ == '__main__':
 
 
-    from group_optimization_experiment import group
-    # from Optimiztion.optimizations_groups.optuna_groups import group
+    # from group_optimization_experiment import group
+    from Optimiztion.optimizations_groups.optuna_groups import group
     # test_folder = 'DataForTests\DataFromMOEX'
     test_folder = 'DataForTests\DataFromMoexFast'
     test_folder = 'DataForTests\DataFromMoexFastStock'
-    # test_folder = 'DataForTests\DataFromMoexForStepTests'
+    test_folder = 'DataForTests\DataFromMoexForStepTests'
     # test_folder = 'DataForTests\DataFromBitget'
     min_fee: float = 0.0002
     # min_fee: float = 0.0004

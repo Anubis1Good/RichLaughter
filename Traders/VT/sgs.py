@@ -18,7 +18,7 @@ stock_groups= {
         'VTBR2',
         'LSRG2',
         'RUAL2',
-        'FESH2',
+        'TRMK2',
         'NMTP2',
         'CBOM2'
     )
