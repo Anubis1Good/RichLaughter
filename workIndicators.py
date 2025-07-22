@@ -11,24 +11,19 @@ from ForBots.Indicators.van_indicators import *
 from ForBots.Indicators.ml_indicators import *
 from scipy.stats import linregress
 
-raw_file = 'DataForTests\DataFromBitget\DOGEUSDT_1m_1739873922.csv'
-raw_file = 'DataForTests\DataFromMOEX\MMM5_1_1749581140.csv'
-raw_file = 'DataForTests\DataFromMoexFast\MMM5_1_1749581140.csv'
+# raw_file = 'DataForTests\DataFromBitget\DOGEUSDT_1m_1739873922.csv'
+# raw_file = 'DataForTests\DataFromMOEX\MMM5_1_1749581140.csv'
+raw_file = 'DataForTests\DataFromMoexFast\\5MMU5_1_1752761082.csv'
 # raw_file = 'DataForTests\oldMoex\SiM5_1_1745579847.csv'
 period = 10
 df = bitget_loader(raw_file)
-# df = df.iloc[-200:]
+df = df.iloc[-200:]
 # df = df.iloc[10:510]
 
-
-df = add_fractals(df,10)
-df = add_sma(df,20)
-# df['up_diff'] = df['high'] - df['sma']
-df = add_diffmean_fractals_channel(df)
-
 # df['down_diff'] = df['low'] - df['sma']
-# df = add_dzz_peaks(df,period=20)
-
+df = add_dzz_peaks(df,period=20)
+df = add_ideal_pos(df)
+# df = add_cdvsai(df)
 # df = add_analys_dzz(df)
 print(df.tail(10))
 # df.info()
@@ -37,12 +32,9 @@ print(df.tail(10))
 plot = True
 # plot = False
 if plot:
-    # plt.subplot(2,1,1)
+    plt.subplot(2,1,1)
     plt.grid() 
     draw_hb_chart_fast(df)
-    plt.plot(df['dmu'],color='b')
-    plt.plot(df['dmd'],color='r')
-    plt.plot(df['sma'],color='g')
     # plt.plot(df['upper_channel'])
     # plt.plot(df['fd_up'])
     # plt.plot(df['fd_down'])
@@ -52,7 +44,7 @@ if plot:
     # plt.plot(df['regression_line'])
     # plt.plot(df['stair'])
     # plt.plot(df['trend'])
-    # plt.plot(df['zigzag'])
+    plt.plot(df['zigzag'])
     # plt.plot(df['stair_up'])
     # df['points'] = np.where((df['zigzag_direction'] != df['zigzag_direction'].shift(1)), df['middle'], np.nan)
 
@@ -65,10 +57,17 @@ if plot:
     #     plt.plot(df[k])
     # for k in 'max_hb, min_hb, avarege'.split(', '):
 
-    # ax1 = plt.gca()
-    # plt.subplot(2,1,2,sharex=ax1)
-    # plt.grid() 
-    # plt.plot(df['top_mean'])
+    ax1 = plt.gca()
+    plt.subplot(2,1,2,sharex=ax1)
+    plt.grid() 
+    # plt.bar(df.index.to_series(),df['dvsai'])
+    # plt.plot(df['dvsaima'],color='red')
+    # plt.plot(df['dvsaiu'],color='red')
+    # plt.plot(df['dvsaid'],color='red')
+    # plt.plot(df['cum_dvsai'])
+    # plt.plot(df['ma_cdv1'])
+    # plt.plot(df['ma_cdv2'])
+    # plt.plot()
     # plt.plot(df['bottom_mean'])
     # plt.plot(df['trend'])
     # plt.plot(df['trend_sma'])

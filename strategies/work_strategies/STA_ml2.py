@@ -1,9 +1,9 @@
 import numpy as np
 import pandas as pd
 from strategies.work_strategies.BaseTA import BaseTABitget
-from ForBots.Indicators.classic_indicators import add_slice_df,add_ema,add_enter_price2close,add_rsi
+from ForBots.Indicators.classic_indicators import add_slice_df,add_ema,add_enter_price2close,add_rsi,add_dzz_peaks,add_donchan_channel
 from ForBots.Indicators.rare_indicators import add_dynamic_trend_lines_slope_reversed,add_segmented_regression_from_end
-from ForBots.Indicators.ml_indicators import add_find_similar_pattern_lite,add_linear_regression_last_row
+from ForBots.Indicators.ml_indicators import add_find_similar_pattern_lite,add_linear_regression_last_row,add_ideal_pos
 
 class STAML2_CHAOS(BaseTABitget):
     """ period=60,min_points=2,divider=30"""
@@ -242,3 +242,142 @@ class STAML2_TRENDWAVE(BaseTABitget):
                 return 'long_pw'
             if row['rsi'] < self.threshold_exit:
                 return 'close_short_pw'
+            
+from sklearn.tree import DecisionTreeClassifier,plot_tree
+
+class STAML2a_(BaseTABitget):
+    """period=60, n_std=3"""
+    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=60, n_std=3,max_depth=None):
+        super().__init__(symbol, granularity, productType, n_parts, period)
+        self.n_std = n_std
+        self.model = None
+        self.max_depth = max_depth
+    def get_model(self, X_train, y_train):
+        if self.max_depth:
+            self.model = DecisionTreeClassifier(max_depth=self.max_depth)
+        else:
+            self.model = DecisionTreeClassifier()
+        self.model.fit(X_train, y_train)
+    
+    def preprocessing(self, df:pd.DataFrame):
+        df = add_dzz_peaks(df, n_std=self.n_std, period=self.period)
+        df = add_ideal_pos(df)
+        
+        # Инициализируем сигнал нулями
+        df['signal'] = 0
+        train_set = ['close', 'high', 'low']
+        
+        # Убедимся, что нет пропущенных значений
+        df_train = df.copy()
+        df_train = df_train.dropna(subset=train_set+['ideal_pos']).copy()
+        if not df_train.empty:
+            y_train = df_train['ideal_pos']
+            X_train = df_train[train_set]
+            
+            # Обучаем модель
+            self.get_model(X_train, y_train)
+            # Получаем предсказания и присваиваем их обратно в исходный DataFrame
+            df.loc[X_train.index, 'signal'] = self.model.predict(X_train)
+        df = add_enter_price2close(df)
+        df = add_slice_df(df, period=self.period)
+        return df
+    
+    def __call__(self, row, *args, **kwds):
+        if row['signal'] == 1:
+            return 'long_pw'
+        if row['signal'] == 2:
+            return 'short_pw'
+        return None
+    
+class STAML2a_PHENOMENON(BaseTABitget):
+    """period=60, n_std=3"""
+    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=60, n_std=3,max_depth=None):
+        super().__init__(symbol, granularity, productType, n_parts, period)
+        self.n_std = n_std
+        self.model = None
+        self.max_depth = max_depth
+    def get_model(self, X_train, y_train):
+        if self.max_depth:
+            self.model = DecisionTreeClassifier(max_depth=self.max_depth)
+        else:
+            self.model = DecisionTreeClassifier()
+        self.model.fit(X_train, y_train)
+    
+    def preprocessing(self, df:pd.DataFrame):
+        df = add_dzz_peaks(df, n_std=self.n_std, period=self.period)
+        df = add_ideal_pos(df)
+        
+        # Инициализируем сигнал нулями
+        df['signal'] = 0
+        train_set = ['close', 'high', 'low']
+        
+        # Убедимся, что нет пропущенных значений
+        df_train = df.copy()
+        df_train = df_train.dropna(subset=train_set+['ideal_pos']).copy()
+        if not df_train.empty:
+            y_train = df_train['ideal_pos']
+            X_train = df_train[train_set]
+            
+            # Обучаем модель
+            self.get_model(X_train, y_train)
+            # Получаем предсказания и присваиваем их обратно в исходный DataFrame
+            df.loc[X_train.index, 'signal'] = self.model.predict(X_train)
+        df = add_enter_price2close(df)
+        df = add_slice_df(df, period=self.period)
+        return df
+    
+    def __call__(self, row, *args, **kwds):
+        if row['signal'] == 2:
+            return 'long_pw'
+        if row['signal'] == 1:
+            return 'short_pw'
+        return None
+    
+class STAML2a_MARVEL(BaseTABitget):
+    """period=60, n_std=3,period_dc=30,max_depth=None"""
+    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=60, n_std=3,period_dc=30,period_rsi=30,period_adx=30,max_depth=None):
+        super().__init__(symbol, granularity, productType, n_parts, period)
+        self.n_std = n_std
+        self.model = None
+        self.period_dc = period_dc
+        self.period_rsi = period_rsi
+        self.period_adx = period_adx
+        self.max_depth = max_depth
+    def get_model(self, X_train, y_train):
+        if self.max_depth:
+            self.model = DecisionTreeClassifier(max_depth=self.max_depth)
+        else:
+            self.model = DecisionTreeClassifier()
+        self.model.fit(X_train, y_train)
+    
+    def preprocessing(self, df:pd.DataFrame):
+        df = add_dzz_peaks(df, n_std=self.n_std, period=self.period)
+        df = add_ideal_pos(df)
+        df = add_donchan_channel(df, self.period_dc)
+        df = add_rsi(df,period=self.period_rsi)
+        
+        # Инициализируем сигнал нулями
+        df['signal'] = 0
+        train_set = ['close', 'high', 'low', 'max_hb', 'min_hb', 'avarege']
+        
+        # Убедимся, что нет пропущенных значений
+        df_train = df.copy()
+        df_train = df_train.dropna(subset=train_set+['ideal_enter']).copy()
+        if not df_train.empty:
+            y_train = df_train['ideal_enter']
+            X_train = df_train[train_set]
+            
+            # Обучаем модель
+            self.get_model(X_train, y_train)
+            # Получаем предсказания и присваиваем их обратно в исходный DataFrame
+            df.loc[X_train.index, 'signal'] = self.model.predict(X_train)
+        df = add_enter_price2close(df)
+        df = add_slice_df(df, period=self.period)
+        return df
+    
+    def __call__(self, row, *args, **kwds):
+        if row['signal'] == 2:
+            return 'long_pw'
+        if row['signal'] == 1:
+            return 'short_pw'
+        return None

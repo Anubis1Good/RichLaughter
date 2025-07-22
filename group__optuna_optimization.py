@@ -215,17 +215,17 @@ def process_group(part, test_folder, n_trials, n_jobs, need_plot, min_fee):
 if __name__ == '__main__':
 
 
-    # from group_optimization_experiment import group
-    from Optimiztion.optimizations_groups.optuna_groups import group
+    from group_optimization_experiment import group
+    # from Optimiztion.optimizations_groups.optuna_groups import group
     # test_folder = 'DataForTests\DataFromMOEX'
     test_folder = 'DataForTests\DataFromMoexFast'
-    test_folder = 'DataForTests\DataFromMoexFastStock'
-    test_folder = 'DataForTests\DataFromMoexForStepTests'
+    # test_folder = 'DataForTests\DataFromMoexFastStock'
+    # test_folder = 'DataForTests\DataFromMoexForStepTests'
     # test_folder = 'DataForTests\DataFromBitget'
     min_fee: float = 0.0002
     # min_fee: float = 0.0004
     need_plot=True
-    n_trials = 100
+    n_trials = 1000
     n_jobs = 1
 
 

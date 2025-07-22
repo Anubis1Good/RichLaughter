@@ -1,5 +1,6 @@
 from request_functions.download_bitget import get_df
 from ForBots.Indicators.classic_indicators import add_slice_df
+import traceback
 class BaseTABitget:
     def __init__(self,symbol="BTCUSDT",granularity="1m",productType="usdt-futures",n_parts=1,period=20):
         self.symbol = symbol
@@ -20,8 +21,8 @@ class BaseTABitget:
         try:
             df = self.preprocessing(df)
             return df.iloc[-1]
-        except:
-            # print(self.symbol,self.granularity, 'empty df!')
+        except Exception:
+            # traceback.print_exc()
             pass
     
     def get_row(self):

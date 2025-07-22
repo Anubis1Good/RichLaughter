@@ -1,5 +1,6 @@
+import pandas as pd
 from strategies.work_strategies.BaseTA import BaseTABitget
-from ForBots.Indicators.classic_indicators import add_slice_df,add_enter_price2close,add_fractals,add_average_fractals,add_dynamic_zigzag
+from ForBots.Indicators.classic_indicators import add_slice_df,add_enter_price2close,add_fractals,add_average_fractals,add_dynamic_zigzag,add_dzz_peaks
 
 
 class PSTA2_HERO(BaseTABitget):
@@ -80,3 +81,22 @@ class PSTA3_HADES(BaseTABitget):
                 return 'short_pw'
             if row['zigzag_direction'] == -1:
                 return 'long_pw'
+
+class PSTA3_REVAN(BaseTABitget):
+    """period=60, n_std=5"""
+    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=60, n_std=5):
+        super().__init__(symbol, granularity, productType, n_parts, period)
+        self.n_std = n_std
+
+    def preprocessing(self, df:pd.DataFrame):
+        df = add_dzz_peaks(df, n_std=self.n_std, period=self.period)
+        df = add_enter_price2close(df)
+        df = add_slice_df(df, period=self.period)
+        return df
+    
+    def __call__(self, row, *args, **kwds):
+        if row['zigzag_direction'] == -1:
+            return 'long_pw'
+        if row['zigzag_direction'] == 1:
+            return 'short_pw'
+        return None

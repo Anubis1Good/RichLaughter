@@ -2,8 +2,9 @@ import numpy as np
 import pandas as pd
 from utils.help_trades import reverse_action
 from strategies.work_strategies.BaseTA import BaseTABitget
-from ForBots.Indicators.vsa_indicators import add_rails,add_rails_slice,add_allowance_rails,add_spred,add_OGTA2_rails_info,add_CDV,add_detect_volume_zones
-from ForBots.Indicators.classic_indicators import add_big_volume,add_slice_df,add_enter_price,add_delta_2v,add_sc_and_buffer,add_sma,add_enter_price2close,add_rsi
+from ForBots.Indicators.vsa_indicators import add_rails,add_rails_slice,add_allowance_rails,add_spred,add_OGTA2_rails_info,add_CDV,add_detect_volume_zones,add_cdvsai,add_dvsai,add_vsai
+from ForBots.Indicators.classic_indicators import add_big_volume,add_slice_df,add_enter_price,add_delta_2v,add_sc_and_buffer,add_sma,add_enter_price2close,add_rsi,add_fractals
+from ForBots.Indicators.pva_indicators import add_mean_on_fractals
 from ForBots.Indicators.price_funcs import get_price_reverse_rails,get_universal_r
 
 class OGTA1_Rails(BaseTABitget):
@@ -159,7 +160,50 @@ class OGTA4_PUPPY(BaseTABitget):
             return 'close_short_pw'
         if row['rsi'] > 100-self.threshold_exit:  
             return 'close_long_pw'
+        
+class OGTA4_HAMSTER(BaseTABitget):
+    """period=14,threshold=30"""
+    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=14,threshold=30):
+        super().__init__(symbol, granularity, productType, n_parts, period)
+        self.threshold = threshold
+    def preprocessing(self, df):
+        df = add_cdvsai(df,period=self.period)
+        df = add_rsi(df,self.period,'cum_dvsai')
+        df = add_enter_price2close(df)  
+        df = add_slice_df(df, self.period) 
+        # df['signal'] = add_signal(df) # поиск какого-то сигнала
+        return df
 
+    def __call__(self, row, *args, **kwds):
+        if row['rsi'] < self.threshold:  
+            return 'long_pw'
+        if row['rsi'] > 100-self.threshold:  
+            return 'short_pw'
+        
+class OGTA4_RAT(BaseTABitget):
+    """period=14,period_fractal=5,period_mean=10"""
+    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=14,period_fractal=5,period_mean=10):
+        super().__init__(symbol, granularity, productType, n_parts, period)
+        self.period_fractal = period_fractal
+        self.period_mean = period_mean
+    def preprocessing(self, df):
+        df = add_cdvsai(df,period=self.period)
+        df = add_rsi(df,self.period,'cum_dvsai')
+        df = add_fractals(df,self.period_fractal)
+        df = add_mean_on_fractals(df,self.period_mean,'rsi')
+        df['oversold'] = df['rsi'] < df['bottom_mean']
+        df['overbought'] = df['rsi'] > df['top_mean']
+        df = add_enter_price2close(df)  
+        df = add_slice_df(df, self.period) 
+        # df['signal'] = add_signal(df) # поиск какого-то сигнала
+        return df
+
+    def __call__(self, row, *args, **kwds):
+        if row['oversold']:  
+            return 'long_pw'
+        if row['overbought']:  
+            return 'short_pw'
+        
 # TODO изменить логику, сейчас все плохо
 class OGTA5_CAT(BaseTABitget):
     def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=20,volume_multiplier=1.5,spread_threshold=1.2):
@@ -191,4 +235,40 @@ class OGTA5_CAT(BaseTABitget):
         if row['signal'] == 1:
             return 'long_pw'
         if row['signal'] == -1:
+            return 'short_pw'
+
+
+class OGTA6_CERBERUS(BaseTABitget):
+    """period=14,period_ma1=20,period_ma2=10"""
+    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=14,period_ma1=20,period_ma2=10):
+        super().__init__(symbol, granularity, productType, n_parts, period)
+        self.period_ma1 = period_ma1
+        self.period_ma2 = period_ma2
+    def preprocessing(self, df):
+        df = add_cdvsai(df,self.period,self.period_ma1,self.period_ma2)
+        df = add_enter_price2close(df)  
+        df = add_slice_df(df, self.period) 
+        return df
+
+    def __call__(self, row, *args, **kwds):
+        if row['ma_cdv1'] < row['ma_cdv2']:  
+            return 'long_pw'
+        else:  
+            return 'short_pw'
+        
+class OGTA7_PARADOX(BaseTABitget):
+    """period=14,mult=1"""
+    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=14,mult=1):
+        super().__init__(symbol, granularity, productType, n_parts, period)
+        self.mult = mult
+    def preprocessing(self, df):
+        df = add_dvsai(df,self.period,self.mult)
+        df = add_enter_price2close(df)  
+        df = add_slice_df(df, self.period) 
+        return df
+
+    def __call__(self, row, *args, **kwds):
+        if row['dvsai'] < row['dvsaid']:  
+            return 'long_pw'
+        if row['dvsai'] > row['dvsaiu']:  
             return 'short_pw'

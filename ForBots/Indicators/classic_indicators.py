@@ -1290,6 +1290,7 @@ def add_dynamic_zigzag(df:pd.DataFrame, source='high_low', n_std=1.5, method='st
 # Good variant
 def add_dzz_peaks(df: pd.DataFrame, source='high_low', n_std=1.5, method='std', period=20):
     """
+    add 'zigzag','zigzag_peaks'
     ZigZag с динамическим reversal на основе волатильности
     
     Параметры:

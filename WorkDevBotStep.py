@@ -52,7 +52,7 @@ granularity = "5m"
 slope = 4
 #  (PTA18_REXXAR,(100,5,10,50,30)),   
 # bot = WS(symbol,granularity,'e',1,100,7,10,10,40,10,0)
-bot = WS(symbol,granularity,'e',1)
+bot = WS(symbol,granularity,'e',1,max_depth=3)
 # bot = WS(symbol,granularity,'e',1,30,50,3,15,20)
 # bot = WS(symbol,granularity,'e',1,20,10,'LP_1752352674.json')
 # bot = WS(symbol,granularity,'e',1,25,9,12,'QGA20_beta2_001.json')
@@ -60,13 +60,13 @@ bot = WS(symbol,granularity,'e',1)
 # bot = WS(symbol,granularity,'e',1,30,100,30,60,30,50,policy='BP_1751841463.6270704.json')
 # trades,equity3,equity_fee = check_strategy_v5(df.copy(),bot,close_2330=True)
 # print(trades)
-# trades,equity1,equity_fee,longs1,shorts1,closes1 = check_strategy_v4(df.copy(),bot)
+trades,equity1,equity_fee,longs1,shorts1,closes1 = check_strategy_v4(df.copy(),bot)
 # print(trades)
 # trades,equity,equity_fee = check_strategy_v5(df,bot)
 # conf = (20,55,12,25,20)
 # bot = WS(symbol,granularity,"usdt-futures",1,*conf)
 # df = df.iloc[-50:]
-df = bot.get_test_df(df)
+# df = bot.get_test_df(df)
 # df.info()
 # print(df.tail()['chop'])
 # print(time() - start)
@@ -80,41 +80,30 @@ fee_base = 0.0002
 # trades,longs,shorts,closes,equity = check_strategy(df,get_action_STA1e,bot)
 # trades,equity2,equity_fee = check_strategy_v3(df,bot,fee_base)
 # print(trades)
-trades,longs,shorts,closes,equity = check_strategy(df,TS,bot)
+# trades,longs,shorts,closes,equity = check_strategy(df,TS,bot)
 print(trades)
-try:
-    fee = trades['count']*trades['open_price']*fee_base
-    print('fee',fee, (fee/trades['open_price'])*100)
-    print('total_with_fee',trades['total'] - fee, ((trades['total'] - fee)/trades['open_price'])*100)
-except:
-    print('НЕТ СДЕЛОК!')
+
 
 
 
 longs = np.array(longs)
 shorts = np.array(shorts)
 closes = np.array(closes)
-equity = np.array(equity)
 
 # print(longs.shape,longs1.shape)
 # print(shorts.shape,shorts1.shape)
 # print(closes.shape,closes1.shape)
 
 see_equity = True
-see_equity = False
+# see_equity = False
 if see_equity:
-    plt.plot(equity,color='red')
-    # plt.plot(equity1,color='blue')
-    # plt.plot(equity2,color='green')
-    # plt.plot(equity3,color='yellow')
-
-    # plt.plot(equity_fee,color='blue')
-    pass
+    plt.plot(equity1,color='red')
+    plt.plot(equity_fee,color='blue')
 else:
-    # plt.subplot(2,1,1)
+    plt.subplot(2,1,1)
     # plt.subplot(3,1,1)
     plt.grid() 
-    plt.plot(df['zigzag'])
+    
     draw_hb_chart_fast(df)
     # plt.plot(df['zigzag'])
     # plt.plot(df['stair'])
@@ -173,12 +162,12 @@ else:
     # draw_hb_chart_fast(df)
     # for k in ('stop_long','stop_short','ema'):
     #     plt.plot(df[k])
-    # ax1 = plt.gca()
-    # plt.subplot(2,1,2,sharex=ax1)
-    # plt.grid() 
-    # plt.plot(df['rsi'])
-    # plt.axhline(70)
-    # plt.axhline(30)
+    ax1 = plt.gca()
+    plt.subplot(2,1,2,sharex=ax1)
+    plt.grid() 
+    plt.plot(df['rsi'])
+    plt.axhline(70)
+    plt.axhline(30)
     # plt.subplot(3,1,3,sharex=ax1)
     # plt.grid() 
     # plt.plot(df['adx'],color='blue')

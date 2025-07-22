@@ -262,3 +262,17 @@ def add_linear_regression_last_row(df: pd.DataFrame,
     df.loc[df.index[-1], 'regression_line'] = last_value
     
     return df
+
+def add_ideal_pos(df:pd.DataFrame):
+    """add 'ideal_enter','ideal_pos' \n
+    !!!require add_dzz_peaks!!! \n
+    actions = (None,'long_pw','short_pw','close_long_pw','close_short_pw','close_all_pw')
+    """
+    ideal_pos = df[~pd.isna(df['zigzag_peaks'])]
+    ideal_pos = ideal_pos.copy()
+    ideal_pos['ideal_enter']= np.where(ideal_pos['zigzag_direction'] == -1,1,2)
+
+    df['ideal_enter'] = ideal_pos['ideal_enter']
+    df['ideal_pos'] = df['ideal_enter'].ffill()
+    df['ideal_enter'] = df['ideal_enter'].fillna(0)
+    return df

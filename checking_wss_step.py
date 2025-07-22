@@ -21,8 +21,8 @@ save_cores = 2
 fee = 0.0002
 close_2330 = True
 need_plot = True
-# test_folder = 'DataForTests\DataFromMoexFast'
-test_folder = 'DataForTests\DataFromMoexForStepTests'
+test_folder = 'DataForTests\DataFromMoexFast'
+# test_folder = 'DataForTests\DataFromMoexForStepTests'
 list_dir = os.listdir(test_folder)
 # wss = (
 #     (PTA2_LISICA,(10,1)), 

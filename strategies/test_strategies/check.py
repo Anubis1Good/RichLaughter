@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+from tqdm import tqdm
 # from numba import jit  # Ускорение вычислений (опционально)
 def check_strategy(df,test_strategy,work_strategy):
     """
@@ -518,8 +519,8 @@ def check_strategy_v4(df: pd.DataFrame, work_strategy, fee=0.0002):
     closes = []
     fee_one_p = (fee / 2) * 100
     open_fee = 0
-    period2x = 200
-    for i in range(period2x,len(df.index)):
+    period2x = 300
+    for i in tqdm(range(period2x,len(df.index))):
         
         lc = df.iloc[i-1]
         step_candles = get_step_candles(lc)
@@ -702,7 +703,7 @@ def check_strategy_v5(df: pd.DataFrame, work_strategy, fee=0.0002,close_2330=Fal
 
     fee_one_p = (fee / 2) * 100
     open_fee = 0
-    period2x = 200
+    period2x = 300
     for i in range(period2x,len(df.index)):
         
         lc = df.iloc[i-1]

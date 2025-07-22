@@ -8,6 +8,7 @@ from strategies.work_strategies.LTA import *
 from strategies.work_strategies.LTA2 import *
 from strategies.work_strategies.GLTA import *
 from strategies.work_strategies.PSTA0 import *
+from strategies.work_strategies.STA_ml2 import *
 
 map_wss = {
     '5GZU5_1':(
@@ -43,23 +44,16 @@ map_wss = {
 
     ),
     '5MMU5_1':(
-        (PTA19_TYRAEL,(100,3,16,11,48,20,0)),
-        (LTA_BIBI,(147,7,2,'ultimate_oscillator')),
-        (PTA4_U3,(28,59,12,3,'VC','s')),
-        (PTA21_AURIEL,(111,5,2,3.0,4,0.25)),
-        (PTA18_DEHAKA,(100,7,17,31)),
-        (LTA2_FENNEC,(76,1.81,21,50,15,21,1.93,0)),
-        (PTA18_KELTHUZAD,(100,6,15,25)),
-        (PTA19_ZERATUL,(100,7,7,31,36,19,1)),
-        (PTA18_MISHA,(100,8,5,44,33)),
-        (PTA22_BERSERK,(67,7,2,5.73,6,0.59,95,32,39,11)),
-        (PTA19_JOHANNA,(100,7,9,108,45,17,0)),
-        (PTA19_YREL,(100,5,5,45,28,4,1)),
-        (LTA_IRONANNY,(29,5,2,7)),
-        (LTA2_FENNEC,(68,1.95,23,49,13,17,1.88,0)),
-        (PTA21_WHITEMANE,(2,91,10,2,3.0,5,0.0,1)),
-        (PTA14_RENEGADE,(116,20,129,5,42,36)),
-        (PTA14_RANGER,(103,30,118,5,42,21)),
+        # (STAML2_CHAOS,(60,3,30)),
+        # (STAML2_CHAOS,(60,2,10)),
+        # (STAML2_CHAOS,(60,2,60)),
+        # (STAML2_TRADITION,(60,5,0.5)),
+        # (STAML2_TRADITION,(30,5,1)),
+        # (STAML2_TRADITION,(5,5,1)),
+        (STAML2_GOLDENMEAN,(60,2,5,30)),
+        # (STAML2_KAMIKAZE,(5,30)),
+        # (STAML2_TRENDWAVE,(5,5,0.5,20,40)),
+        # (STAML2_SID,(200,20,10,30,0.05)),
 
     ),
     '5RMU5_1':(

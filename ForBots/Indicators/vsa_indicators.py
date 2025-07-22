@@ -408,3 +408,32 @@ def add_detect_volume_zones(df, window=10, volume_multiplier=1.5, spread_thresho
     df['mid_zone'] = (df['top_zone'] + df['bottom_zone']) / 2
     
     return df
+
+def add_vsai(df,period=20):
+    """add 'vsai','vsaima'"""
+    df['hl'] = df['high'] - df['low']
+    df['vsai'] = df['volume'] / df['hl']
+    vsai_roll = df['vsai'].rolling(period, min_periods=1)
+    df['vsaima'] = vsai_roll.mean()+vsai_roll.std()
+    return df
+
+def add_dvsai(df,period=20,mult=1):
+    """add 'dvsai','dvsaima','dvsaiu','dvsaid'"""
+    df['hl'] = df['high'] - df['low']
+    df['dvsai'] = (df['volume'] / df['hl']) * df['direction']
+    vsai_roll = df['dvsai'].rolling(period, min_periods=1)
+    df['dvsaima'] = vsai_roll.mean()
+    std_roll = vsai_roll.std() * mult
+    df['dvsaiu'] = df['dvsaima'] + std_roll
+    df['dvsaid'] = df['dvsaima'] - std_roll
+    return df
+
+def add_cdvsai(df:pd.DataFrame,period=20,period_ma1=10,period_ma2=5):
+    """add 'dvsai','cum_dvsai','ma_cdv1','ma_cdv2'"""
+    df['hl'] = df['high'] - df['low']
+    df['dvsai'] = (df['volume'] / df['hl']) * df['direction']
+    vsai_roll = df['dvsai'].rolling(period, min_periods=1)
+    df['cum_dvsai'] = vsai_roll.sum()
+    df['ma_cdv1'] = df['cum_dvsai'].rolling(period_ma1).mean()
+    df['ma_cdv2'] = df['cum_dvsai'].rolling(period_ma2).mean()
+    return df

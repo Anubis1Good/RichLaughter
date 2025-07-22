@@ -5,6 +5,7 @@ import sqlite3
 import shutil
 import traceback
 from datetime import datetime
+from utils.processing_results.add_vtb_fee_fut import get_func_vtb_fee
 
 
 def process_history_position(result:pd.DataFrame,suffix,db_path):
@@ -18,19 +19,24 @@ def process_history_position(result:pd.DataFrame,suffix,db_path):
     result['t_avg_fp'] = ((result['total_with_average_fee']/result['avg_close_price'])*100).round(2)
     result['t_max_fp'] = ((result['total_with_max_fee']/result['avg_close_price'])*100).round(2)
     result = result.drop(['avg_close_price','total_fee','total_result_fee','total_with_average_fee','total_with_max_fee'],axis=1)
-
+# Самый надёжный вариант - использовать list comprehension
+    result['vtbf_res'] = [
+        float(get_func_vtb_fee(row['ticker'])(float(row['total_result']), int(row['total_trades'])))
+        for _, row in result.iterrows()
+    ]
     has_days = 'days' in result.columns.tolist()
 
     if has_days:
         result['cd'] = round(result['total_trades'] / result['days'],2)
         result['pred'] = result['avgt'] * result['cd']
         result['trd'] = result['total_result'] / result['days']
+        result['trd_vtb'] = result['vtbf_res'] / result['days']
     result = result.sort_values(by=['ticker','avgt'],axis=0,ascending=[True,False])
     result = result.reset_index(drop=True)
 
     ranks = ['total_trades','total_per','t_min_fp','t_avg_fp','t_max_fp','avgdd','maxdd','avgt','maxp','win_rate']
     if has_days:
-        ranks += ['cd','pred','trd','days']
+        ranks += ['cd','pred','trd','trd_vtb','days']
     data_sum = result.groupby('bot')[ranks].mean().sort_values('t_avg_fp',ascending=False).round(2)
     rank_names = ["rank_"+r for r in ranks]
     for r in ranks:
