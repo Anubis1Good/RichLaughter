@@ -16,10 +16,10 @@ stock_groups= {
     'TS': (
         'MTLR2'
         'VTBR2',
-        'LSRG2',
-        'RUAL2',
-        'TRMK2',
-        'NMTP2',
-        'CBOM2'
+        'LSRG3',
+        'RUAL3',
+        'TRMK3',
+        'NMTP3',
+        'CBOM3'
     )
 }

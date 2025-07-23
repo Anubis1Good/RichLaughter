@@ -37,6 +37,7 @@ bot_on_ticker = (
             # ('IMOEXF','SPBFUT','M5',1),
             ('CNYRUBF','SPBFUT','M5',1),
             ('BRQ5','SPBFUT','M5',1),
+            ('NGN5','SPBFUT','M5',1),
         )
     ),
 )
