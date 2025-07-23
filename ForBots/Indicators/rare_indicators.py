@@ -34,6 +34,7 @@ def add_crisis_remora(df: pd.DataFrame, volatility_period=20, trend_period=50,qu
     
     return df
 
+# CHECK THIS
 def add_vix(df: pd.DataFrame, period=20):
     """
     Добавляет колонку 'vix' в DataFrame.
@@ -139,6 +140,7 @@ def add_zigzag(df: pd.DataFrame, threshold=0.1, min_distance=10):
     df['zigzag'] = zigzag
     return df
 
+#USE THIS
 def add_chaikin_volatility(df: pd.DataFrame, ema_period=10, change_period=10):
     """
     Добавляет колонку 'chaikin_volatility' в DataFrame.

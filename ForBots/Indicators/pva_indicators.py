@@ -61,13 +61,17 @@ def add_market_mode(df,period_check=10,period_frequency=5):
     )
     return df
 
+#TAKE THIS
 def add_kvas_channel(df:pd.DataFrame,period=20):
+    """add 'top_kvas','low_kvas'"""
     df['delta_p'] = (df['close'] - df['close'].shift(period))
     df['top_kvas'] = df['high'].rolling(period).max() + df['delta_p']
     df['low_kvas'] = df['low'].rolling(period).min() + df['delta_p']
     return df
 
+#NEED EXPERIMENT
 def add_kefir_channel(df:pd.DataFrame,period=20):
+    """add 'top_kefir','low_kefir'"""
     df['delta_p'] = df['close'] - df['close'].shift(period)
     df['delta_t'] = df['delta_p'].shift(period).rolling(period).max()
     df['delta_l'] = df['delta_p'].shift(period).rolling(period).min()
@@ -197,6 +201,7 @@ def add_pc_stair_fast(df: pd.DataFrame, n=3, period=20):
     return df
 
 def add_integrity_index(df:pd.DataFrame,period:int=14):
+    """add 'ii'"""
     df['spred'] = df['high'] - df['low']
     df['integrity'] = np.where(df['direction'] == 1, df['spred'],-df['spred'])
     df['ii'] = (df['integrity'].rolling(period).sum() / np.abs(df['integrity']).rolling(period).sum()) * 100
@@ -274,6 +279,7 @@ def add_static_channel(df:pd.DataFrame,period=60):
     df['bottom_line'] = df['close'].rolling(period,1).quantile(0.1)
     return df
 
+#check thos
 def add_assessment_motion_index(df:pd.DataFrame,period=100,period_filter=50):
     """add 'ami', 'ami_filter'"""
     df['ami'] = (((df['avarege'].diff().rolling(period,1).sum())/ np.abs(df['avarege'].diff()).rolling(period).sum())*100).round(2)

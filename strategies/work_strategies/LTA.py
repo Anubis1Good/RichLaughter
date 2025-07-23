@@ -2,9 +2,10 @@ import numpy as np
 import  matplotlib.pyplot as plt
 from sklearn.cluster import KMeans
 from strategies.work_strategies.BaseTA import BaseTABitget
-from ForBots.Indicators.classic_indicators import add_slice_df,add_enter_price,add_ema,add_stochastic,add_atr,add_local_extrema,add_enter_price2close,add_supertrend,add_rsi,add_chop,add_rsi_tw,add_cci,add_williams_r,add_mfi,add_ultimate_oscillator,add_cmo,add_fractals
+from ForBots.Indicators.classic_indicators import add_slice_df,add_enter_price,add_ema,add_stochastic,add_atr,add_local_extrema,add_enter_price2close,add_supertrend,add_rsi,add_chop,add_rsi_tw,add_cci,add_williams_r,add_mfi,add_ultimate_oscillator,add_cmo,add_fractals,add_bollinger,add_average_fractals,add_roc
 # from ForBots.Indicators.price_funcs import get_universal_r,get_universal
-from ForBots.Indicators.pva_indicators import add_mean_on_fractals,add_ext_on_fractals
+from ForBots.Indicators.pva_indicators import add_mean_on_fractals,add_ext_on_fractals,add_integrity_index
+from ForBots.Indicators.vsa_indicators import add_dvsai,add_cdvsai
 from utils.help_trades import reverse_action
 #D Похоже на WDDCr
 class LTA_LAKSA(BaseTABitget):
@@ -722,3 +723,65 @@ class LTA_IRONANNY(BaseTABitget):
             return 'long_pw'
         if row['overbought'] > self.solution:  
             return 'short_pw'
+
+class LTA_CC(BaseTABitget):
+    """period=15, period_fractal=10, period_mean=5, solution=8,n_fractals=3,mult=2,use_stop=1,use_ps=1 \n
+    Crisis Counter 15 features"""
+    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=15, period_fractal=10, period_mean=5, solution=8,n_fractals=3,mult=2,use_stop=1,use_ps=1):
+        super().__init__(symbol, granularity, productType, n_parts, period)
+        self.solution = solution
+        self.period_fractal = period_fractal
+        self.period_mean = period_mean
+        self.n_fractals = n_fractals
+        self.mult = mult
+        self.use_stop = use_stop
+        self.use_ps = use_ps
+    def preprocessing(self, df):
+        df = add_rsi(df,self.period)
+        df = add_rsi_tw(df,self.period)
+        df = add_williams_r(df,self.period)
+        df = add_mfi(df,self.period)
+        df = add_ultimate_oscillator(df,self.period//3,self.period//2,self.period)
+        df = add_cmo(df,self.period)
+        df = add_cci(df,self.period)
+        df = add_stochastic(df,self.period,self.period//2)
+        df = add_roc(df,self.period)
+        df = add_integrity_index(df,self.period)
+        df = add_fractals(df,self.period_fractal)
+        inds = ('cmo','rsi','rsi_tw','williams_r','mfi','ultimate_oscillator','cci','%d','roc','ii')
+        df['oversold'] = 0
+        df['overbought'] = 0
+        for i, ind in enumerate(inds):
+            df = add_mean_on_fractals(df,self.period_mean,ind)
+            df['oversold'] += df[ind] < df['bottom_mean']
+            df['overbought'] += df[ind] > df['top_mean']
+        df = add_bollinger(df,self.period)
+        df['oversold'] += df['close'] < df['bbd']
+        df['overbought'] += df['close'] > df['bbu']
+        df = add_average_fractals(df,self.n_fractals)
+        df['oversold'] += df['close'] <= df['ave_down']
+        df['overbought'] += df['close'] >= df['ave_up']
+        df = add_dvsai(df,self.period,self.mult)
+        df['oversold'] += df['dvsai'] < df['dvsaid']
+        df['overbought'] += df['dvsai'] > df['dvsaiu']
+        df = add_cdvsai(df,self.period)
+        df = add_rsi(df,self.period,'cum_dvsai')
+        df = add_mean_on_fractals(df,self.period_mean,'rsi')
+        df['oversold'] += df['rsi'] < df['bottom_mean']
+        df['overbought'] += df['rsi'] > df['top_mean']
+        
+        df = add_enter_price2close(df)  
+        df = add_slice_df(df, self.period) 
+        return df
+
+    def __call__(self, row, *args, **kwds):
+        if row['oversold'] > self.solution:  
+            return 'long_pw'
+        if row['overbought'] > self.solution:  
+            return 'short_pw'
+        if self.use_ps:
+            sol = self.solution // 2
+            if row['oversold'] > sol or row['overbought'] > sol:  
+                return None 
+        if self.use_stop:
+            return 'close_all_pw'

@@ -1,7 +1,6 @@
 import sys
 import pandas as pd
 import matplotlib.pyplot as plt
-from matplotlib.gridspec import GridSpec
 import numpy as np
 import numpy.typing as npt
 from time import time
@@ -17,11 +16,11 @@ from strategies.test_strategies.check import check_strategy,check_strategy_v3,ch
 # from strategies.work_strategies.GLTA import GLTA2_BETA as WS
 # from strategies.work_strategies.GLTA import GLTA2_GAMMA as WS
 # from strategies.work_strategies.OGTA import OGTA7_PARADOX as WS
-# from strategies.work_strategies.LTA import LTA_IRONANNY as WS
+from strategies.work_strategies.LTA import LTA_CC as WS
 # from strategies.work_strategies.LTA2 import LTA2_DRG as WS
 # from strategies.work_strategies.PSTA0 import PSTA3_ZEUS as WS
 # from strategies.work_strategies.MTA import MTA_LORD as WS
-from strategies.work_strategies.STA_ml2 import STAML2a_MARVEL as WS
+# from strategies.work_strategies.STA_ml2 import STAML2a_MARVEL as WS
 # from strategies.work_strategies.STA_ml import STAML1_XGBR2_DC as WS
 # from strategies.work_strategies.STA_rl import STARL1_HELPGOD as WS
 # from strategies.work_strategies.experiments import ExpBot as WS
@@ -114,7 +113,7 @@ else:
     # plt.subplot(2,1,1)
     # plt.subplot(3,1,1)
     plt.grid() 
-    plt.plot(df['zigzag'])
+    # plt.plot(df['zigzag'])
     draw_hb_chart_fast(df)
     # plt.plot(df['zigzag'])
     # plt.plot(df['stair'])

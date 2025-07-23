@@ -290,7 +290,7 @@ class STAML2a_(BaseTABitget):
         return None
     
 class STAML2a_PHENOMENON(BaseTABitget):
-    """period=60, n_std=3"""
+    """period=60, n_std=3, max_depth=None"""
     def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=60, n_std=3,max_depth=None):
         super().__init__(symbol, granularity, productType, n_parts, period)
         self.n_std = n_std

@@ -4,7 +4,7 @@ from strategies.work_strategies.PTAXX import PTA20_HOGGER,PTA21_WHITEMANE,PTA21_
 
 from strategies.work_strategies.STA_ml2 import STAML2_NEWAVE,STAML2_GOLDENMEAN,STAML2a_PHENOMENON,STAML2_CHAOS,STAML2_TRADITION
 from strategies.work_strategies.STA_ca import STA2,STA2_FAST,STA2_SLOW,STA2_ULTRA,STA3_LITE,STA3_FORCE
-from strategies.work_strategies.LTA import LTA_OKROSHKA,LTA_PIN,LTA_OKROSHKA2,LTA_BIBI,LTA_IGOGOSHA,LTA_IRONANNY
+from strategies.work_strategies.LTA import LTA_OKROSHKA,LTA_PIN,LTA_OKROSHKA2,LTA_BIBI,LTA_IGOGOSHA,LTA_IRONANNY,LTA_CC
 from strategies.work_strategies.LTA2 import LTA2_LOGAN, LTA2_ALKASH, LTA2_DRINKER,LTA2_FENNEC,LTA2_HOTS,LTA2_LYNX,LTA2_PUBG,LTA2_DRG
 from strategies.work_strategies.GLTA import GLTA_BETA
 from strategies.work_strategies.OGTA import OGTA4_DOG,OGTA4_PUPPY,OGTA4_HAMSTER,OGTA4_RAT,OGTA6_CERBERUS,OGTA7_PARADOX
@@ -101,6 +101,7 @@ wssMoexFut5 = [
     (LTA_IGOGOSHA,(60,10,3,'ultimate_oscillator')), #0807
     (LTA_IRONANNY,(30,10,3,4)), #0807
     (LTA_IRONANNY,(90,10,2,6)), #0807 CNY
+    (LTA_CC,(96,5,2,7,2,2.2,0,0,)), #2307
 
     (LTA2_LOGAN,(10,100,30)), #CNY B RMM C
     (LTA2_LOGAN,(30,10,20)), #0106

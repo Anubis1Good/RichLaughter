@@ -9,6 +9,7 @@ from multiprocessing import Pool
 from functools import partial
 from strategies.test_strategies.check import check_strategy_v3
 from Loader.BitgetLoader import bitget_loader
+from utils.processing_results.add_vtb_fee_fut import get_func_vtb_fee
 phys_cores = psutil.cpu_count(logical=False) 
 
 
@@ -94,12 +95,13 @@ def get_optimization_results_table(study, df, strategy_class, param_options, nee
         name_doc = f"{ticker}_{name_bot}"
         name_file = f"{name_doc}_{'_'.join(param_values)}"
         params_tuple = f"({name_bot},({','.join(param_values)},)),"
-        
+        vtb_twf_func = get_func_vtb_fee(ticker[1:].split('_')[0])
         # Добавляем результаты
         result_row = {
             # "Trial": trial.number,
             "name": name_file,
-            "ws":params_tuple
+            "ws":params_tuple,
+            "vtb": vtb_twf_func(trades["total"],trades["count"])
             # "Total": trades["total"],
             # "TradesCount": trades["count"],
             # "TotalFeePer": trades["total_fee_per"],  

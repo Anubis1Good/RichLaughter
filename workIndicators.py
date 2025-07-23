@@ -21,9 +21,9 @@ df = df.iloc[-200:]
 # df = df.iloc[10:510]
 
 # df['down_diff'] = df['low'] - df['sma']
-df = add_dzz_peaks(df,period=20)
-df = add_ideal_pos(df)
-# df = add_cdvsai(df)
+# df = add_dzz_peaks(df,period=20)
+# df = add_ideal_pos(df)
+df = add_chaikin_volatility(df)
 # df = add_analys_dzz(df)
 print(df.tail(10))
 # df.info()
@@ -44,7 +44,7 @@ if plot:
     # plt.plot(df['regression_line'])
     # plt.plot(df['stair'])
     # plt.plot(df['trend'])
-    plt.plot(df['zigzag'])
+    # plt.plot(df['zigzag'])
     # plt.plot(df['stair_up'])
     # df['points'] = np.where((df['zigzag_direction'] != df['zigzag_direction'].shift(1)), df['middle'], np.nan)
 
@@ -53,7 +53,7 @@ if plot:
     # plt.scatter(points.index,points['middle'])
     # plt.scatter(df.index, df['zigzag_peaks'], color='red', label='Peaks')
     # for k in ('fractal_up','fractal_down'):
-    # for k in ('std_up', 'std_down', 'sma'):
+    # for k in ('top_kefir','low_kefir'):
     #     plt.plot(df[k])
     # for k in 'max_hb, min_hb, avarege'.split(', '):
 
@@ -61,8 +61,7 @@ if plot:
     plt.subplot(2,1,2,sharex=ax1)
     plt.grid() 
     # plt.bar(df.index.to_series(),df['dvsai'])
-    # plt.plot(df['dvsaima'],color='red')
-    # plt.plot(df['dvsaiu'],color='red')
+    plt.plot(df['chaikin_volatility'],color='red')
     # plt.plot(df['dvsaid'],color='red')
     # plt.plot(df['cum_dvsai'])
     # plt.plot(df['ma_cdv1'])

@@ -28,7 +28,7 @@ class TestingTrader1:
             delta = timedelta(days=4)
         else:
             delta = timedelta(days=2)
-        self.yesterday = self.yesterday = str(today - delta)
+        self.yesterday = str(today - delta)
         self.check_time = False
         self.check_time2 = True
         self.count_bars = 300
