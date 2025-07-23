@@ -1,5 +1,6 @@
 import pandas as pd
 import os
+import traceback
 from time import sleep
 from datetime import date,timedelta
 from Loader.BitgetLoader import bitget_loader
@@ -29,16 +30,25 @@ while True:
                 board = "TQBR"
                 market: str = "shares"
                 engine: str = "stock"
-            df = download_moex(ticker,interval,yesterday,board=board,market=market,engine=engine)
+            df = download_moex(ticker,10,yesterday,board=board,market=market,engine=engine)
             df = create_df(df)
             if len(df.index) > 400:
                 df = df.iloc[-400:]
             df = bot.preprocessing(df)
-            res[ticker] = df.iloc[-1]['overbought'] - df.iloc[-1]['oversold']
-        except:
-            pass
-    res_df = pd.Series(res)
-    res_df = res_df.sort_values()
+            res[ticker] = {}
+            res[ticker]['10m'] = df.iloc[-1]['overbought'] - df.iloc[-1]['oversold']
+            df = download_moex(ticker,60,yesterday,board=board,market=market,engine=engine)
+            df = create_df(df)
+            if len(df.index) > 400:
+                df = df.iloc[-400:]
+            df = bot.preprocessing(df)
+            res[ticker]['60m'] = df.iloc[-1]['overbought'] - df.iloc[-1]['oversold']
+
+        except Exception:
+            print(traceback.print_exc())
+    # res_df = pd.Series(res)
+    res_df = pd.DataFrame(res).T
+    res_df = res_df.sort_values('60m',axis=0)
     os.system('cls')
     print('-----------long recomendation-----------')
     print(res_df.head(10))

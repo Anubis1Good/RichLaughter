@@ -52,8 +52,11 @@ class QuikTrader1:
         chour = now.hour
         cminute = now.minute
         if chour > 8:
-            if chour == 23 and cminute > 20:
-                return -1
+            if chour == 23:
+                if cminute > 20:
+                    return -1
+                else:
+                    return -2
             return 1
         return 0
     def _debug_log(self,pos,action):
@@ -134,6 +137,8 @@ class QuikTrader1:
                 pos = self._check_position()
                 if time_mode == -1:
                     action = 'close_all'
+                if time_mode == -2:
+                    action = action if 'close' in action else None
                 self._work_action(action,pos)
 
         except Exception as err:

@@ -1,5 +1,28 @@
 import os
 import pandas as pd
+import re
+
+dollar_step = 7.8
+
+futures_fee_funcs = {
+    'base': lambda total,count: total - count*2,
+    r'BR..$': lambda total,count: total*100*dollar_step - count*2,
+    r'ED..$': lambda total,count: total*10000*dollar_step - count*2,
+    r'EURRUBF': lambda total,count: total*1000 - count*2,
+    r'IMOEXF': lambda total,count: total*10 - count*2,
+    r'MM..$': lambda total,count: total*10 - count*2,
+    r'NG..$': lambda total,count: total*1000*dollar_step - count*2,
+    r'RM..$': lambda total,count: total*2*dollar_step - count*2,
+    r'RI..$': lambda total,count: total*2*dollar_step*0.1 - count*2,
+    r'CNYRUBF': lambda total,count: total*1000 - count*2,
+    r'CR..$': lambda total,count: total*1000 - count*2,
+}
+
+def get_func_vtb_fee(name):
+    for fff in futures_fee_funcs:
+        if re.match(fff,name):
+            return futures_fee_funcs[fff]
+    return futures_fee_funcs['base']
 
 main_folder = 'TestNewResults\StepTest'
 
@@ -17,6 +40,16 @@ for inner_folder in inner_folders:
             df_total = df_file
         else:
             df_total = pd.concat([df_total,df_file])
+    vtb_twf_func = get_func_vtb_fee(inner_folder[1:].split('_')[0])
+    df_total["vtb"] = vtb_twf_func(df_total["total"],df_total["count"])
+    # Получаем список столбцов без "vtb"
+    cols = [col for col in df_total.columns if col != "vtb"]
+
+    # Вставляем "vtb" на вторую позицию
+    cols.insert(2, "vtb")
+
+    # Применяем новый порядок
+    df_total = df_total.reindex(columns=cols)
     df_total = df_total.sort_values('total_abs_fee',ascending=False)
     df_total = df_total.reset_index(drop=True)
     if 'Unnamed: 0' in df_total.columns:
