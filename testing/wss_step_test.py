@@ -44,16 +44,13 @@ map_wss = {
 
     ),
     '5MMU5_1':(
-        # (STAML2_CHAOS,(60,3,30)),
-        # (STAML2_CHAOS,(60,2,10)),
-        # (STAML2_CHAOS,(60,2,60)),
-        # (STAML2_TRADITION,(60,5,0.5)),
-        # (STAML2_TRADITION,(30,5,1)),
-        # (STAML2_TRADITION,(5,5,1)),
-        (STAML2_GOLDENMEAN,(60,2,5,30)),
-        # (STAML2_KAMIKAZE,(5,30)),
-        # (STAML2_TRENDWAVE,(5,5,0.5,20,40)),
-        # (STAML2_SID,(200,20,10,30,0.05)),
+        (STAML2b_RAPTOR,(100,5,30,30,30,0,0)),
+        (STAML2b_RAPTOR,(60,2,30,30,30,0,0)),
+        (STAML2b_RAPTOR,(10,2,30,30,30,0,0)),
+        (STAML2b_RAPTOR,(10,2,30,30,30,0,1)),
+        (STAML2b_RAPTOR,(10,2,30,30,30,0,1,3)),
+        (STAML2b_RAPTOR,(5,2,15,15,30,0,1,3)),
+        (STAML2b_RAPTOR,(5,2,15,15,30,1,1,3)),
 
     ),
     '5RMU5_1':(

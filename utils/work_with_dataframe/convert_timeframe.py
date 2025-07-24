@@ -1,4 +1,6 @@
+import os
 import pandas as pd
+
 def convert_chart1to5(df):
     # Преобразуем столбец 'ms' в datetime
     df['ms'] = pd.to_datetime(df['ms'])
@@ -24,3 +26,17 @@ def convert_chart1to5(df):
     df_5min.reset_index(inplace=True)
     df_5min['x'] = df_5min.index
     return df_5min
+
+if __name__ == "__main__":
+    folder = 'DataForTests\DataFromMOEX'
+    # folder = 'DataForTests\DataFromMoexForStepTests'
+    # folder = 'DataForTests\otherMOEX'
+    listdir = os.listdir(folder)
+    # output_folder = 'DataForTests\DataFromMOEXto5'
+    output_folder = folder
+    for f in listdir:
+        filepath = os.path.join(folder,f)
+        df = pd.read_csv(filepath)
+        df = convert_chart1to5(df)
+        new_path = os.path.join(output_folder,'5'+f)
+        df.to_csv(new_path)

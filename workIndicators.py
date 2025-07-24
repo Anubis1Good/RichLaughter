@@ -21,9 +21,9 @@ df = df.iloc[-200:]
 # df = df.iloc[10:510]
 
 # df['down_diff'] = df['low'] - df['sma']
-# df = add_dzz_peaks(df,period=20)
+df = add_dzz_peaks(df,period=10)
 # df = add_ideal_pos(df)
-df = add_chaikin_volatility(df)
+# df = add_chaikin_volatility(df)
 # df = add_analys_dzz(df)
 print(df.tail(10))
 # df.info()
@@ -44,7 +44,7 @@ if plot:
     # plt.plot(df['regression_line'])
     # plt.plot(df['stair'])
     # plt.plot(df['trend'])
-    # plt.plot(df['zigzag'])
+    plt.plot(df['zigzag'])
     # plt.plot(df['stair_up'])
     # df['points'] = np.where((df['zigzag_direction'] != df['zigzag_direction'].shift(1)), df['middle'], np.nan)
 
@@ -61,7 +61,7 @@ if plot:
     plt.subplot(2,1,2,sharex=ax1)
     plt.grid() 
     # plt.bar(df.index.to_series(),df['dvsai'])
-    plt.plot(df['chaikin_volatility'],color='red')
+    # plt.plot(df['chaikin_volatility'],color='red')
     # plt.plot(df['dvsaid'],color='red')
     # plt.plot(df['cum_dvsai'])
     # plt.plot(df['ma_cdv1'])

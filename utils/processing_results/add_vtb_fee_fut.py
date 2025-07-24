@@ -15,6 +15,18 @@ futures_fee_funcs = {
     r'RI..$': lambda total,count: total*2*dollar_step*0.1 - count*2,
     r'CNYRUBF': lambda total,count: total*1000 - count*2,
     r'CR..$': lambda total,count: total*1000 - count*2,
+    r'GD..$': lambda total,count: total*10*dollar_step - count*2,
+    r'USDRUBF': lambda total,count: total*1000 - count*2,
+    r'SV..$': lambda total,count: total*100*dollar_step - count*2,
+    r'PD..$': lambda total,count: total*10*dollar_step - count*2,
+    r'PT..$': lambda total,count: total*10*dollar_step - count*2,
+    r'UC..$': lambda total,count: total*1000*10.94 - count*2,
+    r'SF..$': lambda total,count: total*10*dollar_step - count*2,
+    r'NA..$': lambda total,count: total*dollar_step*0.1 - count*2,
+    r'CC..$': lambda total,count: total*10 - count*2,
+    r'SBERF': lambda total,count: total*100 - count*2,
+    r'GAZPF': lambda total,count: total*100 - count*2,
+    r'IB..$': lambda total,count: total*10*dollar_step - count*2,
 }
 
 tests = ('BR','BRQ5','BQR5','BRU5','BRQ51')

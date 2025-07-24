@@ -21,7 +21,7 @@ from strategies.test_strategies.check import check_strategy,check_strategy_v3,ch
 # from strategies.work_strategies.LTA2 import LTA2_DRG as WS
 # from strategies.work_strategies.PSTA0 import PSTA3_ZEUS as WS
 # from strategies.work_strategies.MTA import MTA_LORD as WS
-from strategies.work_strategies.STA_ml2 import STAML2a_MARVEL as WS
+from strategies.work_strategies.STA_ml2 import STAML2b_ as WS
 # from strategies.work_strategies.STA_ml import STAML1_XGBR2_DC as WS
 # from strategies.work_strategies.STA_rl import STARL1_HELPGOD as WS
 # from strategies.work_strategies.experiments import ExpBot as WS
@@ -52,7 +52,7 @@ granularity = "5m"
 slope = 4
 #  (PTA18_REXXAR,(100,5,10,50,30)),   
 # bot = WS(symbol,granularity,'e',1,100,7,10,10,40,10,0)
-bot = WS(symbol,granularity,'e',1,max_depth=3)
+bot = WS(symbol,granularity,'e',1)
 # bot = WS(symbol,granularity,'e',1,30,50,3,15,20)
 # bot = WS(symbol,granularity,'e',1,20,10,'LP_1752352674.json')
 # bot = WS(symbol,granularity,'e',1,25,9,12,'QGA20_beta2_001.json')
@@ -60,7 +60,7 @@ bot = WS(symbol,granularity,'e',1,max_depth=3)
 # bot = WS(symbol,granularity,'e',1,30,100,30,60,30,50,policy='BP_1751841463.6270704.json')
 # trades,equity3,equity_fee = check_strategy_v5(df.copy(),bot,close_2330=True)
 # print(trades)
-trades,equity1,equity_fee,longs1,shorts1,closes1 = check_strategy_v4(df.copy(),bot)
+trades,equity,equity_fee,longs,shorts,closes = check_strategy_v4(df.copy(),bot)
 # print(trades)
 # trades,equity,equity_fee = check_strategy_v5(df,bot)
 # conf = (20,55,12,25,20)
@@ -95,12 +95,12 @@ closes = np.array(closes)
 # print(closes.shape,closes1.shape)
 
 see_equity = True
-# see_equity = False
+see_equity = False
 if see_equity:
-    plt.plot(equity1,color='red')
+    plt.plot(equity,color='red')
     plt.plot(equity_fee,color='blue')
 else:
-    plt.subplot(2,1,1)
+    # plt.subplot(2,1,1)
     # plt.subplot(3,1,1)
     plt.grid() 
     
@@ -162,12 +162,12 @@ else:
     # draw_hb_chart_fast(df)
     # for k in ('stop_long','stop_short','ema'):
     #     plt.plot(df[k])
-    ax1 = plt.gca()
-    plt.subplot(2,1,2,sharex=ax1)
-    plt.grid() 
-    plt.plot(df['rsi'])
-    plt.axhline(70)
-    plt.axhline(30)
+    # ax1 = plt.gca()
+    # plt.subplot(2,1,2,sharex=ax1)
+    # plt.grid() 
+    # plt.plot(df['rsi'])
+    # plt.axhline(70)
+    # plt.axhline(30)
     # plt.subplot(3,1,3,sharex=ax1)
     # plt.grid() 
     # plt.plot(df['adx'],color='blue')

@@ -1,9 +1,10 @@
 import numpy as np
 import pandas as pd
 from strategies.work_strategies.BaseTA import BaseTABitget
-from ForBots.Indicators.classic_indicators import add_slice_df,add_ema,add_enter_price2close,add_rsi,add_dzz_peaks,add_donchan_channel
+from ForBots.Indicators.classic_indicators import add_slice_df,add_ema,add_enter_price2close,add_rsi,add_dzz_peaks,add_donchan_channel,add_adx,add_chop
 from ForBots.Indicators.rare_indicators import add_dynamic_trend_lines_slope_reversed,add_segmented_regression_from_end
 from ForBots.Indicators.ml_indicators import add_find_similar_pattern_lite,add_linear_regression_last_row,add_ideal_pos
+from ForBots.Indicators.pva_indicators import add_analys_dzz
 
 class STAML2_CHAOS(BaseTABitget):
     """ period=60,min_points=2,divider=30"""
@@ -333,9 +334,9 @@ class STAML2a_PHENOMENON(BaseTABitget):
             return 'short_pw'
         return None
     
-class STAML2a_MARVEL(BaseTABitget):
-    """period=60, n_std=3,period_dc=30,max_depth=None"""
-    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=60, n_std=3,period_dc=30,period_rsi=30,period_adx=30,max_depth=None):
+class STAML2b_RAPTOR(BaseTABitget):
+    """period=10, n_std=2,period_dc=30,period_rsi=30,period_adx=30,mode_ideal=0,mode_enter=0,max_depth=None"""
+    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=60, n_std=3,period_dc=30,period_rsi=30,period_adx=30,mode_ideal=0,mode_enter=0,max_depth=None):
         super().__init__(symbol, granularity, productType, n_parts, period)
         self.n_std = n_std
         self.model = None
@@ -343,6 +344,14 @@ class STAML2a_MARVEL(BaseTABitget):
         self.period_rsi = period_rsi
         self.period_adx = period_adx
         self.max_depth = max_depth
+        if mode_ideal == 0:
+            self.mode_ideal = 'ideal_pos'
+        else:
+            self.mode_ideal = 'ideal_enter'
+        if mode_enter == 0:
+            self.enters = (2,1)
+        else:
+            self.enters = (1,2)
     def get_model(self, X_train, y_train):
         if self.max_depth:
             self.model = DecisionTreeClassifier(max_depth=self.max_depth)
@@ -354,17 +363,27 @@ class STAML2a_MARVEL(BaseTABitget):
         df = add_dzz_peaks(df, n_std=self.n_std, period=self.period)
         df = add_ideal_pos(df)
         df = add_donchan_channel(df, self.period_dc)
+        df = add_adx(df,self.period_adx)
+        df['adx'] = df['adx'] / 100
+        df = add_chop(df,self.period_adx)
+        df['chop'] = df['chop'] / 100
         df = add_rsi(df,period=self.period_rsi)
-        
+        df['rsi'] = df['rsi'] / 100
+        df = add_analys_dzz(df,self.period_dc)
+        df['trend'] = (df['trend'] + 1) / 2
+        df['trend_sma'] = (df['trend_sma'] + 1) / 2
+        df['c_max_hb'] = df['close'] >= df['max_hb']
+        df['c_min_hb'] = df['close'] <= df['min_hb']
+        df['c_avarege'] = df['close'] >= df['min_hb']
         # Инициализируем сигнал нулями
         df['signal'] = 0
-        train_set = ['close', 'high', 'low', 'max_hb', 'min_hb', 'avarege']
+        train_set = [ 'trend','trend_sma','c_max_hb','c_min_hb','c_avarege','rsi','chop','adx']
         
         # Убедимся, что нет пропущенных значений
         df_train = df.copy()
-        df_train = df_train.dropna(subset=train_set+['ideal_enter']).copy()
+        df_train = df_train.dropna(subset=train_set+[self.mode_ideal]).copy()
         if not df_train.empty:
-            y_train = df_train['ideal_enter']
+            y_train = df_train[self.mode_ideal]
             X_train = df_train[train_set]
             
             # Обучаем модель
@@ -376,8 +395,8 @@ class STAML2a_MARVEL(BaseTABitget):
         return df
     
     def __call__(self, row, *args, **kwds):
-        if row['signal'] == 2:
+        if row['signal'] == self.enters[0]:
             return 'long_pw'
-        if row['signal'] == 1:
+        if row['signal'] == self.enters[1]:
             return 'short_pw'
         return None

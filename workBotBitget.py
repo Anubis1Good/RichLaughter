@@ -5,8 +5,8 @@ from time import sleep
 
 trader = BitgetTrader()
 # strategy = WS("DOGEUSDT","5m",period=4,multiplier=0.5)
-strategy = WS("DOGEUSDT","1m",period=300,pick_file='KING_1m_Bitget_FUT')
-bot = RL1("DOGEUSDT",trader,strategy,35,1)
+strategy = WS("DOGEUSDT","1m",period=300,pick_file='uKING_1m_Bitget_FUT')
+bot = RL1("DOGEUSDT",trader,strategy,30,1)
 # trader.need_reset = False
 
 while True:

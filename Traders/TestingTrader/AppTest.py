@@ -61,8 +61,8 @@ class MainWindow(QWidget):
         self.moex_stock_btn = QPushButton(text='StartMoexStock')
         self.moex_stock_btn_close = QPushButton(text='CloseMoexStock')
 
-        self.moexm_fut_btn = QPushButton(text='StartMoexMTAFut')
-        self.moexm_fut_btn_close = QPushButton(text='CloseMoexMTAFut')
+        self.moexm_fut_btn = QPushButton(text='StartMoexFut2')
+        self.moexm_fut_btn_close = QPushButton(text='CloseMoexFut2')
         self.moexm_stock_btn = QPushButton(text='StartMoexMTAStock')
         self.moexm_stock_btn_close = QPushButton(text='CloseMoexMTAStock')
 
@@ -109,11 +109,17 @@ class MainWindow(QWidget):
         self.moex_fut_btn_close.clicked.connect(
             lambda: self.toggle_close_script(self.moex_fut_btn_close,'moex_fut_close',script,['MOEX','FUT','close'])
         )
+        # self.moexm_fut_btn.clicked.connect(
+        #     lambda: self.toggle_script(self.moexm_fut_btn,'moexM_fut',script,['MOEXM','FUT','run'])
+        # )
+        # self.moexm_fut_btn_close.clicked.connect(
+        #     lambda: self.toggle_close_script(self.moexm_fut_btn_close,'moexM_fut_close',script,['MOEXM','FUT','close'])
+        # )
         self.moexm_fut_btn.clicked.connect(
-            lambda: self.toggle_script(self.moexm_fut_btn,'moexM_fut',script,['MOEXM','FUT','run'])
+            lambda: self.toggle_script(self.moexm_fut_btn,'moex2_fut',script,['MOEX2','FUT','run'])
         )
         self.moexm_fut_btn_close.clicked.connect(
-            lambda: self.toggle_close_script(self.moexm_fut_btn_close,'moexM_fut_close',script,['MOEXM','FUT','close'])
+            lambda: self.toggle_close_script(self.moexm_fut_btn_close,'moex2_fut_close',script,['MOEX2','FUT','close'])
         )
         self.moex_stock_btn.clicked.connect(
             lambda: self.toggle_script(self.moex_stock_btn,'moex_stock',script,['MOEX','STOCK','run'])

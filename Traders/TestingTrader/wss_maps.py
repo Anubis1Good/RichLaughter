@@ -1,5 +1,5 @@
 import copy
-from Traders.TestingTrader.wss_maps_without_MTA import bitgetFutMap,moexFutMap,moexStockMap
+from Traders.TestingTrader.wss_maps_without_MTA import bitgetFutMap,moexFutMap,moexStockMap,moexFutMap2
 from strategies.work_strategies.MTA import MTA_LORD,MTA_LORD2,MTA_SKYNET
 
 wssMoexSkynet1 = (

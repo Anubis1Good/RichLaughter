@@ -1,5 +1,5 @@
 from dropbox import DropboxOAuth2FlowNoRedirect
-from utils.settings import settings
+from settings import settings
 
 # Замените на свои значения из Dropbox App Console
 APP_KEY = settings.dropbox_key
