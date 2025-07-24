@@ -421,6 +421,7 @@ wssMoexStocks1 = [
     (PTA19_YREL,(100,7,35,40,20,20,0)),    
 
 ]
+
 wssMoexStocks5 = [
     (LTA_OKROSHKA,(10,30)),
     (LTA_PIN,(40,9,40,3)),
@@ -557,6 +558,129 @@ wssMoexStocks5 = [
     (PTA22_BERSERK,(107,9,2,3.25,4,0.59,83,27,47,50)), #1907
 
 ]
+
+wssMoexStocks1b = [
+    (LTA2_HOTS,(150,1,35,40,10,0,0)),
+]
+wssMoexStocks5b = [
+    #5ABRD_1
+    (LTA2_LOGAN,(2,37,26,)),
+    (LTA_CC,(2,2,12,4,2,2.68,0,1,)),
+    #5APTK_1
+    (PSTA2_GGD,(60,2,4,)),
+    (LTA2_ALKASH,(141,1.87,3,27,0,)),
+    # 5AQUA_1
+    (PSTA2_GGD,(60,2,2,)),
+    # 5BANE_1
+    (LTA_BIBI,(3,5,18,'williams_r',)),
+    (LTA2_DRINKER,(150,1.99,3,50,11,12,0,)),
+    # 5BLNG_1
+    (LTA_BIBI,(3,4,6,'williams_r',)),
+    (PTA19_YREL,(100,6,2,45,36,2,0,)),
+    # 5CNTL_1
+    (PSTA2_GGD,(60,2,8,)),
+    (PTA4_U3,(10,26,2,11,'VC','rsi_tw',)),
+    # 5CNTLP_1
+    (LTA_CC,(44,2,6,6,7,1.12,1,0,)),
+    (LTA2_LOGAN,(2,73,34,)),
+    # 5DVEC_1
+    (LTA2_ALKASH,(28,1.89,2,4,0,)),
+    # 5IRKT_1
+    (LTA_IRONANNY,(2,4,25,2,)),
+    (PTA10_MAGIC,(41,81,2,)),
+    # 5KMAZ_1
+    (PTA19_TYRAEL,(100,10,2,12,46,14,1,)),
+    # 5KZOS_1
+    (PTA22_BERSERK,(64,3,5,1.44,7,0.64,92,2,54,20,)),
+    # 5KZOSP_1
+    (PTA10_MAGIC,(5,84,2,)),
+    (PTA2_DVCr,(6,)),
+    # 5LSNG_1
+    (PTA4_U3,(3,48,2,7,'VC','rsi_tw',)),
+    (LTA2_HOTS,(146,1.96,2,45,11,19,1,)),
+    # 5LSNGP_1
+    (LTA_CC,(5,7,7,3,2,0.7,1,1,)),
+    # 5MGTSP_1
+    (PSTA3_REVAN,(11,2,)),
+    (PTA2_DDCrWork,(5,)),
+    # 5MRKC_1
+    (PTA21_AURIEL,(25,10,2,3.0,4,0.5,)),
+    # 5MRKP_1
+    (STA3_FORCE,(58,5,4,9,26,31,53,)),
+    (PTA22_BERSERK,(101,7,4,3.83,4,0.62,57,89,40,55,)),
+    # 5MRKS_1
+    (PTA19_YREL,(100,3,2,42,19,2,0,)),
+    # 5MRKU_1
+    (PTA19_TYRAEL,(100,8,2,83,50,23,0,)),
+    (PTA19_YREL,(100,7,2,48,26,1,0,)),
+    # 5MRKV_1
+    (LTA_OKROSHKA2,(2,14,)),
+    (PTA19_JOHANNA,(100,8,2,16,39,29,0,)),
+    # 5MRKZ_1
+    (PTA21_AURIEL,(61,5,2,3.0,5,0.25,)),
+    (OGTA4_DOG,(2,15,)),
+    # 5MSNG_1
+    (LTA_IRONANNY,(149,4,3,3,)),
+    (PTA21_AURIEL,(25,10,3,1.5,4,0.5,)),
+    # 5MSTT_1
+    (LTA_PIN,(2,29,40,3,)),
+    # 5MTLRP_1
+    (PTA19_YREL,(100,8,18,40,12,11,0,)),
+    (PTA19_JOHANNA,(100,7,19,37,38,14,0,)),
+    (LTA2_DRINKER,(120,1.72,37,47,20,7,0,)),
+    (PTA14_RENEGADE,(117,20,46,7,44,31,)),
+    (OGTA4_RAT,(45,8,3,)),
+    # 5OGKB_1
+    (PTA19_CASSIA,(100,10,4,2,23,35,0,)),
+    (LTA_BIBI,(85,7,2,'cci',)),
+    # 5PHOR_1
+    (PTA22_BERSERK,(141,8,2,2.51,3,0.3,68,119,59,41,)),
+    (PTA21_AURIEL,(119,10,2,3.0,5,0.25,)),
+    (PTA11_KUSURUKEN,(62,13,104,12,'c',)),
+    (PTA4_U3,(5,80,4,14,'WC','rsi_tw',)),
+    # 5PLZL_1
+    (PTA22_BERSERK,(18,10,2,2.07,10,0.54,19,18,32,30,)),
+    (PTA19_IMPERIUS,(100,6,10,67,17,26,0,)),
+    (PTA21_WHITEMANE,(24,68,10,2,1.5,4,0.25,1,)),
+    # 5QIWI_1
+    (PTA14_RENEGADE,(81,40,75,5,29,33,)),
+    # 5RASP_1
+    (LTA2_LYNX,(138,1.83,29,12,1.93,1,)),
+    # 5RBCM_1
+    (LTA_IRONANNY,(60,4,5,3,)),
+    # 5ROLO_1
+    (LTA2_PUBG,(79,1.76,5,38,12,12,0,)),
+    # 5RTKMP_1
+    (PTA14_RENEGADE,(41,40,88,5,26,36,)),
+    # 5SBERP_1
+    (PTA22_BERSERK,(46,9,2,2.54,4,0.46,66,61,22,15,)),
+    (LTA_BIBI,(47,13,2,'cmo',)),
+    (PTA21_AURIEL,(61,10,4,3.0,4,0.25,)),
+    (PTA21_WHITEMANE,(7,63,5,4,1.5,6,0.25,1,)),
+    # 5SVAV_1
+    (PTA13_DWDDCr,(150,40,2,)),
+    # 5TATNP_1
+    (LTA2_FENNEC,(127,1.95,22,39,18,5,1.91,0,)),
+    (LTA2_DRINKER,(126,1.79,28,49,22,2,0,)),
+    (LTA_BIBI,(31,14,3,'%d',)),
+    # 5TGKA_1
+    (PTA14_RANGER,(80,40,95,5,24,37,)),
+    # 5TGKN_1
+    (PTA11_KUSURUKEN,(149,2,4,36,'c',)),
+    # 5TTLK_1
+    (PTA14_RWDDCr,(2,23,97,3,)),
+    # 5UNAC_1
+    (PTA14_RENEGADE,(134,40,141,6,26,35,)),
+    # 5UWGN_1
+    (PTA19_YREL,(100,9,2,25,14,2,0,)),
+    (PTA14_RENEGADE,(130,40,42,8,48,27,)),
+    # GENERAL
+    (PTA4_WLISICA,(30,2,30)),
+    (PTA4_WDVCr,(21,30)),
+    (PTA4_WDDCrVG,(21,30)),
+    (PTA4_WDDCr,(21,30)),
+    (PTA4_UNIVERSAL,(30,15,30,30,"DC",'rsi',1,1)),
+]   
 
 wssBitgetFut1 = [
     (LTA_BIBI,(49,5,2,'mfi')),

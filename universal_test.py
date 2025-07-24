@@ -2,8 +2,8 @@ from time import sleep
 import sys
 from Bots.TestBot3 import backup_sqlite_db
 from Traders.TestingTrader.TestingTrader1 import TestingTrader1
-from Traders.TestingTrader.tickers_groups import tickersBitgetFut,tickersMoexFut,tickersMoexStock,tickersMoexFut2
-from Traders.TestingTrader.wss_maps import bitgetFutMap,moexFutMap,moexStockMap,bitgetMTAFutMap,moexMTAFutMap,moexMTAStockMap,moexFutMap2
+from Traders.TestingTrader.tickers_groups import tickersBitgetFut,tickersMoexFut,tickersMoexStock,tickersMoexFut2,tickersMoexStock2
+from Traders.TestingTrader.wss_maps import bitgetFutMap,moexFutMap,moexStockMap,bitgetMTAFutMap,moexMTAFutMap,moexMTAStockMap,moexFutMap2,moexStockMap2
 
 args = sys.argv[1:]
 exchange = args[0]
@@ -27,9 +27,9 @@ elif exchange == 'MOEX2':
     if spec == 'FUT':
         tickers = tickersMoexFut2
         wss_map = moexFutMap2
-    # else:
-    #     tickers = tickersMoexStock
-    #     wss_map = moexMTAStockMap
+    else:
+        tickers = tickersMoexStock2
+        wss_map = moexStockMap2
 elif exchange == 'Bitget':
     tickers = tickersBitgetFut
     wss_map = bitgetFutMap

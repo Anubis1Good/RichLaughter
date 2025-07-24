@@ -1,4 +1,4 @@
-from Traders.TestingTrader.wss_groups import wssBitgetFut1,wssBitgetFut5,wssBitgetFut15,wssBitgetFut30,wssBitgetFut60,wssMoexFut1,wssMoexFut5,wssMoexStocks1,wssMoexStocks5,wssMoexFut1b,wssMoexFut5b
+from Traders.TestingTrader.wss_groups import wssBitgetFut1,wssBitgetFut5,wssBitgetFut15,wssBitgetFut30,wssBitgetFut60,wssMoexFut1,wssMoexFut5,wssMoexStocks1,wssMoexStocks5,wssMoexFut1b,wssMoexFut5b,wssMoexStocks1b,wssMoexStocks5b
 
 bitgetFutMap = {
     '1m':wssBitgetFut1,
@@ -19,6 +19,10 @@ moexFutMap2 = {
 moexStockMap = {
     1:wssMoexStocks1,
     5:wssMoexStocks5,
+}
+moexStockMap2 = {
+    1:wssMoexStocks1b,
+    5:wssMoexStocks5b,
 }
 
 testTestMap = {
