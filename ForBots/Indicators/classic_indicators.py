@@ -36,7 +36,7 @@ def add_vodka_channel(df:pd.DataFrame,period=20):
 
 def add_donchan_channel(df, period=20):
     """
-    '''add max_hb, min_hb, avarege'''
+    '''add "max_hb", "min_hb", "avarege"'''
     
     :param df: DataFrame с колонками 'high', 'low'
     :param period: Период для расчета канала Дончиана (по умолчанию 20)

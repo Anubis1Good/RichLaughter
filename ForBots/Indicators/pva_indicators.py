@@ -477,3 +477,40 @@ def add_analys_dzz(df, period_sma=3):
     df['trend_sma'] = peacks['trend_sma'].reindex(df.index).ffill().fillna(0)
     
     return df
+
+def add_smooth_channel(df:pd.DataFrame,period=20,smooth_features=('max_hb', 'min_hb', 'avarege'),variant_smooth='mean'):
+    for sf in smooth_features:
+        df[sf] = df[sf].rolling(period).agg([variant_smooth])
+    return df
+
+def add_plus_delta_fc(df:pd.DataFrame, period=1):
+    """add 'pdf_up', 'pdf_down'
+    \n plus delta fractal channel
+    """
+    up_points = df[df['fractal_up']].copy()
+    up_points['delta_high'] = up_points['high'].diff()
+    up_points['dhm'] = up_points['delta_high'].rolling(period).mean()
+    df['pdf_up'] = up_points['high'] + up_points['dhm']
+    df['pdf_up'] = df['pdf_up'].ffill()
+    down_points = df[df['fractal_down']].copy()
+    down_points['delta_low'] = down_points['low'].diff()
+    down_points['dlm'] = down_points['delta_low'].rolling(period).mean()
+    df['pdf_down'] = down_points['low'] + down_points['dlm']
+    df['pdf_down'] = df['pdf_down'].ffill()
+    return df
+
+def add_exp_pdfc(df:pd.DataFrame, period=1):
+    """add 'pdf_up', 'pdf_down'
+    \n exponential plus delta fractal channel
+    """
+    up_points = df[df['fractal_up']].copy()
+    up_points['delta_high'] = up_points['high'].diff()
+    up_points['dhm'] = up_points['delta_high'].ewm(period).mean()
+    df['pdf_up'] = up_points['high'] + up_points['dhm']
+    df['pdf_up'] = df['pdf_up'].ffill()
+    down_points = df[df['fractal_down']].copy()
+    down_points['delta_low'] = down_points['low'].diff()
+    down_points['dlm'] = down_points['delta_low'].ewm(period).mean()
+    df['pdf_down'] = down_points['low'] + down_points['dlm']
+    df['pdf_down'] = df['pdf_down'].ffill()
+    return df

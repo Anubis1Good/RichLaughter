@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 from request_functions.download_bitget import get_df
 from ForBots.Indicators.classic_indicators import add_donchan_channel,add_slice_df,add_big_volume,add_dynamics_ma,add_bollinger,add_over_bb,add_enter_price,add_buffer_add,add_buffer_sub,add_vangerchik,add_simple_dynamics_ma,add_vodka_channel,add_rsi,add_enter_price2close,add_rsi_tw,add_sma,add_ema,add_mfi,add_ultimate_oscillator,add_stochastic,add_fractals
-from ForBots.Indicators.pva_indicators import add_mean_on_fractals
+from ForBots.Indicators.pva_indicators import add_mean_on_fractals,add_smooth_channel
 from utils.help_trades import reverse_action,chep
 from strategies.work_strategies.BaseTA import BaseTABitget
 
@@ -133,6 +133,25 @@ class PTA2_BVGFIX(BaseTABitget):
 class PTA2_DDCrWork(BaseTABitget):
     def preprocessing(self, df):
         df = add_donchan_channel(df,self.period)
+        df = add_enter_price2close(df)
+        df = add_slice_df(df,period=self.period)
+        return df
+    def __call__(self, row, *args, **kwds):
+        nearest_long = row['high'] - row['close'] > row['close'] - row['low'] 
+        if row['low'] <= row['min_hb']:
+            if nearest_long:
+                return 'long_pw'
+        if row['high'] >= row['max_hb']:
+            return 'short_pw'
+        
+class PTA2_SDDCr(BaseTABitget):
+    """period=20,period2=20"""
+    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=20,period2=20):
+        super().__init__(symbol, granularity, productType, n_parts, period)
+        self.period2 = period2
+    def preprocessing(self, df):
+        df = add_donchan_channel(df,self.period)
+        df = add_smooth_channel(df,self.period2)
         df = add_enter_price2close(df)
         df = add_slice_df(df,period=self.period)
         return df

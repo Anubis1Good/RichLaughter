@@ -21,8 +21,11 @@ df = df.iloc[-200:]
 # df = df.iloc[10:510]
 
 # df['down_diff'] = df['low'] - df['sma']
-df = add_dzz_peaks(df,period=10)
-# df = add_ideal_pos(df)
+# df = add_dzz_peaks(df,period=10)
+df = add_fractals(df,10)
+
+# df = add_plus_delta_fc(df,10)
+df = add_exp_pdfc(df,10)
 # df = add_chaikin_volatility(df)
 # df = add_analys_dzz(df)
 print(df.tail(10))
@@ -36,15 +39,15 @@ if plot:
     plt.grid() 
     draw_hb_chart_fast(df)
     # plt.plot(df['upper_channel'])
-    # plt.plot(df['fd_up'])
-    # plt.plot(df['fd_down'])
+    plt.plot(df['pdf_up'])
+    plt.plot(df['pdf_down'])
     # plt.plot(df['lower_channel'])
     # plt.plot(df['top_line'])
     # plt.plot(df['bottom_line'])
     # plt.plot(df['regression_line'])
     # plt.plot(df['stair'])
     # plt.plot(df['trend'])
-    plt.plot(df['zigzag'])
+    # plt.plot(df['zigzag'])
     # plt.plot(df['stair_up'])
     # df['points'] = np.where((df['zigzag_direction'] != df['zigzag_direction'].shift(1)), df['middle'], np.nan)
 
@@ -53,7 +56,7 @@ if plot:
     # plt.scatter(points.index,points['middle'])
     # plt.scatter(df.index, df['zigzag_peaks'], color='red', label='Peaks')
     # for k in ('fractal_up','fractal_down'):
-    # for k in ('top_kefir','low_kefir'):
+    # for k in (('max_hb', 'min_hb', 'avarege')):
     #     plt.plot(df[k])
     # for k in 'max_hb, min_hb, avarege'.split(', '):
 
