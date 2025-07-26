@@ -8,8 +8,8 @@ from time import time
 from Loader.BitgetLoader import bitget_loader
 from utils.draw_utils import draw_lite_chart,draw_chart_channel,draw_hb_chart,draw_bollinger,draw_dynamics,draw_rails,draw_hb_chart_fast
 # from ForBots.Indicators.classic_indicators import add_donchan_channel,add_vangerchik,add_sma, add_slice_df,add_bollinger,add_over_bb,add_attached_bb,add_big_volume,add_dynamics_ma
-from strategies.test_strategies.check import check_strategy,check_strategy_v3,check_strategy_v4,check_strategy_v5
-# from strategies.work_strategies.PTA import PTA2_DDCrWork as WS
+from strategies.test_strategies.check import check_strategy,check_strategy_v3,check_strategy_v4,check_strategy_v5,check_strategy_v6
+from strategies.work_strategies.PTA import PTA2_DDCrWork as WS
 # from strategies.work_strategies.PTAX import PTA10_WIZARD as WS
 # from strategies.work_strategies.PTAXX import PTA22_BERSERK as WS
 # from strategies.work_strategies.STA_ca import STA3_LITE as WS
@@ -21,7 +21,7 @@ from strategies.test_strategies.check import check_strategy,check_strategy_v3,ch
 # from strategies.work_strategies.LTA2 import LTA2_DRG as WS
 # from strategies.work_strategies.PSTA0 import PSTA3_ZEUS as WS
 # from strategies.work_strategies.MTA import MTA_LORD as WS
-from strategies.work_strategies.STA_ml2 import STAML2b_ as WS
+# from strategies.work_strategies.STA_ml2 import STAML2b_ as WS
 # from strategies.work_strategies.STA_ml import STAML1_XGBR2_DC as WS
 # from strategies.work_strategies.STA_rl import STARL1_HELPGOD as WS
 # from strategies.work_strategies.experiments import ExpBot as WS
@@ -30,6 +30,7 @@ from strategies.test_strategies.universal import universal_test_strategy as TS
 # raw_file = 'DataForTests\DataFromBitget\DOGEUSDT_1H_1752589488.csv'
 # raw_file = 'DataForTests\DataFromMOEX\MMM5_1_1749581140.csv'
 raw_file = 'DataForTests\DataFromMoexFast\\5MMU5_1_1752761082.csv'
+raw_file = 'DataForTests\DataFromMoexForStepTests\IMOEXF_1_1753514802.csv'
 # raw_file = 'DataForTests\oldMoex\SiM5_1_1745579847.csv'
 # raw_file = 'DataForTests\oldBitget\DOGEUSDT_1m_1741087742_big.csv'
 # raw_file = 'DataForTests\DataFromTicksBitget\DOGEUSDT_1m_from_ticks.csv'
@@ -60,7 +61,8 @@ bot = WS(symbol,granularity,'e',1)
 # bot = WS(symbol,granularity,'e',1,30,100,30,60,30,50,policy='BP_1751841463.6270704.json')
 # trades,equity3,equity_fee = check_strategy_v5(df.copy(),bot,close_2330=True)
 # print(trades)
-trades,equity,equity_fee,longs,shorts,closes = check_strategy_v4(df.copy(),bot)
+# trades,equity,equity_fee,longs,shorts,closes = check_strategy_v4(df.copy(),bot)
+trades,equity,equity_fee,longs,shorts,closes,df = check_strategy_v6(df.copy(),bot)
 # print(trades)
 # trades,equity,equity_fee = check_strategy_v5(df,bot)
 # conf = (20,55,12,25,20)

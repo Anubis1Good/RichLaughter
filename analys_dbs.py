@@ -431,7 +431,7 @@ need_equity_last_chart = False
 need_analisys = False
 need_analisys = True
 need_last = False
-# need_last = True
+need_last = True
 need_n_days = False
 need_n_days = True
 

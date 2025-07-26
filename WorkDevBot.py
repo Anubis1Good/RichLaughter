@@ -8,7 +8,7 @@ from Loader.BitgetLoader import bitget_loader
 from utils.draw_utils import draw_lite_chart,draw_chart_channel,draw_hb_chart,draw_bollinger,draw_dynamics,draw_rails,draw_hb_chart_fast
 # from ForBots.Indicators.classic_indicators import add_donchan_channel,add_vangerchik,add_sma, add_slice_df,add_bollinger,add_over_bb,add_attached_bb,add_big_volume,add_dynamics_ma
 from strategies.test_strategies.check import check_strategy,check_strategy_v3,check_strategy_v4,check_strategy_v5
-# from strategies.work_strategies.PTA import PTA2_SDDCr as WS
+from strategies.work_strategies.PTA import PTA2_DDCrWork as WS
 # from strategies.work_strategies.PTAX import PTA10_WIZARD as WS
 # from strategies.work_strategies.PTAXX import PTA23_ULTIMATUM as WS
 # from strategies.work_strategies.STA_ca import STA3_LITE as WS
@@ -18,7 +18,7 @@ from strategies.test_strategies.check import check_strategy,check_strategy_v3,ch
 # from strategies.work_strategies.OGTA import OGTA7_PARADOX as WS
 # from strategies.work_strategies.LTA import LTA_CC as WS
 # from strategies.work_strategies.LTA2 import LTA2_DRG as WS
-from strategies.work_strategies.PSTA0 import PSTA5_HAWK as WS
+# from strategies.work_strategies.PSTA0 import PSTA5_HAWK as WS
 # from strategies.work_strategies.MTA import MTA_LORD as WS
 # from strategies.work_strategies.STA_ml2 import STAML2a_PHENOMENON as WS
 # from strategies.work_strategies.STA_ml import STAML1_XGBR2_DC as WS
@@ -29,6 +29,7 @@ from strategies.test_strategies.universal import universal_test_strategy as TS
 # raw_file = 'DataForTests\DataFromBitget\DOGEUSDT_1H_1752589488.csv'
 # raw_file = 'DataForTests\DataFromMOEX\MMM5_1_1749581140.csv'
 raw_file = 'DataForTests\DataFromMoexFast\\5MMU5_1_1752761082.csv'
+raw_file = 'DataForTests\oldMoex\MMH5_1_1739993452.csv'
 # raw_file = 'DataForTests\oldMoex\SiM5_1_1745579847.csv'
 # raw_file = 'DataForTests\oldBitget\DOGEUSDT_1m_1741087742_big.csv'
 # raw_file = 'DataForTests\DataFromTicksBitget\DOGEUSDT_1m_from_ticks.csv'
@@ -44,6 +45,8 @@ closes = []
 start = time()
 
 df = bitget_loader(raw_file)
+# from utils.work_with_dataframe.convert_timeframe import convert_timeframe
+# df = convert_timeframe(df,'5min')
 period = 20
 multiplier = 2
 symbol = "DOGEUSDT"

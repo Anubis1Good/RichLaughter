@@ -15,12 +15,14 @@ today = date.today()
 start_date = str(today - timedelta(days=30))
 # start_date = '2025-02-01'
 fut = True
-fut = False
+# fut = False
 from request_functions.download_moex import save_df
-# tickers = ['MMU5','IMOEXF','CRU5','RMU5','GZU5']
+tickers = ['NGN5','BRQ5','MMU5','RMU5','GZU5']
+# tickers = ['IMOEXF']
+# tickers = ['CNYRUBF']
 # tickers = ['SRU5','SiU5','CNYRUBF','NGN5','BRQ5','EDU5','EURRUBF']
-from Traders.TestingTrader.tickers_groups import tickersMoexStock2
-tickers = [x[0] for x in tickersMoexStock2]
+# from Traders.TestingTrader.tickers_groups import tickersMoexStock2
+# tickers = [x[0] for x in tickersMoexStock2]
 print(tickers)# # tickers = ['SBER','ROSN','GAZP',"MTLR","VTBR","NLMK"]
 for ticker in tickers:
     print(ticker)

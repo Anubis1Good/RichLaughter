@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 from tqdm import tqdm
+from utils.work_with_dataframe.convert_timeframe import convert_timeframe
 # from numba import jit  # Ускорение вычислений (опционально)
 def check_strategy(df,test_strategy,work_strategy):
     """
@@ -774,3 +775,124 @@ def check_strategy_v5(df: pd.DataFrame, work_strategy, fee=0.0002,close_2330=Fal
         })
     
     return trades,equity,equity_fee
+
+def get_child_candles(df:pd.DataFrame,x):
+    candels = []
+    df = df.copy()
+    df = df.reset_index(drop=True)
+    for i,row in df.iterrows():
+        if i == 0:
+            candel = row
+            candel['x'] = x
+        else:
+            candel['close'] = row['close']
+            candel['volume'] += row['volume']
+            candel['high'] = max(candel['high'],row['high'])
+            candel['low'] = min(candel['low'],row['low'])
+            candel['middle'] = (candel['high'] + candel['low']) / 2
+            candel['direction'] = 1 if candel['open'] < candel['close'] else -1
+        candels.append(candel.copy())
+    return candels
+
+def check_strategy_v6(df: pd.DataFrame, work_strategy, fee=0.0002,close_2330=False,timeframe='5min'):
+    """
+    return trades,equity,equity_fee,longs,shorts,closes,df_big
+    Улучшенная версия:
+    - шаговый тестер через младшие таймфреймы
+    """
+    df = df.copy()
+    df['ms'] = pd.to_datetime(df['ms'])
+    df_big = convert_timeframe(df,timeframe)
+    if close_2330:
+        df_big['close_2330'] = np.where((df_big['ms'].dt.hour == 23)&(df_big['ms'].dt.minute > 25),True,False)
+        df['close_2330'] = np.where((df['ms'].dt.hour == 23)&(df['ms'].dt.minute > 25),True,False)
+    trades = {'total': 0, 'count': 0, 'total_fee_per': 0}
+    pos = 0
+    open_price = 0
+    equity = [0]
+    equity_fee = [0]
+    fees = 0
+    longs = []
+    shorts = []
+    closes = []
+    fee_one_p = (fee / 2) * 100
+    open_fee = 0
+    period2x = 300
+    for i in tqdm(range(period2x,len(df_big.index))):
+        
+        lc = df_big.iloc[i-1]
+        start_time = lc['ms']
+        end_time = start_time + pd.Timedelta(minutes=5)
+        df_child = df[(df['ms'] >= start_time)&(df['ms'] < end_time)]
+        child_candles = get_child_candles(df_child,lc['x'])
+        df_slice = df_big.iloc[i-period2x:i].copy()
+        for sc in child_candles:
+            df_slice.iloc[-1] = sc
+            df_temp = df_slice.copy()
+            test_row= work_strategy.get_test_row(df_temp)
+            action = work_strategy(test_row)
+            if close_2330:
+                if test_row['close_2330']:
+                    action = 'close_all_pw'
+            pos, open_price, fees, open_fee = work_action_v3(
+                action, trades, sc['close'], fee_one_p, fees, equity, equity_fee, pos, open_price,open_fee,test_row['x'],longs,shorts,closes
+            )
+            # print(test_row)
+            # print(action,pos,open_price,trades)
+            # print(len(longs),len(shorts),len(closes))
+            # input()
+            # print('-------')
+
+    df_eq = pd.DataFrame({'eq':equity,'eq_fee':equity_fee})
+    if df_eq.empty:
+        trades.update({
+        'total_abs_fee': 0,
+        'win_rate_wf': 0,
+        'total_fee': fees,
+        'mean_eq':0,
+        'median_eq':0,
+        'max_eq':0,
+        'min_eq':0,
+        'balance_eq':0,
+        'mean_eqf':0,
+        'median_eqf':0,
+        'max_eqf':0,
+        'min_eqf':0,
+        'balance_eqf':0
+        })
+    else:
+        df_eq['diff_eq'] = df_eq['eq'].diff()
+        df_eq['diff_eq_fee'] = df_eq['eq_fee'].diff()
+        mean_eq = df_eq['diff_eq'].mean()
+        median_eq = df_eq['diff_eq'].median()
+        min_eq = df_eq['diff_eq'].min()
+        max_eq = df_eq['diff_eq'].max()
+        mean_eqf = df_eq['diff_eq_fee'].mean()
+        median_eqf = df_eq['diff_eq_fee'].median()
+        min_eqf = df_eq['diff_eq_fee'].min()
+        max_eqf = df_eq['diff_eq_fee'].max()
+        wins = len(df_eq[df_eq['diff_eq'] > 0].index)
+        loss = len(df_eq[df_eq['diff_eq'] < 0].index)
+        if loss > 0:
+            win_rate = round((wins / (wins + loss)) * 100,2)
+        else:
+            win_rate = 0
+
+        trades['total_fee_per'] = round(trades['total_fee_per'],2)
+        trades.update({
+            'total_abs_fee': equity_fee[-1],
+            'win_rate_wf': win_rate,
+            'total_fee': fees,
+            'mean_eq':mean_eq,
+            'median_eq':median_eq,
+            'max_eq':max_eq,
+            'min_eq':min_eq,
+            'balance_eq':max_eq+min_eq,
+            'mean_eqf':mean_eqf,
+            'median_eqf':median_eqf,
+            'max_eqf':max_eqf,
+            'min_eqf':min_eqf,
+            'balance_eqf':max_eqf+min_eqf
+        })
+    
+    return trades,equity,equity_fee,longs,shorts,closes,df_big
