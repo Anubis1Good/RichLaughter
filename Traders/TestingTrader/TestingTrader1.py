@@ -122,7 +122,7 @@ class TestingTrader1:
                 self.trade_base(lambda bot,df:bot.run(df))
 
             except KeyboardInterrupt:
-                self.close_all_pos()
+                # self.close_all_pos()
                 break
             except:
                 self.output('Ошибка')

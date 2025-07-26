@@ -246,7 +246,7 @@ class STAML2_TRENDWAVE(BaseTABitget):
             
 from sklearn.tree import DecisionTreeClassifier,plot_tree
 
-class STAML2a_(BaseTABitget):
+class STAML2a_CONSERVATIVE(BaseTABitget):
     """period=60, n_std=3"""
     def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=60, n_std=3,max_depth=None):
         super().__init__(symbol, granularity, productType, n_parts, period)

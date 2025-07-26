@@ -142,7 +142,7 @@ class QuikTrader1:
                 self._work_action(action,pos)
 
         except Exception as err:
-            print(f"!!!! {type(err).__name__}: {err} !!!!")
+            print(datetime.now(), f"!!!! {type(err).__name__}: {err} !!!!")
             with open(self.error_log,'a',encoding="utf-8") as f:
                 f.write(str(datetime.now()) + "\n")
                 f.write('\n')

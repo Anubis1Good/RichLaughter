@@ -24,6 +24,7 @@ def process_history_position(result:pd.DataFrame,suffix,db_path):
         float(get_func_vtb_fee(row['ticker'])(float(row['total_result']), int(row['total_trades'])))
         for _, row in result.iterrows()
     ]
+    result['p'] = result['t_min_fp'] > 0
     has_days = 'days' in result.columns.tolist()
 
     if has_days:
@@ -34,15 +35,15 @@ def process_history_position(result:pd.DataFrame,suffix,db_path):
     result = result.sort_values(by=['ticker','avgt'],axis=0,ascending=[True,False])
     result = result.reset_index(drop=True)
 
-    ranks = ['total_trades','total_per','t_min_fp','t_avg_fp','t_max_fp','avgdd','maxdd','avgt','maxp','win_rate']
+    ranks = ['total_trades','total_per','t_min_fp','t_avg_fp','t_max_fp','avgdd','maxdd','avgt','maxp','win_rate','p']
     if has_days:
         ranks += ['cd','pred','trd','trd_vtb','days']
     data_sum = result.groupby('bot')[ranks].mean().sort_values('t_avg_fp',ascending=False).round(2)
-    rank_names = ["rank_"+r for r in ranks]
+    rank_names = ["r_"+r for r in ranks]
     for r in ranks:
         # print(r)
-        result["rank_"+r] = result.groupby("ticker")[r].rank(ascending=False, method="min")
-    avg_rank = result.groupby("bot")[rank_names].mean().sort_values('rank_t_avg_fp').round(2)
+        result["r_"+r] = result.groupby("ticker")[r].rank(ascending=False, method="min")
+    avg_rank = result.groupby("bot")[rank_names].mean().sort_values('r_t_avg_fp').round(2)
 
     result_old = result.copy()
     result_old = result_old.sort_values(by=['ticker','t_min_fp'],axis=0,ascending=[True,False])
@@ -56,7 +57,7 @@ def process_history_position(result:pd.DataFrame,suffix,db_path):
     result2['tf'] = result2.index.str.split('_').str[0]
     tf = result2.pop('tf')
     result2.insert(0,'tf',tf)
-    to_end = ('rank_total_per','rank_t_min_fp','rank_t_avg_fp','rank_t_max_fp')
+    to_end = ('r_total_per','r_t_min_fp','r_t_avg_fp','r_t_max_fp')
     # Все остальные колонки (кроме тех, что в to_end)
     other_columns = [col for col in result2.columns if col not in to_end]
 
@@ -66,13 +67,13 @@ def process_history_position(result:pd.DataFrame,suffix,db_path):
     # Переупорядочиваем DataFrame
     result2 = result2[new_order]
     result2_old = result2.copy()
-    result2_old = result2_old.sort_values('rank_t_min_fp')
+    result2_old = result2_old.sort_values('r_t_min_fp')
     result2_old = result2.reset_index()
     if has_days:
         result2_pred = result2.copy()
-        result2_pred = result2_pred.sort_values('rank_pred')
+        result2_pred = result2_pred.sort_values('r_pred')
         result2_pred = result2_pred.reset_index()
-    result2 = result2.sort_values('rank_avgt')
+    result2 = result2.sort_values('r_avgt')
     result2 = result2.reset_index()
     # print(result2)
     # print(avg_rank)
@@ -149,6 +150,28 @@ def process_history_position(result:pd.DataFrame,suffix,db_path):
                     })
 
 
+def add_days(df):
+    df['last_trade_date'] = pd.to_datetime(df['last_trade_date'])
+    df['start_trade_date'] = pd.to_datetime(df['start_trade_date'])
+    df['days'] = (df['last_trade_date'] - df['start_trade_date']).dt.days + 1
+    df['days'] = df['days'] - ((df['days']//7)*2)
+    # Получаем список всех столбцов
+    cols = df.columns.tolist()
+
+    # Находим индекс 'last_trade_date'
+    idx = cols.index('last_trade_date')
+    cols.remove('days')  # (если он был где-то ещё)
+
+
+    # Вставляем 'days' после 'last_trade_date'
+    cols.insert(idx + 1, 'days')
+
+    # Удаляем старый 'days' (если он уже был в другом месте)
+
+    # Переупорядочиваем DataFrame
+    df = df[cols]
+    return df
+
 def analisys_db(db_path:str):
     conn = sqlite3.connect(db_path)
     query = '''
@@ -190,26 +213,54 @@ def analisys_db(db_path:str):
         '''
     df = pd.read_sql_query(query, conn)
     conn.close()
-    df['last_trade_date'] = pd.to_datetime(df['last_trade_date'])
-    df['start_trade_date'] = pd.to_datetime(df['start_trade_date'])
-    df['days'] = (df['last_trade_date'] - df['start_trade_date']).dt.days + 1
-    df['days'] = df['days'] - ((df['days']//7)*2)
-    # Получаем список всех столбцов
-    cols = df.columns.tolist()
-
-    # Находим индекс 'last_trade_date'
-    idx = cols.index('last_trade_date')
-    cols.remove('days')  # (если он был где-то ещё)
-
-
-    # Вставляем 'days' после 'last_trade_date'
-    cols.insert(idx + 1, 'days')
-
-    # Удаляем старый 'days' (если он уже был в другом месте)
-
-    # Переупорядочиваем DataFrame
-    df = df[cols]
+    df = add_days(df)
     process_history_position(df,'All',db_path)
+
+def analisys_db_n_days(db_path: str, n_days: int):
+    conn = sqlite3.connect(db_path)
+    query = '''
+    SELECT 
+        r.id AS bot_id,
+        r.name AS bot,
+        t.name AS ticker,
+        MIN(hp.open_timestamp) AS start_trade_date,
+        MAX(hp.close_timestamp) AS last_trade_date,
+        AVG(hp.close_price) AS avg_close_price,
+        SUM(hp.fee) AS total_fee,
+        SUM(hp.result) AS total_result,
+        COUNT(*) AS total_trades,
+        SUM(hp.result_fee) AS total_result_fee,
+        ROUND(AVG(CASE 
+                WHEN hp.result_fee < 0 
+                THEN ABS(hp.result_fee) * 100.0 / NULLIF(hp.open_price, 0) 
+                ELSE 0 
+                END), 2) AS avgdd,
+        ROUND(MAX(CASE 
+                WHEN hp.result_fee < 0 
+                THEN ABS(hp.result_fee) * 100.0 / NULLIF(hp.open_price, 0) 
+                ELSE 0 
+                END), 2) AS maxdd,
+        ROUND(AVG(hp.result_fee * 100.0 / NULLIF(hp.open_price, 0)), 2) AS avgt,
+        ROUND(MAX(hp.result_fee * 100.0 / NULLIF(hp.open_price, 0)), 2) AS maxp,
+        ROUND(AVG(CASE WHEN hp.result_fee >= 0 THEN 1.0 ELSE 0.0 END) * 100, 2) AS win_rate
+    FROM 
+        history_positions hp
+    JOIN 
+        robots r ON hp.robot_id = r.id
+    JOIN 
+        tickers t ON hp.ticker_id = t.id
+    WHERE 
+        hp.close_timestamp >= datetime('now', '-' || ? || ' days')
+    GROUP BY 
+        r.id, r.name, t.name
+    ORDER BY 
+        r.name, t.name
+    '''
+    df = pd.read_sql_query(query, conn, params=(str(n_days),))  # Преобразуем n_days в строку
+    conn.close()
+    df = add_days(df)
+    process_history_position(df, f'{n_days}Days', db_path)
+    return df
 
 def analisys_db_last(db_path:str):
     conn = sqlite3.connect(db_path)
@@ -380,7 +431,9 @@ need_equity_last_chart = False
 need_analisys = False
 need_analisys = True
 need_last = False
-need_last = True
+# need_last = True
+need_n_days = False
+need_n_days = True
 
 if __name__ == '__main__':
     print('analys start...')
@@ -394,6 +447,8 @@ if __name__ == '__main__':
                     analisys_db(file_path)
                 if need_last:
                     analisys_db_last(file_path)
+                if need_n_days:
+                    analisys_db_n_days(file_path,14)
                 if need_equity_chart:
                     get_equity_charts_db(file_path,queryAllChart,'AllTime')
             except Exception as e:

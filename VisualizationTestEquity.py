@@ -10,11 +10,11 @@ from utils.draw_utils import draw_hb_chart_fast
 board = "RFUD"
 market = "forts"
 engine= "futures"
-ticker = 'MMU5'
+ticker = 'BRQ5'
 # ticker = 'CRM5'
 # ticker = 'GZM5'
 # ticker = 'RMM5'
-# bot_id = 73
+bot_id = 618
 granularity = '5'
 # granularity = '1'
 # start = str(date.today() - timedelta(days=2))
