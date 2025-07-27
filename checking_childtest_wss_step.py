@@ -10,27 +10,27 @@ from functools import partial
 from strategies.test_strategies.check import check_strategy_v6
 from Loader.BitgetLoader import bitget_loader
 # from strategies.work_strategies.PTA import PTA4_WDDCr,PTA4_WDDCrE,PTA4_WDDCrVG,PTA4_WDVCr,PTA4_WLISICA,PTA8_WDOBBY_FREEr,PTA4_UNIVERSAL,PTA2_LISICA,PTA2_DDCrWork,PTA2_BDDCr_UNIVERSAL,PTA2_BDDC_FIX,PTA2_BVGFIX,PTA2_BBBU,PTA2_BBBUr,PTA2_DDCrVG,PTA2_DVCr,PTA2_VOLCHARA,PTA4_U3
-from Traders.TestingTrader.wss_groups import wssMoexFut5 as wss
-map_wss = {
-    'IMOEXF_1':wss,
-    'BRQ5_1':wss,
-    'GZU5_1':wss,
-    'MMU5_1':wss,
-    'NGN5_1':wss,
-    'RMU5_1':wss
-}
-# from testing.wss_step_test import map_wss
+# from Traders.TestingTrader.wss_groups import wssMoexFut5 as wss
+# map_wss = {
+#     'IMOEXF_1':wss,
+#     'BRQ5_1':wss,
+#     'GZU5_1':wss,
+#     'MMU5_1':wss,
+#     'NGN5_1':wss,
+#     'RMU5_1':wss
+# }
+from testing.wss_step_test import map_wss
 phys_cores = psutil.cpu_count(logical=False) 
 
 main_folder = 'TestNewResults/ChildTest'
 if not os.path.exists(main_folder):
     os.makedirs(main_folder)
-save_cores = 2
+save_cores = 1
 fee = 0.0002
 close_2330 = True
 need_plot = True
-timeframe = '5min'
-test_folder = 'DataForTests\DataFromMoexFast'
+timeframe = '15min'
+# test_folder = 'DataForTests\DataFromMoexFast'
 test_folder = 'DataForTests\DataFromMoexForStepTests'
 list_dir = os.listdir(test_folder)
 

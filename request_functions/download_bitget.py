@@ -2,7 +2,6 @@ import os
 import pandas as pd
 from time import time, sleep
 from request_functions.get_bitget import get_history_candles,get_candles,get_ticks
-import matplotlib.pyplot as plt
 from tqdm import tqdm
 
 def get_multiplier(granularity:str):

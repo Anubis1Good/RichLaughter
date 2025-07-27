@@ -1,14 +1,7 @@
-import pandas as pd
-import matplotlib.pyplot as plt
-from utils.work_with_dataframe.convert_timeframe import convert_timeframe
-from utils.draw_utils import draw_hb_chart_fast
+symbol = '1000PEPEUSDT'
+from request_functions.download_bybit import save_df
 
-raw_file = 'DataForTests\oldMoex\MMH5_1_1739993452.csv'
-df = pd.read_csv(raw_file)
-# df.info()
-# df = convert_timeframe(df,'5min')
-# df.info()
-# print(df.tail())
-# print(df.head())
-draw_hb_chart_fast(df)
-plt.show()
+save_df(symbol,'1',n_parts=2)
+
+# print(candles[-1])
+# print(len(candles))

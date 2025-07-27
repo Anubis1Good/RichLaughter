@@ -12,11 +12,15 @@ class Settings:
     dropbox_key:str
     dropbox_secret:str
     dropbox_refresh:str
+    apikey_bybit:str
+    apisec_bybit:str
 settings = Settings(
     apikey_bitget=os.getenv('apikey_bitget'),
     apisec_bitget=os.getenv('apisec_bitget'),
     apiphrase_bitget = os.getenv('apiphrase_bitget'),
     dropbox_key=os.getenv('dropbox_key'),
     dropbox_secret=os.getenv('dropbox_secret'),
-    dropbox_refresh=os.getenv('dropbox_refresh')
+    dropbox_refresh=os.getenv('dropbox_refresh'),
+    apikey_bybit=os.getenv('apikey_bybit'),
+    apisec_bybit=os.getenv('apisec_bybit')
 )

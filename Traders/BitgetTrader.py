@@ -61,13 +61,8 @@ class BitgetTrader:
         '''
         side: buy / sell
         '''
-        # self._exchange.set_position_mode(False, symbol)
-        # self._exchange.set_margin_mode( 'isolated', symbol)
         order = None
         order_id = str(time() * 1000000)
-        # hold_side = "short" if side == 'sell' else "long"
-        # params = {'newClientOrderId':"{}_limit_{}".format(order_id,side),"timeInForceValue":"normal",'hedged':True}
-        # params = {'newClientOrderId':"{}_limit_{}".format(order_id,side),"timeInForceValue":"normal",'oneWayMode':True, 'holdSide':hold_side}
         params = {'newClientOrderId':"{}_limit_{}".format(order_id,side),"timeInForceValue":"normal",'oneWayMode':True}
         if sl is not None:
             params['presetStopLossPrice'] = sl
@@ -238,5 +233,3 @@ class BitgetTrader:
         if self.need_reset:
             self.clear_orders(symbol)
 
-class BitgetTestTrader(BitgetTrader):
-    pass
