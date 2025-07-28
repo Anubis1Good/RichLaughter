@@ -34,7 +34,7 @@ bot_on_ticker = (
     # ((MTA_KING,(100,'KING_1_MOEX_STOCK','u')),
     #  ('',)),
     ((MTA_KING,(100,'KING_1_MOEX_FUT','u')),
-     ('CRU5','MMU5','MXU5','GZU5','SRU5','RIU5','RMU5','SiU5')),
+     ('CRU5','MMU5','MXU5','GZU5','SRU5','RIU5','RMU5','SiU5','IMOEXF')),
 
 )
 

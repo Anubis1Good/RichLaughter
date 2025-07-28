@@ -1,13 +1,13 @@
 stock_groups= { 
     'LI':(
-        'CRU5',
+        'IMOEXF',
         'ROSN',
         'FESH',
         'LSRG',
         'CBOM',
         'TRMK',
         'NMTP',
-        'TATN',
+        'SELG',
         'RUAL',
         'MTLR',
         'VTBR',
