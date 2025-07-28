@@ -10,28 +10,24 @@ from functools import partial
 from strategies.test_strategies.check import check_strategy_v6
 from Loader.BitgetLoader import bitget_loader
 # from strategies.work_strategies.PTA import PTA4_WDDCr,PTA4_WDDCrE,PTA4_WDDCrVG,PTA4_WDVCr,PTA4_WLISICA,PTA8_WDOBBY_FREEr,PTA4_UNIVERSAL,PTA2_LISICA,PTA2_DDCrWork,PTA2_BDDCr_UNIVERSAL,PTA2_BDDC_FIX,PTA2_BVGFIX,PTA2_BBBU,PTA2_BBBUr,PTA2_DDCrVG,PTA2_DVCr,PTA2_VOLCHARA,PTA4_U3
-# from Traders.TestingTrader.wss_groups import wssMoexFut5 as wss
-# map_wss = {
-#     'IMOEXF_1':wss,
-#     'BRQ5_1':wss,
-#     'GZU5_1':wss,
-#     'MMU5_1':wss,
-#     'NGN5_1':wss,
-#     'RMU5_1':wss
-# }
-from testing.wss_step_test import map_wss
+from Traders.TestingTrader.wss_groups import wssMoexStocks5 as wss
+map_wss = {
+    'default':wss,
+}
+# from testing.wss_step_test import map_wss
 phys_cores = psutil.cpu_count(logical=False) 
 
 main_folder = 'TestNewResults/ChildTest'
 if not os.path.exists(main_folder):
     os.makedirs(main_folder)
-save_cores = 1
+save_cores = 2
 fee = 0.0002
 close_2330 = True
 need_plot = True
-timeframe = '15min'
+timeframe = '5min'
 # test_folder = 'DataForTests\DataFromMoexFast'
-test_folder = 'DataForTests\DataFromMoexForStepTests'
+# test_folder = 'DataForTests\DataFromMoexForStepTests'
+test_folder = 'DataForTests\DataFromMOEX'
 list_dir = os.listdir(test_folder)
 
 
@@ -94,7 +90,7 @@ def process_rw(variant_name,variant_folder,clear_df):
     if variant_name in map_wss:
         wss = map_wss[variant_name]
     else:
-        wss = []
+        wss = map_wss['default']
     with Pool(num_processes) as pool:
         results = list(tqdm(pool.imap(worker, wss), total=len(wss)))
     success = 0
@@ -121,24 +117,4 @@ if __name__ == '__main__':
         process_rw(variant_name,variant_folder,clear_df)
         print('Time (m):',round((time()-start)/60,2))
     print('END')
-    # for ws in tqdm(wss):
-    #     image_folder,xls_folder = create_folder(variant_folder)
-    #     name_bot = str(ws[0].__name__)
-    #     name_file = f"{name_bot}_{'_'.join(map(str, ws[1]))}"
-    #     strategy = ws[0](variant_name,'5',"1",1,*ws[1])
-    #     trades,equity,equity_fee = check_strategy_v5(clear_df.copy(),strategy,fee,close_2330)
-    #     if need_plot:
-    #         full_name_img = os.path.join(image_folder, f"{name_file}.png")
-    #         plt.figure(figsize=(12, 6))
-    #         plt.plot(equity, color='red', label='Equity')
-    #         plt.plot(equity_fee, color='blue', label='Equity with Fees')
-    #         plt.title(f"{name_bot}")
-    #         plt.legend()
-    #         plt.savefig(full_name_img, bbox_inches='tight')
-    #         plt.close()
-    #     result_row = {"name": name_file}
-    #     result_row = result_row | trades
-    #     df_results = pd.DataFrame([result_row])
-    #     full_name_doc = os.path.join(xls_folder, name_file + '.xlsx')
-    #     with pd.ExcelWriter(full_name_doc, engine='xlsxwriter') as writer:  
-    #         df_results.to_excel(writer, sheet_name='total')
+

@@ -12,6 +12,8 @@ from Loader.BitgetLoader import bitget_loader
 from utils.processing_results.add_vtb_fee_fut import get_func_vtb_fee
 phys_cores = psutil.cpu_count(logical=False) 
 
+save_cores = 2
+close_2330 = True
 
 # # Целевая функция для Optuna
 def objective(trial, df, ws, param_options, fee=0.0002):
@@ -51,7 +53,7 @@ def objective(trial, df, ws, param_options, fee=0.0002):
     )
     df = strategy.preprocessing(df)
     # 3. Запускаем бэктест
-    result,_,_ = check_strategy_v3(df, strategy,fee)
+    result,_,_ = check_strategy_v3(df, strategy,fee,close_2330)
     
     # 4. Возвращаем метрику (например, Sharpe Ratio)
     return result['total_abs_fee']
@@ -89,7 +91,7 @@ def get_optimization_results_table(study, df, strategy_class, param_options, nee
         processed_df = strategy.preprocessing(df.copy())
         
         # Запускаем бэктест
-        trades, eq, eq_f = check_strategy_v3(processed_df, strategy,fee)
+        trades, eq, eq_f = check_strategy_v3(processed_df, strategy,fee,close_2330)
         
         # Формируем имя файла
         name_doc = f"{ticker}_{name_bot}"
@@ -185,7 +187,7 @@ def process_group(part, test_folder, n_trials, n_jobs, need_plot, min_fee):
         return 0
 
     # Настраиваем количество процессов
-    num_processes = min(max(1, phys_cores - 2), len(files))
+    num_processes = min(max(1, phys_cores - save_cores), len(files))
     print(f"Using {num_processes} processes for {len(files)} files")
 
     # Создаем worker функцию с фиксированными параметрами
@@ -222,8 +224,8 @@ if __name__ == '__main__':
     # test_folder = 'DataForTests\DataFromMOEX'
     # test_folder = 'DataForTests\DataFromMoexFast'
     # test_folder = 'DataForTests\DataFromMoexFastStock'
-    test_folder = 'DataForTests\DataFromMoexForStepTests'
-    # test_folder = 'DataForTests\DataFromMoexTemp'
+    # test_folder = 'DataForTests\DataFromMoexForStepTests'
+    test_folder = 'DataForTests\DataFromMoexTemp'
     # test_folder = 'DataForTests\DataFromBitget'
     min_fee: float = 0.0002
     # min_fee: float = 0.0004

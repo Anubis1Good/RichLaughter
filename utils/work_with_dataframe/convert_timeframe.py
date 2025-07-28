@@ -116,6 +116,6 @@ if __name__ == "__main__":
         filepath = os.path.join(folder,f)
         df = pd.read_csv(filepath)
         # df = convert_chart1to5(df)
-        df = convert_timeframe(df,'15min')
-        new_path = os.path.join(output_folder,'15'+f)
+        df = convert_timeframe(df,'5min')
+        new_path = os.path.join(output_folder,'5'+f)
         df.to_csv(new_path)

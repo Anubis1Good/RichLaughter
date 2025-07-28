@@ -14,7 +14,7 @@ stock_groups= {
         'GMKN'
     ),
     'TS': (
-        'MTLR2'
+        'MTLR2',
         'VTBR2',
         'LSRG3',
         'RUAL3',

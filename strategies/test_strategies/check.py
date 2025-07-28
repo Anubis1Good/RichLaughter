@@ -274,7 +274,7 @@ def work_action_v2(action, trades, cur_price, fee, fees, equity, equity_fee, pos
     #     #     print(trades['total_fee_per'])
     return pos,open_price,fees,open_fee
 
-def check_strategy_v3(df: pd.DataFrame, work_strategy, fee=0.0002):
+def check_strategy_v3(df: pd.DataFrame, work_strategy, fee=0.0002,close_2330=False):
     """
     Улучшенная версия:
     - Поддержка векторных операций.
@@ -285,9 +285,13 @@ def check_strategy_v3(df: pd.DataFrame, work_strategy, fee=0.0002):
     equity = [0]
     equity_fee = [0]
     fees = 0
-    
     # Получаем сигналы
-    signals = df.apply(work_strategy, axis=1).values
+    # signals = df.apply(work_strategy, axis=1).values
+    df['action'] = df.apply(work_strategy, axis=1)
+    if close_2330:
+        df['ms'] = pd.to_datetime(df['ms'], format='%Y-%m-%d %H:%M:%S')
+        df['action'] = np.where((df['ms'].dt.hour == 23)&(df['ms'].dt.minute > 25),'close_all_pw',df['action'])
+    signals = df['action'].values
     signals = np.where(signals[:, None] == actions_array)[1]  # Ваш метод конвертации в индексы
     
     prices = df['close'].values
