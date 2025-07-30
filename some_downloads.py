@@ -21,17 +21,7 @@ from request_functions.download_moex import save_df
 # tickers = ['IMOEXF']
 # tickers = ['CNYRUBF']
 # tickers = ['SRU5','CRU5','CNYRUBF','EDU5']
-tickers = [        'ROSN',
-        'FESH',
-        'LSRG',
-        'CBOM',
-        'TRMK',
-        'NMTP',
-        'SELG',
-        'RUAL',
-        'MTLR',
-        'VTBR',
-        'GMKN']
+tickers = ['UWGN','QIWI','APTK','KZOSP']
 # from Traders.TestingTrader.tickers_groups import tickersMoexStock2
 # tickers = [x[0] for x in tickersMoexStock2]
 print(tickers)# # tickers = ['SBER','ROSN','GAZP',"MTLR","VTBR","NLMK"]

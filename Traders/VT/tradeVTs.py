@@ -37,10 +37,10 @@ class TradeWorker(QThread):
         sg = stock_groups[self.sg_key]
             
         for s in sg:
-            ws = init_trader(s)
+            ws,close18 = init_trader(s)
             if self.sg_key == 'TS':
                 s = s[:-1]
-            trader = VT5(*self.param_bots,s,ws)
+            trader = VT5(*self.param_bots,s,ws,close18=close18)
             self.work_traders.append(trader)
         self.msleep(3000)
         while not self.isInterruptionRequested():

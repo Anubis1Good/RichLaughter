@@ -27,14 +27,23 @@ from Optimiztion.Optimizator1 import generate_combinations
 
 bot_on_ticker = (
 
-    ((MTA_KING,(100,'KING_1_MOEX_STOCK','u')),
-     ('NVTK2','RUAL2','CHMF2','GAZP2','ALRS2','TRMK2','MTLR2','LSRG2','MAGN2''NMTP2','GMKN2','AFLT2','IRAO2','ROSN2','NLMK2','TATN2','AFKS2','HYDR2','PIKK2','SELG2','UPRO2','YDEX2','TRNFP2','BANEP2','RTKM2','MGNT2','SIBN2','MOEX2','MTSS2','SNGSP2','FESH2','LKOH2','CBOM2','FEES2','SBER2','VTBR2','SNGS2')),
+    ((MTA_KING,(100,'KING_5_MOEX_SPECIAL','u')),
+     ('NVTK2','RUAL2','CHMF2','GAZP2','ALRS2','TRMK2','MTLR2','LSRG2','MAGN2','NMTP2','GMKN2','AFLT2','IRAO2','ROSN2','NLMK2','TATN2','AFKS2','HYDR2','PIKK2','SELG2','UPRO2','YDEX2','TRNFP2','BANEP2','RTKM2','MGNT2','SIBN2','MOEX2','MTSS2','SNGSP2','FESH2','LKOH2','CBOM2','FEES2','SBER2','VTBR2','SNGS2','APTK2','QIWI2','UWGN2'),
+     False),
+    ((MTA_KING,(100,'KING_5_MOEX_SPECIAL','u')),
+     ('KZOSP2',),
+     True),
     ((MTA_KING,(100,'KING_5_MOEX_STOCK','u')),
-     ('NVTK','RUAL','CHMF','GAZP','ALRS','TRMK','MTLR','LSRG','MAGN''NMTP','GMKN','AFLT','IRAO','ROSN','NLMK','TATN','AFKS','HYDR','PIKK','SELG','UPRO','YDEX','TRNFP','BANEP','RTKM','MGNT','SIBN','MOEX','MTSS','SNGSP','FESH','LKOH','CBOM','FEES','SBER','VTBR','SNGS')),
+     ('NVTK','RUAL','CHMF','GAZP','ALRS','TRMK','MTLR','LSRG','MAGN','NMTP','GMKN','AFLT','IRAO','ROSN','NLMK','TATN','AFKS','HYDR','PIKK','SELG','UPRO','YDEX','TRNFP','BANEP','RTKM','MGNT','SIBN','MOEX','MTSS','SNGSP','FESH','LKOH','CBOM','FEES','SBER','VTBR','SNGS','APTK','QIWI','UWGN'),
+     False),
+    ((MTA_KING,(100,'KING_5_MOEX_STOCK','u')),
+     ('KZOSP',),
+     True),
     # ((MTA_KING,(100,'KING_1_MOEX_STOCK','u')),
     #  ('',)),
     ((MTA_KING,(100,'KING_1_MOEX_FUT','u')),
-     ('CRU5','MMU5','MXU5','GZU5','SRU5','RIU5','RMU5','SiU5','IMOEXF')),
+     ('CRU5','MMU5','MXU5','GZU5','SRU5','RIU5','RMU5','SiU5','IMOEXF'),
+     True),
 
 )
 
@@ -43,5 +52,5 @@ bot_on_ticker = (
 def init_trader(ticker):
     for bt in  bot_on_ticker:
         if ticker in bt[1]:
-            return bt[0]
-    return (BaseTABitget,(1,))
+            return bt[0],bt[2]
+    return (BaseTABitget,(1,)),False

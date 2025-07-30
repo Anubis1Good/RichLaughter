@@ -220,8 +220,8 @@ class VT5:
             row = self.ws.get_test_row(df)
             action = self.ws(row)
             if self.close18:
-                action = only_close(action,18,10)
-            action = only_close(action,23,10)
+                action = only_close(action,18,5)
+            action = only_close(action,23,5)
             pos = self._check_position(img)
             if pos == -1:
                 self.close_long = False
