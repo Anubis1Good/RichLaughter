@@ -7,8 +7,8 @@ from time import time
 from Loader.BitgetLoader import bitget_loader
 from utils.draw_utils import draw_lite_chart,draw_chart_channel,draw_hb_chart,draw_bollinger,draw_dynamics,draw_rails,draw_hb_chart_fast
 # from ForBots.Indicators.classic_indicators import add_donchan_channel,add_vangerchik,add_sma, add_slice_df,add_bollinger,add_over_bb,add_attached_bb,add_big_volume,add_dynamics_ma
-from strategies.test_strategies.check import check_strategy,check_strategy_v3,check_strategy_v4,check_strategy_v5
-from strategies.work_strategies.PTA import PTA2_DDCrWork as WS
+from strategies.test_strategies.check import check_strategy,check_strategy_v3_LSC,check_strategy_v4,check_strategy_v5
+# from strategies.work_strategies.PTA import PTA2_DDCrWork as WS
 # from strategies.work_strategies.PTAX import PTA10_WIZARD as WS
 # from strategies.work_strategies.PTAXX import PTA23_ULTIMATUM as WS
 # from strategies.work_strategies.STA_ca import STA3_LITE as WS
@@ -18,7 +18,8 @@ from strategies.work_strategies.PTA import PTA2_DDCrWork as WS
 # from strategies.work_strategies.OGTA import OGTA7_PARADOX as WS
 # from strategies.work_strategies.LTA import LTA_CC as WS
 # from strategies.work_strategies.LTA2 import LTA2_DRG as WS
-# from strategies.work_strategies.PSTA0 import PSTA5_HAWK as WS
+from strategies.work_strategies.PSTA0 import PSTA6_PIGEON as WS
+# from strategies.work_strategies.PSTA0 import PSTA2_GGD as WS
 # from strategies.work_strategies.MTA import MTA_LORD as WS
 # from strategies.work_strategies.STA_ml2 import STAML2a_PHENOMENON as WS
 # from strategies.work_strategies.STA_ml import STAML1_XGBR2_DC as WS
@@ -28,8 +29,9 @@ from strategies.work_strategies.PTA import PTA2_DDCrWork as WS
 from strategies.test_strategies.universal import universal_test_strategy as TS
 # raw_file = 'DataForTests\DataFromBitget\DOGEUSDT_1H_1752589488.csv'
 # raw_file = 'DataForTests\DataFromMOEX\MMM5_1_1749581140.csv'
-raw_file = 'DataForTests\DataFromMoexFast\\5MMU5_1_1752761082.csv'
-raw_file = 'DataForTests\oldMoex\MMH5_1_1739993452.csv'
+raw_file = 'DataForTests\DataFromMoexFast\\5IMOEXF_1_1752761086.csv'
+# raw_file = 'DataForTests\DataFromMoexFast\\5BRQ5_1_1752809062.csv'
+# raw_file = 'DataForTests\oldMoex\MMH5_1_1739993452.csv'
 # raw_file = 'DataForTests\oldMoex\SiM5_1_1745579847.csv'
 # raw_file = 'DataForTests\oldBitget\DOGEUSDT_1m_1741087742_big.csv'
 # raw_file = 'DataForTests\DataFromTicksBitget\DOGEUSDT_1m_from_ticks.csv'
@@ -55,7 +57,7 @@ slope = 4
 #  (PTA18_REXXAR,(100,5,10,50,30)),   
 # bot = WS(symbol,granularity,'e',1,100,7,10,10,40,10,0)
 bot = WS(symbol,granularity,'e',1)
-# bot = WS(symbol,granularity,'e',1,30,50,3,15,20)
+# bot = WS(symbol,granularity,'e',1,60,2,2)
 # bot = WS(symbol,granularity,'e',1,20,10,'LP_1752352674.json')
 # bot = WS(symbol,granularity,'e',1,25,9,12,'QGA20_beta2_001.json')
 # bot = WS(symbol,granularity,'e',1,30,100,30,60,30,50,'LP_1752353219.json')
@@ -63,15 +65,13 @@ bot = WS(symbol,granularity,'e',1)
 # trades,equity3,equity_fee = check_strategy_v5(df.copy(),bot,close_2330=True)
 # print(trades)
 # trades,equity1,equity_fee,longs1,shorts1,closes1 = check_strategy_v4(df.copy(),bot)
-# df = bot.preprocessing(df)
-# trades,equity1,equity_fee= check_strategy_v3(df.copy(),bot,close_2330=True)
 # print(trades)
 # print(trades)
 # trades,equity,equity_fee = check_strategy_v5(df,bot)
 # conf = (20,55,12,25,20)
 # bot = WS(symbol,granularity,"usdt-futures",1,*conf)
 # df = df.iloc[-50:]
-df = bot.get_test_df(df)
+# df = bot.get_test_df(df)
 # df.info()
 # print(df.tail()['chop'])
 # print(time() - start)
@@ -82,38 +82,40 @@ df = bot.get_test_df(df)
 # fee_base = 0.0004
 # fee_base = 0.0012
 fee_base = 0.0002
+df = bot.preprocessing(df)
+trades,equity,equity_fee,longs,shorts,closes= check_strategy_v3_LSC(df.copy(),bot,fee_base,close_2330=True)
 # trades,longs,shorts,closes,equity = check_strategy(df,get_action_STA1e,bot)
 # trades,equity2,equity_fee = check_strategy_v3(df,bot,fee_base)
 # print(trades)
-trades,longs,shorts,closes,equity = check_strategy(df,TS,bot)
+# trades,longs,shorts,closes,equity = check_strategy(df,TS,bot)
 print(trades)
-try:
-    fee = trades['count']*trades['open_price']*fee_base
-    print('fee',fee, (fee/trades['open_price'])*100)
-    print('total_with_fee',trades['total'] - fee, ((trades['total'] - fee)/trades['open_price'])*100)
-except:
-    print('НЕТ СДЕЛОК!')
+# try:
+#     fee = trades['count']*trades['open_price']*fee_base
+#     print('fee',fee, (fee/trades['open_price'])*100)
+#     print('total_with_fee',trades['total'] - fee, ((trades['total'] - fee)/trades['open_price'])*100)
+# except:
+#     print('НЕТ СДЕЛОК!')
 
 
 
-longs = np.array(longs)
-shorts = np.array(shorts)
-closes = np.array(closes)
-equity = np.array(equity)
+# longs = np.array(longs)
+# shorts = np.array(shorts)
+# closes = np.array(closes)
+# equity = np.array(equity)
 
 # print(longs.shape,longs1.shape)
 # print(shorts.shape,shorts1.shape)
 # print(closes.shape,closes1.shape)
 
 see_equity = True
-see_equity = False
+# see_equity = False
 if see_equity:
     plt.plot(equity,color='red')
+    plt.plot(equity_fee,color='blue')
     # plt.plot(equity1,color='blue')
     # plt.plot(equity2,color='green')
     # plt.plot(equity3,color='yellow')
 
-    # plt.plot(equity_fee,color='blue')
     pass
 else:
     # plt.subplot(2,1,1)
@@ -121,6 +123,7 @@ else:
     plt.grid() 
     # plt.plot(df['zigzag'])
     draw_hb_chart_fast(df)
+    # draw_bollinger(df)
     # plt.plot(df['zigzag'])
     # plt.plot(df['stair'])
     # plt.plot(df['stair_s'])

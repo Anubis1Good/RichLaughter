@@ -1,6 +1,6 @@
 import pandas as pd
 from strategies.work_strategies.BaseTA import BaseTABitget
-from ForBots.Indicators.classic_indicators import add_slice_df,add_enter_price2close,add_fractals,add_average_fractals,add_dynamic_zigzag,add_dzz_peaks,add_rsi
+from ForBots.Indicators.classic_indicators import add_slice_df,add_enter_price2close,add_fractals,add_average_fractals,add_dynamic_zigzag,add_dzz_peaks,add_rsi,add_adx,add_bollinger,add_chop
 from ForBots.Indicators.pva_indicators import add_plus_delta_fc ,add_exp_pdfc,add_analys_dzz,add_mean_on_fractals,add_ext_on_fractals
 
 class PSTA2_GGD(BaseTABitget):
@@ -216,3 +216,235 @@ class PSTA5_HAWK(BaseTABitget):
                 return 'close_long_pw'
             if row['trend_sma'] > 0.8:
                 return 'close_short_pw'
+            
+class PSTA6_DODO(BaseTABitget):
+    """period=20, period_smas=2,adx_threshold=30,adx_stop=35
+    \n
+    фильтрованный по adx GGD быстрых параметров. RANGER + GGD
+    """
+    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=20, period_smas=2,adx_threshold=30,adx_stop=35):
+        super().__init__(symbol, granularity, productType, n_parts, period)
+        self.period_smas = period_smas
+        self.adx_threshold = adx_threshold
+        self.adx_stop = adx_stop
+    def preprocessing(self, df):
+        df = add_adx(df,self.period)
+        df['high_sma'] = df['high'].rolling(self.period_smas).mean()
+        df['low_sma'] = df['low'].rolling(self.period_smas).mean()
+        df = add_enter_price2close(df)  
+        df = add_slice_df(df, self.period) 
+        return df
+
+    def __call__(self, row, *args, **kwds):
+        if row['adx'] > self.adx_stop:
+            return 'close_all_pw'
+        if row['adx'] < self.adx_threshold:
+            if row['close'] >= row['high_sma']:
+                return 'short_pw'
+            if row['close'] <= row['low_sma']:
+                return 'long_pw'
+
+class PSTA6_DUELDODO(BaseTABitget):
+    """ period=20, period_smas=2,adx_threshold=30,period_sma=20,use_stop=0
+    \n
+    фильтрованный по adx, направленный по sma GGD быстрых параметров."""
+    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=20, period_smas=2,adx_threshold=30,period_sma=20,use_stop=0):
+        super().__init__(symbol, granularity, productType, n_parts, period)
+        self.period_smas = period_smas
+        self.adx_threshold = adx_threshold
+        self.period_sma = period_sma
+        self.use_stop = use_stop
+    def preprocessing(self, df):
+        df = add_adx(df,self.period)
+        df['sma'] = df['close'].rolling(self.period).mean()
+        df['high_sma'] = df['high'].rolling(self.period_smas).mean()
+        df['low_sma'] = df['low'].rolling(self.period_smas).mean()
+        df = add_enter_price2close(df)  
+        df = add_slice_df(df, self.period) 
+        return df
+
+    def __call__(self, row, *args, **kwds):
+        if row['adx'] < self.adx_threshold:
+            if row['close'] >= row['high_sma']:
+                return 'short_pw'
+            if row['close'] <= row['low_sma']:
+                return 'long_pw'
+        else:
+            if row['close'] > row['sma']: #long
+                if row['close'] >= row['high_sma']:
+                    if self.use_stop:
+                        return 'close_all_pw'
+                    return 'close_long_pw'
+                if row['close'] <= row['low_sma']:
+                    return 'long_pw'
+            else:
+                if row['close'] >= row['high_sma']:
+                    return 'short_pw'
+                if row['close'] <= row['low_sma']:
+                    if self.use_stop:
+                        return 'close_all_pw'
+                    return 'close_short_pw'
+                
+class PSTA6_VULTURE(BaseTABitget):
+    """period=20, period_smas=2,adx_threshold=30,period_sma=20,n_candles=5,n_fractals=3,allowance=0.1
+    \n
+    фильтрованный по adx, направленный по sma GGD(быстрых параметров) + PELICAN ."""
+    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=20, period_smas=2,adx_threshold=30,period_sma=20,n_candles=5,n_fractals=3,allowance=0.1):
+        super().__init__(symbol, granularity, productType, n_parts, period)
+        self.period_smas = period_smas
+        self.adx_threshold = adx_threshold
+        self.period_sma = period_sma
+        self.n_candles = n_candles
+        self.n_fractals = n_fractals
+        self.allowance = allowance
+
+    def preprocessing(self, df):
+        df = add_adx(df,self.period)
+        df['sma'] = df['close'].rolling(self.period).mean()
+        df['high_sma'] = df['high'].rolling(self.period_smas).mean()
+        df['low_sma'] = df['low'].rolling(self.period_smas).mean()
+        df = add_fractals(df,self.n_candles)
+        df = add_exp_pdfc(df,self.n_fractals)
+        df['pdf_diff_percent'] = ((df['pdf_up'] - df['pdf_down']) / df['pdf_down']) * 100
+        df['allowance'] = df['pdf_diff_percent'] > self.allowance
+        df = add_enter_price2close(df)  
+        df = add_slice_df(df, self.period) 
+        return df
+
+    def __call__(self, row, *args, **kwds):
+        if row['adx'] < self.adx_threshold:
+            if row['close'] >= row['high_sma']:
+                return 'short_pw'
+            if row['close'] <= row['low_sma']:
+                return 'long_pw'
+        else:
+            if row['allowance']:
+                if row['close'] > row['sma']: #long
+                    if row['close'] >= row['pdf_up']:
+                        return 'close_all_pw'
+                    if row['close'] <= row['pdf_down']:
+                        return 'long_pw'
+                else:
+                    if row['close'] >= row['pdf_up']:
+                        return 'short_pw'
+                    if row['close'] <= row['pdf_down']:
+                        return 'close_all_pw'
+   
+class PSTA6_PIGEON(BaseTABitget):
+    """period=60, period_smas=2,period_sma=20,n_candles=5,n_fractals=3,allowance=0.1,mult_bb=1,use_stop=0
+    \n
+    Что-то типо DRG+VULTURE"""
+    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=60, period_smas=2,period_sma=20,n_candles=5,n_fractals=3,allowance=0.1,mult_bb=1,use_stop=0):
+        super().__init__(symbol, granularity, productType, n_parts, period)
+        self.period_smas = period_smas
+        self.period_sma = period_sma
+        self.n_candles = n_candles
+        self.n_fractals = n_fractals
+        self.allowance = allowance
+        self.mult_bb = mult_bb
+        self.use_stop = use_stop
+
+    def preprocessing(self, df):
+        df = add_bollinger(df,self.period,multiplier=self.mult_bb)
+        df['high_sma'] = df['high'].rolling(self.period_smas).mean()
+        df['low_sma'] = df['low'].rolling(self.period_smas).mean()
+        df = add_fractals(df,self.n_candles)
+        df = add_exp_pdfc(df,self.n_fractals)
+        df['pdf_diff_percent'] = ((df['pdf_up'] - df['pdf_down']) / df['pdf_down']) * 100
+        df['allowance'] = df['pdf_diff_percent'] > self.allowance
+        df = add_enter_price2close(df)  
+        df = add_slice_df(df, self.period) 
+        return df
+
+    def __call__(self, row, *args, **kwds):
+        if row['high'] < row['bbu'] and row['low'] > row['bbd']:
+            if row['close'] >= row['high_sma']:
+                return 'short_pw'
+            if row['close'] <= row['low_sma']:
+                return 'long_pw'
+        else:
+            if row['allowance']:
+                if row['low'] > row['bbu']: #long
+                    if row['close'] >= row['pdf_up']:
+                        return 'close_long_pw'
+                    if row['close'] <= row['pdf_down']:
+                        return 'long_pw'
+                    if self.use_stop:
+                        return 'close_short_pw'
+                if row['high'] < row['bbd']: #short
+                    if row['close'] >= row['pdf_up']:
+                        return 'short_pw'
+                    if row['close'] <= row['pdf_down']:
+                        return 'close_short_pw'
+                    if self.use_stop:
+                        return 'close_long_pw'
+                    
+class PSTA6_ADVENTURE(BaseTABitget):
+    """period=60, period_smas=2,period_sma=20,mult_bb=1,use_stop=0
+    \n
+    DRG+DUELDODO"""
+    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=60, period_smas=2,period_sma=20,mult_bb=1,use_stop=0):
+        super().__init__(symbol, granularity, productType, n_parts, period)
+        self.period_smas = period_smas
+        self.period_sma = period_sma
+        self.mult_bb = mult_bb
+        self.use_stop = use_stop
+
+    def preprocessing(self, df):
+        df = add_bollinger(df,self.period,multiplier=self.mult_bb)
+        df['high_sma'] = df['high'].rolling(self.period_smas).mean()
+        df['low_sma'] = df['low'].rolling(self.period_smas).mean()
+        df = add_enter_price2close(df)  
+        df = add_slice_df(df, self.period) 
+        return df
+
+    def __call__(self, row, *args, **kwds):
+        if row['high'] < row['bbu'] and row['low'] > row['bbd']:
+            if row['close'] >= row['high_sma']:
+                return 'short_pw'
+            if row['close'] <= row['low_sma']:
+                return 'long_pw'
+        else:
+            if row['low'] > row['bbu']: #long
+                if row['close'] >= row['high_sma']:
+                    return 'close_long_pw'
+                if row['close'] <= row['low_sma']:
+                    return 'long_pw'
+                if self.use_stop:
+                    return 'close_short_pw'
+            if row['high'] < row['bbd']: #short
+                if row['close'] >= row['high_sma']:
+                    return 'short_pw'
+                if row['close'] <= row['low_sma']:
+                    return 'close_short_pw'
+                if self.use_stop:
+                    return 'close_long_pw'
+                    
+class PSTA6_SHERIFF(BaseTABitget):
+    """period=60, period_smas=2,mult_bb=2
+    \n
+    GGD+PUBG"""
+    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=60, period_smas=2,mult_bb=2):
+        super().__init__(symbol, granularity, productType, n_parts, period)
+        self.period_smas = period_smas
+        self.mult_bb = mult_bb
+
+    def preprocessing(self, df):
+        df = add_bollinger(df,self.period,multiplier=self.mult_bb)
+        df['high_sma'] = df['high'].rolling(self.period_smas).mean()
+        df['low_sma'] = df['low'].rolling(self.period_smas).mean()
+        df = add_enter_price2close(df)  
+        df = add_slice_df(df, self.period) 
+        return df
+
+    def __call__(self, row, *args, **kwds):
+        if row['high'] < row['bbu'] and row['low'] > row['bbd']:
+            if row['close'] >= row['high_sma']:
+                return 'short_pw'
+            if row['close'] <= row['low_sma']:
+                return 'long_pw'
+        else:
+            if row['low'] > row['bbu']: #long
+                return 'long_pw'
+            if row['high'] < row['bbd']: #short
+                return 'short_pw'

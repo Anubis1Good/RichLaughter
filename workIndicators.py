@@ -13,7 +13,8 @@ from scipy.stats import linregress
 
 # raw_file = 'DataForTests\DataFromBitget\DOGEUSDT_1m_1739873922.csv'
 # raw_file = 'DataForTests\DataFromMOEX\MMM5_1_1749581140.csv'
-raw_file = 'DataForTests\DataFromMoexFast\\5MMU5_1_1752761082.csv'
+# raw_file = 'DataForTests\DataFromMoexFast\\5IMOEXF_1_1752761086.csv'
+raw_file = 'DataForTests\DataFromMoexFast\\5BRQ5_1_1752809062.csv'
 # raw_file = 'DataForTests\oldMoex\SiM5_1_1745579847.csv'
 period = 10
 df = bitget_loader(raw_file)
@@ -21,13 +22,13 @@ df = df.iloc[-200:]
 # df = df.iloc[10:510]
 
 # df['down_diff'] = df['low'] - df['sma']
-# df = add_dzz_peaks(df,period=10)
-df = add_fractals(df,10)
+df = add_dzz_peaks(df,period=10,n_std=5)
+# df = add_fractals(df,2)
 
-# df = add_plus_delta_fc(df,10)
-df = add_exp_pdfc(df,10)
-# df = add_chaikin_volatility(df)
-# df = add_analys_dzz(df)
+# df = add_average_fractals(df,2)
+
+
+df = add_pattern18_dzz(df)
 print(df.tail(10))
 # df.info()
 
@@ -39,15 +40,19 @@ if plot:
     plt.grid() 
     draw_hb_chart_fast(df)
     # plt.plot(df['upper_channel'])
-    plt.plot(df['pdf_up'])
-    plt.plot(df['pdf_down'])
+    # plt.plot(df['ave_up'])
+    # plt.plot(df['ave_down'])
+    # plt.plot(df['max_hb'])
+    # plt.plot(df['min_hb'])
+    # plt.plot(df['stop_up'])
+    # plt.plot(df['stop_down'])
     # plt.plot(df['lower_channel'])
-    # plt.plot(df['top_line'])
-    # plt.plot(df['bottom_line'])
+    # plt.plot(df['high_sma'])
+    # plt.plot(df['low_sma'])
     # plt.plot(df['regression_line'])
     # plt.plot(df['stair'])
     # plt.plot(df['trend'])
-    # plt.plot(df['zigzag'])
+    plt.plot(df['zigzag'])
     # plt.plot(df['stair_up'])
     # df['points'] = np.where((df['zigzag_direction'] != df['zigzag_direction'].shift(1)), df['middle'], np.nan)
 
@@ -65,7 +70,9 @@ if plot:
     plt.grid() 
     # plt.bar(df.index.to_series(),df['dvsai'])
     # plt.plot(df['chaikin_volatility'],color='red')
-    # plt.plot(df['dvsaid'],color='red')
+    # plt.plot(df['spred'],color='red')
+    # plt.plot(df['spred_max'],color='blue')
+    # plt.plot(df['spred_ma'],color='green')
     # plt.plot(df['cum_dvsai'])
     # plt.plot(df['ma_cdv1'])
     # plt.plot(df['ma_cdv2'])

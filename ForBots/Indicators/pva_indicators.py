@@ -514,3 +514,180 @@ def add_exp_pdfc(df:pd.DataFrame, period=1):
     df['pdf_down'] = down_points['low'] + down_points['dlm']
     df['pdf_down'] = df['pdf_down'].ffill()
     return df
+
+def help_analiz_pattern18(row,threshold=0.2):
+    if pd.isna(row['zp1']):
+        return 'none_pattern'
+    big = 1 + threshold
+    small = 1 - threshold
+    if row['r12_23'] > big:
+        if row['r23_34'] > big:
+            if row['p1_2'] > 0:
+                return 'weak_short'
+            else:
+                return 'weak_long'
+        elif row['r23_34'] < small:
+            if row['p1_2'] > 0:
+                return 'strong_short'
+            else:
+                return 'strong_long'
+        else:
+            if row['p1_2'] > 0:
+                return 'enter_short_range'
+            else:
+                return 'enter_long_range'
+    elif row['r12_23'] < small:
+        if row['r23_34'] > big:
+            if row['p1_2'] > 0:
+                return 'btc'
+            else:
+                return 'bti'
+        elif row['r23_34'] < small:
+            if row['p1_2'] > 0:
+                return 'sow'
+            else:
+                return 'sos'
+        else:
+            if row['p1_2'] > 0:
+                return 'upthrust'
+            else:
+                return 'spring'
+    else:
+        if row['r23_34'] > big:
+            if row['p1_2'] > 0:
+                return 'narrowing_up'
+            else:
+                return 'narrowing_down'
+        elif row['r23_34'] < small:
+            if row['p1_2'] > 0:
+                return 'bui'
+            else:
+                return 'joc'
+        else:
+            if row['p1_2'] > 0:
+                return 'bottom_range'
+            else:
+                return 'top_range'
+def add_my_pattern_dzz(df:pd.DataFrame, threshold=0.2):
+    """add 'pattern18'"""
+    # Создаем явную копию DataFrame
+    df = df.copy()
+    # Создаем копию для работы с пиками
+    peacks = df[~df['zigzag_peaks'].isna()].copy()  # Явное копирование
+    if len(peacks) < 4:
+        df['pattern18'] = 'none_pattern'
+        return df
+    peacks['zp1'] = peacks['zigzag_peaks'].shift(3)
+    peacks['zp2'] = peacks['zigzag_peaks'].shift(2)
+    peacks['zp3'] = peacks['zigzag_peaks'].shift(1)
+    peacks['zp4'] = peacks['zigzag_peaks']
+    peacks['p1_2'] = peacks['zp1'] - peacks['zp2']
+    peacks['p2_3'] = peacks['zp2'] - peacks['zp3']
+    peacks['p3_4'] = peacks['zp3'] - peacks['zp4']
+    peacks['r12_23'] = abs(peacks['p1_2'] / peacks['p2_3'])
+    peacks['r23_34'] = abs(peacks['p2_3'] / peacks['p3_4'])
+    peacks['pattern'] = peacks.apply(lambda row: help_analiz_pattern18(row,threshold),axis=1)
+    df['pattern18'] = peacks['pattern']
+    df['pattern18'] = df['pattern18'].ffill()
+    
+    return df
+
+def add_pattern18_dzz(df: pd.DataFrame, threshold: float = 0.2) -> pd.DataFrame:
+    """
+    Добавляет столбец 'pattern18' с классификацией паттернов зигзага
+    
+    Параметры:
+        df - DataFrame с колонкой 'zigzag_peaks'
+        threshold - порог для определения соотношения сегментов
+    
+    Возвращает:
+        DataFrame с добавленной колонкой 'pattern18'
+    """
+    # Создаем копию DataFrame
+    result_df = df.copy()
+    
+    # Инициализируем колонку правильным типом
+    result_df = result_df.assign(pattern18=pd.NA)
+    
+    # Выбираем только точки пиков зигзага
+    peaks_mask = ~result_df['zigzag_peaks'].isna()
+    peaks = result_df.loc[peaks_mask].copy()
+    
+    # Недостаточно точек для анализа паттерна
+    if len(peaks) < 4:
+        return result_df.assign(pattern18='none_pattern')
+    
+    # Вычисляем 4 последовательные точки
+    peaks = peaks.assign(
+        zp1=peaks['zigzag_peaks'].shift(3),
+        zp2=peaks['zigzag_peaks'].shift(2),
+        zp3=peaks['zigzag_peaks'].shift(1),
+        zp4=peaks['zigzag_peaks']
+    )
+    
+    # Удаляем строки с недостаточными данными
+    peaks = peaks.loc[~peaks['zp1'].isna()].copy()
+    
+    # Вычисляем разницы между точками
+    peaks = peaks.assign(
+        p1_2=peaks['zp1'] - peaks['zp2'],
+        p2_3=peaks['zp2'] - peaks['zp3'],
+        p3_4=peaks['zp3'] - peaks['zp4']
+    )
+    
+    # Вычисляем соотношения длин сегментов
+    with np.errstate(divide='ignore', invalid='ignore'):
+        r12_23 = np.abs(peaks['p1_2'] / peaks['p2_3'])
+        r23_34 = np.abs(peaks['p2_3'] / peaks['p3_4'])
+    
+    # Определяем условия для каждого паттерна
+    big = 1 + threshold
+    small = 1 - threshold
+    p1_2_pos = peaks['p1_2'] > 0
+    
+    # Создаем маски для каждого условия
+    conditions = [
+        (r12_23 > big) & (r23_34 > big) & p1_2_pos,
+        (r12_23 > big) & (r23_34 > big) & ~p1_2_pos,
+        (r12_23 > big) & (r23_34 < small) & p1_2_pos,
+        (r12_23 > big) & (r23_34 < small) & ~p1_2_pos,
+        (r12_23 > big) & (r23_34 >= small) & (r23_34 <= big) & p1_2_pos,
+        (r12_23 > big) & (r23_34 >= small) & (r23_34 <= big) & ~p1_2_pos,
+        (r12_23 < small) & (r23_34 > big) & p1_2_pos,
+        (r12_23 < small) & (r23_34 > big) & ~p1_2_pos,
+        (r12_23 < small) & (r23_34 < small) & p1_2_pos,
+        (r12_23 < small) & (r23_34 < small) & ~p1_2_pos,
+        (r12_23 < small) & (r23_34 >= small) & (r23_34 <= big) & p1_2_pos,
+        (r12_23 < small) & (r23_34 >= small) & (r23_34 <= big) & ~p1_2_pos,
+        (~(r12_23 < small) & ~(r12_23 > big)) & (r23_34 > big) & p1_2_pos,
+        (~(r12_23 < small) & ~(r12_23 > big)) & (r23_34 > big) & ~p1_2_pos,
+        (~(r12_23 < small) & ~(r12_23 > big)) & (r23_34 < small) & p1_2_pos,
+        (~(r12_23 < small) & ~(r12_23 > big)) & (r23_34 < small) & ~p1_2_pos,
+        (~(r12_23 < small) & ~(r12_23 > big)) & ~(r23_34 < small) & ~(r23_34 > big) & p1_2_pos,
+        (~(r12_23 < small) & ~(r12_23 > big)) & ~(r23_34 < small) & ~(r23_34 > big) & ~p1_2_pos
+    ]
+    
+    choices = [
+        'weak_short', 'weak_long',
+        'strong_short', 'strong_long',
+        'enter_short_range', 'enter_long_range',
+        'btc', 'bti',
+        'sow', 'sos',
+        'upthrust', 'spring',
+        'narrowing_up', 'narrowing_down',
+        'bui', 'joc',
+        'bottom_range', 'top_range'
+    ]
+    
+    # Создаем Series с паттернами
+    peaks_pattern = pd.Series(
+        data=np.select(conditions, choices, default='none_pattern'),
+        index=peaks.index,
+        dtype='object'
+    )
+    
+    # Обновляем основной DataFrame
+    result_df['pattern18'] = peaks_pattern.reindex(result_df.index).ffill()
+    result_df['pattern18'] = result_df['pattern18'].replace(pd.NA, 'none_pattern')
+    
+    return result_df
