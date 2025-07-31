@@ -7,7 +7,7 @@
 # from strategies.work_strategies.OGTA import *
 # from strategies.work_strategies.MTA import *
 # from strategies.work_strategies.BaseTA import BaseTABitget
-from strategies.work_strategies.MTA_KING import MTA_KING
+from strategies.work_strategies.MTA_KING import MTA_KING,MTA_LIGHT
 
 from Optimiztion.Optimizator1 import generate_combinations
 
@@ -28,7 +28,7 @@ from Traders.QuikTrader.QuikTrader1 import QuikTrader1,QuikTrader2
 
 bot_on_ticker = (
     (
-        (MTA_KING,(100,'KING_5_MOEX_FUT')),
+        (MTA_LIGHT,(100,'KING_5_MOEX_FUT')),
         (
             ('MMU5','SPBFUT','M5',1),
             ('RMU5','SPBFUT','M5',1),
