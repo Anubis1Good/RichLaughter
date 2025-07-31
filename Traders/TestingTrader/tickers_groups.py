@@ -10,7 +10,7 @@ tickersMoexFut = (
     ('IMOEXF',True),
     ('CNYRUBF',True),
     ('NGQ5',True),
-    ('BRQ5',True),
+    ('BRU5',True),
     ('EDU5',True),
     ('EURRUBF',True),
 )

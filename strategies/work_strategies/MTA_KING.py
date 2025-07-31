@@ -29,14 +29,17 @@ class MTA_KING(BaseTABitget):
             if not os.path.exists(folder):
                 os.makedirs(folder)
             self.filename = os.path.join(folder,filename)
-        if not symbol in prepare_tickers(tickersExchange[index_ex]):
-            self.symbol = 'Other'
+        # if not symbol in prepare_tickers(tickersExchange[index_ex]):
+        #     self.symbol = 'Other'
+        self.symbol = symbol
         self.name_bot_king = 'Base'
         self.need_change = False
         if alias:
             self.work_symbol = alias
         else:
             self.work_symbol = self.symbol
+        self.choice_ws_king()
+        print(self.work_symbol,self.tas_king)
 
     def write_log(self):
         with open(self.filename,mode='a+') as f:
