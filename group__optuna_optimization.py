@@ -229,14 +229,15 @@ if __name__ == '__main__':
     # from Optimiztion.optimizations_groups.optuna_groups import group
     # test_folder = 'DataForTests\DataFromMOEX'
     # test_folder = 'DataForTests\DataFromMoexFast'
-    # test_folder = 'DataForTests\DataFromMoexFastStock'
-    test_folder = 'DataForTests\DataFromMoexForStepTests'
+    test_folder = 'DataForTests\DataFromMoexFastStock'
+    # test_folder = 'DataForTests\DataFromMoexForStepTests'
     # test_folder = 'DataForTests\DataFromMoexTemp'
     # test_folder = 'DataForTests\DataFromBitget'
     min_fee: float = 0.0002
     # min_fee: float = 0.00002
     # min_fee: float = 0.0004
     need_plot=True
+    # n_trials = 100
     n_trials = 200
     # n_trials = 500
     n_jobs = 1

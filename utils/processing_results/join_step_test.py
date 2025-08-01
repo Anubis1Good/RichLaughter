@@ -3,31 +3,33 @@ import pandas as pd
 import re
 
 dollar_step = 7.8
+fee2x = 2
+# fee2x = 0.36
 
 futures_fee_funcs = {
-    'base': lambda total,count: total - count*2,
-    r'BR..$': lambda total,count: total*100*dollar_step - count*2,
-    r'ED..$': lambda total,count: total*10000*dollar_step - count*2,
-    r'EURRUBF': lambda total,count: total*1000 - count*2,
-    r'IMOEXF': lambda total,count: total*10 - count*2,
-    r'MM..$': lambda total,count: total*10 - count*2,
-    r'NG..$': lambda total,count: total*1000*dollar_step - count*2,
-    r'RM..$': lambda total,count: total*2*dollar_step - count*2,
-    r'RI..$': lambda total,count: total*2*dollar_step*0.1 - count*2,
-    r'CNYRUBF': lambda total,count: total*1000 - count*2,
-    r'CR..$': lambda total,count: total*1000 - count*2,
-    r'GD..$': lambda total,count: total*10*dollar_step - count*2,
-    r'USDRUBF': lambda total,count: total*1000 - count*2,
-    r'SV..$': lambda total,count: total*100*dollar_step - count*2,
-    r'PD..$': lambda total,count: total*10*dollar_step - count*2,
-    r'PT..$': lambda total,count: total*10*dollar_step - count*2,
-    r'UC..$': lambda total,count: total*1000*10.94 - count*2,
-    r'SF..$': lambda total,count: total*10*dollar_step - count*2,
-    r'NA..$': lambda total,count: total*dollar_step*0.1 - count*2,
-    r'CC..$': lambda total,count: total*10 - count*2,
-    r'SBERF': lambda total,count: total*100 - count*2,
-    r'GAZPF': lambda total,count: total*100 - count*2,
-    r'IB..$': lambda total,count: total*10*dollar_step - count*2,
+    'base': lambda total,count: total - count*fee2x,
+    r'.*BR..*': lambda total,count: total*100*dollar_step - count*fee2x,
+    r'.*ED.*': lambda total,count: total*10000*dollar_step - count*fee2x,
+    r'.*EURRUBF.*': lambda total,count: total*1000 - count*fee2x,
+    r'.*IMOEXF': lambda total,count: total*10 - count*fee2x,
+    r'.*MM..*': lambda total,count: total*10 - count*fee2x,
+    r'.*NG..*': lambda total,count: total*1000*dollar_step - count*fee2x,
+    r'.*RM..*': lambda total,count: total*2*dollar_step - count*fee2x,
+    r'.*RI..*': lambda total,count: total*2*dollar_step*0.1 - count*fee2x,
+    r'.*CNYRUBF.*': lambda total,count: total*1000 - count*fee2x,
+    r'.*CR..*': lambda total,count: total*1000 - count*fee2x,
+    r'.*GD..*': lambda total,count: total*10*dollar_step - count*fee2x,
+    r'.*USDRUBF.*': lambda total,count: total*1000 - count*fee2x,
+    r'.*SV..*': lambda total,count: total*100*dollar_step - count*fee2x,
+    r'.*PD..*': lambda total,count: total*10*dollar_step - count*fee2x,
+    r'.*PT..*': lambda total,count: total*10*dollar_step - count*fee2x,
+    r'.*UC..*': lambda total,count: total*1000*10.94 - count*fee2x,
+    r'.*SF..*': lambda total,count: total*10*dollar_step - count*fee2x,
+    r'.*NA..*': lambda total,count: total*dollar_step*0.1 - count*fee2x,
+    r'.*CC..*': lambda total,count: total*10 - count*fee2x,
+    r'.*SBERF.*': lambda total,count: total*100 - count*fee2x,
+    r'.*GAZPF.*': lambda total,count: total*100 - count*fee2x,
+    r'.*IB..*': lambda total,count: total*10*dollar_step - count*fee2x,
 }
 
 def get_func_vtb_fee(name):

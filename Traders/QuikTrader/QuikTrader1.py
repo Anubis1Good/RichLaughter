@@ -3,11 +3,11 @@ import traceback
 from time import sleep
 from datetime import datetime
 import pandas as pd
-from Traders.QuikTrader.QuikFuncs import get_bars,get_best_glass,get_pos_futures,close_active_order,send_transaction,get_code_orders
+from Traders.QuikTrader.QuikFuncs import get_bars,get_best_glass,get_pos_futures,close_active_order,send_transaction,get_code_orders,smart_close_active_order
 from strategies.work_strategies.BaseTA import BaseTABitget
 
 class QuikTrader1:
-    def __init__(self,sec_code,class_code='SPBFUT',granularity='M5',quantity = 1,ws:tuple=(BaseTABitget,(20,)),need_debug=False):
+    def __init__(self,sec_code,class_code='SPBFUT',granularity='M5',quantity = 1,ws:tuple=(BaseTABitget,(20,)),need_debug=False,smart_reset=True):
         self.sec_code = sec_code
         self.class_code = class_code
         self.granularity = granularity
@@ -16,6 +16,7 @@ class QuikTrader1:
         self.count = conf[0]*3
         self.ws:BaseTABitget = ws[0](sec_code,'1m',"moex_stock",1,*conf)
         self.need_debug = need_debug
+        self.smart_reset = smart_reset
         folder_error = 'logs/error_logsQT'
         folder_debug = 'logs/debug_logsQT'
         if not os.path.exists(folder_error):
@@ -31,10 +32,15 @@ class QuikTrader1:
         return pos
     
     def _send_open(self,direction,quantity):
-        close_active_order(self.sec_code)
         bbid,bask = get_best_glass(self.sec_code,self.class_code)
         price = bbid if direction == 'B' else bask
-        send_transaction(self.sec_code,price,direction,quantity,self.class_code)
+        if self.smart_reset:
+            skip_close = smart_close_active_order(self.sec_code,price)
+            if skip_close == 0:
+                send_transaction(self.sec_code,price,direction,quantity,self.class_code)
+        else:
+            close_active_order(self.sec_code)
+            send_transaction(self.sec_code,price,direction,quantity,self.class_code)
 
     def _send_close(self,direction,quantity):
         rev_direction = 'B' if direction == 'S' else 'S'

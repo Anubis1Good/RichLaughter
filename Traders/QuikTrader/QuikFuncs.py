@@ -87,6 +87,7 @@ def get_code_orders(qp_provider:QuikPy,sec_code):
 def help_close_active_order(qp_provider:QuikPy,active_orders,sec_code):
     if active_orders:
         for ao in active_orders:
+            # print(ao['price'])
             transaction = {  # Все значения должны передаваться в виде строк
                 'TRANS_ID': str(next(trans_id)),  # Следующий номер транзакции
                 'ACTION': 'KILL_ORDER',  # Тип заявки: Удаление существующей заявки
@@ -96,10 +97,33 @@ def help_close_active_order(qp_provider:QuikPy,active_orders,sec_code):
             }
             qp_provider.send_transaction(transaction)
 
+@provider
+def help_smart_close_active_order(qp_provider:QuikPy,active_orders,sec_code,price):
+    skip_close = 0
+    if active_orders:
+        for ao in active_orders:
+            if str(ao['price']) == price:
+                skip_close += 1
+                continue
+            transaction = {  # Все значения должны передаваться в виде строк
+                'TRANS_ID': str(next(trans_id)),  # Следующий номер транзакции
+                'ACTION': 'KILL_ORDER',  # Тип заявки: Удаление существующей заявки
+                'CLASSCODE': ao['class_code'],  # Код режима торгов
+                'SECCODE': sec_code,  # Код тикера
+                'ORDER_KEY': str(ao['order_num'])
+            }
+            qp_provider.send_transaction(transaction)
+    return skip_close
+
 
 def close_active_order(sec_code):
     active_orders = get_active_order(sec_code)
     help_close_active_order(active_orders,sec_code)
+
+def smart_close_active_order(sec_code,price:str) -> int:
+    active_orders = get_active_order(sec_code)
+    skip_close = help_smart_close_active_order(active_orders,sec_code,price)
+    return skip_close
 
 @provider
 def get_pos_futures(qp_provider:QuikPy,sec_code):

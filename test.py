@@ -1,7 +1,8 @@
-symbol = '1000PEPEUSDT'
-from request_functions.download_bybit import save_df
-
-save_df(symbol,'1',n_parts=2)
-
-# print(candles[-1])
-# print(len(candles))
+from Traders.QuikTrader.QuikFuncs import *
+sec_code = 'CRU5'
+# sec_code = 'GZU5'
+# acts = get_active_order(sec_code)
+smart_close_active_order(sec_code,'11.318')
+# bbid,bask = get_best_glass(sec_code)
+# print(type(bbid),bbid)
+# print(type(bask),bask)

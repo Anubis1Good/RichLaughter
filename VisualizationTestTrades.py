@@ -6,17 +6,25 @@ import matplotlib.pyplot as plt
 
 from request_functions.download_moex import download_moex,create_df
 from utils.draw_utils import draw_hb_chart_fast
-board = "RFUD"
-market = "forts"
-engine= "futures"
+fut = 0
+fut = 1
+if fut:
+    board = "RFUD"
+    market = "forts"
+    engine= "futures"
+else:
+    board = "TQBR"
+    market: str = "shares",
+    engine: str = "stock"
 ticker = 'MMU5'
-# ticker = 'RMU5'
-bot_id = 595
+ticker = 'IMOEXF'
+bot_id = 664
 # start = str(date.today() - timedelta(days=2))
 # end = None
 
 # print(df.head())
 db_path = 'dbs/test_MOEX_FUT.db'
+# db_path = 'dbs/test_MOEX_STOCK.db'
 
 
 # 2. Загрузка сделок из базы данных
