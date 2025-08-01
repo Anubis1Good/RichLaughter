@@ -10,10 +10,14 @@ from functools import partial
 from strategies.test_strategies.check import check_strategy_v3
 from Loader.BitgetLoader import bitget_loader
 from utils.processing_results.add_vtb_fee_fut import get_func_vtb_fee
+from utils.work_with_dataframe.convert_timeframe import convert_timeframe
 phys_cores = psutil.cpu_count(logical=False) 
 
 save_cores = 2
 close_2330 = True
+new_timeframe = None
+new_timeframe = '5min'
+# feature_optimization = 'total_abs_fee'
 
 # # Целевая функция для Optuna
 def objective(trial, df, ws, param_options, fee=0.0002):
@@ -97,7 +101,7 @@ def get_optimization_results_table(study, df, strategy_class, param_options, nee
         name_doc = f"{ticker}_{name_bot}"
         name_file = f"{name_doc}_{'_'.join(param_values)}"
         params_tuple = f"({name_bot},({','.join(param_values)},)),"
-        vtb_twf_func = get_func_vtb_fee(ticker[1:].split('_')[0])
+        vtb_twf_func = get_func_vtb_fee(ticker.split('_')[0])
         # Добавляем результаты
         result_row = {
             # "Trial": trial.number,
@@ -145,6 +149,8 @@ def optimization_optuna(raw_file,strategy_config,n_trials=100,n_jobs=1,need_plot
     variant_name = variant_name.split('_')
     variant_name = variant_name[0]+'_'+variant_name[1]
     df = bitget_loader(raw_file)
+    if new_timeframe:
+        df = convert_timeframe(df,new_timeframe)
     study = optuna.create_study(direction="maximize")
     # # Оптимизируем (n_trials=100, можно увеличить)
     study.optimize(lambda trial: objective(trial, df,*strategy_config,fee), n_trials=n_trials,n_jobs=n_jobs)
@@ -222,15 +228,17 @@ if __name__ == '__main__':
     from group_optimization_experiment import group
     # from Optimiztion.optimizations_groups.optuna_groups import group
     # test_folder = 'DataForTests\DataFromMOEX'
-    test_folder = 'DataForTests\DataFromMoexFast'
+    # test_folder = 'DataForTests\DataFromMoexFast'
     # test_folder = 'DataForTests\DataFromMoexFastStock'
-    # test_folder = 'DataForTests\DataFromMoexForStepTests'
+    test_folder = 'DataForTests\DataFromMoexForStepTests'
     # test_folder = 'DataForTests\DataFromMoexTemp'
     # test_folder = 'DataForTests\DataFromBitget'
     min_fee: float = 0.0002
+    # min_fee: float = 0.00002
     # min_fee: float = 0.0004
     need_plot=True
     n_trials = 200
+    # n_trials = 500
     n_jobs = 1
 
 

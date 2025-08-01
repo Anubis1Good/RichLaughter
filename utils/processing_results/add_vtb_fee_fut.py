@@ -5,35 +5,37 @@ dollar_step = 7.8
 
 futures_fee_funcs = {
     'base': lambda total,count: total - count*2,
-    r'BR..$': lambda total,count: total*100*dollar_step - count*2,
-    r'ED..$': lambda total,count: total*10000*dollar_step - count*2,
-    r'EURRUBF': lambda total,count: total*1000 - count*2,
-    r'IMOEXF': lambda total,count: total*10 - count*2,
-    r'MM..$': lambda total,count: total*10 - count*2,
-    r'NG..$': lambda total,count: total*1000*dollar_step - count*2,
-    r'RM..$': lambda total,count: total*2*dollar_step - count*2,
-    r'RI..$': lambda total,count: total*2*dollar_step*0.1 - count*2,
-    r'CNYRUBF': lambda total,count: total*1000 - count*2,
-    r'CR..$': lambda total,count: total*1000 - count*2,
-    r'GD..$': lambda total,count: total*10*dollar_step - count*2,
-    r'USDRUBF': lambda total,count: total*1000 - count*2,
-    r'SV..$': lambda total,count: total*100*dollar_step - count*2,
-    r'PD..$': lambda total,count: total*10*dollar_step - count*2,
-    r'PT..$': lambda total,count: total*10*dollar_step - count*2,
-    r'UC..$': lambda total,count: total*1000*10.94 - count*2,
-    r'SF..$': lambda total,count: total*10*dollar_step - count*2,
-    r'NA..$': lambda total,count: total*dollar_step*0.1 - count*2,
-    r'CC..$': lambda total,count: total*10 - count*2,
-    r'SBERF': lambda total,count: total*100 - count*2,
-    r'GAZPF': lambda total,count: total*100 - count*2,
-    r'IB..$': lambda total,count: total*10*dollar_step - count*2,
+    r'.*BR..*': lambda total,count: total*100*dollar_step - count*2,
+    r'.*ED.*': lambda total,count: total*10000*dollar_step - count*2,
+    r'.*EURRUBF.*': lambda total,count: total*1000 - count*2,
+    r'.*IMOEXF': lambda total,count: total*10 - count*2,
+    r'.*MM..*': lambda total,count: total*10 - count*2,
+    r'.*NG..*': lambda total,count: total*1000*dollar_step - count*2,
+    r'.*RM..*': lambda total,count: total*2*dollar_step - count*2,
+    r'.*RI..*': lambda total,count: total*2*dollar_step*0.1 - count*2,
+    r'.*CNYRUBF.*': lambda total,count: total*1000 - count*2,
+    r'.*CR..*': lambda total,count: total*1000 - count*2,
+    r'.*GD..*': lambda total,count: total*10*dollar_step - count*2,
+    r'.*USDRUBF.*': lambda total,count: total*1000 - count*2,
+    r'.*SV..*': lambda total,count: total*100*dollar_step - count*2,
+    r'.*PD..*': lambda total,count: total*10*dollar_step - count*2,
+    r'.*PT..*': lambda total,count: total*10*dollar_step - count*2,
+    r'.*UC..*': lambda total,count: total*1000*10.94 - count*2,
+    r'.*SF..*': lambda total,count: total*10*dollar_step - count*2,
+    r'.*NA..*': lambda total,count: total*dollar_step*0.1 - count*2,
+    r'.*CC..*': lambda total,count: total*10 - count*2,
+    r'.*SBERF.*': lambda total,count: total*100 - count*2,
+    r'.*GAZPF.*': lambda total,count: total*100 - count*2,
+    r'.*IB..*': lambda total,count: total*10*dollar_step - count*2,
 }
 
-tests = ('BR','BRQ5','BQR5','BRU5','BRQ51')
+# tests = ('BR','BRQ5','5BRQ5','5_BRQ5','BQR5','BRU5','BRQ51')
 def get_func_vtb_fee(name):
     for fff in futures_fee_funcs:
         if re.match(fff,name):
             return futures_fee_funcs[fff]
     return futures_fee_funcs['base']
 
-# print(get_func_vtb_fee('RMU5')(1000,100))
+# for t in tests:
+#     print(t,get_func_vtb_fee(t)(10,10))
+# print(get_func_vtb_fee('RMU5'))

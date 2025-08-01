@@ -10,24 +10,24 @@ from functools import partial
 from strategies.test_strategies.check import check_strategy_v6
 from Loader.BitgetLoader import bitget_loader
 # from strategies.work_strategies.PTA import PTA4_WDDCr,PTA4_WDDCrE,PTA4_WDDCrVG,PTA4_WDVCr,PTA4_WLISICA,PTA8_WDOBBY_FREEr,PTA4_UNIVERSAL,PTA2_LISICA,PTA2_DDCrWork,PTA2_BDDCr_UNIVERSAL,PTA2_BDDC_FIX,PTA2_BVGFIX,PTA2_BBBU,PTA2_BBBUr,PTA2_DDCrVG,PTA2_DVCr,PTA2_VOLCHARA,PTA4_U3
-from Traders.TestingTrader.wss_groups import wssMoexStocks5 as wss
-map_wss = {
-    'default':wss,
-}
-# from testing.wss_step_test import map_wss
+# from Traders.TestingTrader.wss_groups import wssMoexStocks5 as wss
+# map_wss = {
+#     'default':wss,
+# }
+from testing.wss_step_test import map_wss
 phys_cores = psutil.cpu_count(logical=False) 
 
 main_folder = 'TestNewResults/ChildTest'
 if not os.path.exists(main_folder):
     os.makedirs(main_folder)
-save_cores = 2
+save_cores = 1
 fee = 0.0002
 close_2330 = True
 need_plot = True
 timeframe = '5min'
 # test_folder = 'DataForTests\DataFromMoexFast'
-# test_folder = 'DataForTests\DataFromMoexForStepTests'
-test_folder = 'DataForTests\DataFromMOEX'
+test_folder = 'DataForTests\DataFromMoexForStepTests'
+# test_folder = 'DataForTests\DataFromMOEX'
 list_dir = os.listdir(test_folder)
 
 
