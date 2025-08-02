@@ -448,3 +448,241 @@ class PSTA6_SHERIFF(BaseTABitget):
                 return 'long_pw'
             if row['high'] < row['bbd']: #short
                 return 'short_pw'
+            
+class PSTA7_DODO(BaseTABitget):
+    """period=20, n_candles=5,n_fractals=3,adx_threshold=30,adx_stop=35
+    \n
+    фильтрованный по adx GGD быстрых параметров. RANGER + GGD
+    """
+    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=20, n_candles=5,n_fractals=3,adx_threshold=30,adx_stop=35):
+        super().__init__(symbol, granularity, productType, n_parts, period)
+        self.n_candles = n_candles
+        self.n_fractals = n_fractals
+        self.adx_threshold = adx_threshold
+        self.adx_stop = adx_stop
+    def preprocessing(self, df):
+        df = add_adx(df,self.period)
+        df = add_fractals(df,self.n_candles)
+        df = add_average_fractals(df,self.n_fractals)
+        df = add_enter_price2close(df)  
+        df = add_slice_df(df, self.period) 
+        return df
+
+    def __call__(self, row, *args, **kwds):
+        if row['adx'] > self.adx_stop:
+            return 'close_all_pw'
+        if row['adx'] < self.adx_threshold:
+            if row['close'] >= row['ave_up']:
+                return 'short_pw'
+            if row['close'] <= row['ave_down']:
+                return 'long_pw'
+
+class PSTA7_DUELDODO(BaseTABitget):
+    """ period=20,n_candles=5,n_fractals=3,adx_threshold=30,period_sma=20,use_stop=0
+    \n
+    фильтрованный по adx, направленный по sma GGD быстрых параметров."""
+    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=20,n_candles=5,n_fractals=3,adx_threshold=30,period_sma=20,use_stop=0):
+        super().__init__(symbol, granularity, productType, n_parts, period)
+        self.n_candles = n_candles
+        self.n_fractals = n_fractals
+        self.adx_threshold = adx_threshold
+        self.period_sma = period_sma
+        self.use_stop = use_stop
+    def preprocessing(self, df):
+        df = add_adx(df,self.period)
+        df['sma'] = df['close'].rolling(self.period).mean()
+        df = add_fractals(df,self.n_candles)
+        df = add_average_fractals(df,self.n_fractals)
+        df = add_enter_price2close(df)  
+        df = add_slice_df(df, self.period) 
+        return df
+
+    def __call__(self, row, *args, **kwds):
+        if row['adx'] < self.adx_threshold:
+            if row['close'] >= row['ave_up']:
+                return 'short_pw'
+            if row['close'] <= row['ave_down']:
+                return 'long_pw'
+        else:
+            if row['close'] > row['sma']: #long
+                if row['close'] >= row['ave_up']:
+                    if self.use_stop:
+                        return 'close_all_pw'
+                    return 'close_long_pw'
+                if row['close'] <= row['ave_down']:
+                    return 'long_pw'
+            else:
+                if row['close'] >= row['ave_up']:
+                    return 'short_pw'
+                if row['close'] <= row['ave_down']:
+                    if self.use_stop:
+                        return 'close_all_pw'
+                    return 'close_short_pw'
+                
+class PSTA7_VULTURE(BaseTABitget):
+    """period=20, adx_threshold=30,period_sma=20,n_candles=5,n_fractals=3,n_candles2=5,n_fractals2=3,allowance=0.1
+    \n
+    фильтрованный по adx, направленный по sma GGD(быстрых параметров) + PELICAN ."""
+    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=20, adx_threshold=30,period_sma=20,n_candles=7,n_fractals=5,n_candles2=5,n_fractals2=3,allowance=0.1):
+        super().__init__(symbol, granularity, productType, n_parts, period)
+        self.adx_threshold = adx_threshold
+        self.period_sma = period_sma
+        self.n_candles = n_candles
+        self.n_fractals = n_fractals
+        self.n_candles2 = n_candles2
+        self.n_fractals2 = n_fractals2
+        self.allowance = allowance
+
+    def preprocessing(self, df):
+        df = add_adx(df,self.period)
+        df['sma'] = df['close'].rolling(self.period).mean()
+        df = add_fractals(df,self.n_candles)
+        df = add_average_fractals(df,self.n_fractals)
+        df = df.drop(['fractal_up','fractal_down'],axis=1)
+        df = add_fractals(df,self.n_candles2)
+        df = add_exp_pdfc(df,self.n_fractals2)
+        df['pdf_diff_percent'] = ((df['pdf_up'] - df['pdf_down']) / df['pdf_down']) * 100
+        df['allowance'] = df['pdf_diff_percent'] > self.allowance
+        df = add_enter_price2close(df)  
+        df = add_slice_df(df, self.period) 
+        return df
+
+    def __call__(self, row, *args, **kwds):
+        if row['adx'] < self.adx_threshold:
+            if row['close'] >= row['ave_up']:
+                return 'short_pw'
+            if row['close'] <= row['ave_down']:
+                return 'long_pw'
+        else:
+            if row['allowance']:
+                if row['close'] > row['sma']: #long
+                    if row['close'] >= row['pdf_up']:
+                        return 'close_all_pw'
+                    if row['close'] <= row['pdf_down']:
+                        return 'long_pw'
+                else:
+                    if row['close'] >= row['pdf_up']:
+                        return 'short_pw'
+                    if row['close'] <= row['pdf_down']:
+                        return 'close_all_pw'
+   
+class PSTA7_PIGEON(BaseTABitget):
+    """period=60, n_candles=5,n_fractals=3,n_candles2=5,n_fractals2=3,allowance=0.1,mult_bb=1,use_stop=0
+    \n
+    Что-то типо DRG+VULTURE"""
+    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=60, n_candles=10,n_fractals=6,n_candles2=5,n_fractals2=3,allowance=0.1,mult_bb=1,use_stop=0):
+        super().__init__(symbol, granularity, productType, n_parts, period)
+        self.n_candles = n_candles
+        self.n_fractals = n_fractals
+        self.n_candles2 = n_candles2
+        self.n_fractals2 = n_fractals2
+        self.allowance = allowance
+        self.mult_bb = mult_bb
+        self.use_stop = use_stop
+
+    def preprocessing(self, df):
+        df = add_bollinger(df,self.period,multiplier=self.mult_bb)
+        df = add_fractals(df,self.n_candles)
+        df = add_average_fractals(df,self.n_fractals)
+        df = df.drop(['fractal_up','fractal_down'],axis=1)
+        df = add_fractals(df,self.n_candles2)
+        df = add_exp_pdfc(df,self.n_fractals2)
+        df['pdf_diff_percent'] = ((df['pdf_up'] - df['pdf_down']) / df['pdf_down']) * 100
+        df['allowance'] = df['pdf_diff_percent'] > self.allowance
+        df = add_enter_price2close(df)  
+        df = add_slice_df(df, self.period) 
+        return df
+
+    def __call__(self, row, *args, **kwds):
+        if row['high'] < row['bbu'] and row['low'] > row['bbd']:
+            if row['close'] >= row['ave_up']:
+                return 'short_pw'
+            if row['close'] <= row['ave_down']:
+                return 'long_pw'
+        else:
+            if row['allowance']:
+                if row['low'] > row['bbu']: #long
+                    if row['close'] >= row['pdf_up']:
+                        return 'close_long_pw'
+                    if row['close'] <= row['pdf_down']:
+                        return 'long_pw'
+                    if self.use_stop:
+                        return 'close_short_pw'
+                if row['high'] < row['bbd']: #short
+                    if row['close'] >= row['pdf_up']:
+                        return 'short_pw'
+                    if row['close'] <= row['pdf_down']:
+                        return 'close_short_pw'
+                    if self.use_stop:
+                        return 'close_long_pw'
+                    
+class PSTA7_ADVENTURE(BaseTABitget):
+    """period=60, n_candles=5,n_fractals=3,mult_bb=1,use_stop=0
+    \n
+    DRG+DUELDODO"""
+    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=60, n_candles=5,n_fractals=3,mult_bb=1,use_stop=0):
+        super().__init__(symbol, granularity, productType, n_parts, period)
+        self.n_candles = n_candles
+        self.n_fractals = n_fractals
+        self.mult_bb = mult_bb
+        self.use_stop = use_stop
+
+    def preprocessing(self, df):
+        df = add_bollinger(df,self.period,multiplier=self.mult_bb)
+        df = add_fractals(df,self.n_candles)
+        df = add_average_fractals(df,self.n_fractals)
+        df = add_enter_price2close(df)  
+        df = add_slice_df(df, self.period) 
+        return df
+
+    def __call__(self, row, *args, **kwds):
+        if row['high'] < row['bbu'] and row['low'] > row['bbd']:
+            if row['close'] >= row['ave_up']:
+                return 'short_pw'
+            if row['close'] <= row['ave_down']:
+                return 'long_pw'
+        else:
+            if row['low'] > row['bbu']: #long
+                if row['close'] >= row['ave_up']:
+                    return 'close_long_pw'
+                if row['close'] <= row['ave_down']:
+                    return 'long_pw'
+                if self.use_stop:
+                    return 'close_short_pw'
+            if row['high'] < row['bbd']: #short
+                if row['close'] >= row['ave_up']:
+                    return 'short_pw'
+                if row['close'] <= row['ave_down']:
+                    return 'close_short_pw'
+                if self.use_stop:
+                    return 'close_long_pw'
+                    
+class PSTA7_SHERIFF(BaseTABitget):
+    """period=60, n_candles=5,n_fractals=3,mult_bb=2
+    \n
+    GGD+PUBG"""
+    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=60, n_candles=5,n_fractals=3,mult_bb=2):
+        super().__init__(symbol, granularity, productType, n_parts, period)
+        self.n_candles = n_candles
+        self.n_fractals = n_fractals
+        self.mult_bb = mult_bb
+
+    def preprocessing(self, df):
+        df = add_bollinger(df,self.period,multiplier=self.mult_bb)
+        df = add_fractals(df,self.n_candles)
+        df = add_average_fractals(df,self.n_fractals)
+        df = add_enter_price2close(df)  
+        df = add_slice_df(df, self.period) 
+        return df
+
+    def __call__(self, row, *args, **kwds):
+        if row['high'] < row['bbu'] and row['low'] > row['bbd']:
+            if row['close'] >= row['ave_up']:
+                return 'short_pw'
+            if row['close'] <= row['ave_down']:
+                return 'long_pw'
+        else:
+            if row['low'] > row['bbu']: #long
+                return 'long_pw'
+            if row['high'] < row['bbd']: #short
+                return 'short_pw'

@@ -26,8 +26,8 @@ close_2330 = True
 need_plot = True
 timeframe = '5min'
 # test_folder = 'DataForTests\DataFromMoexFast'
-# test_folder = 'DataForTests\DataFromMoexForStepTests'
-test_folder = 'DataForTests\DataFromMoexFastStock'
+test_folder = 'DataForTests\DataFromMoexForStepTests'
+# test_folder = 'DataForTests\DataFromMoexFastStock'
 # test_folder = 'DataForTests\DataFromMOEX'
 list_dir = os.listdir(test_folder)
 
