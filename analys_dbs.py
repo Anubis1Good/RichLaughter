@@ -433,7 +433,7 @@ need_analisys = True
 need_last = False
 need_last = True
 need_n_days = False
-# need_n_days = True
+need_n_days = True
 
 if __name__ == '__main__':
     print('analys start...')
@@ -448,7 +448,7 @@ if __name__ == '__main__':
                 if need_last:
                     analisys_db_last(file_path)
                 if need_n_days:
-                    analisys_db_n_days(file_path,31)
+                    analisys_db_n_days(file_path,14)
                 if need_equity_chart:
                     get_equity_charts_db(file_path,queryAllChart,'AllTime')
             except Exception as e:
