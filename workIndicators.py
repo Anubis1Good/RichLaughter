@@ -18,7 +18,7 @@ raw_file = 'DataForTests\DataFromMoexFast\\5BRQ5_1_1752809062.csv'
 # raw_file = 'DataForTests\oldMoex\SiM5_1_1745579847.csv'
 period = 10
 df = bitget_loader(raw_file)
-df = df.iloc[-200:]
+# df = df.iloc[-200:]
 # df = df.iloc[10:510]
 
 # df['down_diff'] = df['low'] - df['sma']
@@ -30,13 +30,13 @@ df = add_dzz_peaks(df,period=10,n_std=5)
 
 df = add_pattern18_dzz(df)
 print(df.tail(10))
-# df.info()
+df.info()
 
 
 plot = True
 # plot = False
 if plot:
-    plt.subplot(2,1,1)
+    # plt.subplot(2,1,1)
     plt.grid() 
     draw_hb_chart_fast(df)
     # plt.plot(df['upper_channel'])
@@ -53,6 +53,14 @@ if plot:
     # plt.plot(df['stair'])
     # plt.plot(df['trend'])
     plt.plot(df['zigzag'])
+    plt.plot(df['bzp1'], linestyle=':',color='g')
+    plt.plot(df['bzp2'], linestyle='-.',color='g')
+    plt.plot(df['bzp3'], linestyle=':',color='b')
+    plt.plot(df['bzp4'], linestyle='-.',color='b')
+    plt.plot(df['target'], linestyle='--',color='r')
+    plt.plot(df['btarget'], linestyle='--',color='r')
+    plt.plot(df['mzp'], linestyle='--',color='#ff00ff')
+
     # plt.plot(df['stair_up'])
     # df['points'] = np.where((df['zigzag_direction'] != df['zigzag_direction'].shift(1)), df['middle'], np.nan)
 
@@ -65,9 +73,9 @@ if plot:
     #     plt.plot(df[k])
     # for k in 'max_hb, min_hb, avarege'.split(', '):
 
-    ax1 = plt.gca()
-    plt.subplot(2,1,2,sharex=ax1)
-    plt.grid() 
+    # ax1 = plt.gca()
+    # plt.subplot(2,1,2,sharex=ax1)
+    # plt.grid() 
     # plt.bar(df.index.to_series(),df['dvsai'])
     # plt.plot(df['chaikin_volatility'],color='red')
     # plt.plot(df['spred'],color='red')
@@ -96,5 +104,5 @@ if plot:
     # for k in 'trend_up_slope, trend_down_slope'.split(', '):
     # for k in ('regression_slope',):
     # plt.plot(df['rsi'])
-    
+    df.to_csv('test.csv')
     plt.show()

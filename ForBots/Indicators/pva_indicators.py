@@ -592,22 +592,40 @@ def add_my_pattern_dzz(df:pd.DataFrame, threshold=0.2):
     
     return df
 
-def add_pattern18_dzz(df: pd.DataFrame, threshold: float = 0.2) -> pd.DataFrame:
+def add_pattern18_dzz(df: pd.DataFrame, threshold: float = 0.2, buffer_percent: float = 0.1) -> pd.DataFrame:
     """
-    Добавляет столбец 'pattern18' с классификацией паттернов зигзага
-    
+    add 'pattern18', 'prev_pattern18', 
+                'zp1', 'zp2', 'zp3', 'zp4',
+                'bzp1', 'bzp2', 'bzp3', 'bzp4',
+                'target', 'btarget', 'mzp' \n
+    с классификацией паттернов зигзага и буферизованными точками
+    patterns:
+        'weak_short', 'weak_long',
+        'bui', 'joc',
+        'double_bottom', 'double_top',
+        'btc', 'bti',
+        'sow', 'sos',
+        'upthrust', 'spring',
+        'narrowing_up', 'narrowing_down',
+        'bui', 'joc',
+        'bottom_range', 'top_range'
     Параметры:
         df - DataFrame с колонкой 'zigzag_peaks'
         threshold - порог для определения соотношения сегментов
+        buffer_percent - процент буфера (0.1 = 10%)
     
     Возвращает:
-        DataFrame с добавленной колонкой 'pattern18'
+        DataFrame с добавленными колонками
     """
     # Создаем копию DataFrame
     result_df = df.copy()
     
-    # Инициализируем колонку правильным типом
-    result_df = result_df.assign(pattern18=pd.NA)
+    # Инициализируем колонки
+    result_df = result_df.assign(
+        pattern18=pd.NA, 
+        prev_pattern18=pd.NA,
+        bzp1=pd.NA, bzp2=pd.NA, bzp3=pd.NA, bzp4=pd.NA
+    )
     
     # Выбираем только точки пиков зигзага
     peaks_mask = ~result_df['zigzag_peaks'].isna()
@@ -615,7 +633,11 @@ def add_pattern18_dzz(df: pd.DataFrame, threshold: float = 0.2) -> pd.DataFrame:
     
     # Недостаточно точек для анализа паттерна
     if len(peaks) < 4:
-        return result_df.assign(pattern18='none_pattern')
+        return result_df.assign(
+            pattern18='none_pattern', 
+            prev_pattern18='none_pattern',
+            bzp1=pd.NA, bzp2=pd.NA, bzp3=pd.NA, bzp4=pd.NA
+        )
     
     # Вычисляем 4 последовательные точки
     peaks = peaks.assign(
@@ -635,17 +657,35 @@ def add_pattern18_dzz(df: pd.DataFrame, threshold: float = 0.2) -> pd.DataFrame:
         p3_4=peaks['zp3'] - peaks['zp4']
     )
     
-    # Вычисляем соотношения длин сегментов
+    # Вычисляем буферизованные точки
+    peaks = peaks.assign(
+        # Внешний буфер для bzp1 (направление зависит от p2_3)
+        bzp1=peaks['zp1'] - np.sign(peaks['p2_3']) * np.abs(peaks['p2_3']) * buffer_percent,
+        
+        # Внешний буфер для bzp2 (направление зависит от p2_3)
+        bzp2=peaks['zp2'] + np.sign(peaks['p2_3']) * np.abs(peaks['p2_3']) * buffer_percent,
+        
+        # Внутренний буфер для bzp3 (направление зависит от p3_4)
+        bzp3=peaks['zp3'] - np.sign(peaks['p3_4']) * np.abs(peaks['p3_4']) * buffer_percent,
+        
+        # Внутренний буфер для bzp4 (направление зависит от p3_4)
+        bzp4=peaks['zp4'] + np.sign(peaks['p3_4']) * np.abs(peaks['p3_4']) * buffer_percent
+    )
+        # Добавляем целевые точки
+    peaks = peaks.assign(
+        target=peaks['zp4'] - peaks['p2_3'],  # zp4 + (zp3 - zp4) = zp3
+        btarget=peaks['zp4'] - peaks['p2_3'] * (1 - buffer_percent/2),
+        mzp = (peaks['zp3'] + peaks['zp4']) / 2
+    )
+    # Остальной код без изменений
     with np.errstate(divide='ignore', invalid='ignore'):
         r12_23 = np.abs(peaks['p1_2'] / peaks['p2_3'])
         r23_34 = np.abs(peaks['p2_3'] / peaks['p3_4'])
     
-    # Определяем условия для каждого паттерна
     big = 1 + threshold
     small = 1 - threshold
     p1_2_pos = peaks['p1_2'] > 0
     
-    # Создаем маски для каждого условия
     conditions = [
         (r12_23 > big) & (r23_34 > big) & p1_2_pos,
         (r12_23 > big) & (r23_34 > big) & ~p1_2_pos,
@@ -669,8 +709,8 @@ def add_pattern18_dzz(df: pd.DataFrame, threshold: float = 0.2) -> pd.DataFrame:
     
     choices = [
         'weak_short', 'weak_long',
-        'strong_short', 'strong_long',
-        'enter_short_range', 'enter_long_range',
+        'bui', 'joc',
+        'double_bottom', 'double_top',
         'btc', 'bti',
         'sow', 'sos',
         'upthrust', 'spring',
@@ -679,15 +719,31 @@ def add_pattern18_dzz(df: pd.DataFrame, threshold: float = 0.2) -> pd.DataFrame:
         'bottom_range', 'top_range'
     ]
     
-    # Создаем Series с паттернами
     peaks_pattern = pd.Series(
         data=np.select(conditions, choices, default='none_pattern'),
         index=peaks.index,
         dtype='object'
     )
     
-    # Обновляем основной DataFrame
-    result_df['pattern18'] = peaks_pattern.reindex(result_df.index).ffill()
-    result_df['pattern18'] = result_df['pattern18'].replace(pd.NA, 'none_pattern')
+    prev_peaks_pattern = peaks_pattern.shift(1)
+    prev_peaks_pattern.fillna('none_pattern', inplace=True)
     
+    result_df['pattern18'] = peaks_pattern.reindex(result_df.index).ffill()
+    result_df['prev_pattern18'] = prev_peaks_pattern.reindex(result_df.index).ffill()
+    
+    result_df['pattern18'] = result_df['pattern18'].replace(pd.NA, 'none_pattern')
+    result_df['prev_pattern18'] = result_df['prev_pattern18'].replace(pd.NA, 'none_pattern')
+    
+    # Обновляем основной DataFrame всеми колонками
+    # Разделяем колонки по типам
+    num_cols = ['zp1', 'zp2', 'zp3', 'zp4', 
+               'bzp1', 'bzp2', 'bzp3', 'bzp4',
+               'target', 'btarget', 'mzp']
+    
+    # Создаем временный DataFrame с числовыми данными
+    num_data = peaks[num_cols].reindex(result_df.index).ffill()
+    for col in num_cols:
+        # Явное преобразование к float64 через numpy
+        result_df[col] = num_data[col].values.astype('float64')
+       
     return result_df

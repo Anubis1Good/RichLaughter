@@ -9,7 +9,7 @@ from Loader.BitgetLoader import bitget_loader
 from utils.draw_utils import draw_lite_chart,draw_chart_channel,draw_hb_chart,draw_bollinger,draw_dynamics,draw_rails,draw_hb_chart_fast
 # from ForBots.Indicators.classic_indicators import add_donchan_channel,add_vangerchik,add_sma, add_slice_df,add_bollinger,add_over_bb,add_attached_bb,add_big_volume,add_dynamics_ma
 from strategies.test_strategies.check import check_strategy,check_strategy_v3,check_strategy_v4,check_strategy_v5,check_strategy_v6
-from strategies.work_strategies.PTA import PTA2_DDCrWork as WS
+# from strategies.work_strategies.PTA import PTA2_DDCrWork as WS
 # from strategies.work_strategies.PTAX import PTA10_WIZARD as WS
 # from strategies.work_strategies.PTAXX import PTA22_BERSERK as WS
 # from strategies.work_strategies.STA_ca import STA3_LITE as WS
@@ -17,6 +17,7 @@ from strategies.work_strategies.PTA import PTA2_DDCrWork as WS
 # from strategies.work_strategies.GLTA import GLTA2_BETA as WS
 # from strategies.work_strategies.GLTA import GLTA2_GAMMA as WS
 # from strategies.work_strategies.OGTA import OGTA7_PARADOX as WS
+from strategies.work_strategies.VSAT import VSAT1_ as WS
 # from strategies.work_strategies.LTA import LTA_IRONANNY as WS
 # from strategies.work_strategies.LTA2 import LTA2_DRG as WS
 # from strategies.work_strategies.PSTA0 import PSTA3_ZEUS as WS
@@ -30,7 +31,7 @@ from strategies.test_strategies.universal import universal_test_strategy as TS
 # raw_file = 'DataForTests\DataFromBitget\DOGEUSDT_1H_1752589488.csv'
 # raw_file = 'DataForTests\DataFromMOEX\MMM5_1_1749581140.csv'
 raw_file = 'DataForTests\DataFromMoexFast\\5MMU5_1_1752761082.csv'
-raw_file = 'DataForTests\DataFromMoexForStepTests\IMOEXF_1_1753514802.csv'
+raw_file = 'DataForTests\DataFromMoexFast\\5IMOEXF_1_1752761086.csv'
 # raw_file = 'DataForTests\oldMoex\SiM5_1_1745579847.csv'
 # raw_file = 'DataForTests\oldBitget\DOGEUSDT_1m_1741087742_big.csv'
 # raw_file = 'DataForTests\DataFromTicksBitget\DOGEUSDT_1m_from_ticks.csv'
@@ -95,7 +96,7 @@ closes = np.array(closes)
 # print(longs.shape,longs1.shape)
 # print(shorts.shape,shorts1.shape)
 # print(closes.shape,closes1.shape)
-
+# df = bot.preprocessing(df)
 see_equity = True
 see_equity = False
 if see_equity:
@@ -107,6 +108,14 @@ else:
     plt.grid() 
     
     draw_hb_chart_fast(df)
+    # plt.plot(df['zigzag'])
+    # plt.plot(df['bzp1'], linestyle=':',color='g')
+    # plt.plot(df['bzp2'], linestyle='-.',color='g')
+    # plt.plot(df['bzp3'], linestyle=':',color='b')
+    # plt.plot(df['bzp4'], linestyle='-.',color='b')
+    # plt.plot(df['target'], linestyle='--',color='r')
+    # plt.plot(df['btarget'], linestyle='--',color='r')
+    # plt.plot(df['mzp'], linestyle='--',color='#ff00ff')
     # plt.plot(df['zigzag'])
     # plt.plot(df['stair'])
     # plt.plot(df['stair_s'])

@@ -1,7 +1,7 @@
 import pandas as pd
 from strategies.work_strategies.BaseTA import BaseTABitget
 from ForBots.Indicators.classic_indicators import add_slice_df,add_enter_price2close,add_fractals,add_average_fractals,add_dynamic_zigzag,add_dzz_peaks,add_rsi,add_adx,add_bollinger,add_chop
-from ForBots.Indicators.pva_indicators import add_plus_delta_fc ,add_exp_pdfc,add_analys_dzz,add_mean_on_fractals,add_ext_on_fractals
+from ForBots.Indicators.pva_indicators import add_plus_delta_fc ,add_exp_pdfc,add_analys_dzz,add_mean_on_fractals,add_ext_on_fractals,add_pattern18_dzz
 
 class PSTA2_GGD(BaseTABitget):
     """period=20, n_candles=5,n_fractals=3"""
@@ -686,3 +686,46 @@ class PSTA7_SHERIFF(BaseTABitget):
                 return 'long_pw'
             if row['high'] < row['bbd']: #short
                 return 'short_pw'
+
+#TODO
+class PSTA8_(BaseTABitget):
+    """period=20, n_candles=5,n_fractals=3,adx_threshold=30,adx_stop=35
+    \n
+    фильтрованный по adx GGD быстрых параметров. RANGER + GGD
+    """
+    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=20, n_candles=5,n_fractals=3,adx_threshold=30,adx_stop=35,n_std=5,threshold_dzz=0.2,buff=0.1):
+        super().__init__(symbol, granularity, productType, n_parts, period)
+        self.n_candles = n_candles
+        self.n_fractals = n_fractals
+        self.adx_threshold = adx_threshold
+        self.adx_stop = adx_stop
+        self.n_std = n_std
+        self.threshold_dzz = threshold_dzz
+        self.buff = buff
+    def preprocessing(self, df):
+        df = add_adx(df,self.period)
+        df = add_fractals(df,self.n_candles)
+        df = add_average_fractals(df,self.n_fractals)
+        df = add_dzz_peaks(df,period=self.period,n_std=self.n_std)
+        df = add_pattern18_dzz(df,self.threshold_dzz,self.buff)
+        df = add_enter_price2close(df)  
+        df = add_slice_df(df, self.period) 
+        return df
+
+    def __call__(self, row, *args, **kwds):
+        # range_pattern
+        if row['pattern18'] in ('joc',):
+            pass
+        # only long
+        if row['pattern18'] in ('joc',):
+            pass
+        # only short
+        if row['pattern18'] in ('bui',):
+            pass
+        if row['adx'] > self.adx_stop:
+            return 'close_all_pw'
+        if row['adx'] < self.adx_threshold:
+            if row['close'] >= row['ave_up']:
+                return 'short_pw'
+            if row['close'] <= row['ave_down']:
+                return 'long_pw'

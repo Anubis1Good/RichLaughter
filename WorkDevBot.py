@@ -18,7 +18,8 @@ from strategies.test_strategies.check import check_strategy,check_strategy_v3_LS
 # from strategies.work_strategies.OGTA import OGTA7_PARADOX as WS
 # from strategies.work_strategies.LTA import LTA_CC as WS
 # from strategies.work_strategies.LTA2 import LTA2_DRG as WS
-from strategies.work_strategies.PSTA0 import PSTA7_VULTURE as WS
+# from strategies.work_strategies.PSTA0 import PSTA7_VULTURE as WS
+from strategies.work_strategies.VSAT import VSAT1_ as WS
 # from strategies.work_strategies.PSTA0 import PSTA2_GGD as WS
 # from strategies.work_strategies.MTA import MTA_LORD as WS
 # from strategies.work_strategies.STA_ml2 import STAML2a_PHENOMENON as WS
@@ -29,9 +30,9 @@ from strategies.work_strategies.PSTA0 import PSTA7_VULTURE as WS
 from strategies.test_strategies.universal import universal_test_strategy as TS
 # raw_file = 'DataForTests\DataFromBitget\DOGEUSDT_1H_1752589488.csv'
 # raw_file = 'DataForTests\DataFromMOEX\MMM5_1_1749581140.csv'
-# raw_file = 'DataForTests\DataFromMoexFast\\5IMOEXF_1_1752761086.csv'
+raw_file = 'DataForTests\DataFromMoexFast\\5IMOEXF_1_1752761086.csv'
 # raw_file = 'DataForTests\DataFromMoexFast\\5BRQ5_1_1752809062.csv'
-raw_file = 'DataForTests\DataFromMoexForStepTests\BRQ5_1_1753990569.csv'
+# raw_file = 'DataForTests\DataFromMoexForStepTests\BRQ5_1_1753990569.csv'
 # raw_file = 'DataForTests\oldMoex\MMH5_1_1739993452.csv'
 # raw_file = 'DataForTests\oldMoex\SiM5_1_1745579847.csv'
 # raw_file = 'DataForTests\oldBitget\DOGEUSDT_1m_1741087742_big.csv'
@@ -109,7 +110,7 @@ print(trades)
 # print(closes.shape,closes1.shape)
 
 see_equity = True
-# see_equity = False
+see_equity = False
 if see_equity:
     plt.plot(equity,color='red')
     plt.plot(equity_fee,color='blue')
@@ -124,8 +125,9 @@ else:
     plt.grid() 
     # plt.plot(df['zigzag'])
     draw_hb_chart_fast(df)
+    plt.plot(df['zigzag'])
+    plt.plot(df['btarget'], linestyle='--',color='r')
     # draw_bollinger(df)
-    # plt.plot(df['zigzag'])
     # plt.plot(df['stair'])
     # plt.plot(df['stair_s'])
     # plt.plot(df['top_kvas'])
