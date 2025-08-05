@@ -13,7 +13,7 @@ engine= "futures"
 ticker = 'BRQ5'
 # ticker = 'CRM5'
 # ticker = 'GZM5'
-# ticker = 'RMM5'
+ticker = 'IMOEXF'
 bot_id = 618
 granularity = '5'
 granularity = '1'
@@ -21,7 +21,7 @@ granularity = '1'
 # end = None
 
 get_all = False
-get_all = True
+# get_all = True
 # print(df.head())
 db_path = 'dbs/test_MOEX_FUT.db'
 # db_path = 'dbs/test_MOEXM_FUT.db'

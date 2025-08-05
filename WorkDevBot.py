@@ -7,8 +7,8 @@ from time import time
 from Loader.BitgetLoader import bitget_loader
 from utils.draw_utils import draw_lite_chart,draw_chart_channel,draw_hb_chart,draw_bollinger,draw_dynamics,draw_rails,draw_hb_chart_fast
 # from ForBots.Indicators.classic_indicators import add_donchan_channel,add_vangerchik,add_sma, add_slice_df,add_bollinger,add_over_bb,add_attached_bb,add_big_volume,add_dynamics_ma
-from strategies.test_strategies.check import check_strategy,check_strategy_v3_LSC,check_strategy_v4,check_strategy_v5
-# from strategies.work_strategies.PTA import PTA2_DDCrWork as WS
+from strategies.test_strategies.check import check_strategy,check_strategy_v3_LSC,check_strategy_v4,check_strategy_v5,check_strategy_realistic_v1
+from strategies.work_strategies.PTA import PTA2_DDCrWork as WS
 # from strategies.work_strategies.PTAX import PTA10_WIZARD as WS
 # from strategies.work_strategies.PTAXX import PTA23_ULTIMATUM as WS
 # from strategies.work_strategies.STA_ca import STA3_LITE as WS
@@ -19,8 +19,8 @@ from strategies.test_strategies.check import check_strategy,check_strategy_v3_LS
 # from strategies.work_strategies.LTA import LTA_CC as WS
 # from strategies.work_strategies.LTA2 import LTA2_DRG as WS
 # from strategies.work_strategies.PSTA0 import PSTA7_VULTURE as WS
-from strategies.work_strategies.VSAT import VSAT1_ as WS
-# from strategies.work_strategies.PSTA0 import PSTA2_GGD as WS
+# from strategies.work_strategies.VSAT import VSAT1_ as WS
+# from strategies.work_strategies.PSTA0 import PSTA8_ as WS
 # from strategies.work_strategies.MTA import MTA_LORD as WS
 # from strategies.work_strategies.STA_ml2 import STAML2a_PHENOMENON as WS
 # from strategies.work_strategies.STA_ml import STAML1_XGBR2_DC as WS
@@ -85,7 +85,8 @@ bot = WS(symbol,granularity,'e',1)
 # fee_base = 0.0012
 fee_base = 0.0002
 df = bot.preprocessing(df)
-trades,equity,equity_fee,longs,shorts,closes= check_strategy_v3_LSC(df.copy(),bot,fee_base,close_2330=True)
+# trades,equity,equity_fee,longs,shorts,closes= check_strategy_v3_LSC(df.copy(),bot,fee_base,close_2330=True)
+trades,equity,equity_fee,longs,shorts,closes= check_strategy_realistic_v1(df.copy(),bot,fee_base,close_2330=True)
 # trades,longs,shorts,closes,equity = check_strategy(df,get_action_STA1e,bot)
 # trades,equity2,equity_fee = check_strategy_v3(df,bot,fee_base)
 # print(trades)
@@ -123,10 +124,10 @@ else:
     # plt.subplot(2,1,1)
     # plt.subplot(3,1,1)
     plt.grid() 
-    # plt.plot(df['zigzag'])
+    plt.plot(df['close'])
     draw_hb_chart_fast(df)
-    plt.plot(df['zigzag'])
-    plt.plot(df['btarget'], linestyle='--',color='r')
+    # plt.plot(df['zigzag'])
+    # plt.plot(df['btarget'], linestyle='--',color='r')
     # draw_bollinger(df)
     # plt.plot(df['stair'])
     # plt.plot(df['stair_s'])

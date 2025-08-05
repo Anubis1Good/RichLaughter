@@ -7,7 +7,8 @@ import psutil
 from tqdm import tqdm
 from multiprocessing import Pool
 from functools import partial
-from strategies.test_strategies.check import check_strategy_v3
+# from strategies.test_strategies.check import check_strategy_v3
+from strategies.test_strategies.check import check_strategy_realistic_v1
 from Loader.BitgetLoader import bitget_loader
 from utils.processing_results.add_vtb_fee_fut import get_func_vtb_fee
 from utils.work_with_dataframe.convert_timeframe import convert_timeframe
@@ -57,7 +58,7 @@ def objective(trial, df, ws, param_options, fee=0.0002):
     )
     df = strategy.preprocessing(df)
     # 3. Запускаем бэктест
-    result,_,_ = check_strategy_v3(df, strategy,fee,close_2330)
+    result = check_strategy_realistic_v1(df, strategy,fee,close_2330)[0]
     
     # 4. Возвращаем метрику (например, Sharpe Ratio)
     return result['total_abs_fee']
@@ -95,7 +96,7 @@ def get_optimization_results_table(study, df, strategy_class, param_options, nee
         processed_df = strategy.preprocessing(df.copy())
         
         # Запускаем бэктест
-        trades, eq, eq_f = check_strategy_v3(processed_df, strategy,fee,close_2330)
+        trades, eq, eq_f,_,_,_ = check_strategy_realistic_v1(processed_df, strategy,fee,close_2330)
         
         # Формируем имя файла
         name_doc = f"{ticker}_{name_bot}"
@@ -225,16 +226,16 @@ def process_group(part, test_folder, n_trials, n_jobs, need_plot, min_fee):
 if __name__ == '__main__':
 
 
-    # from group_optimization_experiment import group
-    from Optimiztion.optimizations_groups.optuna_groups import group
-    # test_folder = 'DataForTests\DataFromMOEX'
+    from group_optimization_experiment import group
+    # from Optimiztion.optimizations_groups.optuna_groups import group
+    test_folder = 'DataForTests\DataFromMOEX'
     # test_folder = 'DataForTests\DataFromMoexFast'
     # test_folder = 'DataForTests\DataFromMoexFastStock'
-    test_folder = 'DataForTests\DataFromMoexForStepTests'
+    # test_folder = 'DataForTests\DataFromMoexForStepTests'
     # test_folder = 'DataForTests\DataFromMoexTemp'
     # test_folder = 'DataForTests\DataFromBitget'
     min_fee: float = 0.0002
-    min_fee: float = 0.0004
+    # min_fee: float = 0.0004
     # min_fee: float = 0.00002
     # min_fee: float = 0.0004
     need_plot=True

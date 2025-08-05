@@ -1078,3 +1078,429 @@ def check_strategy_v6(df: pd.DataFrame, work_strategy, fee=0.0002,close_2330=Fal
         })
     
     return trades,equity,equity_fee,longs,shorts,closes,df_big
+
+def work_action_realistic_v1(action, trades, cur_price, fee, fees, equity, equity_fee, pos, open_price,open_fee,row_name,longs:list,shorts:list,closes:list,order,high,low):
+    """return pos,open_price,fees,open_fee"""
+    # actions = (None,'long_pw','short_pw','close_long_pw','close_short_pw','close_all_pw')
+    reward = 0
+    delta = 0
+    # print(feei)
+    if order:
+        feei = (fee * order[1]) / 100  # fee абсолютное значение
+        if order[0] == 2:
+            if low < order[1]:
+                if pos == 0:
+                    open_price = order[1]
+                    reward = -fee  # комиссия за открытие
+                    fees += feei
+                    open_fee = feei
+                else:  # был шорт, закрываем его и открываем лонг
+                    delta = open_price - order[1]  # прибыль по шорту (как при action=4)
+                    trades['total'] += delta
+                    reward = ((delta  / order[1]) * 100) - fee*2   # комиссия за закрытие + открытие
+                    open_price = order[1]  # новая цена для лонга
+                    fees += feei * 2
+                    equity.append(equity[-1] + delta)
+                    equity_fee.append(equity_fee[-1] + delta - feei * 2 - open_fee)
+                    open_fee = 0
+                longs.append((row_name,order[1]))
+                pos = 1
+                trades['count'] += 1
+                order = None
+        elif order[0] == -2:
+            if high > order[1]:
+                if pos == 0:
+                    open_price = order[1]
+                    reward = -fee  # комиссия за открытие
+                    fees += feei
+                    open_fee = feei
+                else:  # был лонг, закрываем его и открываем шорт
+                    delta = order[1] - open_price  # прибыль по лонгу (как при action=3)
+                    trades['total'] += delta
+                    reward = ((delta  / order[1]) * 100) - fee*2  # комиссия за закрытие + открытие
+                    open_price = order[1]  # новая цена для шорта
+                    fees += feei * 2
+                    equity.append(equity[-1] + delta)
+                    equity_fee.append(equity_fee[-1] + delta - feei * 2 - open_fee)
+                    open_fee = 0
+                shorts.append((row_name,order[1]))
+                pos = -1
+                trades['count'] += 1
+                order = None
+        elif order[0] == 1: #close_long
+            if high > order[1]:
+                delta = order[1] - open_price
+                trades['total'] += delta
+                reward = ((delta  / order[1]) * 100) - fee
+                pos = 0
+                fees += feei
+                equity.append(equity[-1] + delta)
+                equity_fee.append(equity_fee[-1] + delta - feei - open_fee)
+                open_fee = 0
+                closes.append((row_name,order[1]))
+                order = None
+        elif order[0] == -1: #close_short
+            if low < order[1]:
+                delta = open_price - order[1]
+                trades['total'] += delta
+                reward = ((delta  / order[1]) * 100) - fee
+                pos = 0
+                fees += feei
+                equity.append(equity[-1] + delta)
+                equity_fee.append(equity_fee[-1] + delta - feei - open_fee)
+                open_fee = 0
+                closes.append((row_name,order[1]))
+                order = None 
+        else:
+            if pos == 1:
+                if high > order[1]:
+                    delta = order[1] - open_price
+                    trades['total'] += delta
+                    reward = ((delta  / order[1]) * 100) - fee
+                    pos = 0
+                    fees += feei
+                    equity.append(equity[-1] + delta)
+                    equity_fee.append(equity_fee[-1] + delta - feei - open_fee)
+                    open_fee = 0
+                    closes.append((row_name,order[1]))
+                    order = None
+            elif pos == -1:
+                if low < order[1]:
+                    delta = open_price - order[1]
+                    trades['total'] += delta
+                    reward = ((delta  / order[1]) * 100) - fee
+                    pos = 0
+                    fees += feei
+                    equity.append(equity[-1] + delta)
+                    equity_fee.append(equity_fee[-1] + delta - feei - open_fee)
+                    open_fee = 0
+                    closes.append((row_name,order[1]))
+                    order = None 
+    if action == 1:  # long
+        if pos != 1:
+            order = (2,cur_price)
+    elif action == 2:  # short
+        if pos != -1:
+            order = (-2,cur_price)
+    elif action == 3:  # close long
+        if pos == 1:
+            order = (1,cur_price)
+    elif action == 4:  # close short
+        if pos == -1:
+            order = (-1,cur_price)
+    elif action == 5:
+        if pos != 0:
+            order = (0,cur_price)
+    else:
+        order = None
+    trades['total_fee_per'] += reward
+    return pos,open_price,fees,open_fee,order
+
+def check_strategy_realistic_v1(df: pd.DataFrame, work_strategy, fee=0.0002,close_2330=False):
+    """
+    return trades,equity,equity_fee,longs,shorts,closes
+    Улучшенная версия:
+    - Поддержка векторных операций.
+    """
+    trades = {'total': 0, 'count': 0, 'total_fee_per': 0}
+    pos = 0
+    open_price = 0
+    equity = [0]
+    equity_fee = [0]
+    fees = 0
+    # Получаем сигналы
+    df['action'] = df.apply(work_strategy, axis=1)
+    if close_2330:
+        df['ms'] = pd.to_datetime(df['ms'], format='%Y-%m-%d %H:%M:%S')
+        df['action'] = np.where((df['ms'].dt.hour == 23)&(df['ms'].dt.minute > 25),'close_all_pw',df['action'])
+    signals = df['action'].values
+    signals = np.where(signals[:, None] == actions_array)[1]  # Ваш метод конвертации в индексы
+    row_names = df.index.to_series().values
+    longs = []
+    shorts = []
+    closes = []
+    prices = df['close'].values
+    highs = df['high'].values
+    lows = df['low'].values
+    fee_one_p = (fee / 2) * 100
+    open_fee = 0
+    order = None
+    for i in range(len(signals)):
+        pos, open_price, fees, open_fee,order = work_action_realistic_v1(
+            signals[i], trades, prices[i], fee_one_p, fees, equity, equity_fee, pos, open_price,open_fee,row_names[i],longs,shorts,closes,order,highs[i],lows[i]
+        )
+    df_eq = pd.DataFrame({'eq':equity,'eq_fee':equity_fee})
+    if df_eq.empty:
+        trades.update({
+        'total_abs_fee': 0,
+        'win_rate_wf': 0,
+        'total_fee': fees,
+        'mean_eq':0,
+        'median_eq':0,
+        'max_eq':0,
+        'min_eq':0,
+        'balance_eq':0,
+        'mean_eqf':0,
+        'median_eqf':0,
+        'max_eqf':0,
+        'min_eqf':0,
+        'balance_eqf':0
+        })
+    else:
+        df_eq['diff_eq'] = df_eq['eq'].diff()
+        df_eq['diff_eq_fee'] = df_eq['eq_fee'].diff()
+        mean_eq = df_eq['diff_eq'].mean()
+        median_eq = df_eq['diff_eq'].median()
+        min_eq = df_eq['diff_eq'].min()
+        max_eq = df_eq['diff_eq'].max()
+        mean_eqf = df_eq['diff_eq_fee'].mean()
+        median_eqf = df_eq['diff_eq_fee'].median()
+        min_eqf = df_eq['diff_eq_fee'].min()
+        max_eqf = df_eq['diff_eq_fee'].max()
+        wins = len(df_eq[df_eq['diff_eq'] > 0].index)
+        loss = len(df_eq[df_eq['diff_eq'] < 0].index)
+        if loss > 0:
+            win_rate = round((wins / (wins + loss)) * 100,2)
+        else:
+            win_rate = 0
+
+        trades['total_fee_per'] = round(trades['total_fee_per'],2)
+        trades.update({
+            'total_abs_fee': equity_fee[-1],
+            'win_rate_wf': win_rate,
+            'total_fee': fees,
+            'mean_eq':mean_eq,
+            'median_eq':median_eq,
+            'max_eq':max_eq,
+            'min_eq':min_eq,
+            'balance_eq':max_eq+min_eq,
+            'mean_eqf':mean_eqf,
+            'median_eqf':median_eqf,
+            'max_eqf':max_eqf,
+            'min_eqf':min_eqf,
+            'balance_eqf':max_eqf+min_eqf
+        })
+    longs = np.array(longs)
+    shorts = np.array(shorts)
+    closes = np.array(closes)
+    equity = np.array(equity)
+    equity_fee = np.array(equity_fee)
+    return trades,equity,equity_fee,longs,shorts,closes
+
+def work_action_step_realistic_v1(action, trades, cur_price, fee, fees, equity, equity_fee, pos, open_price,open_fee,row_name,longs:list,shorts:list,closes:list,order,high,low):
+    """return pos,open_price,fees,open_fee,order"""
+    # actions = (None,'long_pw','short_pw','close_long_pw','close_short_pw','close_all_pw')
+    action = np.where(actions_array == action)[0][0]
+    reward = 0
+    delta = 0
+    if order:
+        feei = (fee * order[1]) / 100  # fee абсолютное значение
+        if order[0] == 2:
+            if low < order[1]:
+                if pos == 0:
+                    open_price = order[1]
+                    reward = -fee  # комиссия за открытие
+                    fees += feei
+                    open_fee = feei
+                else:  # был шорт, закрываем его и открываем лонг
+                    delta = open_price - order[1]  # прибыль по шорту (как при action=4)
+                    trades['total'] += delta
+                    reward = ((delta  / order[1]) * 100) - fee*2   # комиссия за закрытие + открытие
+                    open_price = order[1]  # новая цена для лонга
+                    fees += feei * 2
+                    equity.append(equity[-1] + delta)
+                    equity_fee.append(equity_fee[-1] + delta - feei * 2 - open_fee)
+                    open_fee = 0
+                longs.append((row_name,order[1]))
+                pos = 1
+                trades['count'] += 1
+                order = None
+        elif order[0] == -2:
+            if high > order[1]:
+                if pos == 0:
+                    open_price = order[1]
+                    reward = -fee  # комиссия за открытие
+                    fees += feei
+                    open_fee = feei
+                else:  # был лонг, закрываем его и открываем шорт
+                    delta = order[1] - open_price  # прибыль по лонгу (как при action=3)
+                    trades['total'] += delta
+                    reward = ((delta  / order[1]) * 100) - fee*2  # комиссия за закрытие + открытие
+                    open_price = order[1]  # новая цена для шорта
+                    fees += feei * 2
+                    equity.append(equity[-1] + delta)
+                    equity_fee.append(equity_fee[-1] + delta - feei * 2 - open_fee)
+                    open_fee = 0
+                shorts.append((row_name,order[1]))
+                pos = -1
+                trades['count'] += 1
+                order = None
+        elif order[0] == 1: #close_long
+            if high > order[1]:
+                delta = order[1] - open_price
+                trades['total'] += delta
+                reward = ((delta  / order[1]) * 100) - fee
+                pos = 0
+                fees += feei
+                equity.append(equity[-1] + delta)
+                equity_fee.append(equity_fee[-1] + delta - feei - open_fee)
+                open_fee = 0
+                closes.append((row_name,order[1]))
+                order = None
+        elif order[0] == -1: #close_short
+            if low < order[1]:
+                delta = open_price - order[1]
+                trades['total'] += delta
+                reward = ((delta  / order[1]) * 100) - fee
+                pos = 0
+                fees += feei
+                equity.append(equity[-1] + delta)
+                equity_fee.append(equity_fee[-1] + delta - feei - open_fee)
+                open_fee = 0
+                closes.append((row_name,order[1]))
+                order = None 
+        else:
+            if pos == 1:
+                if high > order[1]:
+                    delta = order[1] - open_price
+                    trades['total'] += delta
+                    reward = ((delta  / order[1]) * 100) - fee
+                    pos = 0
+                    fees += feei
+                    equity.append(equity[-1] + delta)
+                    equity_fee.append(equity_fee[-1] + delta - feei - open_fee)
+                    open_fee = 0
+                    closes.append((row_name,order[1]))
+                    order = None
+            elif pos == -1:
+                if low < order[1]:
+                    delta = open_price - order[1]
+                    trades['total'] += delta
+                    reward = ((delta  / order[1]) * 100) - fee
+                    pos = 0
+                    fees += feei
+                    equity.append(equity[-1] + delta)
+                    equity_fee.append(equity_fee[-1] + delta - feei - open_fee)
+                    open_fee = 0
+                    closes.append((row_name,order[1]))
+                    order = None 
+    if action == 1:  # long
+        if pos != 1:
+            order = (2,cur_price)
+    elif action == 2:  # short
+        if pos != -1:
+            order = (-2,cur_price)
+    elif action == 3:  # close long
+        if pos == 1:
+            order = (1,cur_price)
+    elif action == 4:  # close short
+        if pos == -1:
+            order = (-1,cur_price)
+    elif action == 5:
+        if pos != 0:
+            order = (0,cur_price)
+    else:
+        order = None
+    trades['total_fee_per'] += reward
+    return pos,open_price,fees,open_fee,order
+
+def check_strategy_step_realistic_v1(df: pd.DataFrame, work_strategy, fee=0.0002,close_2330=False,timeframe='5min'):
+    """
+    return trades,equity,equity_fee,longs,shorts,closes,df_big
+    Улучшенная версия:
+    - шаговый тестер через младшие таймфреймы
+    """
+    df = df.copy()
+    df['ms'] = pd.to_datetime(df['ms'])
+    df_big = convert_timeframe(df,timeframe)
+    if close_2330:
+        df_big['close_2330'] = np.where((df_big['ms'].dt.hour == 23)&(df_big['ms'].dt.minute > 25),True,False)
+        df['close_2330'] = np.where((df['ms'].dt.hour == 23)&(df['ms'].dt.minute > 25),True,False)
+    trades = {'total': 0, 'count': 0, 'total_fee_per': 0}
+    pos = 0
+    open_price = 0
+    equity = [0]
+    equity_fee = [0]
+    fees = 0
+    longs = []
+    shorts = []
+    closes = []
+    fee_one_p = (fee / 2) * 100
+    open_fee = 0
+    period2x = 300
+    order = None
+    for i in tqdm(range(period2x,len(df_big.index))):
+        
+        lc = df_big.iloc[i-1]
+        start_time = lc['ms']
+        end_time = start_time + pd.Timedelta(minutes=5)
+        df_child = df[(df['ms'] >= start_time)&(df['ms'] < end_time)]
+        highs = df_child['high'].values
+        lows = df_child['low'].values
+        child_candles = get_child_candles(df_child,lc['x'])
+        df_slice = df_big.iloc[i-period2x:i].copy()
+        for idx,sc in enumerate(child_candles):
+            df_slice.iloc[-1] = sc
+            df_temp = df_slice.copy()
+            test_row= work_strategy.get_test_row(df_temp)
+            action = work_strategy(test_row)
+            if close_2330:
+                if test_row['close_2330']:
+                    action = 'close_all_pw'
+            pos, open_price, fees, open_fee,order = work_action_step_realistic_v1(
+                action, trades, sc['close'], fee_one_p, fees, equity, equity_fee, pos, open_price,open_fee,test_row['x'],longs,shorts,closes,order,highs[idx],lows[idx]
+            )
+
+    df_eq = pd.DataFrame({'eq':equity,'eq_fee':equity_fee})
+    if df_eq.empty:
+        trades.update({
+        'total_abs_fee': 0,
+        'win_rate_wf': 0,
+        'total_fee': fees,
+        'mean_eq':0,
+        'median_eq':0,
+        'max_eq':0,
+        'min_eq':0,
+        'balance_eq':0,
+        'mean_eqf':0,
+        'median_eqf':0,
+        'max_eqf':0,
+        'min_eqf':0,
+        'balance_eqf':0
+        })
+    else:
+        df_eq['diff_eq'] = df_eq['eq'].diff()
+        df_eq['diff_eq_fee'] = df_eq['eq_fee'].diff()
+        mean_eq = df_eq['diff_eq'].mean()
+        median_eq = df_eq['diff_eq'].median()
+        min_eq = df_eq['diff_eq'].min()
+        max_eq = df_eq['diff_eq'].max()
+        mean_eqf = df_eq['diff_eq_fee'].mean()
+        median_eqf = df_eq['diff_eq_fee'].median()
+        min_eqf = df_eq['diff_eq_fee'].min()
+        max_eqf = df_eq['diff_eq_fee'].max()
+        wins = len(df_eq[df_eq['diff_eq'] > 0].index)
+        loss = len(df_eq[df_eq['diff_eq'] < 0].index)
+        if loss > 0:
+            win_rate = round((wins / (wins + loss)) * 100,2)
+        else:
+            win_rate = 0
+
+        trades['total_fee_per'] = round(trades['total_fee_per'],2)
+        trades.update({
+            'total_abs_fee': equity_fee[-1],
+            'win_rate_wf': win_rate,
+            'total_fee': fees,
+            'mean_eq':mean_eq,
+            'median_eq':median_eq,
+            'max_eq':max_eq,
+            'min_eq':min_eq,
+            'balance_eq':max_eq+min_eq,
+            'mean_eqf':mean_eqf,
+            'median_eqf':median_eqf,
+            'max_eqf':max_eqf,
+            'min_eqf':min_eqf,
+            'balance_eqf':max_eqf+min_eqf
+        })
+    
+    return trades,equity,equity_fee,longs,shorts,closes,df_big
