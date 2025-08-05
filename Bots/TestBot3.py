@@ -322,3 +322,56 @@ class TestBot3:
         except Exception as err:
             print(self.ticker,self.name)
             traceback.print_exc()
+
+class TestBot4(TestBot3):
+    def __init__(self, db_path, fee, ticker, granularity, strategy, conf):
+        super().__init__(db_path, fee, ticker, granularity, strategy, conf)
+        self.order = None
+    def trade_next(self, action, row):
+        # work order
+        if self.order:
+            price = self.order[1]
+            if self.order[0] == 2: #long
+                if row['low'] < price:
+                    self.process_single_position(1, price)
+                    self.order = None
+            elif self.order[0] == -2: #short
+                if row['high'] > price:
+                    self.process_single_position(-1, price)
+                    self.order = None
+            elif self.order[0] == 1: #close_long
+                if row['high'] > price:
+                    self.process_single_position(0, price)
+                    self.order = None
+            elif self.order[0] == -1: #close_short
+                if row['low'] < price:
+                    self.process_single_position(0, price)
+                    self.order = None
+            else: #close_all
+                if self.pos == 1:
+                    if row['high'] > price:
+                        self.process_single_position(0, price)
+                        self.order = None
+                elif self.pos == -1:
+                    if row['low'] < price:
+                        self.process_single_position(0, price)
+                        self.order = None                   
+        # work action
+        if not action:
+            return
+        price = float(row['close'])  # Явное преобразование к float
+        if 'close_long' in action:
+            if self.pos == 1:
+                self.order = (1,price)
+        elif 'close_short' in action:
+            if self.pos == -1:
+                self.order = (-1,price)
+        elif 'long' in action:
+            if self.pos != 1:
+                self.order = (2,price)
+        elif 'short' in action:
+            if self.pos != -1:
+                self.order = (-2,price)
+        elif 'close_all' in action:
+            if self.pos != 0:
+                self.order = (0,price)

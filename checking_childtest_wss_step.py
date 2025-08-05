@@ -50,7 +50,7 @@ def process_ws(variant_name,image_folder, xls_folder, clear_df,ws):
         # Создаем стратегию и проверяем ее
         strategy = ws[0](variant_name, '5', "1", 1, *ws[1])
         trades,equity,equity_fee,_,_,_,_ = check_strategy_step_realistic_v1(clear_df.copy(), strategy, fee, close_2330,timeframe)
-
+        print(name_file)
         # Сохраняем график если нужно
         if need_plot:
             full_name_img = os.path.join(image_folder, f"{name_file}.png")

@@ -3,7 +3,8 @@ import sys
 from datetime import date, timedelta,datetime
 from time import sleep,time
 from collections import defaultdict
-from Bots.TestBot3 import TestBot3
+# from Bots.TestBot3 import TestBot3
+from Bots.TestBot3 import TestBot4
 from request_functions.download_bitget import get_df
 from request_functions.download_moex import download_moex,create_df
 from utils.work_with_dataframe.convert_timeframe import convert_chart1to5
@@ -106,7 +107,7 @@ class TestingTrader1:
         for ticker,fut in self.tickers:
             for WS,conf in wss:
                 strategy = WS(ticker,granularity,fut,1,*conf)
-                bot = TestBot3(self.db_path,self.fee,ticker,granularity,strategy,conf)
+                bot = TestBot4(self.db_path,self.fee,ticker,granularity,strategy,conf)
                 bots[ticker].append(bot)
         return bots
     
