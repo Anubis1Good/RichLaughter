@@ -27,7 +27,8 @@ from strategies.work_strategies.PTA import PTA2_DDCrWork as WS
 # from strategies.work_strategies.STA_rl import STARL1_HELPGOD as WS
 # from strategies.work_strategies.experiments import ExpBot as WS
 
-from strategies.test_strategies.universal import universal_test_strategy as TS
+# from strategies.test_strategies.universal import universal_test_strategy as TS
+
 # raw_file = 'DataForTests\DataFromBitget\DOGEUSDT_1H_1752589488.csv'
 # raw_file = 'DataForTests\DataFromMOEX\MMM5_1_1749581140.csv'
 # raw_file = 'DataForTests\DataFromMoexFast\\5MMU5_1_1752761082.csv'

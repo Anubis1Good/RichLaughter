@@ -747,3 +747,130 @@ def add_pattern18_dzz(df: pd.DataFrame, threshold: float = 0.2, buffer_percent: 
         result_df[col] = num_data[col].values.astype('float64')
        
     return result_df
+
+def add_pattern18_dzz_shifted(df: pd.DataFrame, threshold: float = 0.2, buffer_percent: float = 0.1) -> pd.DataFrame:
+    """
+    Версия индикатора, где все значения смещены на 1 пик назад
+    """
+    # Создаем копию DataFrame
+    result_df = df.copy()
+    
+    # Инициализируем колонки
+    result_df = result_df.assign(
+        pattern18='none_pattern', 
+        prev_pattern18='none_pattern',
+        zp1=pd.NA, zp2=pd.NA, zp3=pd.NA, zp4=pd.NA,
+        bzp1=pd.NA, bzp2=pd.NA, bzp3=pd.NA, bzp4=pd.NA,
+        target=pd.NA, btarget=pd.NA, mzp=pd.NA
+    )
+    
+    # Выбираем только точки пиков зигзага
+    peaks_mask = ~result_df['zigzag_peaks'].isna()
+    peaks = result_df.loc[peaks_mask].copy()
+    
+    # Недостаточно точек для анализа паттерна
+    if len(peaks) < 4:
+        return result_df
+    
+    # Вычисляем 4 последовательные точки (оригинальный расчет)
+    peaks = peaks.assign(
+        zp1=peaks['zigzag_peaks'].shift(3),
+        zp2=peaks['zigzag_peaks'].shift(2),
+        zp3=peaks['zigzag_peaks'].shift(1),
+        zp4=peaks['zigzag_peaks']
+    )
+    
+    # Удаляем строки с недостаточными данными
+    peaks = peaks.loc[~peaks['zp1'].isna()].copy()
+    
+    # Вычисляем разницы между точками
+    peaks = peaks.assign(
+        p1_2=peaks['zp1'] - peaks['zp2'],
+        p2_3=peaks['zp2'] - peaks['zp3'],
+        p3_4=peaks['zp3'] - peaks['zp4']
+    )
+    
+    # Вычисляем буферизованные точки
+    peaks = peaks.assign(
+        bzp1=peaks['zp1'] - np.sign(peaks['p2_3']) * np.abs(peaks['p2_3']) * buffer_percent,
+        bzp2=peaks['zp2'] + np.sign(peaks['p2_3']) * np.abs(peaks['p2_3']) * buffer_percent,
+        bzp3=peaks['zp3'] - np.sign(peaks['p3_4']) * np.abs(peaks['p3_4']) * buffer_percent,
+        bzp4=peaks['zp4'] + np.sign(peaks['p3_4']) * np.abs(peaks['p3_4']) * buffer_percent,
+        target=peaks['zp4'] - peaks['p2_3'],
+        btarget=peaks['zp4'] - peaks['p2_3'] * (1 - buffer_percent/2),
+        mzp=(peaks['zp3'] + peaks['zp4']) / 2
+    )
+    
+    # Определяем паттерны
+    with np.errstate(divide='ignore', invalid='ignore'):
+        r12_23 = np.abs(peaks['p1_2'] / peaks['p2_3'])
+        r23_34 = np.abs(peaks['p2_3'] / peaks['p3_4'])
+    
+    big = 1 + threshold
+    small = 1 - threshold
+    p1_2_pos = peaks['p1_2'] > 0
+    
+    conditions = [
+        (r12_23 > big) & (r23_34 > big) & p1_2_pos,
+        (r12_23 > big) & (r23_34 > big) & ~p1_2_pos,
+        (r12_23 > big) & (r23_34 < small) & p1_2_pos,
+        (r12_23 > big) & (r23_34 < small) & ~p1_2_pos,
+        (r12_23 > big) & (r23_34 >= small) & (r23_34 <= big) & p1_2_pos,
+        (r12_23 > big) & (r23_34 >= small) & (r23_34 <= big) & ~p1_2_pos,
+        (r12_23 < small) & (r23_34 > big) & p1_2_pos,
+        (r12_23 < small) & (r23_34 > big) & ~p1_2_pos,
+        (r12_23 < small) & (r23_34 < small) & p1_2_pos,
+        (r12_23 < small) & (r23_34 < small) & ~p1_2_pos,
+        (r12_23 < small) & (r23_34 >= small) & (r23_34 <= big) & p1_2_pos,
+        (r12_23 < small) & (r23_34 >= small) & (r23_34 <= big) & ~p1_2_pos,
+        (~(r12_23 < small) & ~(r12_23 > big)) & (r23_34 > big) & p1_2_pos,
+        (~(r12_23 < small) & ~(r12_23 > big)) & (r23_34 > big) & ~p1_2_pos,
+        (~(r12_23 < small) & ~(r12_23 > big)) & (r23_34 < small) & p1_2_pos,
+        (~(r12_23 < small) & ~(r12_23 > big)) & (r23_34 < small) & ~p1_2_pos,
+        (~(r12_23 < small) & ~(r12_23 > big)) & ~(r23_34 < small) & ~(r23_34 > big) & p1_2_pos,
+        (~(r12_23 < small) & ~(r12_23 > big)) & ~(r23_34 < small) & ~(r23_34 > big) & ~p1_2_pos
+    ]
+    
+    choices = [
+        'weak_short', 'weak_long',
+        'bui', 'joc',
+        'double_bottom', 'double_top',
+        'btc', 'bti',
+        'sow', 'sos',
+        'upthrust', 'spring',
+        'narrowing_up', 'narrowing_down',
+        'bui', 'joc',
+        'bottom_range', 'top_range'
+    ]
+    
+    peaks['pattern18'] = np.select(conditions, choices, default='none_pattern')
+    peaks['prev_pattern18'] = peaks['pattern18'].shift(1).fillna('none_pattern')
+    
+    # Ключевое изменение: смещаем все вычисленные значения на 1 пик назад
+    shifted_peaks = peaks.copy()
+    shifted_cols = ['pattern18', 'prev_pattern18',
+                   'zp1', 'zp2', 'zp3', 'zp4',
+                   'bzp1', 'bzp2', 'bzp3', 'bzp4',
+                   'target', 'btarget', 'mzp']
+    
+    for col in shifted_cols:
+        shifted_peaks[col] = shifted_peaks[col].shift(1)
+    
+    # Переносим смещенные значения в основной DataFrame
+    for col in shifted_cols:
+        # Для числовых колонок используем прямое присвоение
+        if col in ['zp1', 'zp2', 'zp3', 'zp4', 'bzp1', 'bzp2', 'bzp3', 'bzp4', 'target', 'btarget', 'mzp']:
+            result_df[col] = shifted_peaks[col].reindex(result_df.index).ffill()
+        # Для паттернов делаем ffill и заполнение
+        else:
+            result_df[col] = shifted_peaks[col].reindex(result_df.index).ffill().fillna('none_pattern')
+    
+    return result_df
+
+def add_buffer_dzz(df:pd.DataFrame,period=20):
+    """add 'hbzz','lbzz'"""
+    df['hdz'] = (df['high'] - df['zigzag']).rolling(period).std()
+    df['ldz'] = (df['zigzag'] - df['low']).rolling(period).std()
+    df['hbzz'] =  df['zigzag'] + df['hdz']
+    df['lbzz'] =  df['zigzag'] - df['ldz']
+    return df

@@ -1288,7 +1288,7 @@ def add_dynamic_zigzag(df:pd.DataFrame, source='high_low', n_std=1.5, method='st
     return df
 
 # Good variant
-def add_dzz_peaks(df: pd.DataFrame, source='high_low', n_std=1.5, method='std', period=20):
+def add_dzz_peaks(df: pd.DataFrame, source='high_low', n_std=1.5, method='std', period=20,drop_last=True):
     """
     add 'zigzag','zigzag_peaks'
     ZigZag с динамическим reversal на основе волатильности
@@ -1389,7 +1389,8 @@ def add_dzz_peaks(df: pd.DataFrame, source='high_low', n_std=1.5, method='std', 
                 direction[i] = -1
     
     # Сохраняем точки перелома до интерполяции
-    zz[-1] = np.nan
+    if drop_last:
+        zz[-1] = np.nan
     df['zigzag_peaks'] = zz.copy()
     
     # Линейная интерполяция между точками для непрерывного зигзага

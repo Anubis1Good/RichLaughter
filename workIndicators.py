@@ -18,19 +18,27 @@ raw_file = 'DataForTests\DataFromMoexFast\\5BRQ5_1_1752809062.csv'
 # raw_file = 'DataForTests\oldMoex\SiM5_1_1745579847.csv'
 period = 10
 df = bitget_loader(raw_file)
-# df = df.iloc[-200:]
+df = df.iloc[-200:]
 # df = df.iloc[10:510]
 
 # df['down_diff'] = df['low'] - df['sma']
-df = add_dzz_peaks(df,period=10,n_std=5)
+# df = add_dzz_peaks(df,period=10,n_std=5)
+df = add_dzz_peaks(df,period=10,n_std=5,drop_last=False)
+# df = add_dzz_peaks(df,period=10,n_std=5)
+
+
+
+# df = add_buffer_dzz(df)
+
 # df = add_fractals(df,2)
 
 # df = add_average_fractals(df,2)
 
 
-df = add_pattern18_dzz(df)
+# df = add_pattern18_dzz(df)
+df = add_pattern18_dzz_shifted(df)
 print(df.tail(10))
-df.info()
+# df.info()
 
 
 plot = True
@@ -51,7 +59,8 @@ if plot:
     # plt.plot(df['low_sma'])
     # plt.plot(df['regression_line'])
     # plt.plot(df['stair'])
-    # plt.plot(df['trend'])
+    # plt.plot(df['hbzz'])
+    # plt.plot(df['lbzz'])
     plt.plot(df['zigzag'])
     plt.plot(df['bzp1'], linestyle=':',color='g')
     plt.plot(df['bzp2'], linestyle='-.',color='g')
