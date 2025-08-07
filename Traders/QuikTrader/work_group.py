@@ -34,12 +34,12 @@ bot_on_ticker = (
             ('RMU5','SPBFUT','M5',1),
             ('GZU5','SPBFUT','M5',1),
             ('IMOEXF','SPBFUT','M5',1),
+            ('SRU5','SPBFUT','M5',1),
             
             # ('BRU5','SPBFUT','M5',1),
             # ('NGN5','SPBFUT','M5',1),
             # ('CRU5','SPBFUT','M5',1),
             # ('CNYRUBF','SPBFUT','M5',1),
-            # ('SRU5','SPBFUT','M5',1),
         )
     ),
 )

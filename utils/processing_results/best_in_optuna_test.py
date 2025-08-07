@@ -4,7 +4,7 @@ from tqdm import tqdm
 
 main_folder = 'TestNewResults\Optuna'
 ignore_folders = ('archive')
-
+amount_var = 1
 inner_folders = os.listdir(main_folder)
 df_total = pd.DataFrame()
 for inner_folder in tqdm(inner_folders):
@@ -23,9 +23,9 @@ for inner_folder in tqdm(inner_folders):
                 df_file = pd.read_excel(file_path,'total')
                 if not df_file.empty:
                     if df_total.empty:
-                        df_total = df_file.head(3)
+                        df_total = df_file.head(amount_var)
                     else:
-                        df_total = pd.concat([df_total,df_file.head(3)])
+                        df_total = pd.concat([df_total,df_file.head(amount_var)])
 df_total = df_total.sort_values('total_abs_fee',ascending=False)
 df_total = df_total.reset_index(drop=True)
 if 'Unnamed: 0' in df_total.columns:

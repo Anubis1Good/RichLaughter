@@ -4,11 +4,13 @@ import pandas as pd
 import optuna
 import traceback
 import psutil
+import multiprocessing as mp
 from tqdm import tqdm
 from multiprocessing import Pool
 from functools import partial
 # from strategies.test_strategies.check import check_strategy_v3
 from strategies.test_strategies.check import check_strategy_realistic_v1
+from strategies.work_strategies.HelpTA import get_rws
 from Loader.BitgetLoader import bitget_loader
 from utils.processing_results.add_vtb_fee_fut import get_func_vtb_fee
 from utils.work_with_dataframe.convert_timeframe import convert_timeframe
@@ -18,6 +20,8 @@ save_cores = 2
 close_2330 = True
 new_timeframe = None
 new_timeframe = '5min'
+reverse_test = False
+# reverse_test = True
 # feature_optimization = 'total_abs_fee'
 
 # # Целевая функция для Optuna
@@ -52,6 +56,7 @@ def objective(trial, df, ws, param_options, fee=0.0002):
                 params.append(trial.suggest_float(param_name, min(options), max(options)))
     
     # 2. Создаём стратегию с текущими параметрами
+
     strategy = ws(
         "BTCUSDT", "1m", "usdt-futures",1,
         *params
@@ -101,7 +106,10 @@ def get_optimization_results_table(study, df, strategy_class, param_options, nee
         # Формируем имя файла
         name_doc = f"{ticker}_{name_bot}"
         name_file = f"{name_doc}_{'_'.join(param_values)}"
-        params_tuple = f"({name_bot},({','.join(param_values)},)),"
+        if name_bot.startswith('Rev'):
+            params_tuple = f"(get_rws({name_bot[3:]}),({','.join(param_values)},)),"
+        else:
+            params_tuple = f"({name_bot},({','.join(param_values)},)),"
         vtb_twf_func = get_func_vtb_fee(ticker.split('_')[0])
         # Добавляем результаты
         result_row = {
@@ -145,6 +153,8 @@ def get_optimization_results_table(study, df, strategy_class, param_options, nee
     return df_results
 
 def optimization_optuna(raw_file,strategy_config,n_trials=100,n_jobs=1,need_plot=False,fee=0.0002):
+    if reverse_test:
+        strategy_config = (get_rws(strategy_config[0]),strategy_config[1])
     sep = '\\' if '\\' in raw_file else '/'
     variant_name = raw_file.split(sep)[-1]
     variant_name = variant_name.split('_')
@@ -226,12 +236,15 @@ def process_group(part, test_folder, n_trials, n_jobs, need_plot, min_fee):
 if __name__ == '__main__':
 
 
-    from group_optimization_experiment import group
+    # from group_optimization_experiment import group
     # from Optimiztion.optimizations_groups.optuna_groups import group
-    test_folder = 'DataForTests\DataFromMOEX'
+    from Optimiztion.optimizations_groups.optuna_groups import group
+
+    # group = [(get_rws(x[0]),x[1]) for x in group]
+    # test_folder = 'DataForTests\DataFromMOEX'
     # test_folder = 'DataForTests\DataFromMoexFast'
     # test_folder = 'DataForTests\DataFromMoexFastStock'
-    # test_folder = 'DataForTests\DataFromMoexForStepTests'
+    test_folder = 'DataForTests\DataFromMoexForStepTests'
     # test_folder = 'DataForTests\DataFromMoexTemp'
     # test_folder = 'DataForTests\DataFromBitget'
     min_fee: float = 0.0002
