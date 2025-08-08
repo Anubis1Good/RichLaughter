@@ -25,7 +25,7 @@ phys_cores = psutil.cpu_count(logical=False)
 main_folder = 'TestNewResults/ChildTest'
 if not os.path.exists(main_folder):
     os.makedirs(main_folder)
-save_cores = 2
+save_cores = 1
 fee = 0.0002
 close_2330 = True
 need_plot = True

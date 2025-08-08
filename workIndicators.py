@@ -24,6 +24,9 @@ df = df.iloc[-200:]
 # df['down_diff'] = df['low'] - df['sma']
 # df = add_dzz_peaks(df,period=10,n_std=5)
 df = add_dzz_peaks(df,period=10,n_std=5,drop_last=False)
+df = add_pattern18_dzz_czd(df)
+# Вычисляем текущий диапазон
+df = add_stop_loss_p18czd(df)
 # df = add_dzz_peaks(df,period=10,n_std=5)
 
 
@@ -36,7 +39,7 @@ df = add_dzz_peaks(df,period=10,n_std=5,drop_last=False)
 
 
 # df = add_pattern18_dzz(df)
-df = add_pattern18_dzz_shifted(df)
+# df = add_pattern18_dzz_shifted(df)
 print(df.tail(10))
 # df.info()
 
@@ -62,13 +65,19 @@ if plot:
     # plt.plot(df['hbzz'])
     # plt.plot(df['lbzz'])
     plt.plot(df['zigzag'])
-    plt.plot(df['bzp1'], linestyle=':',color='g')
-    plt.plot(df['bzp2'], linestyle='-.',color='g')
-    plt.plot(df['bzp3'], linestyle=':',color='b')
-    plt.plot(df['bzp4'], linestyle='-.',color='b')
-    plt.plot(df['target'], linestyle='--',color='r')
-    plt.plot(df['btarget'], linestyle='--',color='r')
-    plt.plot(df['mzp'], linestyle='--',color='#ff00ff')
+    plt.plot(df['lsl'])
+    plt.plot(df['ssl'])
+    # plt.plot(df['bzp1'], linestyle=':',color='g')
+    # plt.plot(df['bzp2'], linestyle='-.',color='g')
+    # plt.plot(df['bzp3'], linestyle=':',color='b')
+    # plt.plot(df['bzp4'], linestyle='-.',color='b')
+    # plt.plot(df['zp1'], linestyle=':',color='g')
+    # plt.plot(df['zp2'], linestyle='-.',color='g')
+    # plt.plot(df['zp3'], linestyle=':',color='b')
+    # plt.plot(df['zp4'], linestyle='-.',color='b')
+    # plt.plot(df['target'], linestyle='--',color='r')
+    # plt.plot(df['btarget'], linestyle='--',color='r')
+    # plt.plot(df['mzp'], linestyle='--',color='#ff00ff')
 
     # plt.plot(df['stair_up'])
     # df['points'] = np.where((df['zigzag_direction'] != df['zigzag_direction'].shift(1)), df['middle'], np.nan)

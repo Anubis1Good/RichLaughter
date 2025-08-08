@@ -20,8 +20,8 @@ from strategies.work_strategies.HelpTA import get_rws
 # from strategies.work_strategies.OGTA import OGTA7_PARADOX as WS
 # from strategies.work_strategies.LTA import LTA_CC as WS
 # from strategies.work_strategies.LTA2 import LTA2_DRG as WS
-from strategies.work_strategies.PSTA0 import PSTA6_SHERIFF as WS
-# from strategies.work_strategies.VSAT import VSAT1_ as WS
+# from strategies.work_strategies.PSTA0 import PSTA6_SHERIFF as WS
+from strategies.work_strategies.VSAT import VSAT1_b as WS
 # from strategies.work_strategies.PSTA0 import PSTA8_ as WS
 # from strategies.work_strategies.MTA import MTA_LORD as WS
 # from strategies.work_strategies.STA_ml2 import STAML2a_PHENOMENON as WS
@@ -30,11 +30,9 @@ from strategies.work_strategies.PSTA0 import PSTA6_SHERIFF as WS
 # from strategies.work_strategies.experiments import ExpBot as WS
 
 
-raw_file = 'DataForTests\DataFromMoexForStepTests\EDU5_1_1753990596.csv'
-# raw_file = 'DataForTests\DataFromMOEX\MMM5_1_1749581140.csv'
-# raw_file = 'DataForTests\DataFromMoexFast\\5IMOEXF_1_1752761086.csv'
-# raw_file = 'DataForTests\DataFromMoexFast\\5BRQ5_1_1752809062.csv'
-# raw_file = 'DataForTests\DataFromMoexForStepTests\BRQ5_1_1753990569.csv'
+# raw_file = 'DataForTests\DataFromMoexForStepTests\EDU5_1_1753990596.csv'
+raw_file = 'DataForTests\DataFromMoexForStepTests\MMU5_1_1753990575.csv'
+
 
 longs = []
 shorts = []
@@ -47,12 +45,14 @@ period = 20
 multiplier = 2
 symbol = "DOGEUSDT"
 granularity = "5m"
+close_2330 = True
+close_2330 = False
 slope = 4
 # bot = WS(symbol,granularity,'e',1,100,7,10,10,40,10,0)
 # WS = get_rws(WS)
 print(WS)
-# bot = WS(symbol,granularity,'e',1)
-bot = WS(symbol,granularity,'e',1,22,4,1.99)
+bot = WS(symbol,granularity,'e',1)
+# bot = WS(symbol,granularity,'e',1,22,4,1.99)
 # bot = WS(symbol,granularity,'e',1,20,10,'LP_1752352674.json')
 # bot = WS(symbol,granularity,'e',1,25,9,12,'QGA20_beta2_001.json')
 # bot = WS(symbol,granularity,'e',1,30,100,30,60,30,50,'LP_1752353219.json')
@@ -79,7 +79,7 @@ bot = WS(symbol,granularity,'e',1,22,4,1.99)
 fee_base = 0.0002
 df = bot.preprocessing(df)
 # trades,equity,equity_fee,longs,shorts,closes= check_strategy_v3_LSC(df.copy(),bot,fee_base,close_2330=True)
-trades,equity,equity_fee,longs,shorts,closes= check_strategy_realistic_v1(df.copy(),bot,fee_base,close_2330=True)
+trades,equity,equity_fee,longs,shorts,closes= check_strategy_realistic_v1(df.copy(),bot,fee_base,close_2330=close_2330)
 # trades,longs,shorts,closes,equity = check_strategy(df,get_action_STA1e,bot)
 # trades,equity2,equity_fee = check_strategy_v3(df,bot,fee_base)
 # print(trades)
@@ -104,7 +104,7 @@ print(trades)
 # print(closes.shape,closes1.shape)
 
 see_equity = True
-# see_equity = False
+see_equity = False
 if see_equity:
     plt.plot(equity,color='red')
     plt.plot(equity_fee,color='blue')
@@ -119,7 +119,9 @@ else:
     plt.grid() 
     # plt.plot(df['close'])
     draw_hb_chart_fast(df)
-    # plt.plot(df['zigzag'])
+    plt.plot(df['zigzag'])
+    plt.plot(df['lsl'])
+    plt.plot(df['ssl'])
     # plt.plot(df['btarget'], linestyle='--',color='r')
     # draw_bollinger(df)
     # plt.plot(df['stair'])

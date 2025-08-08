@@ -867,6 +867,159 @@ def add_pattern18_dzz_shifted(df: pd.DataFrame, threshold: float = 0.2, buffer_p
     
     return result_df
 
+def add_pattern18_dzz_czd(df: pd.DataFrame, threshold: float = 0.2, buffer_percent: float = 0.1) -> pd.DataFrame:
+    """
+    Модифицированная версия индикатора паттернов зигзага.
+    Паттерны фиксируются только в момент смены направления зигзага.
+    """
+    result_df = df.copy()
+    
+    # Инициализация колонок с правильными типами данных
+    # Строковые колонки инициализируем строкой, числовые - np.nan
+    result_df = result_df.assign(
+        pattern18=pd.NA,  # строка
+        prev_pattern18=pd.NA,  # строка
+        bzp1=np.nan, bzp2=np.nan, bzp3=np.nan, bzp4=np.nan,
+        zp1=np.nan, zp2=np.nan, zp3=np.nan, zp4=np.nan,
+        target=np.nan, btarget=np.nan, mzp=np.nan
+    )
+    
+    # Проверка наличия необходимых колонок
+    if 'zigzag_direction' not in df.columns:
+        raise ValueError("DataFrame must contain 'zigzag_direction' column")
+    
+    # Находим моменты смены направления зигзага
+    direction_changes = result_df['zigzag_direction'].diff().ne(0)
+    change_indices = direction_changes[direction_changes].index.tolist()
+    
+    # Если нет смен направления, возвращаем исходный df
+    if len(change_indices) == 0:
+        return result_df
+    
+    # Собираем все пики зигзага
+    peaks_mask = ~result_df['zigzag_peaks'].isna()
+    peaks = result_df.loc[peaks_mask, 'zigzag_peaks']
+    
+    # Создаем список для хранения результатов
+    results = []
+    big = 1 + threshold
+    small = 1 - threshold
+    # Обрабатываем каждую смену направления
+    for i, change_idx in enumerate(change_indices):
+        # Получаем последние 4 пика до текущей смены направления
+        prev_peaks = peaks[peaks.index <= change_idx].tail(4)
+        
+        # Если не набралось 4 пика, пропускаем
+        if len(prev_peaks) < 4:
+            continue
+        
+        # Извлекаем 4 последних пика
+        zp1, zp2, zp3, zp4 = prev_peaks[-4:].values
+        
+        # Вычисляем разницы между точками
+        p1_2 = zp1 - zp2
+        p2_3 = zp2 - zp3
+        p3_4 = zp3 - zp4
+        
+        # Вычисляем буферизованные точки
+        bzp1 = zp1 - np.sign(p2_3) * abs(p2_3) * buffer_percent
+        bzp2 = zp2 + np.sign(p2_3) * abs(p2_3) * buffer_percent
+        bzp3 = zp3 - np.sign(p3_4) * abs(p3_4) * buffer_percent
+        bzp4 = zp4 + np.sign(p3_4) * abs(p3_4) * buffer_percent
+        
+        # Вычисляем целевые точки
+        target = zp4 - p2_3
+        btarget = zp4 - p2_3 * (1 - buffer_percent/2)
+        mzp = (zp3 + zp4) / 2
+        
+        # Вычисляем соотношения сегментов
+        with np.errstate(divide='ignore', invalid='ignore'):
+            r12_23 = abs(p1_2 / p2_3) if p2_3 != 0 else float('inf')
+            r23_34 = abs(p2_3 / p3_4) if p3_4 != 0 else float('inf')
+        
+        # Условия для классификации паттернов
+
+        p1_2_pos = p1_2 > 0
+        
+        # Определяем паттерн через последовательную проверку условий
+        pattern = 'none_pattern'
+        
+        if r12_23 > big and r23_34 > big:
+            pattern = 'weak_short' if p1_2_pos else 'weak_long'
+        elif r12_23 > big and r23_34 < small:
+            pattern = 'bui' if p1_2_pos else 'joc'
+        elif r12_23 > big and small <= r23_34 <= big:
+            pattern = 'double_bottom' if p1_2_pos else 'double_top'
+        elif r12_23 < small and r23_34 > big:
+            pattern = 'btc' if p1_2_pos else 'bti'
+        elif r12_23 < small and r23_34 < small:
+            pattern = 'sow' if p1_2_pos else 'sos'
+        elif r12_23 < small and small <= r23_34 <= big:
+            pattern = 'upthrust' if p1_2_pos else 'spring'
+        elif (small <= r12_23 <= big) and r23_34 > big:
+            pattern = 'narrowing_up' if p1_2_pos else 'narrowing_down'
+        elif (small <= r12_23 <= big) and r23_34 < small:
+            pattern = 'bui' if p1_2_pos else 'joc'
+        elif (small <= r12_23 <= big) and (small <= r23_34 <= big):
+            pattern = 'bottom_range' if p1_2_pos else 'top_range'
+        # Предыдущий паттерн
+        prev_pattern = 'none_pattern'
+        if results:
+            prev_pattern = results[-1]['pattern18']
+        
+        # Сохраняем результаты
+        results.append({
+            'index': change_idx,
+            'pattern18': pattern,
+            'prev_pattern18': prev_pattern,
+            'zp1': zp1, 'zp2': zp2, 'zp3': zp3, 'zp4': zp4,
+            'bzp1': bzp1, 'bzp2': bzp2, 'bzp3': bzp3, 'bzp4': bzp4,
+            'target': target, 'btarget': btarget, 'mzp': mzp
+        })
+    
+    # Если нет результатов, возвращаем исходный df
+    if not results:
+        return result_df
+    
+    # Создаем DataFrame из результатов
+    confirmed_data = pd.DataFrame(results).set_index('index')
+    
+    # Заполняем результаты в основной DataFrame
+    # Для каждой колонки из confirmed_data
+    for col in confirmed_data.columns:
+        # Обновляем значения только в точках смены направления
+        result_df.loc[confirmed_data.index, col] = confirmed_data[col]
+    
+    # Форвардное заполнение для всех колонок
+    # Числовые колонки
+    num_cols = ['zp1', 'zp2', 'zp3', 'zp4', 'bzp1', 'bzp2', 'bzp3', 'bzp4', 'target', 'btarget', 'mzp']
+    for col in num_cols:
+        result_df[col] = result_df[col].ffill().astype(float)
+    
+    # Строковые колонки
+    str_cols = ['pattern18', 'prev_pattern18']
+    for col in str_cols:
+        result_df[col] = result_df[col].ffill().fillna('none_pattern')
+    
+    return result_df
+
+def add_stop_loss_p18czd(df,divider=2):
+    """add 'lsl','ssl'"""
+    df = df.copy()
+    df['cur_range'] = (df['zp3'] - df['zp4']).abs()
+
+    # Вычисляем min и max между zp3 и zp4 для каждой строки
+    df['min_zp'] = df[['zp3', 'zp4']].min(axis=1)
+    df['max_zp'] = df[['zp3', 'zp4']].max(axis=1)
+
+    # Вычисляем lsl и ssl
+    df['lsl'] = df['min_zp'] - df['cur_range'] / divider
+    df['ssl'] = df['max_zp'] + df['cur_range'] / divider
+
+    # Удаляем временные колонки (опционально)
+    df = df.drop(columns=['min_zp', 'max_zp'])
+    return df
+
 def add_buffer_dzz(df:pd.DataFrame,period=20):
     """add 'hbzz','lbzz'"""
     df['hdz'] = (df['high'] - df['zigzag']).rolling(period).std()

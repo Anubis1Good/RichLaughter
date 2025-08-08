@@ -1,108 +1,228 @@
 import pandas as pd
 from strategies.work_strategies.BaseTA import BaseTABitget
 from ForBots.Indicators.classic_indicators import add_slice_df,add_enter_price2close,add_dzz_peaks
-from ForBots.Indicators.pva_indicators import add_pattern18_dzz
+from ForBots.Indicators.pva_indicators import add_pattern18_dzz,add_pattern18_dzz_czd,add_stop_loss_p18czd
 
-class VSAT1_(BaseTABitget):
-    """period=20, n_std=5,threshold_dzz=0.2,buff=0.1)"""
-    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=20, n_std=5,threshold_dzz=0.2,buff=0.1):
+# class VSAT1_a(BaseTABitget):
+#     """period=20, n_std=5,threshold_dzz=0.2,buff=0.1)"""
+#     def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=20, n_std=5,threshold_dzz=0.2,buff=0.1):
+#         super().__init__(symbol, granularity, productType, n_parts, period)
+#         self.n_std = n_std
+#         self.threshold_dzz = threshold_dzz
+#         self.buff = buff
+#     def preprocessing(self, df):
+#         df = add_dzz_peaks(df,period=self.period,n_std=self.n_std)
+#         df = add_pattern18_dzz(df,self.threshold_dzz,self.buff)
+#         # df['signal'] = df.apply(self.__call__,axis=1)
+#         df = add_enter_price2close(df)  
+#         df = add_slice_df(df, self.period) 
+#         return df
+
+#     def __call__(self, row, *args, **kwds):
+#         # long
+#         if row['pattern18'] == 'joc':
+#             if row['close'] <= row['bzp2']:
+#                 return 'long_pw'
+#             if row['close'] < row['zp3']:
+#                 return 'close_long_pw'
+#         if row['pattern18'] == 'btc':
+#             if row['close'] >= row['btarget']:
+#                 return 'close_long_pw'
+#             if row['close'] <= row['bzp4']:
+#                 return 'long_pw'
+#             if row['close'] <= row['mzp']:
+#                 return 'close_short_pw'
+#         # short
+#         if row['pattern18'] == 'bui':
+#             if row['close'] > row['zp3']:
+#                 return 'close_short_pw'
+#             if row['close'] >= row['bzp2']:
+#                 return 'short_pw'
+#         if row['pattern18'] == 'bti':
+#             if row['close'] <= row['btarget']:
+#                 return 'close_short_pw'
+#             if row['close'] >= row['bzp4']:
+#                 return 'short_pw'
+#             if row['close'] >= row['mzp']:
+#                 return 'close_long_pw'
+#         # range
+#         if row['pattern18'] == 'top_range':
+#             if row['close'] <= row['bzp3']:
+#                 return 'long_pw'
+#             if row['close'] >= row['bzp4']:
+#                 return 'short_pw'
+#         if row['pattern18'] == 'bottom_range':
+#             if row['close'] >= row['bzp3']:
+#                 return 'short_pw'
+#             if row['close'] <= row['bzp4']:
+#                 return 'long_pw'
+#         if row['pattern18'] == 'narrowing_up':
+#             if row['close'] >= row['bzp3']:
+#                 return 'close_long_pw'
+#             if row['close'] <= row['mzp']:
+#                 return 'close_short_pw'
+#         if row['pattern18'] == 'narrowing_down':
+#             if row['close'] <= row['bzp3']:
+#                 return 'close_short_pw'
+#             if row['close'] >= row['mzp']:
+#                 return 'close_long_pw'
+#         if row['pattern18'] == 'upthrust':
+#             if row['close'] >= row['bzp3']:
+#                 return 'short_pw'
+#             if row['close'] <= row['bzp4']:
+#                 return 'long_pw'            
+#             if row['close'] >= row['mzp']:
+#                 return 'close_long_pw'            
+#         if row['pattern18'] == 'spring':
+#             if row['close'] <= row['bzp3']:
+#                 return 'long_pw'
+#             if row['close'] >= row['bzp4']:
+#                 return 'short_pw'
+#             if row['close'] <= row['mzp']:
+#                 return 'close_short_pw'         
+#         if row['pattern18'] == 'sow':
+#             if row['close'] >= row['bzp2']:
+#                 return 'short_pw'
+#         if row['pattern18'] == 'sos':
+#             if row['close'] <= row['bzp2']:
+#                 return 'long_pw'
+#         if row['pattern18'] == 'double_bottom':
+#             if row['close'] >= row['bzp3']:
+#                 return 'close_long_pw'
+#             if row['close'] <= row['bzp4']:
+#                 return 'long_pw'
+#         if row['pattern18'] == 'double_top':
+#             if row['close'] <= row['bzp3']:
+#                 return 'close_short_pw'
+#             if row['close'] >= row['bzp4']:
+#                 return 'short_pw'
+#         if row['pattern18'] == 'weak_long':
+#             if row['close'] >= row['bzp4']:
+#                 return 'short_pw'
+#             if row['close'] >= row['mzp']:
+#                 return 'close_long_pw'
+#         if row['pattern18'] == 'weak_short':
+#             if row['close'] <= row['bzp4']:
+#                 return 'long_pw'
+#             if row['close'] <= row['mzp']:
+#                 return 'close_short_pw'
+            
+class VSAT1_MERCURY(BaseTABitget):
+    """period=20, n_std=5,threshold_dzz=0.2,buff=0.1,divider=2,use_target=0,hard_stop=1,use_stop=1"""
+    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=20, n_std=5,threshold_dzz=0.2,buff=0.1,divider=2,use_target=0,hard_stop=1,use_stop=1):
         super().__init__(symbol, granularity, productType, n_parts, period)
         self.n_std = n_std
         self.threshold_dzz = threshold_dzz
         self.buff = buff
+        self.divider = divider
+        self.use_stop = use_stop
+        self.use_target = use_target
+        self.hard_stop = hard_stop
     def preprocessing(self, df):
-        df = add_dzz_peaks(df,period=self.period,n_std=self.n_std)
-        df = add_pattern18_dzz(df,self.threshold_dzz,self.buff)
-        # df['signal'] = df.apply(self.__call__,axis=1)
+        df = add_dzz_peaks(df,period=self.period,n_std=self.n_std,drop_last=False)
+        df = add_pattern18_dzz_czd(df,self.threshold_dzz,self.buff)
+        df = add_stop_loss_p18czd(df,self.divider)
+        df['signal'] = df.apply(self.__call__,axis=1)
         df = add_enter_price2close(df)  
         df = add_slice_df(df, self.period) 
         return df
 
+    def stop_loss_action(self,row):
+        if self.use_stop:
+            if row['close'] > row['ssl']:
+                return 'close_short_pw'
+            if row['close'] < row['lsl']:
+                return 'close_long_pw'
     def __call__(self, row, *args, **kwds):
         # long
         if row['pattern18'] == 'joc':
-            if row['close'] <= row['bzp2']:
+            if row['bzp3'] < row['close'] <= row['bzp2']:
                 return 'long_pw'
-            if row['close'] < row['zp3']:
-                return 'close_long_pw'
         if row['pattern18'] == 'btc':
-            if row['close'] >= row['btarget']:
-                return 'close_long_pw'
-            if row['close'] <= row['bzp4']:
+            if self.use_target:
+                if row['target'] >= row['close'] >= row['btarget']:
+                    return 'close_long_pw'
+            if row['zp4'] <= row['close'] <= row['bzp4']:
                 return 'long_pw'
-            if row['close'] <= row['mzp']:
+            if self.hard_stop:
                 return 'close_short_pw'
         # short
         if row['pattern18'] == 'bui':
-            if row['close'] > row['zp3']:
-                return 'close_short_pw'
-            if row['close'] >= row['bzp2']:
-                return 'short_pw'
+            if row['bzp3'] > row['close'] >= row['bzp2']:
+                return 'short_pw'         
         if row['pattern18'] == 'bti':
-            if row['close'] <= row['btarget']:
-                return 'close_short_pw'
-            if row['close'] >= row['bzp4']:
+            if self.use_target:
+                if row['target'] <= row['close'] <= row['btarget']:
+                    return 'close_short_pw'
+            if row['zp4'] >= row['close'] >= row['bzp4']:
                 return 'short_pw'
-            if row['close'] >= row['mzp']:
+            if self.hard_stop:
                 return 'close_long_pw'
         # range
-        if row['pattern18'] == 'top_range':
-            if row['close'] <= row['bzp3']:
+        if row['pattern18'] in ('top_range','double_top','weak_long'):
+            if row['bzp1'] <= row['close'] <= row['bzp3']:
                 return 'long_pw'
-            if row['close'] >= row['bzp4']:
+            if row['bzp2'] >= row['close'] >= row['bzp4']:
                 return 'short_pw'
-        if row['pattern18'] == 'bottom_range':
-            if row['close'] >= row['bzp3']:
+        if row['pattern18'] in ('bottom_range','double_bottom','weak_short'):
+            if row['bzp1'] >= row['close'] >= row['bzp3']:
                 return 'short_pw'
-            if row['close'] <= row['bzp4']:
+            if row['bzp2'] <= row['close'] <= row['bzp4']:
                 return 'long_pw'
+            
+        # if row['pattern18'] == 'double_bottom':
+        #     if row['close'] >= row['bzp3']:
+        #         return 'short_pw'
+        #     if row['close'] <= row['bzp4']:
+        #         return 'long_pw'
+        # if row['pattern18'] == 'weak_short':
+        #     if row['close'] >= row['bzp3']:
+        #         return 'short_pw'
+        #     if row['close'] <= row['bzp4']:
+        #         return 'long_pw'
+            
+        # if row['pattern18'] == 'double_top':
+        #     if row['close'] <= row['bzp3']:
+        #         return 'long_pw'
+        #     if row['close'] >= row['bzp4']:
+        #         return 'short_pw'
+        # if row['pattern18'] == 'weak_long':
+        #     if row['close'] <= row['bzp3']:
+        #         return 'long_pw'
+        #     if row['close'] >= row['bzp4']:
+        #         return 'short_pw'
+                        
         if row['pattern18'] == 'narrowing_up':
-            if row['close'] >= row['bzp3']:
+            if row['bzp1'] >= row['close'] >= row['bzp3']:
                 return 'close_long_pw'
-            if row['close'] <= row['mzp']:
+            if row['bzp2'] <= row['close'] <= row['zp2']:
                 return 'close_short_pw'
         if row['pattern18'] == 'narrowing_down':
-            if row['close'] <= row['bzp3']:
+            if row['bzp1'] <= row['close'] <= row['bzp3']:
                 return 'close_short_pw'
-            if row['close'] >= row['mzp']:
+            if row['bzp2'] >= row['close'] >= row['zp2']:
                 return 'close_long_pw'
+            
         if row['pattern18'] == 'upthrust':
-            if row['close'] >= row['bzp3']:
+            if row['zp3'] >= row['close'] >= row['bzp3']:
                 return 'short_pw'
-            if row['close'] <= row['bzp4']:
+            if row['bzp2'] <= row['close'] <= row['bzp4']:
                 return 'long_pw'            
-            if row['close'] >= row['mzp']:
+            if row['bzp3'] > row['close'] >= row['mzp']:
                 return 'close_long_pw'            
         if row['pattern18'] == 'spring':
-            if row['close'] <= row['bzp3']:
+            if row['zp3'] <= row['close'] <= row['bzp3']:
                 return 'long_pw'
-            if row['close'] >= row['bzp4']:
+            if row['bzp2'] >= row['close'] >= row['bzp4']:
                 return 'short_pw'
-            if row['close'] <= row['mzp']:
-                return 'close_short_pw'         
+            if row['bzp3'] < row['close'] <= row['mzp']:
+                return 'close_short_pw'    
+                 
         if row['pattern18'] == 'sow':
-            if row['close'] >= row['bzp2']:
+            if row['bzp3'] > row['close'] >= row['bzp2']:
                 return 'short_pw'
         if row['pattern18'] == 'sos':
-            if row['close'] <= row['bzp2']:
+            if row['bzp3'] < row['close'] <= row['bzp2']:
                 return 'long_pw'
-        if row['pattern18'] == 'double_bottom':
-            if row['close'] >= row['bzp3']:
-                return 'close_long_pw'
-            if row['close'] <= row['bzp4']:
-                return 'long_pw'
-        if row['pattern18'] == 'double_top':
-            if row['close'] <= row['bzp3']:
-                return 'close_short_pw'
-            if row['close'] >= row['bzp4']:
-                return 'short_pw'
-        if row['pattern18'] == 'weak_long':
-            if row['close'] >= row['bzp4']:
-                return 'short_pw'
-            if row['close'] >= row['mzp']:
-                return 'close_long_pw'
-        if row['pattern18'] == 'weak_short':
-            if row['close'] <= row['bzp4']:
-                return 'long_pw'
-            if row['close'] <= row['mzp']:
-                return 'close_short_pw'
+
+        return self.stop_loss_action(row) 

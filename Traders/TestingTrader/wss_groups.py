@@ -12,116 +12,80 @@ from strategies.work_strategies.PSTA0 import PSTA2_GGD,PSTA3_ZEUS,PSTA3_HADES,PS
 
 
 wssMoexFut1 = [
-    (LTA_OKROSHKA,(10,80)), #MXI B
-    (LTA_PIN,(10,6,40,5)), #MXI A CNY B
-    (LTA_IRONANNY,(30,15,2,6)), #0807
-    (LTA_IRONANNY,(31,13,3,7,)), #0108 MMU5
-    (LTA_BIBI,(117,14,2,'%d',)), #0108 EDU5
+    (LTA_BIBI,(55,14,2,'%d',)),
+    (LTA_PIN,(23,144,46,4,)),
+    (LTA_IRONANNY,(49,13,2,7,)),
+    (LTA_CC,(137,20,3,9,10,2.86,0,1,)),
+    (LTA_BIBI,(150,13,2,'mfi',)),
 
-    (LTA2_LOGAN,(10,100,30)),  #MXI B- CNY B-
-    (LTA2_LOGAN,(30,100,30)), #MXI B+ CNY B+
-    (LTA2_ALKASH,(60,2,20,0,0)), #MXI A CNY B-
-    (LTA2_ALKASH,(60,2,20,0,1)), #MXI B- CNY B-
-    (LTA2_DRINKER,(60,2,20,40,30,0,0)), #CNY B-
-    (LTA2_DRINKER,(60,2,20,40,30,0,1)), #CNY C
-    (LTA2_DRINKER,(64,1.75,24,41,15,10,0,)), #0108 IMOEXF
-    (LTA2_FENNEC,(150,2,10,30,10,10,0.5,0)),
-    (LTA2_FENNEC,(150,2,10,40,20,30,2,0)), #MXI B
-    (LTA2_FENNEC,(150,2,10,40,20,30,2,1)), #MXI B
-    (LTA2_FENNEC,(128,1.94,29,42,14,5,0.57,0,)), #0108 MMU5
-    (LTA2_HOTS,(90,2,10,40,30,20,0)), #MXI B+
-    (LTA2_HOTS,(90,2,10,40,30,20,1)), #MXI B-
-    (LTA2_HOTS,(22,1.7,12,42,28,19,0,)), #0108 BRQ5
-    (LTA2_LYNX,(90,2,25,0,0.5,0)), #CNY B
-    (LTA2_LYNX,(150,2,10,30,2,0)), #MXI B+ CNY B-
-    (LTA2_LYNX,(150,2,10,30,2,1)), #MXI B+ CNY B-
-    (LTA2_DRG,(150,2,10,30,20,0,0)),#1106
-    (LTA2_DRG,(150,2,30,40,20,10,0)),#1106
+    (LTA2_PUBG,(137,0.67,46,21,11,4,0,)),
+    (LTA2_DRG,(129,1.73,49,49,18,0,0,)),
+    (LTA2_LYNX,(10,1.7,95,30,0.92,0,)),
+    (LTA2_LYNX,(6,1.09,144,20,0.93,0,)),
+    (LTA2_LYNX,(47,0.98,74,17,0.64,0,)),
+    (LTA2_ALKASH,(11,0.5,118,19,0,)),
+    (LTA2_FENNEC,(67,1.2,46,48,18,30,1.04,0,)),
 
-    (OGTA4_DOG,(10,40)), #MXI B+
+    (OGTA4_DOG,(25,21,)),
+    (OGTA6_CERBERUS,(147,125,29,)),
+    (OGTA6_CERBERUS,(136,92,27,)),
 
-    (STAML2_NEWAVE,(5,5,0.5,30)),  #MXI B-
-    (STAML2_NEWAVE,(10,5,0.5,30)), #0606
+    (PSTA2_GGD,(60,18,2,)),
+    (PSTA2_GOOSE,(30,29,1,)),
+    (PSTA2_GOOSE,(102,24,1,)),
+    (PSTA2_GOOSE,(108,23,5,)),
+    (PSTA2_GOOSE,(146,29,2,)),
+    (PSTA2_DUCK,(77,29,9,)),
+    (PSTA2_DUCK,(126,29,2,)),
+    (PSTA2_DUCK,(62,30,1,)),
+    (PSTA2_DUCK,(35,24,4,)),
+    (PSTA3_REVAN,(34,6,)),
+    (PSTA4_FALCON,(137,24,2,0.14,)),
+    (PSTA4_PELICAN,(130,24,3,0.3,)),
+    (PSTA4_PELICAN,(25,16,3,0.17,)),
+    (PSTA6_DODO,(74,37,10,52,)),
+    (PSTA6_DODO,(52,131,10,39,)),
+    (PSTA6_DUELDODO,(39,115,13,121,0,)),
+    (PSTA6_VULTURE,(2,68,35,132,15,8,0.92,)),
+    (PSTA6_ADVENTURE,(31,150,9,0.18,0,)),
+    (PSTA6_ADVENTURE,(3,102,65,0.81,0,)),
+    (PSTA6_PIGEON,(33,123,87,11,17,0.22,0.3,0,)),
+    (PSTA6_PIGEON,(105,60,140,24,3,0.05,0.25,0,)),
+    (PSTA7_DODO,(111,17,2,70,36,)),
+    (PSTA7_DUELDODO,(118,18,2,63,12,1,)),
+    (PSTA7_VULTURE,(72,63,136,22,2,11,4,0.81,)),
+    (PSTA7_VULTURE,(97,41,54,18,2,21,8,0.84,)),
+    (PSTA7_VULTURE,(22,18,59,10,1,30,5,0.9,)),
+    (PSTA7_ADVENTURE,(64,21,2,2.22,0,)),
+    (PSTA7_ADVENTURE,(89,17,2,2.3,1,)),
+    (PSTA7_PIGEON,(95,12,2,12,20,0.15,1.56,0,)),
+    (PSTA7_SHERIFF,(15,18,2,2.69,)),
+    (PSTA7_SHERIFF,(131,21,1,0.61,)),
 
-    (PSTA2_DUCK,(99,15,1,)), #0108 GZU5
-    (PSTA2_DUCK,(67,9,2,)), #0108 BRQ5
-    (PSTA2_DUCK,(144,10,1,)), #0108 IMOEXF
-    (PSTA2_DUCK,(19,12,1,)), #0108 NGN5
-    (PSTA2_GOOSE,(104,18,1,)), #0108 EDU5
-    (PSTA2_GOOSE,(105,28,1,)), #0108 MMU5
-    (PSTA2_GOOSE,(78,11,1,)), #0108 SRU5
-    (PSTA4_PELICAN,(2,9,1,0.0,)), #0108 BRQ5
-    (PSTA4_PELICAN,(56,15,4,0.04,)), #0108 GZU5
-    (PSTA4_PELICAN,(59,19,1,0.1,)), #0108 NGN5
-    (PSTA4_FALCON,(120,15,2,0.06,)), #0108 BRQ5
-    (PSTA5_HAWK,(122,11,9,2,0,4,4.49,15,0.2,0.11,0,)), #0108 MMU5
-    (PSTA6_VULTURE,(38,84,19,48,5,2,0.21,)), #0108 BRQ5
-    (PSTA6_VULTURE,(20,114,25,49,6,17,0.78,)), #0108 IMOEXF
-    (PSTA6_VULTURE,(22,76,12,112,14,5,0.58,)), #0108 SRU5
-    (PSTA6_PIGEON,(134,56,67,10,3,0.05,0.14,0,)), #0108 BRQ5
-    (PSTA6_PIGEON,(129,75,125,18,6,0.06,0.96,0,)), #0108 GZU5
-    (PSTA6_PIGEON,(36,38,50,15,18,0.98,1.26,0,)), #0108 IMOEXF
-    (PSTA6_PIGEON,(128,141,103,12,1,0.98,1.08,0,)), #0108 MMU5
-    (PSTA6_PIGEON,(99,9,43,6,14,1.0,2.95,1,)), #0108 RMU5
-    (PSTA6_ADVENTURE,(15,57,129,1.85,0,)), #0108 GZU5
-    (PSTA6_ADVENTURE,(86,9,8,2.57,0,)), #0108 RMU5
-    (PSTA6_DODO,(46,77,22,69,)), #0108 BRQ5
-    (PSTA6_DODO,(23,92,25,53,)), #0108 IMOEXF
-    (PSTA6_DODO,(66,5,23,41,)), #0108 NGN5
-    (PSTA6_SHERIFF,(17,75,2.51,)), #0108 GZU5
 
-    (PTA2_LISICA,(10,2)),  #MXI A
-    (PTA2_VOLCHARA,(10,1)),  #MXI B
-    (PTA2_DDCrVG,(10,)),  #MXI B+
-    (PTA2_DVCr,(30,)),  #MXI B-
-
-    (PTA4_WDDCrE,(11,30)),  #MXI A
-    (PTA4_WDDCrE,(10,20)),  #MXI A
-    (PTA4_WDDCrE,(6,15)),  #MXI B-
-    (PTA4_WDDCr,(6,30)),  #MXI B+ CNY B
-    (PTA4_WDDCr,(11,30)),  #MXI B CNY B
-
-    (PTA4_WDDCrVG,(11,30)), #MXI B CNY C
-    (PTA4_WDVCr,(11,30)), #MXI B CNY B
-    (PTA4_WLISICA,(10,2,30)), #MXI B
-
-    (PTA4_UNIVERSAL,(20,15,20,50,"WC",'mfi',1,1)), #CNY A
-    (PTA4_UNIVERSAL,(18,23,21,33,'BB','s',1,1,)), #0108 MMU5
-
-    (PTA8_WDOBBY_FREEr,(6,0.5,30)), #MXI B
-
-    (PTA10_WIZARD,(20,55,12,25,20)), #MXI C CNY B
-    (PTA10_WIZARD,(30,55,3,15,20)), #MXI C CNY B+
-
-    (PTA11_KUSURUKEN,(50,6,5,20,'c')), # #MXI B+ CNY B
-    (PTA11_KUSURUKEN,(20,3,35,40,'c')),  #MXI B CNY B
-
-    (PTA12_SWDDCr,(10,30,1,5,10)), #0106
-
-    (PTA14_RANGER,(100,20,70,5,30,40)),  #0107
-    (PTA14_RENEGADE,(99,40,29,23,24,24)), #1807
-    (PTA14_RENEGADE,(112,40,47,14,48,19,)), #0108 BRQ5
-
-    (PTA15_WIDOWMAKER,(5,30)),  #MXI B-
-    (PTA15_ANNA,(5,30)), #MXI B- CNY B-
-
-    (PTA18_BLAZE,(70,10,26,30,10,0)),  #MXI C  
-
-    (PTA19_JOHANNA,(100,5,10,30,30,20,0)),   #0106
-    (PTA19_JOHANNA,(100,7,20,70,40,10,0)),   #CNY A 
-    (PTA19_JOHANNA,(100,7,10,10,40,20,0)),   #MXI B+ CNY B
-    (PTA19_JOHANNA,(100,7,10,10,40,20,1)),     #MXI B
-    (PTA19_TYRAEL,(100,5,10,70,30,20,0)), #0106        
-    (PTA19_YREL,(100,5,10,30,20,10,0)),   #0106
-    (PTA19_YREL,(100,3,10,40,30,30,0)),   #MXI B+ CNY B
-    (PTA19_CASSIA,(100,5,20,50,50,30,0)), #0207
-    (PTA19_CASSIA,(100,10,5,30,30,10,0)), #0207
-
-    (PTA21_AURIEL,(29,5,2,3.0,3,0.25,)), #0108 SRU5
-
+    (PTA2_DDCrWork,(43,)),
+    (PTA2_DDCrVG,(49,)),
+    (PTA2_SDDCr,(38,3,)),
+    (PTA4_U3,(46,138,9,8,'DC','uo',)),
+    (PTA4_U3,(22,143,11,3,'BB','mfi',)),
+    (PTA11_KUSURUKEN,(34,116,70,26,'c',)),
+    (PTA14_RENEGADE,(95,40,3,14,41,39,)),
+    (PTA15_WIDOWMAKER,(9,30,)),
+    (PTA15_VALLA,(38,0,)),
+    (PTA18_DEHAKA,(100,3,56,23,)),
+    (PTA18_GULDAN,(100,4,13,38,)),
+    (PTA21_WHITEMANE,(80,16,5,5,1.5,6,0.25,0,)),
+    (PTA21_WHITEMANE,(41,144,10,5,3.0,6,0.0,0,)),
+    (PTA22_BERSERK,(115,7,2,9.38,3,0.0,33,137,40,41,)),
+    (PTA22_BERSERK,(142,9,2,5.35,10,0.08,146,143,43,41,)),
+    (PTA22_BERSERK,(106,10,5,3.32,10,0.03,9,146,24,19,)),
+    (PTA22_BERSERK,(128,8,5,1.52,7,0.63,120,144,43,59,)),
+    (PTA22_BERSERK,(24,9,5,5.88,10,0.08,6,92,58,45,)),
+    (PTA22_BERSERK,(110,8,2,6.52,3,0.16,70,141,34,35,)),
 ]
 
 wssMoexFut5 = [
+    (LTA_CC,(32,11,2,8,3,0.98,0,0,)), #0808 IMOEXF
     (LTA_CC,(5,20,2,8,3,0.66,0,1,)), #2307 GZU5
     (LTA_IRONANNY,(9,10,10,7,)),
     (LTA_BIBI,(41,9,3,'%d',)),
@@ -130,9 +94,13 @@ wssMoexFut5 = [
     (LTA2_HOTS,(134,1.13,7,43,11,27,0,)),
     (LTA2_DRINKER,(145,1.02,5,34,23,24,0,)),
     (LTA2_FENNEC,(130,0.73,8,46,19,27,1.11,0,)),
+    (LTA2_FENNEC,(112,0.73,8,38,14,28,1.8,0,)), #0808 GZU5
+    (LTA2_LYNX,(147,0.7,11,20,1.95,0,)), #0808 GZU5
     (LTA2_LYNX,(150,0.84,11,8,1.71,0,)),
 
+    (OGTA4_HAMSTER,(35,39,)), #0808 MMU5
     (OGTA6_CERBERUS,(30,9,79,)),
+    (OGTA6_CERBERUS,(138,127,113,)), #0808 BRQ5
 
     (PSTA4_FALCON,(25,12,2,0.0,)), #2507 IMOEXF
     (PSTA6_DODO,(63,107,11,31,)), #0108 NGN5
@@ -140,23 +108,38 @@ wssMoexFut5 = [
     (PSTA6_DODO,(100,73,21,14,)),
     (PSTA6_DODO,(20,49,34,69,)),
     (PSTA6_DUELDODO,(31,48,15,52,0,)),
+    (PSTA6_DUELDODO,(52,25,11,127,0,)), #0808 MMU5
     (PSTA6_PIGEON,(142,85,26,6,11,0.27,0.95,1,)), #1
+    (PSTA6_PIGEON,(113,49,31,26,10,0.9,0.82,0,)), #0808 SRU5
+    (PSTA6_ADVENTURE,(97,52,63,0.92,1,)), #0808 IMOEXF
+    (PSTA6_ADVENTURE,(105,26,76,0.34,0,)), #0808 MMU5
+    (PSTA7_ADVENTURE,(20,6,1,2.87,1,)), #0808 IMOEXF
     (PSTA7_VULTURE,(104,10,93,2,19,11,11,0.34,)),
 
+    (PTA4_UNIVERSAL,(7,26,28,20,'WC','s',1,1,)), #0808 GZU5
     (PTA4_U3,(34,104,9,6,'VC','uo',)),
     (PTA4_U3,(11,54,6,6,'DC','s',)),
+    (PTA4_U3,(43,70,6,5,'VC','rsi',)), #0808 IMOEXF
 
+    (PTA12_SWDDCr,(5,24,0.25,83,88,)), #0808 MMU5
+    (PTA13_DWDDCr,(138,39,7,)), #0808 MMU5
     (PTA13_DWDDCr,(126,34,5,)),
     (PTA13_DWDDCr,(150,32,7,)),
     (PTA13_DWDDCr,(100,37,5,)),
     (PTA14_RANGER,(70,30,10,5,30,40)), #0107
+    (PTA14_RENEGADE,(83,30,150,7,25,28,)), #0808 MMU5
     (PTA14_RENEGADE,(116,30,9,7,34,30,)),
     (PTA18_GULDAN,(100,8,5,38,)), #2
     (PTA18_GULDAN,(100,10,7,39,)),
     (PTA18_GULDAN,(100,5,5,40)), #D CNY A GAZP B Si B
+    (PTA18_GULDAN,(100,8,5,38,)), #0808 MMU5
+    (PTA18_DEHAKA,(100,10,18,29,)), #0808 BRQ5
+    (PTA18_MISHA,(100,8,5,35,12,)), #0808 MMU5
     (PTA18_MISHA,(100,8,5,44,33)),  #1907
 
     (PTA19_JOHANNA,(100,5,5,130,38,24,0,)),
+    (PTA19_JOHANNA,(100,8,5,91,32,36,1,)), #0808 MMU5
+    (PTA19_YREL,(100,4,14,47,11,24,0,)), #0808 MMU5
     (PTA19_YREL,(100,7,5,38,23,14,0,)), #1
     (PTA19_YREL,(100,8,5,35,12,9,0,)),
     (PTA19_YREL,(100,4,25,49,35,15,0,)), #2907 SRU5
@@ -166,147 +149,154 @@ wssMoexFut5 = [
     (PTA19_CASSIA,(100,5,5,49,42,29,0,)),
 
     (PTA21_WHITEMANE,(6,36,10,3,3.0,6,0.25,0,)),
+    (PTA21_WHITEMANE,(10,67,5,3,3.0,4,0.0,0,)), #0808 MMU5
+    (PTA22_BERSERK,(143,10,2,2.86,4,0.03,143,91,52,60,)), #0808 BRQ5
+    (PTA22_BERSERK,(115,9,3,2.32,3,0.34,70,34,44,41,)), #0808 GZU5
+    (PTA22_BERSERK,(31,7,3,7.79,8,0.55,18,32,41,31,)), #0808 IMOEXF
+    (PTA22_BERSERK,(32,9,2,4.57,4,0.0,60,47,52,47,)), #0808 RMU5
+    (PTA22_BERSERK,(36,9,4,7.72,3,0.28,92,53,39,21,)), #0808 NGN5
 ]
 wssMoexFut1b = [
     (LTA2_LOGAN,(10,100,30)),
     (LTA2_ALKASH,(60,2,20,0,0)),
 ]
 wssMoexFut5b = [
-    #AKU5
-    (LTA_CC,(92,2,4,3,10,2.34,1,1,)),
-    (LTA2_DRINKER,(116,1.91,2,33,23,28,1,)),
-    (LTA2_HOTS,(132,1.85,2,37,23,5,1,)),
-    #CCU5
-    (PTA19_CASSIA,(100,10,2,22,38,13,0,)),
-    (PTA4_U3,(5,43,7,2,'VG','rsi_tw',)),
-    #CHU5
-    (PTA22_BERSERK,(14,4,2,4.64,9,0.6,13,35,49,11,)),
-    (LTA_CC,(69,3,2,6,2,0.64,0,1,)),
-    (PSTA2_GGD,(60,6,2,)),
-    (PTA21_WHITEMANE,(7,18,5,2,1.5,4,0.5,1,)),
-    (PTA21_AURIEL,(19,5,2,1.5,3,0.25,)),
-    #EuU5
-    (PTA21_AURIEL,(74,10,2,1.5,5,0.25,)),
-    (PTA22_BERSERK,(28,5,2,1.98,6,0.48,26,61,38,41,)),
-    (PTA15_VALLA,(22,0,)),
-    #GAZPF
-    (PTA2_LISICA,(7,1.74,)),
-    (PTA13_DWDDCr,(4,37,5,)),
-    (PTA22_BERSERK,(32,8,4,6.5,3,0.51,27,5,41,58,)),
-    #GDU5
-    (LTA_BIBI,(43,5,3,'ultimate_oscillator',)),
-    (OGTA4_HAMSTER,(13,26,)),
-    #GLDRUBF
-    (PTA10_MAGIC,(62,49,81,)),
-    (OGTA6_CERBERUS,(125,110,56,)),
-    #GLU5
-    (OGTA6_CERBERUS,(69,130,123,)),
-    (PTA18_DEHAKA,(100,4,27,24,)),
-    #IBU5
-    (OGTA4_DOG,(21,39,)),
-    (OGTA4_PUPPY,(21,39,15,)),
-    #IRU5
-    (LTA_BIBI,(28,4,2,'cmo',)),
-    (OGTA4_RAT,(69,9,2,)),
-    (PSTA2_GGD,(60,2,3,)),
-    #LKU5
-    (PTA21_AURIEL,(34,10,2,3.0,6,0.5,)),
-    (PTA19_YREL,(100,7,2,47,39,15,0,)),
-    (PTA4_U3,(4,65,14,2,'VG','s',)),
-    (PTA19_CASSIA,(100,10,2,87,40,24,0,)),
-    #MCU5
-    (PTA4_U3,(22,30,12,2,'WC','s',)),
-    (LTA_BIBI,(47,12,2,'williams_r',)),
-    #MEU5
-    (LTA_CC,(50,6,2,6,2,1.29,0,0,)),
-    (PTA22_BERSERK,(58,6,2,2.44,10,0.65,91,37,58,13,)),
-    #MGU5
-    (LTA_IRONANNY,(60,5,2,5,)),
-    (LTA2_FENNEC,(86,1.16,12,50,20,8,1.48,0,)),
-    #NAU5
-    (PTA19_IMPERIUS,(100,7,53,32,48,38,0,)),
-    (LTA2_DRINKER,(23,1.5,50,50,17,10,0,)),
-    #NKU5
-    (PSTA2_GGD,(60,2,7,)),
-    (LTA_CC,(91,2,14,4,2,1.25,1,0,)),
-    (PTA10_MAGIC,(7,63,2,)),
-    (PTA21_AURIEL,(69,5,2,3.0,5,0.25,)),
-    #NMU5
-    (LTA_BIBI,(28,4,2,'rsi_tw',)),
-    (PTA14_RENEGADE,(23,40,94,5,24,38,)),
-    #PDU5
-    (LTA_BIBI,(16,6,2,'mfi',)),
-    (OGTA7_PARADOX,(89,0.96,)),
-    (PTA22_BERSERK,(78,3,2,2.47,3,0.68,121,21,47,39,)),
-    #PTU5
-    (PTA19_IMPERIUS,(100,4,2,15,42,22,1,)),
-    (PTA19_YREL,(100,4,2,32,31,0,0,)),
-    (PTA22_BERSERK,(90,4,2,7.99,10,0.5,91,86,52,58,)),
-    (LTA2_ALKASH,(102,1.69,2,22,0,)),
-    #PZU5
-    (LTA_CC,(21,2,4,5,9,0.95,1,1,)),
-    (LTA_BIBI,(21,6,2,'rsi',)),
-    (PTA22_BERSERK,(18,3,2,2.04,3,0.71,11,20,26,14,)),
-    (OGTA4_HAMSTER,(2,20,)),
-    #RBU5
-    (LTA_BIBI,(9,10,14,'williams_r',)),
-    (PTA10_MAGIC,(46,99,2,)),
-    (LTA_IRONANNY,(75,4,7,4,)),
-    #RNU5
-    (PSTA2_GGD,(60,2,4,)),
-    (LTA_BIBI,(5,10,2,'williams_r',)),
-    (LTA_OKROSHKA2,(2,8,)),
-    (LTA2_ALKASH,(57,1.94,16,5,0,)),
-    #SBERF
-    (PTA4_U3,(9,46,14,2,'VC','rsi',)),
-    (PTA21_AURIEL,(55,10,2,3.0,3,0.5,)),
-    #SEU5
-    (PTA21_WHITEMANE,(3,106,10,2,3.0,3,0.0,1,)),
-    (PTA18_KELTHUZAD,(100,10,18,12,)),
-    #SFU5
-    (LTA_BIBI,(101,12,15,'mfi',)),
-    (PTA4_U3,(127,98,14,13,'VC','mfi',)),
-    (OGTA4_RAT,(139,9,2,)),
-    #SGU5
-    (PSTA3_REVAN,(5,2,)),
-    (LTA_CC,(140,2,8,6,8,1.96,0,0,)),
-    (PSTA2_GGD,(60,2,3,)),
-    (LTA2_LOGAN,(3,47,22,)),
-    #SPU5
-    (PTA21_AURIEL,(28,10,3,1.5,5,0.0,)),
-    (PTA4_U3,(6,38,15,2,'DC','s',)),
-    (PTA22_BERSERK,(64,6,2,1.65,7,0.18,42,51,54,23,)),
-    #SVU5
-    (OGTA4_PUPPY,(10,39,27,)),
-    (LTA2_DRINKER,(7,0.57,8,35,12,24,0,)),
-    (OGTA6_CERBERUS,(31,97,77,)),
-    #TTU5
-    (LTA2_ALKASH,(99,1.75,4,1,0,)),
-    (LTA2_DRG,(66,1.82,2,45,28,1,1,)),
-    (LTA_OKROSHKA,(2,97,)),
-    #UCU5
-    (PTA19_YREL,(100,8,14,44,30,19,0,)),
-    (PTA2_DDCrWork,(16,)),
-    (LTA2_ALKASH,(67,1.07,98,14,0,)),
-    #USDRUBF
-    (LTA2_ALKASH,(65,0.71,74,5,0,)),
-    (PTA14_RENEGADE,(26,40,47,14,46,33,)),
-    #VBU5
-    (LTA2_DRINKER,(109,0.76,20,43,20,20,0,)),
-    (PTA19_YREL,(100,10,16,38,11,4,0,)),
-    #GENERAL
-    (PTA2_DDCrWork,(5,)),
-    (PSTA2_GGD,(60,2,2)),
-    (PTA21_AURIEL,(4,10,3,3,6,0.5)),
-    (PTA19_JOHANNA,(100,3,5,10,40,10,0)),
-    (PTA14_RANGER,(70,30,10,5,30,40)),
-    (STAML2_NEWAVE,(5,5,0.5,30)),
-    (LTA2_HOTS,(90,2,10,40,30,20,0)),
-    (STAML2b_RAPTOR,(100,5,30,30,30,0,0)),
-    (PSTA2_GOOSE,(90,15,1,)),
-    (PSTA2_DUCK,(85,17,1,)),
-    (PSTA4_PELICAN,(32,15,2,0.23,)),
-    (PSTA4_FALCON,(78,15,2,0.14,)),
+    # #AKU5
+    # (LTA_CC,(92,2,4,3,10,2.34,1,1,)),
+    # (LTA2_DRINKER,(116,1.91,2,33,23,28,1,)),
+    # (LTA2_HOTS,(132,1.85,2,37,23,5,1,)),
+    # #CCU5
+    # (PTA19_CASSIA,(100,10,2,22,38,13,0,)),
+    # (PTA4_U3,(5,43,7,2,'VG','rsi_tw',)),
+    # #CHU5
+    # (PTA22_BERSERK,(14,4,2,4.64,9,0.6,13,35,49,11,)),
+    # (LTA_CC,(69,3,2,6,2,0.64,0,1,)),
+    # (PSTA2_GGD,(60,6,2,)),
+    # (PTA21_WHITEMANE,(7,18,5,2,1.5,4,0.5,1,)),
+    # (PTA21_AURIEL,(19,5,2,1.5,3,0.25,)),
+    # EDU5
+    # #EuU5
+    # (PTA21_AURIEL,(74,10,2,1.5,5,0.25,)),
+    # (PTA22_BERSERK,(28,5,2,1.98,6,0.48,26,61,38,41,)),
+    # (PTA15_VALLA,(22,0,)),
+    # #GAZPF
+    # (PTA2_LISICA,(7,1.74,)),
+    # (PTA13_DWDDCr,(4,37,5,)),
+    # (PTA22_BERSERK,(32,8,4,6.5,3,0.51,27,5,41,58,)),
+    # #GDU5
+    # (LTA_BIBI,(43,5,3,'ultimate_oscillator',)),
+    # (OGTA4_HAMSTER,(13,26,)),
+    # #GLDRUBF
+    # (PTA10_MAGIC,(62,49,81,)),
+    # (OGTA6_CERBERUS,(125,110,56,)),
+    # #GLU5
+    # (OGTA6_CERBERUS,(69,130,123,)),
+    # (PTA18_DEHAKA,(100,4,27,24,)),
+    # #IBU5
+    # (OGTA4_DOG,(21,39,)),
+    # (OGTA4_PUPPY,(21,39,15,)),
+    # #IRU5
+    # (LTA_BIBI,(28,4,2,'cmo',)),
+    # (OGTA4_RAT,(69,9,2,)),
+    # (PSTA2_GGD,(60,2,3,)),
+    # #LKU5
+    # (PTA21_AURIEL,(34,10,2,3.0,6,0.5,)),
+    # (PTA19_YREL,(100,7,2,47,39,15,0,)),
+    # (PTA4_U3,(4,65,14,2,'VG','s',)),
+    # (PTA19_CASSIA,(100,10,2,87,40,24,0,)),
+    # #MCU5
+    # (PTA4_U3,(22,30,12,2,'WC','s',)),
+    # (LTA_BIBI,(47,12,2,'williams_r',)),
+    # #MEU5
+    # (LTA_CC,(50,6,2,6,2,1.29,0,0,)),
+    # (PTA22_BERSERK,(58,6,2,2.44,10,0.65,91,37,58,13,)),
+    # #MGU5
+    # (LTA_IRONANNY,(60,5,2,5,)),
+    # (LTA2_FENNEC,(86,1.16,12,50,20,8,1.48,0,)),
+    # #NAU5
+    # (PTA19_IMPERIUS,(100,7,53,32,48,38,0,)),
+    # (LTA2_DRINKER,(23,1.5,50,50,17,10,0,)),
+    # #NKU5
+    # (PSTA2_GGD,(60,2,7,)),
+    # (LTA_CC,(91,2,14,4,2,1.25,1,0,)),
+    # (PTA10_MAGIC,(7,63,2,)),
+    # (PTA21_AURIEL,(69,5,2,3.0,5,0.25,)),
+    # #NMU5
+    # (LTA_BIBI,(28,4,2,'rsi_tw',)),
+    # (PTA14_RENEGADE,(23,40,94,5,24,38,)),
+    # #PDU5
+    # (LTA_BIBI,(16,6,2,'mfi',)),
+    # (OGTA7_PARADOX,(89,0.96,)),
+    # (PTA22_BERSERK,(78,3,2,2.47,3,0.68,121,21,47,39,)),
+    # #PTU5
+    # (PTA19_IMPERIUS,(100,4,2,15,42,22,1,)),
+    # (PTA19_YREL,(100,4,2,32,31,0,0,)),
+    # (PTA22_BERSERK,(90,4,2,7.99,10,0.5,91,86,52,58,)),
+    # (LTA2_ALKASH,(102,1.69,2,22,0,)),
+    # #PZU5
+    # (LTA_CC,(21,2,4,5,9,0.95,1,1,)),
+    # (LTA_BIBI,(21,6,2,'rsi',)),
+    # (PTA22_BERSERK,(18,3,2,2.04,3,0.71,11,20,26,14,)),
+    # (OGTA4_HAMSTER,(2,20,)),
+    # #RBU5
+    # (LTA_BIBI,(9,10,14,'williams_r',)),
+    # (PTA10_MAGIC,(46,99,2,)),
+    # (LTA_IRONANNY,(75,4,7,4,)),
+    # #RNU5
+    # (PSTA2_GGD,(60,2,4,)),
+    # (LTA_BIBI,(5,10,2,'williams_r',)),
+    # (LTA_OKROSHKA2,(2,8,)),
+    # (LTA2_ALKASH,(57,1.94,16,5,0,)),
+    # #SBERF
+    # (PTA4_U3,(9,46,14,2,'VC','rsi',)),
+    # (PTA21_AURIEL,(55,10,2,3.0,3,0.5,)),
+    # #SEU5
+    # (PTA21_WHITEMANE,(3,106,10,2,3.0,3,0.0,1,)),
+    # (PTA18_KELTHUZAD,(100,10,18,12,)),
+    # #SFU5
+    # (LTA_BIBI,(101,12,15,'mfi',)),
+    # (PTA4_U3,(127,98,14,13,'VC','mfi',)),
+    # (OGTA4_RAT,(139,9,2,)),
+    # #SGU5
+    # (PSTA3_REVAN,(5,2,)),
+    # (LTA_CC,(140,2,8,6,8,1.96,0,0,)),
+    # (PSTA2_GGD,(60,2,3,)),
+    # (LTA2_LOGAN,(3,47,22,)),
+    # #SPU5
+    # (PTA21_AURIEL,(28,10,3,1.5,5,0.0,)),
+    # (PTA4_U3,(6,38,15,2,'DC','s',)),
+    # (PTA22_BERSERK,(64,6,2,1.65,7,0.18,42,51,54,23,)),
+    # #SVU5
+    # (OGTA4_PUPPY,(10,39,27,)),
+    # (LTA2_DRINKER,(7,0.57,8,35,12,24,0,)),
+    # (OGTA6_CERBERUS,(31,97,77,)),
+    # #TTU5
+    # (LTA2_ALKASH,(99,1.75,4,1,0,)),
+    # (LTA2_DRG,(66,1.82,2,45,28,1,1,)),
+    # (LTA_OKROSHKA,(2,97,)),
+    # #UCU5
+    # (PTA19_YREL,(100,8,14,44,30,19,0,)),
+    # (PTA2_DDCrWork,(16,)),
+    # (LTA2_ALKASH,(67,1.07,98,14,0,)),
+    # #USDRUBF
+    # (LTA2_ALKASH,(65,0.71,74,5,0,)),
+    # (PTA14_RENEGADE,(26,40,47,14,46,33,)),
+    # #VBU5
+    # (LTA2_DRINKER,(109,0.76,20,43,20,20,0,)),
+    # (PTA19_YREL,(100,10,16,38,11,4,0,)),
+    # #GENERAL
+    # (PTA2_DDCrWork,(5,)),
+    # (PSTA2_GGD,(60,2,2)),
+    # (PTA21_AURIEL,(4,10,3,3,6,0.5)),
+    # (PTA19_JOHANNA,(100,3,5,10,40,10,0)),
+    # (PTA14_RANGER,(70,30,10,5,30,40)),
+    # (STAML2_NEWAVE,(5,5,0.5,30)),
+    # (LTA2_HOTS,(90,2,10,40,30,20,0)),
+    # (STAML2b_RAPTOR,(100,5,30,30,30,0,0)),
+    # (PSTA2_GOOSE,(90,15,1,)),
+    # (PSTA2_DUCK,(85,17,1,)),
+    # (PSTA4_PELICAN,(32,15,2,0.23,)),
+    # (PSTA4_FALCON,(78,15,2,0.14,)),
 
 ] 
 wssMoexStocks1 = [
