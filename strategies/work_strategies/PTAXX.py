@@ -169,6 +169,7 @@ class PTA21_AURIEL(BaseTABitget):
                 return 'short_pw'
             else:
                 return 'close_long_pw'
+            
 class PTA21_MALTHAEL(BaseTABitget):
     '''
     period=20,period_fractal=10,period_mean=5,percent_threshold=0.5,use_stop=0
@@ -402,6 +403,62 @@ class PTA24_DEATHWING(BaseTABitget):
                 return 'close_short_pw'
         if row['overbought']:
             if row['pattern18'] in ('btc','bui','bottom_range','double_bottom','weak_short','narrowing_up','upthrust','sow'):
+                return 'short_pw'
+            elif self.use_stop and row['close'] < row['ssl']:
+                return 'close_all_pw'
+            else:
+                return 'close_long_pw'
+        if self.use_stop:
+            if row['close'] > row['ssl']:
+                return 'close_short_pw'
+            if row['close'] < row['lsl']:
+                return 'close_long_pw'
+
+class PTA25_TASSADAR(BaseTABitget):
+    '''
+    period=20,period_fractal=10,period_mean=5,percent_threshold=0.2,threshold_dzz=0.2,buff=0.1,divider=2,threshold_over=10,use_stop=0
+    '''
+    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=20,period_fractal=10,period_mean=5,percent_threshold=0.2,threshold_dzz=0.2,buff=0.1,divider=2,threshold_over=10,use_stop=0):
+        super().__init__(symbol, granularity, productType, n_parts, period)
+        self.period_fractal = period_fractal
+        self.period_mean = period_mean
+        self.threshold_over = threshold_over
+        self.percent_threshold = percent_threshold
+        self.threshold_dzz = threshold_dzz
+        self.buff = buff
+        self.divider = divider
+        self.use_stop = use_stop
+
+    def preprocessing(self, df):
+        df = add_rsi(df,self.period)
+        df = add_fractals(df,self.period_fractal)
+        df = add_mean_on_fractals(df,self.period_mean,'rsi')
+        df['oversold'] = df['rsi'] < df['bottom_mean']
+        df['overbought'] = df['rsi'] > df['top_mean']
+        df['overlimit'] = (df['top_mean'] - df['bottom_mean']) > self.threshold_over
+        df = add_percent_zz_peaks(df,percent_threshold=self.percent_threshold)
+        df = add_pattern18_dzz_czd(df,self.threshold_dzz,self.buff)
+        df = add_stop_loss_p18czd(df,self.divider)
+        df = add_enter_price2close(df)
+        df = add_slice_df(df,period=self.period)
+        return df
+    def __call__(self, row, *args, **kwds):
+        can_long,can_short = None,None
+        if row['pattern18'] in ('bti','joc','top_range','double_top','weak_long','narrowing_down','spring','sos'):
+            can_long = row['close'] >= row['zp3']
+            can_short = row['close'] <= row['zp2']
+        if row['pattern18'] in ('btc','bui','bottom_range','double_bottom','weak_short','narrowing_up','upthrust','sow'):
+            can_long = row['close'] >= row['zp2']
+            can_short = row['close'] <= row['zp3']
+        if row['oversold'] and row['overlimit']:
+            if can_long:
+                return 'long_pw'
+            elif self.use_stop and row['close'] < row['lsl']:
+                return 'close_all_pw'
+            else:
+                return 'close_short_pw'
+        if row['overbought'] and row['overlimit']:
+            if can_short:
                 return 'short_pw'
             elif self.use_stop and row['close'] < row['ssl']:
                 return 'close_all_pw'

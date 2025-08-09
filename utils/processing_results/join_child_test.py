@@ -54,6 +54,8 @@ for inner_folder in inner_folders:
             df_total = df_file
         else:
             df_total = pd.concat([df_total,df_file])
+    if df_total.empty:
+        continue
     vtb_twf_func = get_func_vtb_fee(inner_folder.split('_')[0])
     df_total["vtb"] = vtb_twf_func(df_total["total"],df_total["count"])
     # Получаем список столбцов без "vtb"

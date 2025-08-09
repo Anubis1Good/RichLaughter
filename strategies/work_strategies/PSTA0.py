@@ -1,7 +1,7 @@
 import pandas as pd
 from strategies.work_strategies.BaseTA import BaseTABitget
 from ForBots.Indicators.classic_indicators import add_slice_df,add_enter_price2close,add_fractals,add_average_fractals,add_dynamic_zigzag,add_dzz_peaks,add_rsi,add_adx,add_bollinger,add_chop,add_percent_zz_peaks
-from ForBots.Indicators.pva_indicators import add_plus_delta_fc ,add_exp_pdfc,add_analys_dzz,add_mean_on_fractals,add_ext_on_fractals,add_pattern18_dzz
+from ForBots.Indicators.pva_indicators import add_plus_delta_fc ,add_exp_pdfc,add_analys_dzz,add_mean_on_fractals,add_ext_on_fractals,add_pattern18_dzz,add_pattern18_dzz_czd,add_stop_loss_p18czd
 
 class PSTA2_GGD(BaseTABitget):
     """period=20, n_candles=5,n_fractals=3"""
@@ -688,48 +688,46 @@ class PSTA7_SHERIFF(BaseTABitget):
             if row['high'] < row['bbd']: #short
                 return 'short_pw'
 
-#TODO
-class PSTA8_(BaseTABitget):
-    """period=20, n_candles=5,n_fractals=3,n_std=5,threshold_dzz=0.2,buff=0.1
-    \n
-    фильтрованный по adx GGD быстрых параметров. RANGER + GGD
-    """
-    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=20, n_candles=5,n_fractals=3,n_std=5,threshold_dzz=0.2,buff=0.1):
+#TODO подумать над отключением лютого контртренда
+class PSTA8_AVENGER(BaseTABitget):
+    '''
+    period=20,divider_buff=10,percent_threshold=0.2,threshold_dzz=0.2,buff=0.1,divider_stop=2,use_stop=1
+    '''
+    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=20,divider_buff=10,percent_threshold=0.2,threshold_dzz=0.2,buff=0.1,divider_stop=2,use_stop=1):
         super().__init__(symbol, granularity, productType, n_parts, period)
-        self.n_candles = n_candles
-        self.n_fractals = n_fractals
-        self.n_std = n_std
+        self.divider_buff = divider_buff
+        self.percent_threshold = percent_threshold
         self.threshold_dzz = threshold_dzz
         self.buff = buff
-    def preprocessing(self, df):
-        df = add_fractals(df,self.n_candles)
-        df = add_average_fractals(df,self.n_fractals)
-        df = add_dzz_peaks(df,period=self.period,n_std=self.n_std)
-        df = add_pattern18_dzz(df,self.threshold_dzz,self.buff)
-        df['dir_long'] = df['bzp1'] < df['bzp2']
-        df = add_enter_price2close(df)  
-        df = add_slice_df(df, self.period) 
-        return df
+        self.divider_stop = divider_stop
+        self.use_stop = use_stop
 
+    def preprocessing(self, df):
+        df = add_percent_zz_peaks(df,percent_threshold=self.percent_threshold)
+        df = add_pattern18_dzz_czd(df,self.threshold_dzz,self.buff)
+        df = add_stop_loss_p18czd(df,self.divider_stop)
+        df['buffer'] = ((df['zp2'] - df['zp3'])/self.divider_buff).abs()
+        df['pbzp2'] = df['zp2'] + df['buffer']
+        df['mbzp2'] = df['zp2'] - df['buffer']
+        df['pbzp3'] = df['zp3'] + df['buffer']
+        df['mbzp3'] = df['zp3'] - df['buffer']
+        df = add_enter_price2close(df)
+        df = add_slice_df(df,period=self.period)
+        return df
     def __call__(self, row, *args, **kwds):
-        if row['dir_long']:
-            can_long = row['close'] > row['bzp1']
-            can_short = row['close'] < row['bzp2']
-        else:
-            can_long = row['close'] > row['bzp2']
-            can_short = row['close'] < row['bzp1']
-        if row['close'] >= row['ave_up']:
-            if can_short:
-                return 'short_pw'
-            else:
-                return 'close_long_pw'
-        if row['close'] <= row['ave_down']:
-            if can_long:
-                return 'long_pw'
-            else:
+        can_long,can_short = None,None
+        if row['pattern18'] in ('bti','joc','top_range','double_top','weak_long','narrowing_down','spring','sos'):
+            can_long = row['pbzp3'] >= row['close'] >= row['mbzp3']
+            can_short = row['mbzp2'] <= row['close'] <= row['pbzp2']
+        if row['pattern18'] in ('btc','bui','bottom_range','double_bottom','weak_short','narrowing_up','upthrust','sow'):
+            can_short = row['pbzp3'] >= row['close'] >= row['mbzp3']
+            can_long = row['mbzp2'] <= row['close'] <= row['pbzp2']
+        if can_long:
+            return 'long_pw'
+        if can_short:
+            return 'short_pw'
+        if self.use_stop:
+            if row['close'] > row['ssl']:
                 return 'close_short_pw'
-        if not can_long:
-            return 'close_long_pw'
-        if not can_short:
-            return 'close_short_pw'
-        
+            if row['close'] < row['lsl']:
+                return 'close_long_pw'
