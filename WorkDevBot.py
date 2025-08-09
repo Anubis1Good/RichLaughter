@@ -21,7 +21,7 @@ from strategies.work_strategies.HelpTA import get_rws
 # from strategies.work_strategies.LTA import LTA_CC as WS
 # from strategies.work_strategies.LTA2 import LTA2_DRG as WS
 # from strategies.work_strategies.PSTA0 import PSTA6_SHERIFF as WS
-from strategies.work_strategies.VSAT import VSAT1_b as WS
+from strategies.work_strategies.VSAT import VSAT1_MERCURY as WS
 # from strategies.work_strategies.PSTA0 import PSTA8_ as WS
 # from strategies.work_strategies.MTA import MTA_LORD as WS
 # from strategies.work_strategies.STA_ml2 import STAML2a_PHENOMENON as WS
@@ -79,7 +79,7 @@ bot = WS(symbol,granularity,'e',1)
 fee_base = 0.0002
 df = bot.preprocessing(df)
 # trades,equity,equity_fee,longs,shorts,closes= check_strategy_v3_LSC(df.copy(),bot,fee_base,close_2330=True)
-trades,equity,equity_fee,longs,shorts,closes= check_strategy_realistic_v1(df.copy(),bot,fee_base,close_2330=close_2330)
+trades,equity,equity_fee,longs,shorts,closes = check_strategy_realistic_v1(df.copy(),bot,fee_base,close_2330=close_2330)
 # trades,longs,shorts,closes,equity = check_strategy(df,get_action_STA1e,bot)
 # trades,equity2,equity_fee = check_strategy_v3(df,bot,fee_base)
 # print(trades)
@@ -122,6 +122,10 @@ else:
     plt.plot(df['zigzag'])
     plt.plot(df['lsl'])
     plt.plot(df['ssl'])
+    plt.plot(df['bzp1'], linestyle=':',color='g')
+    plt.plot(df['bzp2'], linestyle='-.',color='g')
+    plt.plot(df['bzp3'], linestyle=':',color='b')
+    plt.plot(df['bzp4'], linestyle='-.',color='b')
     # plt.plot(df['btarget'], linestyle='--',color='r')
     # draw_bollinger(df)
     # plt.plot(df['stair'])

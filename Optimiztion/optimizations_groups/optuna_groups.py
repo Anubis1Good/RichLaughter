@@ -8,7 +8,8 @@ from strategies.work_strategies.LTA import *
 from strategies.work_strategies.LTA2 import *
 from strategies.work_strategies.GLTA import *
 from strategies.work_strategies.PSTA0 import *
-from strategies.work_strategies.HelpTA import get_rws
+from strategies.work_strategies.VSAT import *
+# from strategies.work_strategies.HelpTA import get_rws
 
 group = (
     
@@ -609,6 +610,16 @@ group = (
         (1,2,20),
         (0.1,0.5,3),
         (0,1)
+    )),
+    (VSAT1_MERCURY,(
+        (2,5,150),
+        (0.5,1,20),
+        (0,0.1,1),
+        (0.1,0.2,0.5),
+        (0.5,1,1.1,2),
+        (0,1),
+        (0,1),
+        (0,1),
     )),
 )
 

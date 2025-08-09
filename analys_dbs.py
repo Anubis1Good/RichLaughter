@@ -433,7 +433,7 @@ need_analisys = True
 need_last = False
 need_last = True
 need_n_days = False
-need_n_days = True
+# need_n_days = True
 
 if __name__ == '__main__':
     print('analys start...')

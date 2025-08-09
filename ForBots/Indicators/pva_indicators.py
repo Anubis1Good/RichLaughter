@@ -894,6 +894,8 @@ def add_pattern18_dzz_czd(df: pd.DataFrame, threshold: float = 0.2, buffer_perce
     
     # Если нет смен направления, возвращаем исходный df
     if len(change_indices) == 0:
+        result_df['pattern18'] = result_df['pattern18'].fillna('none_pattern')
+        result_df['prev_pattern18'] = result_df['prev_pattern18'].fillna('none_pattern')
         return result_df
     
     # Собираем все пики зигзага
@@ -979,6 +981,8 @@ def add_pattern18_dzz_czd(df: pd.DataFrame, threshold: float = 0.2, buffer_perce
     
     # Если нет результатов, возвращаем исходный df
     if not results:
+        result_df['pattern18'] = result_df['pattern18'].fillna('none_pattern')
+        result_df['prev_pattern18'] = result_df['prev_pattern18'].fillna('none_pattern')
         return result_df
     
     # Создаем DataFrame из результатов

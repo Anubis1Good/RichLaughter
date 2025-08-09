@@ -122,7 +122,7 @@ class VSAT1_MERCURY(BaseTABitget):
         df = add_dzz_peaks(df,period=self.period,n_std=self.n_std,drop_last=False)
         df = add_pattern18_dzz_czd(df,self.threshold_dzz,self.buff)
         df = add_stop_loss_p18czd(df,self.divider)
-        df['signal'] = df.apply(self.__call__,axis=1)
+        # df['signal'] = df.apply(self.__call__,axis=1)
         df = add_enter_price2close(df)  
         df = add_slice_df(df, self.period) 
         return df
