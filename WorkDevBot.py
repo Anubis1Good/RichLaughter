@@ -12,7 +12,7 @@ from strategies.test_strategies.check import check_strategy,check_strategy_v3_LS
 from strategies.work_strategies.HelpTA import get_rws
 # from strategies.work_strategies.PTA import PTA2_DDCrWork as WS
 # from strategies.work_strategies.PTAX import PTA10_WIZARD as WS
-# from strategies.work_strategies.PTAXX import PTA23_ULTIMATUM as WS
+from strategies.work_strategies.PTAXX import PTA24_ as WS
 # from strategies.work_strategies.STA_ca import STA3_LITE as WS
 # from strategies.work_strategies.GLTA import GLTA2_ALPHA as WS
 # from strategies.work_strategies.GLTA import GLTA2_BETA as WS
@@ -20,8 +20,8 @@ from strategies.work_strategies.HelpTA import get_rws
 # from strategies.work_strategies.OGTA import OGTA7_PARADOX as WS
 # from strategies.work_strategies.LTA import LTA_CC as WS
 # from strategies.work_strategies.LTA2 import LTA2_DRG as WS
-# from strategies.work_strategies.PSTA0 import PSTA6_SHERIFF as WS
-from strategies.work_strategies.VSAT import VSAT1_MERCURY as WS
+# from strategies.work_strategies.PSTA0 import PSTA3_MALAK as WS
+# from strategies.work_strategies.VSAT import VSAT1_VENUS as WS
 # from strategies.work_strategies.PSTA0 import PSTA8_ as WS
 # from strategies.work_strategies.MTA import MTA_LORD as WS
 # from strategies.work_strategies.STA_ml2 import STAML2a_PHENOMENON as WS
@@ -102,7 +102,10 @@ print(trades)
 # print(longs.shape,longs1.shape)
 # print(shorts.shape,shorts1.shape)
 # print(closes.shape,closes1.shape)
-
+plt.plot(equity,color='red')
+plt.plot(equity_fee,color='blue')
+plt.savefig('test.png')
+plt.close()
 see_equity = True
 see_equity = False
 if see_equity:
@@ -120,12 +123,12 @@ else:
     # plt.plot(df['close'])
     draw_hb_chart_fast(df)
     plt.plot(df['zigzag'])
-    plt.plot(df['lsl'])
-    plt.plot(df['ssl'])
-    plt.plot(df['bzp1'], linestyle=':',color='g')
-    plt.plot(df['bzp2'], linestyle='-.',color='g')
-    plt.plot(df['bzp3'], linestyle=':',color='b')
-    plt.plot(df['bzp4'], linestyle='-.',color='b')
+    # plt.plot(df['lsl'])
+    # plt.plot(df['ssl'])
+    # plt.plot(df['bzp1'], linestyle=':',color='g')
+    # plt.plot(df['bzp2'], linestyle='-.',color='g')
+    # plt.plot(df['bzp3'], linestyle=':',color='b')
+    # plt.plot(df['bzp4'], linestyle='-.',color='b')
     # plt.plot(df['btarget'], linestyle='--',color='r')
     # draw_bollinger(df)
     # plt.plot(df['stair'])

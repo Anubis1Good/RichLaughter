@@ -19,7 +19,7 @@ phys_cores = psutil.cpu_count(logical=False)
 save_cores = 1
 close_2330 = True
 new_timeframe = None
-# new_timeframe = '5min'
+new_timeframe = '5min'
 reverse_test = False
 # reverse_test = True
 # feature_optimization = 'total_abs_fee'
@@ -236,7 +236,7 @@ def process_group(part, test_folder, n_trials, n_jobs, need_plot, min_fee):
 if __name__ == '__main__':
 
 
-    from group_optimization_experiment import group
+    from Optimiztion.optimizations_groups.optuna_exp_groups import group
     # from Optimiztion.optimizations_groups.optuna_groups import group
 
     # group = [(get_rws(x[0]),x[1]) for x in group]
@@ -252,8 +252,8 @@ if __name__ == '__main__':
     # min_fee: float = 0.0004
     need_plot=True
     # n_trials = 100
-    # n_trials = 200
-    n_trials = 500
+    n_trials = 200
+    # n_trials = 500
     n_jobs = 1
 
 

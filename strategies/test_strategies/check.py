@@ -1,7 +1,11 @@
+import os
 import pandas as pd
 import numpy as np
+import matplotlib.pyplot as plt
+from time import time
 from tqdm import tqdm
 from utils.work_with_dataframe.convert_timeframe import convert_timeframe
+from utils.draw_utils import draw_hb_chart_fast
 # from numba import jit  # Ускорение вычислений (опционально)
 def check_strategy(df,test_strategy,work_strategy):
     """
@@ -974,6 +978,7 @@ def get_child_candles(df:pd.DataFrame,x):
             candel['middle'] = (candel['high'] + candel['low']) / 2
             candel['direction'] = 1 if candel['open'] < candel['close'] else -1
         candels.append(candel.copy())
+    # print('gcc',len(candels))
     return candels
 
 def check_strategy_v6(df: pd.DataFrame, work_strategy, fee=0.0002,close_2330=False,timeframe='5min'):
@@ -1287,6 +1292,23 @@ def check_strategy_realistic_v1(df: pd.DataFrame, work_strategy, fee=0.0002,clos
     equity_fee = np.array(equity_fee)
     return trades,equity,equity_fee,longs,shorts,closes
 
+def debug_save_plot(df,action,name,need_plot=[]):
+    folder = 'TestNewResults/Debug_Plots'
+    if not os.path.exists(folder):
+        os.makedirs(folder)
+    plt.grid() 
+    # plt.plot(df['close'])
+    draw_hb_chart_fast(df)
+    for np in need_plot:
+        plt.plot(df[np])
+    plt.title(f"{action}")
+    # plt.legend()
+    plt.savefig(os.path.join(folder,name+".png"), bbox_inches='tight')
+    plt.close()
+
+
+    
+
 def work_action_step_realistic_v1(action, trades, cur_price, fee, fees, equity, equity_fee, pos, open_price,open_fee,row_name,longs:list,shorts:list,closes:list,order,high,low):
     """return pos,open_price,fees,open_fee,order"""
     # actions = (None,'long_pw','short_pw','close_long_pw','close_short_pw','close_all_pw')
@@ -1450,6 +1472,8 @@ def check_strategy_step_realistic_v1(df: pd.DataFrame, work_strategy, fee=0.0002
             pos, open_price, fees, open_fee,order = work_action_step_realistic_v1(
                 action, trades, sc['close'], fee_one_p, fees, equity, equity_fee, pos, open_price,open_fee,test_row['x'],longs,shorts,closes,order,highs[idx],lows[idx]
             )
+            # print(i,idx,len(child_candles))
+            # debug_save_plot(work_strategy.preprocessing(df_temp),action,f"{i}_{idx}",['zigzag','lsl','ssl','bzp1','bzp2','bzp3','bzp4'])
 
     df_eq = pd.DataFrame({'eq':equity,'eq_fee':equity_fee})
     if df_eq.empty:

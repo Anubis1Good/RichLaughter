@@ -1,6 +1,6 @@
 import pandas as pd
 from strategies.work_strategies.BaseTA import BaseTABitget
-from ForBots.Indicators.classic_indicators import add_slice_df,add_enter_price2close,add_fractals,add_average_fractals,add_dynamic_zigzag,add_dzz_peaks,add_rsi,add_adx,add_bollinger,add_chop
+from ForBots.Indicators.classic_indicators import add_slice_df,add_enter_price2close,add_fractals,add_average_fractals,add_dynamic_zigzag,add_dzz_peaks,add_rsi,add_adx,add_bollinger,add_chop,add_percent_zz_peaks
 from ForBots.Indicators.pva_indicators import add_plus_delta_fc ,add_exp_pdfc,add_analys_dzz,add_mean_on_fractals,add_ext_on_fractals,add_pattern18_dzz
 
 class PSTA2_GGD(BaseTABitget):
@@ -116,7 +116,8 @@ class PSTA3_REVAN(BaseTABitget):
         if row['zigzag_direction'] == 1:
             return 'short_pw'
         return None
-
+    
+        
 class PSTA4_FALCON(BaseTABitget):
     """period=20, n_candles=5,n_fractals=3,allowance=0.1"""
     def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=20, n_candles=5,n_fractals=3,allowance=0.1):
@@ -731,3 +732,4 @@ class PSTA8_(BaseTABitget):
             return 'close_long_pw'
         if not can_short:
             return 'close_short_pw'
+        
