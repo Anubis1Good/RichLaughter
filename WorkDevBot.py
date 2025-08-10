@@ -11,7 +11,7 @@ from utils.draw_utils import draw_lite_chart,draw_chart_channel,draw_hb_chart,dr
 from strategies.test_strategies.check import check_strategy,check_strategy_v3_LSC,check_strategy_v4,check_strategy_v5,check_strategy_realistic_v1
 from strategies.work_strategies.HelpTA import get_rws
 # from strategies.work_strategies.PTA import PTA2_DDCrWork as WS
-# from strategies.work_strategies.PTAX import PTA10_WIZARD as WS
+from strategies.work_strategies.PTAX import PTA17_PHOENIX as WS
 # from strategies.work_strategies.PTAXX import PTA25_ as WS
 # from strategies.work_strategies.STA_ca import STA3_LITE as WS
 # from strategies.work_strategies.GLTA import GLTA2_ALPHA as WS
@@ -20,9 +20,8 @@ from strategies.work_strategies.HelpTA import get_rws
 # from strategies.work_strategies.OGTA import OGTA7_PARADOX as WS
 # from strategies.work_strategies.LTA import LTA_CC as WS
 # from strategies.work_strategies.LTA2 import LTA2_DRG as WS
-# from strategies.work_strategies.PSTA0 import PSTA3_MALAK as WS
 # from strategies.work_strategies.VSAT import VSAT1_VENUS as WS
-from strategies.work_strategies.PSTA0 import PSTA8_AVENGER as WS
+# from strategies.work_strategies.PSTA0 import PSTA8_AVENGER as WS
 # from strategies.work_strategies.MTA import MTA_LORD as WS
 # from strategies.work_strategies.STA_ml2 import STAML2a_PHENOMENON as WS
 # from strategies.work_strategies.STA_ml import STAML1_XGBR2_DC as WS
@@ -122,7 +121,7 @@ else:
     plt.grid() 
     # plt.plot(df['close'])
     draw_hb_chart_fast(df)
-    plt.plot(df['zigzag'])
+    # plt.plot(df['zigzag'])
     # plt.plot(df['lsl'])
     # plt.plot(df['ssl'])
     # plt.plot(df['bzp1'], linestyle=':',color='g')

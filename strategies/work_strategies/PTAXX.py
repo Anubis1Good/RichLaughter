@@ -1,8 +1,8 @@
 import numpy as np
 import pandas as pd
 # from request_functions.download_bitget import get_df
-from ForBots.Indicators.classic_indicators import add_donchan_channel,add_slice_df,add_big_volume,add_dynamics_ma,add_bollinger,add_over_bb,add_enter_price,add_buffer_add,add_buffer_sub,add_vangerchik,add_simple_dynamics_ma,add_vodka_channel,add_rsi,add_enter_price2close,add_macd,add_rsi_tw,add_adx,add_chop,add_kusuruken_channel,add_awesome_oscillator,add_dzz_peaks,add_fractals,add_percent_zz_peaks
-from ForBots.Indicators.pva_indicators import add_benefit,add_velcro_indicator,add_pc_stair_fast,add_integrity_index,add_cascade_channel,add_assessment_motion_index,add_hope_channel,add_analys_dzz,add_mean_on_fractals,add_smooth_channel,add_ext_on_fractals,add_pattern18_dzz_czd,add_stop_loss_p18czd
+from ForBots.Indicators.classic_indicators import add_donchan_channel,add_slice_df,add_big_volume,add_dynamics_ma,add_bollinger,add_over_bb,add_enter_price,add_buffer_add,add_buffer_sub,add_vangerchik,add_simple_dynamics_ma,add_vodka_channel,add_rsi,add_enter_price2close,add_macd,add_rsi_tw,add_adx,add_chop,add_kusuruken_channel,add_awesome_oscillator,add_dzz_peaks,add_fractals,add_percent_zz_peaks,add_ema
+from ForBots.Indicators.pva_indicators import add_benefit,add_velcro_indicator,add_pc_stair_fast,add_integrity_index,add_cascade_channel,add_assessment_motion_index,add_hope_channel,add_analys_dzz,add_mean_on_fractals,add_smooth_channel,add_ext_on_fractals,add_pattern18_dzz_czd,add_stop_loss_p18czd,add_stable_ma_direction,add_quantile_params
 from strategies.work_strategies.BaseTA import BaseTABitget
 
 class PTA20_HANZO(BaseTABitget):
@@ -469,3 +469,43 @@ class PTA25_TASSADAR(BaseTABitget):
                 return 'close_short_pw'
             if row['close'] < row['lsl']:
                 return 'close_long_pw'
+            
+class PTA26_(BaseTABitget):
+    """period=100,n_stairs=3,period2=10,threshold=30,threshold_ii=25"""
+    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=100,n_stairs=3,period2=10,threshold=30,threshold_ii=25):
+        super().__init__(symbol, granularity, productType, n_parts, period)
+        self.n_stairs = n_stairs
+        self.period2 = period2
+        self.threshold = threshold
+        self.threshold_ii = threshold_ii
+    def preprocessing(self, df:pd.DataFrame):
+        df = add_ema(df,self.period)
+        df = add_stable_ma_direction(df,self.period,'ema')
+        df = add_donchan_channel(df,self.period2)
+        df = add_rsi(df,self.period2)
+        # df = add_integrity_index(df,self.period2*2)
+        df = add_enter_price2close(df)
+        df['stair_s'] = df['stair'].rolling(self.period2).mean()
+        df = add_slice_df(df,self.period)
+        return df
+    def __call__(self, row, *args, **kwds):
+        can_long = row['close'] > row['stair_s']
+        nearest_long = row['high'] - row['close'] > row['close'] - row['low'] 
+        if nearest_long and can_long:
+            if row['close'] <= row['avarege'] and row['ii'] > self.threshold_ii:
+                    return 'long_pw'
+            if row['low'] <= row['min_hb']:
+                    return 'long_pw'
+        if not nearest_long and not can_long:
+            if row['close'] >= row['avarege'] and row['ii'] < -self.threshold_ii:
+                return 'short_pw'
+            if row['high'] >= row['max_hb']:
+                return 'short_pw'
+        if row['rsi'] < self.threshold and row['low'] <= row['min_hb']:
+            return 'close_short_pw'
+        if row['rsi'] > 100-self.threshold and row['high'] >= row['max_hb']:
+            return 'close_long_pw'
+        if can_long:
+            return 'close_short_pw'
+        else:
+            return 'close_long_pw'

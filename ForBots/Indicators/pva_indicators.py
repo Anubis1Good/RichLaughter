@@ -1031,3 +1031,16 @@ def add_buffer_dzz(df:pd.DataFrame,period=20):
     df['hbzz'] =  df['zigzag'] + df['hdz']
     df['lbzz'] =  df['zigzag'] - df['ldz']
     return df
+
+def add_stable_ma_direction(df:pd.DataFrame,period=10,kind:str='sma'):
+    """add 'dir_ma'"""
+    df['diff_ma'] = np.sign(df[kind].diff())
+    df['dir_ma'] = df['diff_ma'].rolling(period).mean()
+    return df
+
+def add_quantile_params(df:pd.DataFrame,period:int=10,kind:str='rsi',quantile:float=0.1):
+    """add 'top_q','bottom_q'"""
+    roll = df[kind].rolling(period)
+    df['top_q'] = roll.quantile(1-quantile)
+    df['bottom_q'] = roll.quantile(quantile)
+    return df

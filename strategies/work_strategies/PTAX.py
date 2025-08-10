@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 from request_functions.download_bitget import get_df
 from ForBots.Indicators.classic_indicators import add_donchan_channel,add_slice_df,add_big_volume,add_dynamics_ma,add_bollinger,add_over_bb,add_enter_price,add_buffer_add,add_buffer_sub,add_vangerchik,add_simple_dynamics_ma,add_vodka_channel,add_rsi,add_enter_price2close,add_macd,add_rsi_tw,add_adx,add_chop,add_kusuruken_channel,add_awesome_oscillator
-from ForBots.Indicators.pva_indicators import add_benefit,add_velcro_indicator,add_pc_stair_fast,add_integrity_index,add_cascade_channel,add_assessment_motion_index,add_hope_channel
+from ForBots.Indicators.pva_indicators import add_benefit,add_velcro_indicator,add_pc_stair_fast,add_integrity_index,add_cascade_channel,add_assessment_motion_index,add_hope_channel,add_quantile_params
 from ForBots.Indicators.help_pva_indicators import get_all_enter_exit_DC,get_all_lup
 from utils.help_trades import reverse_action,chep
 from strategies.work_strategies.BaseTA import BaseTABitget
@@ -656,42 +656,43 @@ class PTA16_ARTANIS(BaseTABitget):
 
 # TODO
 class PTA17_PHOENIX(BaseTABitget):
-    """period=60,threshold=30,period2=20"""
-    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=20,threshold=30,period2=20,threshold_velcro=50,rsi_mode=0):
+    """period=100,period_dc=20,period_rsi=20,period_velcro=50,threshold_velcro=30,use_stop=0"""
+    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=100,period_dc=20,period_rsi=20,period_velcro=50,threshold_velcro=30,use_stop=0):
         super().__init__(symbol, granularity, productType, n_parts, period)
-        self.threshold = threshold
         self.threshold_velcro = threshold_velcro
-        self.period2 = period2
-        self.rsi_mode = rsi_mode
+        self.period_dc = period_dc
+        self.period_rsi = period_rsi
+        self.period_velcro = period_velcro
+        self.use_stop = use_stop
     def preprocessing(self, df:pd.DataFrame):
-        df = add_donchan_channel(df,self.period)
-        df = add_velcro_indicator(df,self.period)
-        df = add_rsi(df,self.period2)
+        df = add_donchan_channel(df,self.period_dc)
+        df = add_velcro_indicator(df,self.period_velcro)
+        df = add_rsi(df,self.period_rsi)
+        df = add_quantile_params(df,self.period)
         df = add_enter_price2close(df)
         df = add_slice_df(df,period=self.period)
         return df
     def __call__(self, row, *args, **kwds):
-        nearest_long = row['high'] - row['close'] > row['close'] - row['low'] 
-        if row['low'] <= row['min_hb']:
-            if nearest_long:
-                    if row['velcro'] > 100-self.threshold_velcro:
-                        return 'long_pw'
-                    else:
-                        if self.rsi_mode:
-                            if row['rsi'] < self.threshold:
-                                return 'close_short_pw'
-                        else:
-                            return 'close_short_pw'
+        if row['velcro'] > 100-self.threshold_velcro: #long
+            # return 'short_pw'
+            if row['low'] <= row["avarege"]:
+                return 'long_pw'
+            else:
+                if self.use_stop:
+                    return 'close_short_pw'
 
-        if row['high'] >= row['max_hb']:
-                if row['velcro'] < self.threshold_velcro:
-                    return 'short_pw'
-                else:
-                    if self.rsi_mode:
-                        if row['rsi'] > 100-self.threshold:
-                            return 'close_long_pw'
-                    else:
-                        return 'close_long_pw'
+        elif row['velcro'] < self.threshold_velcro: #short
+            # return 'long_pw'
+            if row['high'] >= row["avarege"]:
+                return 'short_pw'
+            else:
+                if self.use_stop:
+                    return 'close_long_pw'
+        else: #range
+            if row['low'] <= row['min_hb'] and row['rsi'] <= row['bottom_q']:
+                return 'long_pw'
+            if row['high'] >= row['max_hb'] and row['rsi'] >= row['top_q']:
+                return 'short_pw'
 
 
 class PTA18_ARTAS(BaseTABitget):

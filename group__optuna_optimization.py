@@ -23,6 +23,8 @@ new_timeframe = '5min'
 reverse_test = False
 # reverse_test = True
 # feature_optimization = 'total_abs_fee'
+top_limit=1000
+bottom_limit=150
 
 # # Целевая функция для Optuna
 def objective(trial, df, ws, param_options, fee=0.0002):
@@ -64,6 +66,8 @@ def objective(trial, df, ws, param_options, fee=0.0002):
     df = strategy.preprocessing(df)
     # 3. Запускаем бэктест
     result = check_strategy_realistic_v1(df, strategy,fee,close_2330)[0]
+    if not bottom_limit <= result['count'] <= top_limit:
+        raise optuna.TrialPruned()
     
     # 4. Возвращаем метрику (например, Sharpe Ratio)
     return result['total_abs_fee']

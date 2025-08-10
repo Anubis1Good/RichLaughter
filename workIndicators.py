@@ -23,23 +23,17 @@ df = df.iloc[-200:]
 
 # df['down_diff'] = df['low'] - df['sma']
 # df = add_dzz_peaks(df,period=10,n_std=5)
-df = add_dzz_peaks(df,period=10,n_std=5,drop_last=False)
-df = add_pattern18_dzz_czd(df)
+# df = add_dzz_peaks(df,period=10,n_std=5,drop_last=False)
+# df = add_pattern18_dzz_czd(df)
 # Вычисляем текущий диапазон
-df = add_stop_loss_p18czd(df)
-# df = add_dzz_peaks(df,period=10,n_std=5)
+# df = add_stop_loss_p18czd(df)
+df = add_rsi(df)
 
-
-
-# df = add_buffer_dzz(df)
-
-# df = add_fractals(df,2)
-
-# df = add_average_fractals(df,2)
-
-
-# df = add_pattern18_dzz(df)
-# df = add_pattern18_dzz_shifted(df)
+df = add_quantile_params(df,100)
+df = add_sma(df)
+df = add_donchan_channel(df)
+df = add_integrity_index(df)
+df = add_stable_ma_direction(df)
 print(df.tail(10))
 # df.info()
 
@@ -47,7 +41,7 @@ print(df.tail(10))
 plot = True
 # plot = False
 if plot:
-    # plt.subplot(2,1,1)
+    plt.subplot(2,1,1)
     plt.grid() 
     draw_hb_chart_fast(df)
     # plt.plot(df['upper_channel'])
@@ -58,15 +52,15 @@ if plot:
     # plt.plot(df['stop_up'])
     # plt.plot(df['stop_down'])
     # plt.plot(df['lower_channel'])
-    # plt.plot(df['high_sma'])
+    plt.plot(df['sma'])
     # plt.plot(df['low_sma'])
     # plt.plot(df['regression_line'])
     # plt.plot(df['stair'])
     # plt.plot(df['hbzz'])
     # plt.plot(df['lbzz'])
-    plt.plot(df['zigzag'])
-    plt.plot(df['lsl'])
-    plt.plot(df['ssl'])
+    # plt.plot(df['zigzag'])
+    # plt.plot(df['lsl'])
+    # plt.plot(df['ssl'])
     # plt.plot(df['bzp1'], linestyle=':',color='g')
     # plt.plot(df['bzp2'], linestyle='-.',color='g')
     # plt.plot(df['bzp3'], linestyle=':',color='b')
@@ -91,9 +85,15 @@ if plot:
     #     plt.plot(df[k])
     # for k in 'max_hb, min_hb, avarege'.split(', '):
 
-    # ax1 = plt.gca()
-    # plt.subplot(2,1,2,sharex=ax1)
-    # plt.grid() 
+    ax1 = plt.gca()
+    plt.subplot(2,1,2,sharex=ax1)
+    plt.grid() 
+    # plt.plot(df['dir_ma'])
+    plt.plot(df['ii'])
+    # plt.plot(df['rsi'])
+    # plt.plot(df['top_q'])
+    # plt.plot(df['bottom_q'])
+
     # plt.bar(df.index.to_series(),df['dvsai'])
     # plt.plot(df['chaikin_volatility'],color='red')
     # plt.plot(df['spred'],color='red')
