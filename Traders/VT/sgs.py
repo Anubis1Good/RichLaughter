@@ -2,7 +2,7 @@ stock_groups= {
     'LI':(
         'IMOEXF',
         'ROSN',
-        'FESH',
+        'QIWI',
         'LSRG',
         'CBOM',
         'TRMK',
@@ -18,8 +18,8 @@ stock_groups= {
         'VTBR2',
         'APTK2',
         'RUAL2',
-        'KZOSP2',
-        'QIWI2',
+        'KZOSP2', 
+        'QIWI2', 
         'UWGN2'
     )
 }
