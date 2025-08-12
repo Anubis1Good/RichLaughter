@@ -1044,3 +1044,85 @@ def add_quantile_params(df:pd.DataFrame,period:int=10,kind:str='rsi',quantile:fl
     df['top_q'] = roll.quantile(1-quantile)
     df['bottom_q'] = roll.quantile(quantile)
     return df
+
+def add_mean_dzz_peaks(df: pd.DataFrame, period=2, buffer=0.1):
+    """add 'top_mean','bottom_mean','delta_mean'"""
+    df = df.copy()
+    peaks = df[~pd.isna(df['zigzag_peaks'])].copy()  # Добавляем .copy() здесь
+    
+    # Создаем копии для top и bottom peaks
+    top_peaks = peaks[peaks['zigzag_direction'] == 1].copy()
+    bottom_peaks = peaks[peaks['zigzag_direction'] == -1].copy()
+    
+    # Используем .loc для присвоения значений
+    top_peaks.loc[:, 'top_mean'] = top_peaks['high'].rolling(period).mean()
+    bottom_peaks.loc[:, 'bottom_mean'] = bottom_peaks['low'].rolling(period).mean()
+    
+    # Объединяем результаты обратно
+    df = df.join(top_peaks[['top_mean']], how='left')
+    df = df.join(bottom_peaks[['bottom_mean']], how='left')
+    
+    df['top_mean'] = df['top_mean'].ffill()
+    df['bottom_mean'] = df['bottom_mean'].ffill()
+    df['delta_mean'] = df['top_mean'] - df['bottom_mean']
+    df['buffer_mean'] = df['delta_mean']  * buffer
+    df['top_mean'] = df['top_mean'] - df['buffer_mean']
+    df['bottom_mean'] = df['bottom_mean'] + df['buffer_mean']
+    
+    return df
+
+def add_plusdelta_dzz_peaks(df: pd.DataFrame, period=2, buffer=0.1):
+    """add 'top_pd','bottom_pd','delta_pd'"""
+    df = df.copy()
+    peaks = df[~pd.isna(df['zigzag_peaks'])].copy()  # Добавляем .copy() здесь
+    
+    # Создаем копии для top и bottom peaks
+    top_peaks = peaks[peaks['zigzag_direction'] == 1].copy()
+    bottom_peaks = peaks[peaks['zigzag_direction'] == -1].copy()
+    
+    # Используем .loc для присвоения значений
+    top_peaks.loc[:, 'delta'] = top_peaks['high'].diff()
+    bottom_peaks.loc[:, 'delta'] = bottom_peaks['low'].diff()
+    top_peaks.loc[:, 'delta_mean'] = top_peaks['delta'].rolling(period).mean()
+    bottom_peaks.loc[:, 'delta_mean'] = bottom_peaks['delta'].rolling(period).mean()
+    top_peaks.loc[:, 'top_pd'] = top_peaks['high'] + top_peaks['delta_mean']
+    bottom_peaks.loc[:, 'bottom_pd'] = bottom_peaks['low'] + bottom_peaks['delta_mean']
+    # Объединяем результаты обратно
+    df = df.join(top_peaks[['top_pd']], how='left')
+    df = df.join(bottom_peaks[['bottom_pd']], how='left')
+    
+    df['top_pd'] = df['top_pd'].ffill()
+    df['bottom_pd'] = df['bottom_pd'].ffill()
+    df['delta_pd'] = df['top_pd'] - df['bottom_pd']
+    df['buffer_mean'] = df['delta_pd']  * buffer
+    df['top_pd'] = df['top_pd'] - df['buffer_mean']
+    df['bottom_pd'] = df['bottom_pd'] + df['buffer_mean']
+    return df
+
+def add_exp_plusdelta_dzz_peaks(df: pd.DataFrame, period=2, buffer=0.1):
+    """add 'top_pd','bottom_pd','delta_pd'"""
+    df = df.copy()
+    peaks = df[~pd.isna(df['zigzag_peaks'])].copy()  # Добавляем .copy() здесь
+    
+    # Создаем копии для top и bottom peaks
+    top_peaks = peaks[peaks['zigzag_direction'] == 1].copy()
+    bottom_peaks = peaks[peaks['zigzag_direction'] == -1].copy()
+    
+    # Используем .loc для присвоения значений
+    top_peaks.loc[:, 'delta'] = top_peaks['high'].diff()
+    bottom_peaks.loc[:, 'delta'] = bottom_peaks['low'].diff()
+    top_peaks.loc[:, 'delta_mean'] = top_peaks['delta'].ewm(period).mean()
+    bottom_peaks.loc[:, 'delta_mean'] = bottom_peaks['delta'].ewm(period).mean()
+    top_peaks.loc[:, 'top_pd'] = top_peaks['high'] + top_peaks['delta_mean']
+    bottom_peaks.loc[:, 'bottom_pd'] = bottom_peaks['low'] + bottom_peaks['delta_mean']
+    # Объединяем результаты обратно
+    df = df.join(top_peaks[['top_pd']], how='left')
+    df = df.join(bottom_peaks[['bottom_pd']], how='left')
+    
+    df['top_pd'] = df['top_pd'].ffill()
+    df['bottom_pd'] = df['bottom_pd'].ffill()
+    df['delta_pd'] = df['top_pd'] - df['bottom_pd']
+    df['buffer_mean'] = df['delta_pd']  * buffer
+    df['top_pd'] = df['top_pd'] - df['buffer_mean']
+    df['bottom_pd'] = df['bottom_pd'] + df['buffer_mean']
+    return df

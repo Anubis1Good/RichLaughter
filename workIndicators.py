@@ -22,26 +22,36 @@ df = df.iloc[-200:]
 # df = df.iloc[10:510]
 
 # df['down_diff'] = df['low'] - df['sma']
-# df = add_dzz_peaks(df,period=10,n_std=5)
+df = add_dzz_peaks(df,period=10,n_std=5)
 # df = add_dzz_peaks(df,period=10,n_std=5,drop_last=False)
+
+
+
+# df = add_mean_dzz_peaks(df)
+# df = add_plusdelta_dzz_peaks(df)
+df = add_exp_plusdelta_dzz_peaks(df)
 # df = add_pattern18_dzz_czd(df)
 # Вычисляем текущий диапазон
 # df = add_stop_loss_p18czd(df)
-df = add_rsi(df)
+# df = add_rsi(df)
 
-df = add_quantile_params(df,100)
-df = add_sma(df)
-df = add_donchan_channel(df)
-df = add_integrity_index(df)
-df = add_stable_ma_direction(df)
+# df = add_quantile_params(df,100)
+# df = add_sma(df)
+# df = add_donchan_channel(df)
+# df = add_integrity_index(df)
+# df = add_stable_ma_direction(df)
 print(df.tail(10))
 # df.info()
 
 
 plot = True
 # plot = False
+use_sublot2 = True
+use_sublot2 = False
+
 if plot:
-    plt.subplot(2,1,1)
+    if use_sublot2:
+        plt.subplot(2,1,1)
     plt.grid() 
     draw_hb_chart_fast(df)
     # plt.plot(df['upper_channel'])
@@ -52,13 +62,15 @@ if plot:
     # plt.plot(df['stop_up'])
     # plt.plot(df['stop_down'])
     # plt.plot(df['lower_channel'])
-    plt.plot(df['sma'])
-    # plt.plot(df['low_sma'])
-    # plt.plot(df['regression_line'])
+    # plt.plot(df['sma'])
+    # plt.plot(df['top_mean'])
+    # plt.plot(df['bottom_mean'])
+    plt.plot(df['top_pd'])
+    plt.plot(df['bottom_pd'])
     # plt.plot(df['stair'])
     # plt.plot(df['hbzz'])
     # plt.plot(df['lbzz'])
-    # plt.plot(df['zigzag'])
+    plt.plot(df['zigzag'])
     # plt.plot(df['lsl'])
     # plt.plot(df['ssl'])
     # plt.plot(df['bzp1'], linestyle=':',color='g')
@@ -84,12 +96,12 @@ if plot:
     # for k in (('max_hb', 'min_hb', 'avarege')):
     #     plt.plot(df[k])
     # for k in 'max_hb, min_hb, avarege'.split(', '):
-
-    ax1 = plt.gca()
-    plt.subplot(2,1,2,sharex=ax1)
-    plt.grid() 
+    if use_sublot2:
+        ax1 = plt.gca()
+        plt.subplot(2,1,2,sharex=ax1)
+        plt.grid() 
     # plt.plot(df['dir_ma'])
-    plt.plot(df['ii'])
+    # plt.plot(df['ii'])
     # plt.plot(df['rsi'])
     # plt.plot(df['top_q'])
     # plt.plot(df['bottom_q'])

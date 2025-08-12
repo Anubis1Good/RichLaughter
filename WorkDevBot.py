@@ -11,7 +11,7 @@ from utils.draw_utils import draw_lite_chart,draw_chart_channel,draw_hb_chart,dr
 from strategies.test_strategies.check import check_strategy,check_strategy_v3_LSC,check_strategy_v4,check_strategy_v5,check_strategy_realistic_v1
 from strategies.work_strategies.HelpTA import get_rws
 # from strategies.work_strategies.PTA import PTA2_DDCrWork as WS
-from strategies.work_strategies.PTAX import PTA17_PHOENIX as WS
+# from strategies.work_strategies.PTAX import PTA17_PHOENIX as WS
 # from strategies.work_strategies.PTAXX import PTA25_ as WS
 # from strategies.work_strategies.STA_ca import STA3_LITE as WS
 # from strategies.work_strategies.GLTA import GLTA2_ALPHA as WS
@@ -21,7 +21,7 @@ from strategies.work_strategies.PTAX import PTA17_PHOENIX as WS
 # from strategies.work_strategies.LTA import LTA_CC as WS
 # from strategies.work_strategies.LTA2 import LTA2_DRG as WS
 # from strategies.work_strategies.VSAT import VSAT1_VENUS as WS
-# from strategies.work_strategies.PSTA0 import PSTA8_AVENGER as WS
+from strategies.work_strategies.PSTA0 import PSTA9_BIRDWATCHER as WS
 # from strategies.work_strategies.MTA import MTA_LORD as WS
 # from strategies.work_strategies.STA_ml2 import STAML2a_PHENOMENON as WS
 # from strategies.work_strategies.STA_ml import STAML1_XGBR2_DC as WS
@@ -130,7 +130,10 @@ else:
     # plt.plot(df['bzp4'], linestyle='-.',color='b')
     # plt.plot(df['btarget'], linestyle='--',color='r')
     # draw_bollinger(df)
-    # plt.plot(df['stair'])
+    # plt.plot(df['top_stop'],color='r')
+    # plt.plot(df['bottom_stop'],color='r')
+    # plt.plot(df['top_mean'],color='b')
+    # plt.plot(df['bottom_mean'],color='b')
     # plt.plot(df['stair_s'])
     # plt.plot(df['top_kvas'])
     # if len(longs1.shape) > 1:
