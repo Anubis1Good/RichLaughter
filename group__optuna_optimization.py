@@ -16,10 +16,10 @@ from utils.processing_results.add_vtb_fee_fut import get_func_vtb_fee
 from utils.work_with_dataframe.convert_timeframe import convert_timeframe
 phys_cores = psutil.cpu_count(logical=False) 
 
-save_cores = 1
+save_cores = 2
 close_2330 = True
 new_timeframe = None
-new_timeframe = '5min'
+# new_timeframe = '5min'
 reverse_test = False
 # reverse_test = True
 # feature_optimization = 'total_abs_fee'
