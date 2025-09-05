@@ -15,18 +15,18 @@ today = date.today()
 start_date = str(today - timedelta(days=60))
 # start_date = '2025-02-01'
 fut = True
-fut = False
+# fut = False
 from request_functions.download_moex import save_df
-# tickers = ['NGN5','BRQ5','MMU5','RMU5','GZU5','IMOEXF','EDU5','SRU5',]
+tickers = ['NGU5','BRV5','MMU5','RMU5','GZU5','IMOEXF','SRU5','SVU5']
 # tickers = ['IMOEXF']
 # tickers = ['CNYRUBF']
 # tickers = ['SRU5','CRU5','CNYRUBF','EDU5']
-tickers = ['UWGN','QIWI','APTK','KZOSP','CBOM','TRMK','SELG','GMKN','VTBR','MTLR','NMTP','ROSN','FESH','RUAL','LSRG']
+# tickers = ['UWGN','QIWI','APTK','KZOSP','CBOM','TRMK','SELG','GMKN','VTBR','MTLR','NMTP','ROSN','FESH','RUAL','LSRG']
 # from Traders.TestingTrader.tickers_groups import tickersMoexStock2
 # tickers = [x[0] for x in tickersMoexStock2]
 print(tickers)# # tickers = ['SBER','ROSN','GAZP',"MTLR","VTBR","NLMK"]
 folder_save = 'DataForTests\DataFromMoexForStepTests'
-folder_save = 'DataForTests\DataFromMoexFastStock'
+# folder_save = 'DataForTests\DataFromMoexFastStock'
 for ticker in tickers:
     print(ticker)
     if fut:

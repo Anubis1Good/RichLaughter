@@ -8,22 +8,22 @@ import multiprocessing as mp
 from tqdm import tqdm
 from multiprocessing import Pool
 from functools import partial
-# from strategies.test_strategies.check import check_strategy_v3
-from strategies.test_strategies.check import check_strategy_realistic_v1
+from strategies.test_strategies.check import check_strategy_v3
+# from strategies.test_strategies.check import check_strategy_realistic_v1
 from strategies.work_strategies.HelpTA import get_rws
 from Loader.BitgetLoader import bitget_loader
 from utils.processing_results.add_vtb_fee_fut import get_func_vtb_fee
 from utils.work_with_dataframe.convert_timeframe import convert_timeframe
 phys_cores = psutil.cpu_count(logical=False) 
 
-save_cores = 2
+save_cores = 3
 close_2330 = True
 new_timeframe = None
-new_timeframe = '5min'
+# new_timeframe = '5min'
 reverse_test = False
 # reverse_test = True
 # feature_optimization = 'total_abs_fee'
-top_limit=1000
+top_limit=600
 bottom_limit=150
 
 # # Целевая функция для Optuna
@@ -65,7 +65,8 @@ def objective(trial, df, ws, param_options, fee=0.0002):
     )
     df = strategy.preprocessing(df)
     # 3. Запускаем бэктест
-    result = check_strategy_realistic_v1(df, strategy,fee,close_2330)[0]
+    # result = check_strategy_realistic_v1(df, strategy,fee,close_2330)[0]
+    result = check_strategy_v3(df, strategy,fee,close_2330)[0]
     if not bottom_limit <= result['count'] <= top_limit:
         raise optuna.TrialPruned()
     
@@ -105,7 +106,8 @@ def get_optimization_results_table(study, df, strategy_class, param_options, nee
         processed_df = strategy.preprocessing(df.copy())
         
         # Запускаем бэктест
-        trades, eq, eq_f,_,_,_ = check_strategy_realistic_v1(processed_df, strategy,fee,close_2330)
+        # trades, eq, eq_f,_,_,_ = check_strategy_realistic_v1(processed_df, strategy,fee,close_2330)
+        trades, eq, eq_f = check_strategy_v3(processed_df, strategy,fee,close_2330)
         
         # Формируем имя файла
         name_doc = f"{ticker}_{name_bot}"
@@ -241,7 +243,7 @@ if __name__ == '__main__':
 
 
     from Optimiztion.optimizations_groups.optuna_exp_groups import group
-    # from Optimiztion.optimizations_groups.optuna_groups import group
+    from Optimiztion.optimizations_groups.optuna_groups import group
 
     # group = [(get_rws(x[0]),x[1]) for x in group]
     # test_folder = 'DataForTests\DataFromMOEX'

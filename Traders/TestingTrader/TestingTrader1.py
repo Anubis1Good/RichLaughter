@@ -117,6 +117,21 @@ class TestingTrader1:
         
     def run(self):
         while True:
+            if 'MOEX' in self.exchange:
+                dt = datetime.now()
+                hour = dt.hour
+                minute = dt.minute
+                self.output(hour,minute,self.exchange)
+                # print(hour,minute,self.exchange)
+                if hour > 9:
+                    break
+                if hour == 9 and minute > 5:
+                    break
+                sleep(5*60)
+            else:
+                break
+        self.output('starttime',hour,minute,self.exchange)
+        while True:
             if self.check_time2:
                 start = time()
             try:
