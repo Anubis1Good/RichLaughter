@@ -7,8 +7,8 @@ from time import time
 from tqdm import tqdm
 from multiprocessing import Pool
 from functools import partial
-# from strategies.test_strategies.check import check_strategy_v6
-from strategies.test_strategies.check import check_strategy_step_realistic_v1
+from strategies.test_strategies.check import check_strategy_v6
+# from strategies.test_strategies.check import check_strategy_step_realistic_v1
 from Loader.BitgetLoader import bitget_loader
 # from strategies.work_strategies.PTA import PTA4_WDDCr,PTA4_WDDCrE,PTA4_WDDCrVG,PTA4_WDVCr,PTA4_WLISICA,PTA8_WDOBBY_FREEr,PTA4_UNIVERSAL,PTA2_LISICA,PTA2_DDCrWork,PTA2_BDDCr_UNIVERSAL,PTA2_BDDC_FIX,PTA2_BVGFIX,PTA2_BBBU,PTA2_BBBUr,PTA2_DDCrVG,PTA2_DVCr,PTA2_VOLCHARA,PTA4_U3
 # from Traders.TestingTrader.wss_groups import wssMoexFut5 as wss
@@ -25,7 +25,7 @@ phys_cores = psutil.cpu_count(logical=False)
 main_folder = 'TestNewResults/ChildTest'
 if not os.path.exists(main_folder):
     os.makedirs(main_folder)
-save_cores = 4
+save_cores = 1
 fee = 0.0002
 close_2330 = True
 need_plot = True
@@ -53,7 +53,8 @@ def process_ws(variant_name,image_folder, xls_folder, clear_df,ws):
         
         # Создаем стратегию и проверяем ее
         strategy = ws[0](variant_name, '5', "1", 1, *ws[1])
-        trades,equity,equity_fee,_,_,_,_ = check_strategy_step_realistic_v1(clear_df.copy(), strategy, fee, close_2330,timeframe)
+        # trades,equity,equity_fee,_,_,_,_ = check_strategy_step_realistic_v1(clear_df.copy(), strategy, fee, close_2330,timeframe)
+        trades,equity,equity_fee,longs,shorts,closes,df_big = check_strategy_v6(clear_df.copy(), strategy, fee, close_2330,timeframe)
         print(name_file)
         # Сохраняем график если нужно
         if need_plot:
