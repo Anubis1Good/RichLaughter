@@ -1,10 +1,13 @@
 import os
 import pandas as pd
+import numpy as np
 import matplotlib.pyplot as plt
 import sqlite3
 import shutil
 import traceback
 from datetime import datetime
+from sklearn.linear_model import LinearRegression
+from scipy import stats
 from utils.processing_results.add_vtb_fee_fut import get_func_vtb_fee
 
 
@@ -424,6 +427,160 @@ def create_chart(image_path,ticker_name,ticker_id,conn,performance_records,query
         
         print(f"График сохранен: {plot_filename}")
 
+def analisys_db_alternative(db_path: str):
+    conn = sqlite3.connect(db_path)
+    query = '''
+        SELECT 
+            r.id AS bot_id,
+            r.name AS bot,
+            t.name AS ticker,
+            MIN(hp.open_timestamp) AS start_trade_date,
+            MAX(hp.close_timestamp) AS last_trade_date,
+            AVG(hp.close_price) AS avg_close_price,
+            SUM(hp.fee) AS total_fee,
+            SUM(hp.result) AS total_result,
+            COUNT(*) AS total_trades,
+            SUM(hp.result_fee) AS total_result_fee,
+            ROUND(AVG(CASE 
+                    WHEN hp.result_fee < 0 
+                    THEN ABS(hp.result_fee) * 100.0 / NULLIF(hp.open_price, 0) 
+                    ELSE 0 
+                    END), 2) AS avgdd,
+            ROUND(MAX(CASE 
+                    WHEN hp.result_fee < 0 
+                    THEN ABS(hp.result_fee) * 100.0 / NULLIF(hp.open_price, 0) 
+                    ELSE 0 
+                    END), 2) AS maxdd,
+            ROUND(AVG(hp.result_fee * 100.0 / NULLIF(hp.open_price, 0)), 2) AS avgt,
+            ROUND(MAX(hp.result_fee * 100.0 / NULLIF(hp.open_price, 0)), 2) AS maxp,
+            ROUND(AVG(CASE WHEN hp.result_fee >= 0 THEN 1.0 ELSE 0.0 END) * 100, 2) AS win_rate
+        FROM 
+            history_positions hp
+        JOIN 
+            robots r ON hp.robot_id = r.id
+        JOIN 
+            tickers t ON hp.ticker_id = t.id
+        GROUP BY 
+            r.id, r.name, t.name
+        ORDER BY 
+            r.name, t.name
+        '''
+    df = pd.read_sql_query(query, conn)
+    conn.close()
+    
+    # Добавляем метрики сравнения с идеальной 45-градусной линией
+    df = add_equity_quality_metrics(df, db_path)
+    df = add_days(df)
+    process_history_position(df, 'All', db_path)
+    
+    return df
+
+def add_equity_quality_metrics(df, db_path):
+    """
+    Анализ качества equity curve относительно идеальной 45-градусной линии
+    """
+    conn = sqlite3.connect(db_path)
+    
+    quality_metrics = []
+    
+    for _, row in df.iterrows():
+        bot_id = row['bot_id']
+        ticker = row['ticker']
+        total_result = row['total_result_fee']
+        
+        # Получаем историю сделок с кумулятивным результатом
+        query = f'''
+            SELECT 
+                hp.close_timestamp,
+                hp.result_fee,
+                SUM(hp.result_fee) OVER (ORDER BY hp.close_timestamp) AS cumulative_result
+            FROM 
+                history_positions hp
+            JOIN 
+                robots r ON hp.robot_id = r.id
+            JOIN 
+                tickers t ON hp.ticker_id = t.id
+            WHERE 
+                r.id = {bot_id} AND t.name = '{ticker}'
+            ORDER BY 
+                hp.close_timestamp
+            '''
+        
+        history_df = pd.read_sql_query(query, conn)
+        
+        if len(history_df) > 2:  # Нужно минимум 3 точки для meaningful анализа
+            time_points = np.arange(len(history_df))
+            equity_curve = history_df['cumulative_result'].values
+            
+            # 1. Идеальная 45-градусная линия (линейный рост от 0 до total_result)
+            ideal_line = np.linspace(0, total_result, len(history_df))
+            
+            # 2. Фактическая линейная регрессия
+            X = time_points.reshape(-1, 1)
+            actual_model = LinearRegression()
+            actual_model.fit(X, equity_curve)
+            actual_line = actual_model.predict(X)
+            actual_slope = actual_model.coef_[0]
+            
+            # 3. Метрики отклонения от идеальной линии
+            deviations = equity_curve - ideal_line
+            absolute_deviations = np.abs(deviations)
+            
+            # 4. Ключевые метрики качества
+            metrics = {
+                'bot_id': bot_id,
+                'ticker': ticker,
+                'equity_angle_deg': np.degrees(np.arctan(actual_slope)),  # Угол наклона в градусах
+                'max_deviation_abs': np.max(absolute_deviations),  # Макс абсолютное отклонение
+                'mean_deviation_abs': np.mean(absolute_deviations),  # Среднее абсолютное отклонение
+                'max_deviation_pct': (np.max(absolute_deviations) / total_result * 100 
+                                    if total_result != 0 else 0),  # Макс отклонение в %
+                'mean_deviation_pct': (np.mean(absolute_deviations) / total_result * 100 
+                                     if total_result != 0 else 0),  # Среднее отклонение в %
+                'std_deviation': np.std(deviations),  # Стандартное отклонение
+                'mse_ideal': np.mean(deviations**2),  # MSE относительно идеала
+                'r_squared_ideal': 1 - (np.sum(deviations**2) / 
+                                      np.sum((equity_curve - np.mean(equity_curve))**2)),
+                'sharpe_ratio': (np.mean(history_df['result_fee']) / 
+                                np.std(history_df['result_fee']) * np.sqrt(252) 
+                                if np.std(history_df['result_fee']) != 0 else 0),
+                'calmar_ratio': (total_result / np.max(absolute_deviations) 
+                               if np.max(absolute_deviations) != 0 else 0),
+                'profit_factor': (np.sum(history_df[history_df['result_fee'] > 0]['result_fee']) / 
+                                abs(np.sum(history_df[history_df['result_fee'] < 0]['result_fee'])) 
+                                if np.sum(history_df[history_df['result_fee'] < 0]['result_fee']) != 0 else float('inf'))
+            }
+            
+        else:
+            # Минимальные значения для коротких серий
+            metrics = {
+                'bot_id': bot_id,
+                'ticker': ticker,
+                'equity_angle_deg': 0,
+                'max_deviation_abs': 0,
+                'mean_deviation_abs': 0,
+                'max_deviation_pct': 0,
+                'mean_deviation_pct': 0,
+                'std_deviation': 0,
+                'mse_ideal': 0,
+                'r_squared_ideal': 0,
+                'sharpe_ratio': 0,
+                'calmar_ratio': 0,
+                'profit_factor': 0
+            }
+        
+        quality_metrics.append(metrics)
+    
+    conn.close()
+    
+    # Создаем DataFrame с метриками качества
+    quality_df = pd.DataFrame(quality_metrics)
+    
+    # Объединяем с основным DataFrame
+    result_df = pd.merge(df, quality_df, on=['bot_id', 'ticker'], how='left')
+    
+    return result_df
+
 need_equity_chart = False
 # need_equity_chart = True
 need_equity_last_chart = False
@@ -445,6 +602,7 @@ if __name__ == '__main__':
                 file_path = os.path.join(folder,file)
                 if need_analisys:
                     analisys_db(file_path)
+                    # analisys_db_alternative(file_path)
                 if need_last:
                     analisys_db_last(file_path)
                 if need_n_days:
