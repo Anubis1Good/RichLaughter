@@ -30,7 +30,8 @@ from strategies.work_strategies.PSTA0 import PSTA9_BIRDWATCHER as WS
 
 
 # raw_file = 'DataForTests\DataFromMoexForStepTests\EDU5_1_1753990596.csv'
-raw_file = 'DataForTests\DataFromMoexForStepTests\MMU5_1_1753990575.csv'
+# raw_file = 'DataForTests\DataFromMoexForStepTests\BRV5_1_1756718182.csv'
+raw_file = 'DataForTests\DataFromBitget\SUSHIUSDT_5m_1758294003.csv'
 
 
 longs = []
@@ -39,7 +40,8 @@ closes = []
 start = time()
 
 df = bitget_loader(raw_file)
-df = convert_timeframe(df,'5min')
+# df = convert_timeframe(df,'5min')
+df = convert_timeframe(df,'30min')
 period = 20
 multiplier = 2
 symbol = "DOGEUSDT"

@@ -3,7 +3,7 @@ import pandas as pd
 from time import time,sleep
 from request_functions.get_bybit import get_bybit_history_candles
 from tqdm import tqdm
-
+# import datetime
 
 # TODO
 def download_bybit(symbol="BTCUSDT",granularity="1",n_parts=10):
@@ -32,6 +32,7 @@ def create_df(df):
             df[c] = df[c].apply(float)
     df['direction'] = df.apply(lambda row: 1 if row['open'] < row['close'] else -1, axis=1)
     df['middle'] = df.apply(lambda row: (row['high']+row['low'])/2,axis=1)
+    df = df.sort_values('ms',axis=0)
     df = df.reset_index()
     df['x'] = df.index
     df = df.drop(['index'],axis=1)
@@ -51,5 +52,5 @@ def save_df(symbol="BTCUSDT",granularity="60",n_parts=10,path_folder='DataForTes
     print(df.tail())
     if not os.path.exists(path_folder):
         os.makedirs(path_folder)
-    path = os.path.join(path_folder,symbol+"_"+granularity+'_'+str(time()).split(".")[0]+'.csv')
+    path = os.path.join(path_folder,symbol+"_"+str(granularity)+'_'+str(time()).split(".")[0]+'.csv')
     df.to_csv(path)

@@ -16,15 +16,17 @@ from utils.processing_results.add_vtb_fee_fut import get_func_vtb_fee
 from utils.work_with_dataframe.convert_timeframe import convert_timeframe
 phys_cores = psutil.cpu_count(logical=False) 
 
-save_cores = 3
+save_cores = 2
 close_2330 = True
 new_timeframe = None
 # new_timeframe = '5min'
+new_timeframe = '30min'
 reverse_test = False
 # reverse_test = True
 # feature_optimization = 'total_abs_fee'
 top_limit=600
-bottom_limit=150
+# bottom_limit=150
+bottom_limit=100
 
 # # Целевая функция для Optuna
 def objective(trial, df, ws, param_options, fee=0.0002):
@@ -251,8 +253,10 @@ if __name__ == '__main__':
     # test_folder = 'DataForTests\DataFromMoexFastStock'
     test_folder = 'DataForTests\DataFromMoexForStepTests'
     # test_folder = 'DataForTests\DataFromMoexTemp'
-    # test_folder = 'DataForTests\DataFromBitget'
-    min_fee: float = 0.0002
+    test_folder = 'DataForTests\DataFromBitget'
+    # test_folder = 'DataForTests\DataFromBybit'
+    min_fee = 0.001
+    # min_fee: float = 0.0002
     # min_fee: float = 0.0004
     # min_fee: float = 0.00002
     # min_fee: float = 0.0004
