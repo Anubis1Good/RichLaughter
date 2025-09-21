@@ -8,10 +8,11 @@ from Loader.BitgetLoader import bitget_loader
 from utils.work_with_dataframe.convert_timeframe import convert_timeframe
 from utils.draw_utils import draw_hb_chart_fast
 # from ForBots.Indicators.classic_indicators import add_donchan_channel,add_vangerchik,add_sma, add_slice_df,add_bollinger,add_over_bb,add_attached_bb,add_big_volume,add_dynamics_ma
-from strategies.test_strategies.check import check_strategy_v6,check_strategy_step_realistic_v1
+# from strategies.test_strategies.check import check_strategy_v6,check_strategy_step_realistic_v1
+from strategies.test_strategies.check import check_strategy_v6
 # from strategies.work_strategies.PTA import PTA2_DDCrWork as WS
 # from strategies.work_strategies.PTAX import PTA10_WIZARD as WS
-from strategies.work_strategies.PTAXX import PTA24_ as WS
+from strategies.work_strategies.PTAXX import PTA25_TASSADAR as WS
 # from strategies.work_strategies.STA_ca import STA3_LITE as WS
 # from strategies.work_strategies.GLTA import GLTA2_ALPHA as WS
 # from strategies.work_strategies.GLTA import GLTA2_BETA as WS
@@ -31,6 +32,7 @@ from strategies.work_strategies.PTAXX import PTA24_ as WS
 
 
 raw_file = 'DataForTests\DataFromMoexForStepTests\MMU5_1_1753990575.csv'
+raw_file = 'DataForTests\DataFromBitget\DOGEUSDT_5m_1758293163.csv'
 
 longs = []
 shorts = []
@@ -43,6 +45,7 @@ period = 20
 multiplier = 2
 symbol = "DOGEUSDT"
 granularity = "5m"
+granularity = "30min"
 slope = 4
 #  (PTA18_REXXAR,(100,5,10,50,30)),   
 # bot = WS(symbol,granularity,'e',1,100,7,10,10,40,10,0)
@@ -56,7 +59,8 @@ bot = WS(symbol,granularity,'e',1)
 # print(trades)
 # trades,equity,equity_fee,longs,shorts,closes = check_strategy_v4(df.copy(),bot)
 # trades,equity,equity_fee,longs,shorts,closes,df = check_strategy_v6(df.copy(),bot)
-trades,equity,equity_fee,longs,shorts,closes,df = check_strategy_step_realistic_v1(df.copy(),bot)
+# trades,equity,equity_fee,longs,shorts,closes,df = check_strategy_step_realistic_v1(df.copy(),bot)
+trades,equity,equity_fee,longs,shorts,closes,df = check_strategy_v6(df.copy(),bot,timeframe=granularity)
 # print(trades)
 # trades,equity,equity_fee = check_strategy_v5(df,bot)
 # conf = (20,55,12,25,20)

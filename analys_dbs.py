@@ -35,6 +35,21 @@ def process_history_position(result:pd.DataFrame,suffix,db_path):
         result['pred'] = result['avgt'] * result['cd']
         result['trd'] = result['total_result'] / result['days']
         result['trd_vtb'] = result['vtbf_res'] / result['days']
+        cols = result.columns.tolist()
+
+        # Удаляем целевые столбцы из текущих позиций
+        for col in ['cd', 'pred', 'trd', 'trd_vtb','vtbf_res']:
+            if col in cols:
+                cols.remove(col)
+
+        # Вставляем целевые столбцы на нужные позиции
+        cols[7:7] = ['cd', 'pred', 'trd', 'trd_vtb','vtbf_res']  # Вставляем перед 6-м индексом
+        for col in ['start_trade_date','last_trade_date']:
+            if col in cols:
+                cols.remove(col)
+        cols[-1:-1] = ['start_trade_date','last_trade_date']
+        # Применяем новый порядок столбцов
+        result = result[cols]
     result = result.sort_values(by=['ticker','avgt'],axis=0,ascending=[True,False])
     result = result.reset_index(drop=True)
 

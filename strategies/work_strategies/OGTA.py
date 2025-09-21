@@ -40,7 +40,7 @@ class OGTA1_Rails(BaseTABitget):
         #     return 'long_pw'
         
 
-# class OGTA2_Rails(BaseTABitget):
+class OGTA2_Rails(BaseTABitget):
     def preprocessing(self, df):
         df = add_spred(df)
         df['mean_spred'] = df['spred'].mean()

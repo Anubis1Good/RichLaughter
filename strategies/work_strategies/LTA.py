@@ -380,7 +380,7 @@ class LTA_OKROSHKA2(BaseTABitget):
         super().__init__(symbol, granularity, productType, n_parts, period)
         self.period_chop = period_chop
     def preprocessing(self, df):
-        df = add_rsi_tw(df,self.period)
+        df = add_rsi_tw(df,self.period) #diff with OKROSHKA1
         df = add_chop(df,self.period_chop)
         df = add_enter_price2close(df)  
         period = max(self.period,self.period_chop)

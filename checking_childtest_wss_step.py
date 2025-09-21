@@ -25,15 +25,20 @@ phys_cores = psutil.cpu_count(logical=False)
 main_folder = 'TestNewResults/ChildTest'
 if not os.path.exists(main_folder):
     os.makedirs(main_folder)
-save_cores = 1
-fee = 0.0002
+save_cores = 3
+# fee = 0.0002
+fee = 0.001
 close_2330 = True
+close_2330 = False
 need_plot = True
-timeframe = '5min'
+# timeframe = '5min'
+timeframe = '30min'
 # test_folder = 'DataForTests\DataFromMoexFast'
-test_folder = 'DataForTests\DataFromMoexForStepTests'
+# test_folder = 'DataForTests\DataFromMoexForStepTests'
 # test_folder = 'DataForTests\DataFromMoexFastStock'
 # test_folder = 'DataForTests\DataFromMOEX'
+# test_folder = 'DataForTests\DataFromBitget'
+test_folder = 'DataForTests\DataFromBybit'
 list_dir = os.listdir(test_folder)
 
 

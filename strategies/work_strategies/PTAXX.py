@@ -469,7 +469,8 @@ class PTA25_TASSADAR(BaseTABitget):
                 return 'close_short_pw'
             if row['close'] < row['lsl']:
                 return 'close_long_pw'
-            
+
+#TODO    
 class PTA26_(BaseTABitget):
     """period=100,n_stairs=3,period2=10,threshold=30,threshold_ii=25"""
     def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=100,n_stairs=3,period2=10,threshold=30,threshold_ii=25):

@@ -31,15 +31,27 @@ bot_on_ticker = (
         (MTA_LIGHT,(100,'KING_5_MOEX_FUT')),
         (
             ('MMZ5','SPBFUT','M5',1),
-            ('GZZ5','SPBFUT','M5',1),
-            ('IMOEXF','SPBFUT','M5',1),
+            ('RMZ5','SPBFUT','M5',1),
             ('SRZ5','SPBFUT','M5',1),
+            #-
+            ('GZZ5','SPBFUT','M5',1),
+            #+
+            ('GAZPF','SPBFUT','M5',1),
             
-            # ('RMU5','SPBFUT','M5',1),
+            # ('IMOEXF','SPBFUT','M5',1),
             # ('BRV5','SPBFUT','M5',1),
             # ('NGU5','SPBFUT','M5',1),
             # ('CRU5','SPBFUT','M5',1),
             # ('CNYRUBF','SPBFUT','M5',1),
+        )
+    ),
+    (
+        (MTA_LIGHT,(100,'KING_1_MOEX_FUT')),
+        (   
+            #+
+            ('IMOEXF','SPBFUT','M1',1),
+            ('NGU5','SPBFUT','M1',1),
+            ('SBERF','SPBFUT','M1',1),
         )
     ),
 )

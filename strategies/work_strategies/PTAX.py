@@ -162,7 +162,7 @@ class PTA12_SWDDCr(BaseTABitget):
             if row['rsi'] > 100-self.threshold:
                 return 'short_pw'
             
-#TODO переделать
+
 class PTA13_DWDDCr(BaseTABitget):
     """period=60,threshold=30,period2=20"""
     def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=60,threshold=30,period2=20):
@@ -251,6 +251,7 @@ class PTA14_RANGER(BaseTABitget):
             if row['high'] >= row['max_hb']:
                 if row['rsi'] > 100-self.threshold_rsi:
                     return 'short_pw'
+                
 class PTA14_RENEGADE(BaseTABitget):
     """period=100,threshold_rsi=30,period2=100, period3=20, threshold_chop=60, threshold_adx=30"""
     def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=100,threshold_rsi=30,period2=100, period3=20, threshold_chop=60, threshold_adx=30):
