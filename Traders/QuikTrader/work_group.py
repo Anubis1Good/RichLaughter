@@ -34,7 +34,7 @@ bot_on_ticker = (
             ('RMZ5','SPBFUT','M5',1),
             ('SRZ5','SPBFUT','M5',1),
             #-
-            ('GZZ5','SPBFUT','M5',1),
+            # ('GZZ5','SPBFUT','M5',1),
             #+
             ('GAZPF','SPBFUT','M5',1),
             
@@ -50,8 +50,8 @@ bot_on_ticker = (
         (   
             #+
             ('IMOEXF','SPBFUT','M1',1),
-            ('NGU5','SPBFUT','M1',1),
-            ('SBERF','SPBFUT','M1',1),
+            # ('NGU5','SPBFUT','M1',1),
+            # ('SBERF','SPBFUT','M1',1),
         )
     ),
 )
