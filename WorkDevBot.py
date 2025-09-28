@@ -79,8 +79,8 @@ bot = WS(symbol,granularity,'e',1)
 # fee_base = 0.0012
 fee_base = 0.0002
 df = bot.preprocessing(df)
-# trades,equity,equity_fee,longs,shorts,closes= check_strategy_v3_LSC(df.copy(),bot,fee_base,close_2330=close_2330)
-trades,equity,equity_fee,longs,shorts,closes = check_strategy_realistic_v1(df.copy(),bot,fee_base,close_2330=close_2330)
+trades,equity,equity_fee,longs,shorts,closes= check_strategy_v3_LSC(df.copy(),bot,fee_base,close_2330=close_2330)
+# trades,equity,equity_fee,longs,shorts,closes = check_strategy_realistic_v1(df.copy(),bot,fee_base,close_2330=close_2330)
 # trades,longs,shorts,closes,equity = check_strategy(df,get_action_STA1e,bot)
 # trades,equity2,equity_fee = check_strategy_v3(df,bot,fee_base)
 # print(trades)
