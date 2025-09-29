@@ -1,119 +1,118 @@
 import pandas as pd
 import numpy as np
 
-def work_action_v3_CA(need_pos, trades, cur_price, fee, fees, equity, equity_fee, pos, open_price,open_fee,row_name,longs:list,shorts:list,closes:list):
+def work_action_mp(need_pos, trades, cur_price, fee, fees, equity, equity_fee, pos, open_price, open_fee, row_name, longs:list, shorts:list, closes:list):
     """return pos,open_price,fees,open_fee"""
-    # actions = (None,'long_pw','short_pw','close_long_pw','close_short_pw','close_all_pw')
     reward = 0
     delta = 0
-    feei = (fee * cur_price) / 100  # fee абсолютное значение
-    # print(feei)
+    feei = (fee * cur_price) / 100
     delta_pos = need_pos - pos
+    
     if delta_pos > 0:  # add
-        if pos > -1: #long
-            if pos == 0: #new_long
+        if pos > -1: # long or neutral
+            if pos == 0: # new_long
                 open_price = cur_price
                 pos = delta_pos
+                open_fee = feei * delta_pos
             else:  # change_long
-                open_price = (open_price + cur_price*delta_pos)/ (1+delta_pos)
+                open_price = (open_price * pos + cur_price * delta_pos) / (pos + delta_pos)
                 pos += delta_pos
-            reward = -fee * delta_pos  # комиссия за открытие
+                open_fee += feei * delta_pos
+            reward = -fee * delta_pos
             fees += feei * delta_pos
-            open_fee = feei * delta_pos
-            longs.append((row_name,cur_price))
+            longs.append((row_name, cur_price))
             trades['count'] += 1
-        else: #close_short
+        else: # close_short (pos < 0)
             new_pos = delta_pos + pos
             abs_pos = abs(pos)
-            if new_pos == 0: #close_short
+            
+            if new_pos == 0: # close_short completely
                 delta = open_price - cur_price
-                trades['total'] += delta * abs_pos 
-                reward = (((delta  / cur_price) * 100) - fee ) * abs_pos 
-                pos = 0
+                trades['total'] += delta * abs_pos
+                reward = (((delta / cur_price) * 100) - fee) * abs_pos
                 fees += feei * delta_pos
-                equity.append((equity[-1] + delta)*abs_pos)
-                equity_fee.append((equity_fee[-1] + delta - feei - open_fee)*abs_pos)
+                equity.append(equity[-1] + delta * abs_pos)
+                equity_fee.append(equity_fee[-1] + (delta * abs_pos - feei * delta_pos - open_fee))
                 open_fee = 0
-                closes.append((row_name,cur_price))
-            if new_pos > 0: #open_long
-                delta = open_price - cur_price  # прибыль по шорту (как при action=4)
-                trades['total'] += delta
-                reward = ((delta  / cur_price) * 100) - fee*2   # комиссия за закрытие + открытие
-                open_price = cur_price  # новая цена для лонга
-                fees += feei * 2
-                equity.append(equity[-1] + delta)
-                equity_fee.append(equity_fee[-1] + delta - feei * 2 - open_fee)
-                open_fee = 0
-            if new_pos < 0: #change_short
-                ...    
-
-    elif action == 2:  # short
-        if pos != -1:
-            if pos == 0:
+                closes.append((row_name, cur_price))
+                
+            elif new_pos > 0: # close_short and open_long
+                old_pos = abs(pos)
+                delta = open_price - cur_price
+                trades['total'] += delta * old_pos
+                reward = ((delta / cur_price) * 100 * old_pos) - fee * delta_pos
                 open_price = cur_price
-                reward = -fee  # комиссия за открытие
-                fees += feei
-                open_fee = feei
-                # equity_fee.append(equity_fee[-1] - feei)
-            else:  # был лонг, закрываем его и открываем шорт
-                delta = cur_price - open_price  # прибыль по лонгу (как при action=3)
-                trades['total'] += delta
-                reward = ((delta  / cur_price) * 100) - fee*2  # комиссия за закрытие + открытие
-                open_price = cur_price  # новая цена для шорта
-                fees += feei * 2
-                equity.append(equity[-1] + delta)
-                equity_fee.append(equity_fee[-1] + delta - feei * 2 - open_fee)
-                open_fee = 0
-            shorts.append((row_name,cur_price))
-            pos = -1
+                fees += feei * delta_pos
+                equity.append(equity[-1] + delta * old_pos)
+                equity_fee.append(equity_fee[-1] + (delta * old_pos - feei * delta_pos - open_fee))
+                open_fee = feei * new_pos
+                
+            else: # change_short (reduce short)
+                delta_short = abs(delta_pos)  # количество закрытых шортов
+                delta = open_price - cur_price
+                trades['total'] += delta * delta_short
+                reward = (((delta / cur_price) * 100) - fee) * delta_short
+                fees += feei * delta_pos
+                equity.append(equity[-1] + delta * delta_short)
+                equity_fee.append(equity_fee[-1] + (delta * delta_short - feei * delta_pos - open_fee * delta_short / abs_pos))
+                # Пересчитываем open_fee для оставшейся позиции
+                open_fee = open_fee * (abs(new_pos) / abs_pos)
+                
+            pos = new_pos
+            
+    elif delta_pos < 0: # sub
+        if pos < 1: # short or neutral
+            if pos == 0: # new_short
+                open_price = cur_price
+                pos = delta_pos
+                open_fee = feei * abs(delta_pos)
+            else:  # change_short (increase short)
+                open_price = (abs(pos) * open_price + abs(delta_pos) * cur_price) / (abs(pos) + abs(delta_pos))
+                pos += delta_pos
+                open_fee += feei * abs(delta_pos)
+            reward = -fee * abs(delta_pos)
+            fees += feei * abs(delta_pos)
+            shorts.append((row_name, cur_price))
             trades['count'] += 1
-
-    elif action == 3:  # close long
-        if pos == 1:
-            delta = cur_price - open_price
-            trades['total'] += delta
-            reward = ((delta  / cur_price) * 100) - fee 
-            pos = 0
-            fees += feei
-            equity.append(equity[-1] + delta)
-            equity_fee.append(equity_fee[-1] + delta - feei - open_fee)
-            open_fee = 0
-            closes.append((row_name,cur_price))
-
-    elif action == 4:  # close short
-        if pos == -1:
-            delta = open_price - cur_price
-            trades['total'] += delta
-            reward = ((delta  / cur_price) * 100) - fee 
-            pos = 0
-            fees += feei
-            equity.append(equity[-1] + delta)
-            equity_fee.append(equity_fee[-1] + delta - feei - open_fee)
-            open_fee = 0
-            closes.append((row_name,cur_price))
-    elif action == 5:
-        if pos == 1:
-            delta = cur_price - open_price
-            trades['total'] += delta
-            reward = ((delta  / cur_price) * 100) - fee
-            pos = 0
-            fees += feei
-            equity.append(equity[-1] + delta)
-            equity_fee.append(equity_fee[-1] + delta - feei - open_fee)
-            open_fee = 0
-            closes.append((row_name,cur_price))
-        elif pos == -1:
-            delta = open_price - cur_price
-            trades['total'] += delta
-            reward = ((delta  / cur_price) * 100) - fee
-            pos = 0
-            fees += feei
-            equity.append(equity[-1] + delta)
-            equity_fee.append(equity_fee[-1] + delta - feei - open_fee)
-            open_fee = 0
-            closes.append((row_name,cur_price))
+        else: # close_long (pos > 0)
+            new_pos = delta_pos + pos
+            
+            if new_pos == 0: # close_long completely
+                delta = cur_price - open_price
+                trades['total'] += delta * pos
+                reward = (((delta / cur_price) * 100) - fee) * pos
+                fees += feei * abs(delta_pos)
+                equity.append(equity[-1] + delta * pos)
+                equity_fee.append(equity_fee[-1] + (delta * pos - feei * abs(delta_pos) - open_fee))
+                open_fee = 0
+                closes.append((row_name, cur_price))
+                
+            elif new_pos < 0: # close_long and open_short
+                old_pos = pos
+                delta = cur_price - open_price
+                trades['total'] += delta * old_pos
+                reward = ((delta / cur_price) * 100 * old_pos) - fee * abs(delta_pos)
+                open_price = cur_price
+                fees += feei * abs(delta_pos)
+                equity.append(equity[-1] + delta * old_pos)
+                equity_fee.append(equity_fee[-1] + (delta * old_pos - feei * abs(delta_pos) - open_fee))
+                open_fee = feei * abs(new_pos)
+                
+            else: # change_long (reduce long)
+                delta_long = pos - new_pos  # количество закрытых лонгов
+                delta = cur_price - open_price
+                trades['total'] += delta * delta_long
+                reward = (((delta / cur_price) * 100) - fee) * delta_long
+                fees += feei * abs(delta_pos)
+                equity.append(equity[-1] + delta * delta_long)
+                equity_fee.append(equity_fee[-1] + (delta * delta_long - feei * abs(delta_pos) - open_fee * delta_long / pos))
+                # Пересчитываем open_fee для оставшейся позиции
+                open_fee = open_fee * (new_pos / pos)
+                
+            pos = new_pos
+            
     trades['total_fee_per'] += reward
-    return pos,open_price,fees,open_fee
+    return pos, open_price, fees, open_fee
 
 def check_mp_strategy_LSC(df: pd.DataFrame, work_strategy, fee=0.0002,close_2330=False):
     """
@@ -145,7 +144,7 @@ def check_mp_strategy_LSC(df: pd.DataFrame, work_strategy, fee=0.0002,close_2330
     # from collections import defaultdict
     # debug = defaultdict(list)
     for i in range(len(signals)):
-        pos, open_price, fees, open_fee = work_action_v3_CA(
+        pos, open_price, fees, open_fee = work_action_mp(
             signals[i], trades, prices[i], fee_one_p, fees, equity, equity_fee, pos, open_price,open_fee,row_names[i],longs,shorts,closes
         )
     # with open('debug.json','w') as f:
