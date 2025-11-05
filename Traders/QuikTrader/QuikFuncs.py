@@ -1,8 +1,10 @@
+# import itertools
 import pandas as pd
+from typing import Optional
 from libs.QuikPy import QuikPy
-import itertools
+from time import time
 
-trans_id = itertools.count(1)
+# trans_id = itertools.count(1)
 # class_code = 'SPBFUT'  # Фьючерсы
 # security_codes = ('SiM5', 'RIM5')  
 
@@ -44,13 +46,15 @@ def get_bars(qp_provider:QuikPy,sec_code,tf='M5',count=60,class_code='SPBFUT'):
 
 @provider
 def send_transaction(qp_provider:QuikPy,sec_code,price,direction='B',quantity = 1,class_code='SPBFUT'):
+    '''отправка заявки'''
     account = next((account for account in qp_provider.accounts if class_code in account['class_codes']), None)
-
+    # cur_trans_id = str(next(trans_id))
+    cur_trans_id = str(int(time()*100))[3:]
     if account:
         client_code = account['client_code'] if account['client_code'] else ''
         trade_account_id = account['trade_account_id']
         transaction = {  # Все значения должны передаваться в виде строк
-            'TRANS_ID': str(next(trans_id)),  # Следующий номер транзакции
+            'TRANS_ID': cur_trans_id,  # Следующий номер транзакции
             'CLIENT_CODE': client_code,  # Код клиента
             'ACCOUNT': trade_account_id,  # Счет
             'ACTION': 'NEW_ORDER',  # Тип заявки: Новая лимитная/рыночная заявка
@@ -62,6 +66,7 @@ def send_transaction(qp_provider:QuikPy,sec_code,price,direction='B',quantity = 
             'TYPE': 'L'
         }
         qp_provider.send_transaction(transaction)
+        return cur_trans_id
         
 
 
@@ -85,45 +90,57 @@ def get_code_orders(qp_provider:QuikPy,sec_code):
 
 @provider
 def help_close_active_order(qp_provider:QuikPy,active_orders,sec_code):
+    '''вспомогательная фунция для закрытия активных ордеров'''
+    cur_trans_ids = []
     if active_orders:
         for ao in active_orders:
             # print(ao['price'])
+            cur_trans_id = str(int(time()*100))[3:]
             transaction = {  # Все значения должны передаваться в виде строк
-                'TRANS_ID': str(next(trans_id)),  # Следующий номер транзакции
+                'TRANS_ID': cur_trans_id,  # Следующий номер транзакции
                 'ACTION': 'KILL_ORDER',  # Тип заявки: Удаление существующей заявки
                 'CLASSCODE': ao['class_code'],  # Код режима торгов
                 'SECCODE': sec_code,  # Код тикера
                 'ORDER_KEY': str(ao['order_num'])
             }
             qp_provider.send_transaction(transaction)
+            cur_trans_ids.append(cur_trans_id)
+    return cur_trans_ids
 
 @provider
 def help_smart_close_active_order(qp_provider:QuikPy,active_orders,sec_code,price):
+    '''вспомогательная функция для закрытия активных ордеров не совпадающих по цене'''
+    cur_trans_ids = []
     skip_close = 0
     if active_orders:
         for ao in active_orders:
             if str(ao['price']) == price:
                 skip_close += 1
                 continue
+            cur_trans_id = str(int(time()*100))[3:]
             transaction = {  # Все значения должны передаваться в виде строк
-                'TRANS_ID': str(next(trans_id)),  # Следующий номер транзакции
+                'TRANS_ID': cur_trans_id,  # Следующий номер транзакции
                 'ACTION': 'KILL_ORDER',  # Тип заявки: Удаление существующей заявки
                 'CLASSCODE': ao['class_code'],  # Код режима торгов
                 'SECCODE': sec_code,  # Код тикера
                 'ORDER_KEY': str(ao['order_num'])
             }
             qp_provider.send_transaction(transaction)
-    return skip_close
+            cur_trans_ids.append(cur_trans_id)
+    return cur_trans_ids,skip_close
 
 
 def close_active_order(sec_code):
+    '''закрытие активных'''
     active_orders = get_active_order(sec_code)
-    help_close_active_order(active_orders,sec_code)
+    trans_ids = help_close_active_order(active_orders,sec_code)
+    return trans_ids
 
-def smart_close_active_order(sec_code,price:str) -> int:
+def smart_close_active_order(sec_code,price:str):
+    '''закрытие активных ордеров не совпадающих по цене'''
     active_orders = get_active_order(sec_code)
-    skip_close = help_smart_close_active_order(active_orders,sec_code,price)
-    return skip_close
+    trans_ids,skip_close = help_smart_close_active_order(active_orders,sec_code,price)
+    return trans_ids,skip_close
 
 @provider
 def get_pos_futures(qp_provider:QuikPy,sec_code):
@@ -150,3 +167,16 @@ def get_ticks(qp_provider:QuikPy,sec_code,class_code='SPBFUT'):
     """тики за 2 дня"""
     ticks = qp_provider.get_trade(class_code,sec_code)
     return ticks
+
+@provider
+def get_order_by_trans_id(qp_provider: QuikPy, trans_id: int) -> Optional[str]:
+    """
+    Ищет заявку по trans_id
+    Возвращает order если находит
+    """
+    orders = qp_provider.get_all_orders()['data']
+    for order in orders:
+        if str(order['trans_id']) == str(trans_id):
+            return order
+
+    return None

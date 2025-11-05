@@ -11,7 +11,7 @@ from strategies.work_strategies.MTA_KING import MTA_KING,MTA_LIGHT
 
 from Optimiztion.Optimizator1 import generate_combinations
 
-from Traders.QuikTrader.QuikTrader1 import QuikTrader1,QuikTrader2
+from Traders.QuikTrader.QuikTrader1 import QuikTrader1,QuikTrader2,QuikTrader3
 # wss_u = []
 # configs = generate_combinations((
 #     (6,11),
@@ -30,7 +30,7 @@ bot_on_ticker = (
     (
         (MTA_LIGHT,(100,'KING_5_MOEX_FUT')),
         (
-            ('MMZ5','SPBFUT','M5',1),
+            # ('MMZ5','SPBFUT','M5',1),
             # ('RMZ5','SPBFUT','M5',1),
             # ('SRZ5','SPBFUT','M5',1),
             # ('SBERF','SPBFUT','M5',1),
@@ -48,15 +48,15 @@ bot_on_ticker = (
             # ('RIZ5','SPBFUT','M5',1),
         )
     ),
-    (
-        (MTA_LIGHT,(100,'KING_1_MOEX_FUT')),
-        (   
-            #+
-            # ('GZZ5','SPBFUT','M1',1),
-            ('IMOEXF','SPBFUT','M1',1),
-            # ('NGV5','SPBFUT','M1',1),
-        )
-    ),
+    # (
+    #     (MTA_LIGHT,(100,'KING_1_MOEX_FUT')),
+    #     (   
+    #         #+
+    #         # ('GZZ5','SPBFUT','M1',1),
+    #         # ('IMOEXF','SPBFUT','M1',1),
+    #         # ('NGV5','SPBFUT','M1',1),
+    #     )
+    # ),
 )
 
 def init_trader() -> list[QuikTrader2]:
@@ -64,7 +64,7 @@ def init_trader() -> list[QuikTrader2]:
     for ws,data_tickers in bot_on_ticker:
         for dt in data_tickers:
             print(dt[0],ws)
-            bot = QuikTrader2(*dt,ws,True)
+            bot = QuikTrader3(*dt,ws,True)
             bots.append(bot)
     return bots
 
