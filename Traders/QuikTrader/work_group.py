@@ -30,14 +30,14 @@ bot_on_ticker = (
     (
         (MTA_LIGHT,(100,'KING_5_MOEX_FUT')),
         (
-            # ('MMZ5','SPBFUT','M5',1),
-            # ('RMZ5','SPBFUT','M5',1),
-            # ('SRZ5','SPBFUT','M5',1),
-            # ('SBERF','SPBFUT','M5',1),
             #+
+            ('MMZ5','SPBFUT','M5',1),
+            ('RMZ5','SPBFUT','M5',1),
+            ('IMOEXF','SPBFUT','M5',1),
+            ('SRZ5','SPBFUT','M5',1),
             ('GAZPF','SPBFUT','M5',1),
             
-            # ('IMOEXF','SPBFUT','M5',1),
+            # ('SBERF','SPBFUT','M5',1),
             # ('BRV5','SPBFUT','M5',1),
             # ('NGU5','SPBFUT','M5',1),
             # ('CRU5','SPBFUT','M5',1),
@@ -59,7 +59,7 @@ bot_on_ticker = (
     # ),
 )
 
-def init_trader() -> list[QuikTrader2]:
+def init_trader() -> list[QuikTrader3]:
     bots = []
     for ws,data_tickers in bot_on_ticker:
         for dt in data_tickers:

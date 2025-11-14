@@ -438,7 +438,7 @@ class QuikTrader3:
                 if self.orders_start:
                     last_order = get_order_by_trans_id(self.last_order_id)
                     if not last_order:
-                        print(datetime.now(),self.sec_code, 'not see last order:', last_order)
+                        print(datetime.now(),self.sec_code, 'not see last order:', self.last_order_id)
                         return
                 df = self._get_df()
                 row = self.ws.get_test_row(df)
@@ -450,6 +450,11 @@ class QuikTrader3:
                     self._debug_diff_pos(pos_old,pos_new)
                 if time_mode == -1:
                     action = 'close_all'
+                if time_mode == -2:
+                    if action == 'long':
+                        action = 'close_short'
+                    elif action == 'short':
+                        action = 'close_long'
                 self._work_action(action,pos_new)
 
         except Exception as err:

@@ -16,8 +16,10 @@ def only_close(action,hour,minute):
     end_minute = minute + 15
     if hour == chour:
         if end_minute > cminute > minute:
-            if action == 'long' or action == 'short':
-                return None
+            if action == 'long':
+                return 'close_short'
+            if action == 'short':
+                return 'close_long'
         if end_minute < cminute:
             return 'close_all'
     return action
