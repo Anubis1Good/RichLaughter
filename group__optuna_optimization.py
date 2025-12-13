@@ -24,8 +24,8 @@ new_timeframe = '30min'
 reverse_test = False
 # reverse_test = True
 # feature_optimization = 'total_abs_fee'
-top_limit=600
 # bottom_limit=150
+top_limit=600
 bottom_limit=100
 
 # # Целевая функция для Optuna

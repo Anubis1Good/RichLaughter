@@ -8,8 +8,8 @@ tickersMoexFut = (
     ('SBERF',True),
     ('RIZ5',True),
     ('RMZ5',True),
-    ('NGX5',True),
-    ('BRZ5',True),
+    ('NGZ5',True),
+    ('BRF6',True),
     ('SVZ5',True),
 )
 tickersMoexFut2 = (

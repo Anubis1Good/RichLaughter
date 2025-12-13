@@ -55,10 +55,10 @@ class TestingTrader1:
             df = download_moex(ticker,1,self.yesterday,board=self.board,market=self.market,engine=self.engine)
             df = create_df(df)
             df5 = convert_chart1to5(df.copy())
-            if len(df.index) > 400:
-                df = df.iloc[-400:]
-            if len(df5.index) > 400:
-                df5 = df5.iloc[-400:]
+            if len(df.index) > 150: #раньше было 400
+                df = df.iloc[-150:]
+            if len(df5.index) > 150:
+                df5 = df5.iloc[-150:]
             for bot in self.map_bots[1][ticker]:
                 # print(bot)
                 df_c = df.copy()

@@ -3,7 +3,7 @@ import pandas as pd
 from tqdm import tqdm
 
 main_folder = 'TestNewResults\Optuna'
-ignore_folders = ('archive')
+ignore_folders = ('archive',)
 amount_var = 1
 inner_folders = os.listdir(main_folder)
 df_total = pd.DataFrame()

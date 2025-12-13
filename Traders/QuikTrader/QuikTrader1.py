@@ -312,8 +312,8 @@ class QuikTrader3:
         chour = now.hour
         cminute = now.minute
         if chour > 8:
-            if chour == 23:
-                if cminute > 20:
+            if chour == 22:
+                if cminute > 30:
                     return -1
                 else:
                     return -2
