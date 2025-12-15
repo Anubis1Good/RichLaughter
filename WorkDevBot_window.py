@@ -8,7 +8,7 @@ from Loader.BitgetLoader import bitget_loader
 from utils.work_with_dataframe.convert_timeframe import convert_timeframe
 from utils.draw_utils import draw_lite_chart,draw_chart_channel,draw_hb_chart,draw_bollinger,draw_dynamics,draw_rails,draw_hb_chart_fast
 # from ForBots.Indicators.classic_indicators import add_donchan_channel,add_vangerchik,add_sma, add_slice_df,add_bollinger,add_over_bb,add_attached_bb,add_big_volume,add_dynamics_ma
-from strategies.test_strategies.check import check_strategy,check_strategy_v3_LSC,check_strategy_v4,check_strategy_v5,check_strategy_realistic_v1
+from strategies.test_strategies.check_window import check_strategy_window
 from strategies.work_strategies.HelpTA import get_rws
 # from strategies.work_strategies.PTA import PTA2_DDCrWork as WS
 # from strategies.work_strategies.PTAX import PTA17_PHOENIX as WS
@@ -47,7 +47,7 @@ multiplier = 2
 symbol = "DOGEUSDT"
 granularity = "5m"
 close_2330 = True
-close_2330 = False
+# close_2330 = False
 slope = 4
 # bot = WS(symbol,granularity,'e',1,100,7,10,10,40,10,0)
 # WS = get_rws(WS)
@@ -58,28 +58,15 @@ bot = WS(symbol,granularity,'e',1)
 # bot = WS(symbol,granularity,'e',1,25,9,12,'QGA20_beta2_001.json')
 # bot = WS(symbol,granularity,'e',1,30,100,30,60,30,50,'LP_1752353219.json')
 # bot = WS(symbol,granularity,'e',1,30,100,30,60,30,50,policy='BP_1751841463.6270704.json')
-# trades,equity3,equity_fee = check_strategy_v5(df.copy(),bot,close_2330=True)
-# print(trades)
-# trades,equity1,equity_fee,longs1,shorts1,closes1 = check_strategy_v4(df.copy(),bot)
-# print(trades)
-# print(trades)
-# trades,equity,equity_fee = check_strategy_v5(df,bot)
-# conf = (20,55,12,25,20)
-# bot = WS(symbol,granularity,"usdt-futures",1,*conf)
-# df = df.iloc[-50:]
-# df = bot.get_test_df(df)
-# df.info()
-# print(df.tail()['chop'])
-# print(time() - start)
-# sys.exit()
+
 
 
 
 # fee_base = 0.0004
 # fee_base = 0.0012
 fee_base = 0.0002
-df = bot.preprocessing(df)
-trades,equity,equity_fee,longs,shorts,closes= check_strategy_v3_LSC(df.copy(),bot,fee_base,close_2330=close_2330)
+# df = bot.preprocessing(df)
+trades,equity,equity_fee,longs,shorts,closes= check_strategy_window(df.copy(),bot,fee_base,close_2330=close_2330,normalization=False)
 # trades,equity,equity_fee,longs,shorts,closes = check_strategy_realistic_v1(df.copy(),bot,fee_base,close_2330=close_2330)
 # trades,longs,shorts,closes,equity = check_strategy(df,get_action_STA1e,bot)
 # trades,equity2,equity_fee = check_strategy_v3(df,bot,fee_base)
