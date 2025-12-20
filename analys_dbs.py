@@ -70,6 +70,9 @@ def process_history_position(result:pd.DataFrame,suffix,db_path):
         result_pred = result.copy()
         result_pred = result_pred.sort_values(by=['ticker','pred'],axis=0,ascending=[True,False])
         result_pred = result_pred.reset_index(drop=True)
+        result_vtb = result.copy()
+        result_vtb = result_vtb.sort_values(by=['ticker','trd_vtb'],axis=0,ascending=[True,False])
+        result_vtb = result_vtb.reset_index(drop=True)
 
     result2 = pd.concat([avg_rank, data_sum], axis=1)
     result2['tf'] = result2.index.str.split('_').str[0]
@@ -91,6 +94,9 @@ def process_history_position(result:pd.DataFrame,suffix,db_path):
         result2_pred = result2.copy()
         result2_pred = result2_pred.sort_values('r_pred')
         result2_pred = result2_pred.reset_index()
+        result2_vtb = result2.copy()
+        result2_vtb = result2_vtb.sort_values('r_trd_vtb')
+        result2_vtb = result2_vtb.reset_index()
     result2 = result2.sort_values('r_avgt')
     result2 = result2.reset_index()
     # print(result2)
@@ -101,7 +107,7 @@ def process_history_position(result:pd.DataFrame,suffix,db_path):
     with pd.ExcelWriter(file_name, engine='xlsxwriter') as writer:  
         results = [result,result_old]
         if has_days:
-            results += [result_pred]
+            results += [result_pred,result_vtb]
         for idx,result in enumerate(results):
             name_sheet = 'total_' + str(idx)
             result.to_excel(writer,sheet_name=name_sheet)
@@ -130,7 +136,7 @@ def process_history_position(result:pd.DataFrame,suffix,db_path):
                 # })
         results2 = [result2,result2_old]
         if has_days:
-            results2 += [result2_pred]
+            results2 += [result2_pred,result2_vtb]
         for idx,result2 in enumerate(results2):
             name_sheet = 'bots_info_' + str(idx)
             result2.to_excel(writer,sheet_name=name_sheet)
