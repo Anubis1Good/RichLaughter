@@ -36,7 +36,7 @@ bot_on_ticker = (
                 'class_code':'SPBFUT',
                 'granularity':'M5',
                 'quantity':1,
-                'stop_risk':500
+                'stop_risk':10
 
             },
             {
@@ -44,7 +44,7 @@ bot_on_ticker = (
                 'class_code':'SPBFUT',
                 'granularity':'M5',
                 'quantity':1,
-                'stop_risk':500
+                'stop_risk':10
 
             },
             {
@@ -52,7 +52,7 @@ bot_on_ticker = (
                 'class_code':'SPBFUT',
                 'granularity':'M5',
                 'quantity':1,
-                'stop_risk':500
+                'stop_risk':10
 
             },
 
@@ -73,7 +73,7 @@ def init_trader() -> list[QuikTrader3]:
     bots = []
     for ws,data_tickers in bot_on_ticker:
         for dt in data_tickers:
-            print(dt['sec_code'],ws)
+            print(dt['sec_code'],'risk:',dt['stop_risk'],ws)
             bot = QuikTrader3(
                 dt['sec_code'],
                 dt['class_code'],

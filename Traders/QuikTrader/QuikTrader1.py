@@ -298,6 +298,7 @@ class QuikTrader3:
         self.first_forgot = False
         self.index_margin = 1 if cur_margin else 0
         self.stop_risk = -stop_risk if stop_risk is not None else False
+        self.first_risk = True
 
     def _check_position(self):
         pos = get_pos_futures(self.sec_code)
@@ -499,6 +500,8 @@ class QuikTrader3:
                             action = 'close_long'
                 if self.stop_risk: #risk_management
                     if not self._check_risk():
+                        if self.first_risk:
+                            print(self.sec_code, 'риск', self.stop_risk, 'превышен!')
                         action = 'close_all'
                 self._work_action(action,pos_new)
 
