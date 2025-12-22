@@ -1,20 +1,27 @@
-from Loader.BitgetLoader import bitget_loader
 from strategies.test_strategies.CheckWSTrader import CheckWSTrader
 from strategies.work_strategies.PSTA0 import PSTA6_ADVENTURE as WS
+from utils.work_with_dataframe.load_df import simple_load_df
+# from Loader.BitgetLoader import bitget_loader
 
 
-raw_file = 'DataForTests\DataFromMoexFast\\5IMOEXF_1_1752761086.csv'
-raw_file = 'DataForTests\DataFromMoexForStepTests\IMOEXF_1_1756718219.csv'
+# raw_file = 'DataForTests\DataFromMoexFast\\5IMOEXF_1_1752761086.csv'
+# raw_file = 'DataForTests\DataFromMoexForStepTests\IMOEXF_1_1756718219.csv'
+raw_file = 'DataForTests\DataMoexFutP\IMOEXF_1_1766374056.parquet'
+raw_file = 'DataForTests\DataMoexFut5P\_5IMOEXF_1_1766374056.parquet'
 
-df = bitget_loader(raw_file)
+# df = bitget_loader(raw_file)
+df = simple_load_df(raw_file)
 
 symbol = "IMOEXF"
 granularity = "5m"
 fee_base = 0.0002
 stop_risk = None
-stop_risk = 250
+stop_risk = 500
+window = 150
 close_on_time = True
 # close_on_time = False
+normalization=True
+normalization=False
 close_map = ((23,30),(23,30),(23,30),(23,30),(23,30),(17,50),(17,50),)
 params = []
 params = (62,26,11,2.41,0,)
@@ -24,9 +31,23 @@ ws = WS(symbol,granularity,'e',1,*params)
 
 cwt = CheckWSTrader(df,ws,fee_base,symbol,granularity,close_on_time,close_map,True,True,stop_risk)
 
-# cwt.check_strategy_window(window=150,normalization=True)
-cwt.check_strategy_child(window=150,normalization=True)
+use_fast = 1
+use_window = 0
+use_child = 0
+
+new_tf = '5min'
+
+if use_fast:
+    cwt.check_strategy_fast()
+
+if use_window:
+    cwt.check_strategy_window(window=window,normalization=normalization)
+
+if use_child:
+    cwt.check_strategy_child(window=window,normalization=normalization)
+
+convert_tf = new_tf if use_child else None
 
 cwt.print_statistics(vtb=True)
-# cwt.plot_chart_and_sequtity()
-cwt.plot_chart_and_sequtity(convert_tf='5min')
+print(cwt.get_statistics())
+cwt.plot_chart_and_sequtity(convert_tf=convert_tf)

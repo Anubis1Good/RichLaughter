@@ -1,10 +1,22 @@
 from time import time
 from datetime import date,timedelta
 from request_functions.download_bitget import save_df,download_bitget_ticks
+from Loader.ApiMoexLoader import ApiMoexLoader
+from datetime import date,timedelta
 
-end = int(time())*1000
-week = 60*60*24*7*1000 - 1000
-start = end-week
+today = date.today()
+start_date = str(today - timedelta(days=60))
+# # start_date = '2025-02-01'
+
+tickers = ('IMOEXF','MMZ5','RMZ5','SRZ5','GAZPF','SBERF','SVZ5','GZZ5',)
+
+for ticker in tickers:
+    loader = ApiMoexLoader(ticker,'RFUD','forts','futures')
+    loader.save_df(start_date,timeframe=1,sformat='parquet',folder_save='DataForTests\DataMoexFutP')
+
+# end = int(time())*1000
+# week = 60*60*24*7*1000 - 1000
+# start = end-week
 # download_bitget_ticks(symbol="DOGEUSDT",start=start,end=end)
 # from request_functions.download_bybit import save_df
 # tickers_bybit = ('ADAUSDT','ENAUSDT','1000PEPEUSDT','WIFUSDT','XRPUSDT')
@@ -12,9 +24,9 @@ start = end-week
 
 # for ticker in tickers_bybit:
 #     save_df(ticker,'5',500)
-tickers_bitget = ('TRXUSDT','DOGEUSDT','XLMUSDT','XTZUSDT','SUSHIUSDT')
-for ticker in tickers_bitget:
-    save_df(ticker,'5m',n_parts=500)
+# tickers_bitget = ('TRXUSDT','DOGEUSDT','XLMUSDT','XTZUSDT','SUSHIUSDT')
+# for ticker in tickers_bitget:
+#     save_df(ticker,'5m',n_parts=500)
 # ts = ('1m','5m','15m','30m','1H')
 # for t in ts:
 #     print(t,'start')

@@ -5,6 +5,7 @@ from tqdm import tqdm
 from time import time
 from strategies.work_strategies.BaseTA import BaseTABitget
 from utils.processing_results.add_vtb_fee_fut import get_func_vtb_fee
+from utils.work_with_dataframe.load_df import simple_load_df
 from utils.work_with_dataframe.convert_timeframe import convert_timeframe
 from utils.work_with_dataframe.help_child_test import convert_datetime_CT,get_child_candles
 from utils.draw_utils import draw_hb_chart_fast
@@ -41,7 +42,7 @@ class CheckWSTrader:
         self.reload_data()
         if isinstance(df,str):
             path_df = df
-            self.df = self.read_df(path_df)
+            self.df = simple_load_df(path_df)
         else:
             self.df = df.copy()
         if isinstance(ws,tuple) or isinstance(ws,list):
@@ -65,7 +66,7 @@ class CheckWSTrader:
             'total':0,
             'count':0, #количество разворотов
             'fees': 0, #комиссия в абсолютных
-            'total_wfees_per':0, #прибыль в процентах с учетом комиссии
+            'total_wfees_per':0, #прибыль в процентах с учетом комиссии TODO проверить правильность рассчетов
             'equity':[0], #динамика дохода
             'equity_fee':[0], #динамика дохода с комиссией
             'step_eq_fee':[0], #equity каждый шаг
@@ -86,12 +87,6 @@ class CheckWSTrader:
         self.cur_eq = None
         self.first_risk = True
         self.last_c_risk = None
-    
-    def read_df(self,path_df):
-        if path_df.endswith('.parquet'):
-            self.df = pd.read_parquet(path_df)
-        else:
-            self.df = pd.read_csv(path_df)
 
     def get_iterator(self,data):
         if self.use_tqdm:
@@ -206,8 +201,42 @@ class CheckWSTrader:
                     self.last_c_risk = [row_name,price]
                     return False
         return True
-        
+    
     # CHECKS_FUNCS
+    @duration_time
+    def check_strategy_fast(self, vtb=True):
+        self.reload_data()
+        df = self.ws.preprocessing(self.df.copy())
+        
+        # ПРЕДВЫЧИСЛИТЬ все сигналы разом
+        df['action'] = df.apply(lambda row: self.ws(row), axis=1)
+        
+        if self.close_on_time:
+            # Оптимизированная проверка времени
+            mask = (df['hour'] >= df['weekday'].map(lambda wd: self.close_map[wd][0])) & \
+                (df['minute'] >= df['weekday'].map(lambda wd: self.close_map[wd][1]))
+            df.loc[mask, 'action'] = 'close_all_pw'
+        
+        # Преобразуем в массив индексов
+        signals = df['action'].map(self.actions_dict).values
+        prices = df['close'].values
+        row_names = df['x'].values
+        weekdays = df['weekday'].values if 'weekday' in df.columns else None
+        
+        # Основной цикл - теперь быстрый
+        for i in self.get_iterator(range(len(df))):
+            signal = signals[i]
+            price = prices[i]
+            row_name = row_names[i]
+            
+            # check_risk тоже нужно предвычислить или оптимизировать
+            if not self.check_risk(weekdays[i] if weekdays is not None else 0, 
+                                row_name, price, vtb):
+                signal = self.actions_dict['close_all_pw']
+            
+            self.work_action(signal, price, row_name)
+            self.update_step_data(price)
+
     @duration_time
     def check_strategy_window(self,window=150, normalization=False,vtb=True):
         """
@@ -242,7 +271,7 @@ class CheckWSTrader:
                 signal = self.actions_dict.get(action, None)
                 self.work_action(signal, price, row_name)
             self.update_step_data(price)
-    
+
     @duration_time
     def check_strategy_child(self,timeframe='5min',window=150, normalization=False,vtb=True):
         df = self.df.copy()
@@ -261,9 +290,12 @@ class CheckWSTrader:
                 df_slice = df_big.iloc[i-window:i].copy()
                 row = df_slice.iloc[-1]
                 row_name = row['x']
+                row_index = df_slice.index[-1]
                 for sc in child_candles:
-                    df_slice.iloc[-1] = sc
-                    df_temp = df_slice.copy()
+                    # df_slice.iloc[-1] = sc
+                    new_row_df = pd.DataFrame([sc], columns=df_slice.columns,index=[row_index])
+                    df_temp = pd.concat([df_slice.iloc[:-1], new_row_df], ignore_index=False)
+                    # df_temp = df_slice.copy()
                     price = sc['close']
                     if normalization:
                         candel_max = df_temp['high'].max()
@@ -275,7 +307,7 @@ class CheckWSTrader:
                         df_norm['high'] = df_norm['high'] / candel_max
                         row = self.ws.get_test_row(df_norm)
                     else:
-                        row = self.ws.get_test_row(df_slice)
+                        row = self.ws.get_test_row(df_temp)
                     action = self.ws(row)
                     if self.close_on_time:
                         time_close = self.close_map[row['weekday']]
@@ -367,6 +399,63 @@ class CheckWSTrader:
         print(f"Открыто лонгов: {len(td['o_longs'])}")
         print(f"Открыто шортов: {len(td['o_shorts'])}")
         print(f"Превышений просадок: {len(td['c_risks'])}")
+
+    def get_statistics(self,vtb=True):
+        td = self.trade_data
+        type_unclosed = 'unclosed_vtb' if vtb else 'unclosed_fee'
+        pick_profit = 0
+        dropdown = 0
+        pick_loss = 0
+        dropup = 0
+        for p in td[type_unclosed]:
+            if p > pick_profit:
+                pick_profit = p
+            elif p < pick_profit:
+                delta = pick_profit - p
+                if delta > dropdown:
+                    dropdown = delta
+            if p < pick_loss:
+                pick_loss = p
+            elif p > pick_loss:
+                delta = p - pick_loss
+                if delta > dropup:
+                    dropup = delta
+        statistics = {
+            'total':td['total'],
+            'twf_per': round(self.trade_data['total_wfees_per'],2),
+            'total_vtb': td['step_eq_vtb'][-1],
+            'count':td['count'],
+            'fees': td['fees'],
+            'count_risk': len(td['c_risks']),
+            'max_profit': max(td[type_unclosed]),
+            'min_profit': min(td[type_unclosed]),
+            'max_dropdown':dropdown,
+            'max_dropup':dropup,
+        }
+        df_eq = pd.DataFrame({'eq':self.trade_data['equity']})
+        mean_eq = 0
+        median_eq = 0
+        min_eq = 0
+        max_eq = 0
+        win_rate = 0
+        if not df_eq.empty:
+            df_eq['diff_eq'] = df_eq['eq'].diff()
+            mean_eq = df_eq['diff_eq'].mean()
+            median_eq = df_eq['diff_eq'].median()
+            min_eq = df_eq['diff_eq'].min()
+            max_eq = df_eq['diff_eq'].max()
+            wins = len(df_eq[df_eq['diff_eq'] > 0].index)
+            loss = len(df_eq[df_eq['diff_eq'] < 0].index)
+            if loss > 0:
+                win_rate = round((wins / (wins + loss)) * 100,2)
+        statistics.update({
+            'win_rate':win_rate,
+            'mean_eq':mean_eq,
+            'median_eq':median_eq,
+            'min_eq':min_eq,
+            'max_eq':max_eq
+        })
+        return statistics
 
     def plot_transaction(self):
         td = self.trade_data

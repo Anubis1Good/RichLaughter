@@ -7,7 +7,7 @@ def get_child_candles(df:pd.DataFrame,x):
     df = df.reset_index(drop=True)
     for i,row in df.iterrows():
         if i == 0:
-            candel = row
+            candel = row.copy()
             candel['x'] = x
         else:
             candel['close'] = row['close']
@@ -17,7 +17,6 @@ def get_child_candles(df:pd.DataFrame,x):
             candel['middle'] = (candel['high'] + candel['low']) / 2
             candel['direction'] = 1 if candel['open'] < candel['close'] else -1
         candels.append(candel.copy())
-    # print('gcc',len(candels))
     return candels
 
 def convert_datetime_CT(series,datetime_col='ms'):

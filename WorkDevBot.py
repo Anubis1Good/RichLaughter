@@ -20,8 +20,8 @@ from strategies.work_strategies.HelpTA import get_rws
 # from strategies.work_strategies.OGTA import OGTA7_PARADOX as WS
 # from strategies.work_strategies.LTA import LTA_CC as WS
 # from strategies.work_strategies.LTA2 import LTA2_DRG as WS
-from strategies.work_strategies.VSAT import VSAT1_VENUS as WS
-# from strategies.work_strategies.PSTA0 import PSTA9_BIRDWATCHER as WS
+# from strategies.work_strategies.VSAT import VSAT1_VENUS as WS
+from strategies.work_strategies.PSTA0 import PSTA6_ADVENTURE as WS
 # from strategies.work_strategies.MTA import MTA_LORD as WS
 # from strategies.work_strategies.STA_ml2 import STAML2a_PHENOMENON as WS
 # from strategies.work_strategies.STA_ml import STAML1_XGBR2_DC as WS
@@ -52,8 +52,8 @@ slope = 4
 # bot = WS(symbol,granularity,'e',1,100,7,10,10,40,10,0)
 # WS = get_rws(WS)
 print(WS)
-bot = WS(symbol,granularity,'e',1)
-# bot = WS(symbol,granularity,'e',1,22,4,1.99)
+# bot = WS(symbol,granularity,'e',1)
+bot = WS(symbol,granularity,'e',1,62,26,11,2.41,0,)
 # bot = WS(symbol,granularity,'e',1,20,10,'LP_1752352674.json')
 # bot = WS(symbol,granularity,'e',1,25,9,12,'QGA20_beta2_001.json')
 # bot = WS(symbol,granularity,'e',1,30,100,30,60,30,50,'LP_1752353219.json')
