@@ -532,14 +532,15 @@ class CheckWSTrader:
             ax2.plot(sequity)
             sequity = self.trade_data['step_eq_vtb'] if vtb else self.trade_data['step_eq_fee']
         else:
-            sequity = np.array([])
+            sequity = np.array([0])
         ax2.plot(sequity)
             
         
         # Добавляем подписи для удобства
         ax1.set_title(f'Chart for {self.symbol}')
-        ax2.set_title('Sequity')
-        ax2.set_xlabel('Time')
+        ax2.set_title('Sequity: ' + str(sequity[-1]))
+        risk_lbl = 'Count_risk ' + str(self.stop_risk) + ": " + str(len(self.trade_data['c_risks'])) 
+        ax2.set_xlabel(risk_lbl)
         
         # Автоматическая регулировка layout'а
         plt.tight_layout()

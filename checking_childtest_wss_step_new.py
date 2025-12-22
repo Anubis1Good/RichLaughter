@@ -33,7 +33,8 @@ close_map = ((23,30),(23,30),(23,30),(23,30),(23,30),(17,50),(17,50),)
 need_plot = True
 timeframe = '5min'
 
-test_folder = 'DataForTests\DataMoexFutP'
+# test_folder = 'DataForTests\DataMoexFutP'
+test_folder = 'DataForTests\DataMoexFutTemp'
 
 list_dir = os.listdir(test_folder)
 
@@ -54,7 +55,7 @@ def process_ws(variant_name,image_folder, xls_folder, clear_df,ws):
         
         # Создаем стратегию и проверяем ее
         strategy = ws[0](variant_name, '5', "1", 1, *ws[1])
-        stop_risk = risk_map_fut_vtb.get(variant_name,None)
+        stop_risk = risk_map_fut_vtb.get(variant_name[:-2],None)
         cwt = CheckWSTrader(clear_df,strategy,fee_base,variant_name,timeframe,close_on_time,close_map,False,False,stop_risk)
         cwt.check_strategy_child(timeframe,window,normalization,vtb)
         print(name_file)
