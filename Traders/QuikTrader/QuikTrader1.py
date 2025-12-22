@@ -297,8 +297,10 @@ class QuikTrader3:
         self.time_forgot_order = 0
         self.first_forgot = False
         self.index_margin = 0 if cur_margin else 1
-        self.stop_risk = -stop_risk if stop_risk is not None else False
+        self.stop_risk = -stop_risk*self.quantity if stop_risk is not None else False
         self.first_risk = True
+        self.time_mode = None
+        print(self.sec_code,self.stop_risk)
 
     def _check_position(self):
         pos = get_pos_futures(self.sec_code)
@@ -478,6 +480,9 @@ class QuikTrader3:
     def run(self):
         try:
             time_mode = self._check_time()
+            if time_mode != self.time_mode:
+                print('TimeMode:',time_mode)
+                self.time_mode = time_mode
             if time_mode == 0:
                 sleep(60*5)
                 return

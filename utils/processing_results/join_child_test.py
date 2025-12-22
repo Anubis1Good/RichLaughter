@@ -1,44 +1,8 @@
 import os
 import pandas as pd
-import re
 
-dollar_step = 7.8
-fee2x = 2
-# fee2x = 0.36
 
-futures_fee_funcs = {
-    'base': lambda total,count: total - count*fee2x,
-    r'.*BR..*': lambda total,count: total*100*dollar_step - count*fee2x,
-    r'.*ED.*': lambda total,count: total*10000*dollar_step - count*fee2x,
-    r'.*EURRUBF.*': lambda total,count: total*1000 - count*fee2x,
-    r'.*IMOEXF': lambda total,count: total*10 - count*fee2x,
-    r'.*MM..*': lambda total,count: total*10 - count*fee2x,
-    r'.*NG..*': lambda total,count: total*1000*dollar_step - count*fee2x,
-    r'.*RM..*': lambda total,count: total*2*dollar_step - count*fee2x,
-    r'.*RI..*': lambda total,count: total*2*dollar_step*0.1 - count*fee2x,
-    r'.*CNYRUBF.*': lambda total,count: total*1000 - count*fee2x,
-    r'.*CR..*': lambda total,count: total*1000 - count*fee2x,
-    r'.*GD..*': lambda total,count: total*10*dollar_step - count*fee2x,
-    r'.*USDRUBF.*': lambda total,count: total*1000 - count*fee2x,
-    r'.*SV..*': lambda total,count: total*100*dollar_step - count*fee2x,
-    r'.*PD..*': lambda total,count: total*10*dollar_step - count*fee2x,
-    r'.*PT..*': lambda total,count: total*10*dollar_step - count*fee2x,
-    r'.*UC..*': lambda total,count: total*1000*10.94 - count*fee2x,
-    r'.*SF..*': lambda total,count: total*10*dollar_step - count*fee2x,
-    r'.*NA..*': lambda total,count: total*dollar_step*0.1 - count*fee2x,
-    r'.*CC..*': lambda total,count: total*10 - count*fee2x,
-    r'.*SBERF.*': lambda total,count: total*100 - count*fee2x,
-    r'.*GAZPF.*': lambda total,count: total*100 - count*fee2x,
-    r'.*IB..*': lambda total,count: total*10*dollar_step - count*fee2x,
-}
-
-def get_func_vtb_fee(name):
-    for fff in futures_fee_funcs:
-        if re.match(fff,name):
-            return futures_fee_funcs[fff]
-    return futures_fee_funcs['base']
-
-main_folder = 'TestNewResults\ChildTest'
+main_folder = 'TestNewResults\ChildTest2'
 
 inner_folders = os.listdir(main_folder)
 
@@ -56,17 +20,8 @@ for inner_folder in inner_folders:
             df_total = pd.concat([df_total,df_file])
     if df_total.empty:
         continue
-    vtb_twf_func = get_func_vtb_fee(inner_folder.split('_')[0])
-    df_total["vtb"] = vtb_twf_func(df_total["total"],df_total["count"])
-    # Получаем список столбцов без "vtb"
-    cols = [col for col in df_total.columns if col != "vtb"]
 
-    # Вставляем "vtb" на вторую позицию
-    cols.insert(2, "vtb")
-
-    # Применяем новый порядок
-    df_total = df_total.reindex(columns=cols)
-    df_total = df_total.sort_values('total_abs_fee',ascending=False)
+    df_total = df_total.sort_values('total',ascending=False)
     df_total = df_total.reset_index(drop=True)
     if 'Unnamed: 0' in df_total.columns:
         df_total = df_total.drop('Unnamed: 0',axis=1)

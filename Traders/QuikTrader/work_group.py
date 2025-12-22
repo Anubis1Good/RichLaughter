@@ -36,7 +36,7 @@ bot_on_ticker = (
                 'class_code':'SPBFUT',
                 'granularity':'M5',
                 'quantity':1,
-                'stop_risk':250
+                'stop_risk':350
 
             },
             {
@@ -52,7 +52,15 @@ bot_on_ticker = (
                 'class_code':'SPBFUT',
                 'granularity':'M5',
                 'quantity':1,
-                'stop_risk':250
+                'stop_risk':300
+
+            },
+            {
+                'sec_code':'SBERF',
+                'class_code':'SPBFUT',
+                'granularity':'M5',
+                'quantity':1,
+                'stop_risk':500
 
             },
 

@@ -10,7 +10,8 @@ from functools import partial
 from strategies.test_strategies.CheckWSTrader import CheckWSTrader
 from utils.work_with_dataframe.load_df import simple_load_df
 from testing.risk_map import risk_map_fut_vtb
-from Traders.TestingTrader.wss_groups import wssMoexFut5 as wss
+# from Traders.TestingTrader.wss_groups import wssMoexFut5 as wss
+from Traders.TestingTrader.wss_groups import wssMoexStocks5 as wss
 map_wss = {
     'default':wss,
 }
@@ -20,21 +21,22 @@ phys_cores = psutil.cpu_count(logical=False)
 main_folder = 'TestNewResults/ChildTest2'
 if not os.path.exists(main_folder):
     os.makedirs(main_folder)
-save_cores = 3
+save_cores = 5
 fee_base = 0.0002
 window = 150
 close_on_time = True
 # close_on_time = False
 normalization=True
-normalization=False
+# normalization=False
 vtb = True
-# vtb = False
+vtb = False
 close_map = ((23,30),(23,30),(23,30),(23,30),(23,30),(17,50),(17,50),)
 need_plot = True
 timeframe = '5min'
 
 # test_folder = 'DataForTests\DataMoexFutP'
-test_folder = 'DataForTests\DataMoexFutTemp'
+# test_folder = 'DataForTests\DataMoexFutTemp'
+test_folder = 'DataForTests\DataMoexStockP'
 
 list_dir = os.listdir(test_folder)
 

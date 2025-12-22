@@ -1,7 +1,7 @@
 import pandas as pd
 import re
 
-dollar_step = 7.8
+dollar_step = 7.9
 fee2x = 2
 # fee2x = 0.36
 

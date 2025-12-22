@@ -126,9 +126,11 @@ def convert_timeframe(df, timeframe, agg_rules=None, datetime_col='ms', recalc_d
 if __name__ == "__main__":
     # folder = 'DataForTests\DataFromMOEX'
     folder = 'DataForTests\DataMoexFutP'
+    folder = 'DataForTests\DataMoexStockP'
     # folder = 'DataForTests\otherMOEX'
     listdir = os.listdir(folder)
     output_folder = 'DataForTests\DataMoexFut5P'
+    output_folder = 'DataForTests\DataMoexStock5P'
     if not os.path.exists(output_folder):
         os.makedirs(output_folder)
     # output_folder = folder

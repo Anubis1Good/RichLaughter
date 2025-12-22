@@ -8,11 +8,14 @@ today = date.today()
 start_date = str(today - timedelta(days=60))
 # # start_date = '2025-02-01'
 
-tickers = ('IMOEXF','MMZ5','RMZ5','SRZ5','GAZPF','SBERF','SVZ5','GZZ5',)
-
+# tickers = ('IMOEXF','MMZ5','RMZ5','SRZ5','GAZPF','SBERF','SVZ5','GZZ5',)
+# folder_save = 'DataForTests\DataMoexFutP'
+tickers = ('ROSN','LSRG','CBOM','TRMK','NMTP','SELG','RUAL','MTLR','VTBR','GMKN','APTK','KZOSP','UWGN')
+folder_save = 'DataForTests\DataMoexStockP'
 for ticker in tickers:
-    loader = ApiMoexLoader(ticker,'RFUD','forts','futures')
-    loader.save_df(start_date,timeframe=1,sformat='parquet',folder_save='DataForTests\DataMoexFutP')
+    # loader = ApiMoexLoader(ticker,'RFUD','forts','futures')
+    loader = ApiMoexLoader(ticker)
+    loader.save_df(start_date,timeframe=1,sformat='parquet',folder_save=folder_save)
 
 # end = int(time())*1000
 # week = 60*60*24*7*1000 - 1000

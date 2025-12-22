@@ -98,18 +98,17 @@ class CheckWSTrader:
         self.trade_data['fees'] += feei
         self.open_fee = feei
         self.trade_data['total_wfees_per'] -= self.fee_one_p # комиссия за открытие
+        self.trade_data['count'] += 1
     
     def open_long(self,price,feei,row_name):
         self.open_pos(price,feei)
         self.trade_data['o_longs'].append((row_name,price))
         self.trade_data['pos'] = 1
-        self.trade_data['count'] += 1
 
     def open_short(self,price,feei,row_name):
         self.open_pos(price,feei)
         self.trade_data['o_shorts'].append((row_name,price))
         self.trade_data['pos'] = -1
-        self.trade_data['count'] += 1
 
     def close_pos(self,price,feei,delta):
         self.trade_data['total'] += delta
@@ -168,7 +167,8 @@ class CheckWSTrader:
 
     def update_step_data(self,price):
         self.trade_data['step_eq_fee'].append(self.trade_data['equity_fee'][-1])
-        self.trade_data['step_eq_vtb'].append(self.vtb_fee_func(self.trade_data['equity'][-1],1))
+        # self.trade_data['step_eq_vtb'].append(self.vtb_fee_func(self.trade_data['equity'][-1],0)-self.trade_data['count']*2)
+        self.trade_data['step_eq_vtb'].append(self.vtb_fee_func(self.trade_data['equity'][-1],self.trade_data['count']))
         self.trade_data['hist_pos'].append(self.trade_data['pos'])
         if self.trade_data['pos'] > 0:
             unclosed_profit = price - self.trade_data['open_price']
@@ -422,6 +422,7 @@ class CheckWSTrader:
                     dropup = delta
         statistics = {
             'total':td['total'],
+            'total_wfee': self.trade_data['equity_fee'][-1],
             'twf_per': round(self.trade_data['total_wfees_per'],2),
             'total_vtb': td['step_eq_vtb'][-1],
             'count':td['count'],
@@ -534,12 +535,12 @@ class CheckWSTrader:
         else:
             sequity = np.array([0])
         ax2.plot(sequity)
-            
+        total_wfee = sequity[-1]
         
         # Добавляем подписи для удобства
         ax1.set_title(f'Chart for {self.symbol}')
-        ax2.set_title('Sequity: ' + str(sequity[-1]))
-        risk_lbl = 'Count_risk ' + str(self.stop_risk) + ": " + str(len(self.trade_data['c_risks'])) 
+        ax2.set_title('Sequity: ' + str(total_wfee))
+        risk_lbl = 'Count_risk ' + str(self.stop_risk) + ": " + str(len(self.trade_data['c_risks'])) + '| Count_trades: ' + str(self.trade_data['count']) + '| Mean_profit: ' + str(total_wfee/self.trade_data['count'])
         ax2.set_xlabel(risk_lbl)
         
         # Автоматическая регулировка layout'а
