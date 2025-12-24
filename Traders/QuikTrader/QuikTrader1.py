@@ -499,18 +499,18 @@ class QuikTrader3:
                     self._debug_diff_pos(pos_old,pos_new)
                 if self.close_on_time:
                     if time_mode == -1:
-                        action = 'close_all'
+                        action = 'close_all_pw'
                     if time_mode == -2:
-                        if action == 'long':
-                            action = 'close_short'
-                        elif action == 'short':
-                            action = 'close_long'
+                        if action == 'long_pw':
+                            action = 'close_short_pw'
+                        elif action == 'short_pw':
+                            action = 'close_long_pw'
                 if self.stop_risk: #risk_management
                     if not self._check_risk():
                         if self.first_risk:
                             print(datetime.now(),self.sec_code, 'риск', self.stop_risk, 'превышен!')
                             self.first_risk = False
-                        action = 'close_all'
+                        action = 'close_all_pw'
                 self._work_action(action,pos_new)
 
         except Exception as err:

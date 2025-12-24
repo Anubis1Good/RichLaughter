@@ -48,6 +48,14 @@ bot_on_ticker = (
 
             },
             {
+                'sec_code':'GAZPF',
+                'class_code':'SPBFUT',
+                'granularity':'M5',
+                'quantity':1,
+                'stop_risk':250
+
+            },
+            {
                 'sec_code':'RMH6',
                 'class_code':'SPBFUT',
                 'granularity':'M5',
