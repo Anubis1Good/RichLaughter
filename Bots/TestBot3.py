@@ -322,6 +322,7 @@ class TestBot3:
         except Exception as err:
             print(self.ticker,self.name)
             traceback.print_exc()
+            print("+++++++++++++++++")
 
 class TestBot4(TestBot3):
     def __init__(self, db_path, fee, ticker, granularity, strategy, conf):

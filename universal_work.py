@@ -1,5 +1,5 @@
 from strategies.test_strategies.CheckWSTrader import CheckWSTrader
-from strategies.work_strategies.PSTA0 import PSTA6_ADVENTURE as WS
+from strategies.work_strategies.PTAXX import PTA26_ as WS
 from utils.work_with_dataframe.load_df import simple_load_df
 # from Loader.BitgetLoader import bitget_loader
 

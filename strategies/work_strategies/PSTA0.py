@@ -1,4 +1,6 @@
 import pandas as pd
+import numpy as np
+import numpy.typing as npt
 from strategies.work_strategies.BaseTA import BaseTABitget
 from ForBots.Indicators.classic_indicators import add_slice_df,add_enter_price2close,add_fractals,add_average_fractals,add_dynamic_zigzag,add_dzz_peaks,add_rsi,add_adx,add_bollinger,add_chop,add_percent_zz_peaks
 from ForBots.Indicators.pva_indicators import add_plus_delta_fc ,add_exp_pdfc,add_analys_dzz,add_mean_on_fractals,add_ext_on_fractals,add_pattern18_dzz,add_pattern18_dzz_czd,add_stop_loss_p18czd,add_exp_plusdelta_dzz_peaks,add_plusdelta_dzz_peaks,add_mean_dzz_peaks
@@ -797,15 +799,18 @@ class PSTA9_BIRDWATCHER(BaseTABitget):
         df = add_slice_df(df,period=self.period)
         return df
     def __call__(self, row, *args, **kwds):
-        if row['top_stop'] > row['close'] >= row['top_pd']:
-            return 'short_pw'
-        if row['bottom_stop'] < row['close'] <= row['bottom_pd']:
-            return 'long_pw'
-        if self.use_stop:
-            if row['close'] > row['top_stop']:
-                return 'close_short_pw'
-            if row['close'] < row['bottom_stop']:
-                return 'close_long_pw'
+        try:
+            if row['top_stop'] > row['close'] >= row['top_pd']:
+                return 'short_pw'
+            if row['bottom_stop'] < row['close'] <= row['bottom_pd']:
+                return 'long_pw'
+            if self.use_stop:
+                if row['close'] > row['top_stop']:
+                    return 'close_short_pw'
+                if row['close'] < row['bottom_stop']:
+                    return 'close_long_pw'
+        except:
+            return None
             
 class PSTA9_GRAVY(BaseTABitget):
     '''

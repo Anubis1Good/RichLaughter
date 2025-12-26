@@ -1,7 +1,7 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
-from Loader.BitgetLoader import bitget_loader
+from utils.work_with_dataframe.load_df import simple_load_df
 from utils.draw_utils import draw_lite_chart,draw_chart_channel,draw_hb_chart_fast,draw_bollinger,draw_dynamics,draw_rails
 from ForBots.Indicators.classic_indicators import *
 from ForBots.Indicators.vsa_indicators import *
@@ -14,22 +14,28 @@ from scipy.stats import linregress
 # raw_file = 'DataForTests\DataFromBitget\DOGEUSDT_1m_1739873922.csv'
 # raw_file = 'DataForTests\DataFromMOEX\MMM5_1_1749581140.csv'
 # raw_file = 'DataForTests\DataFromMoexFast\\5IMOEXF_1_1752761086.csv'
-raw_file = 'DataForTests\DataFromMoexFast\\5BRQ5_1_1752809062.csv'
+raw_file = 'DataForTests\DataMoexFut5P\_5IMOEXF_1_1766374056.parquet'
 # raw_file = 'DataForTests\oldMoex\SiM5_1_1745579847.csv'
 period = 10
-df = bitget_loader(raw_file)
-df = df.iloc[-200:]
+df = simple_load_df(raw_file)
+# df = df.iloc[-200:]
 # df = df.iloc[10:510]
 
-# df['down_diff'] = df['low'] - df['sma']
-df = add_dzz_peaks(df,period=10,n_std=5)
+
+df = add_sma(df)
+
+for i in range(1,5):
+    df['top_'+str(i)] = df['sma'] + df['close'] * i * 0.002
+    df['bot_'+str(i)] = df['sma'] - df['close'] * i * 0.002
+
+# df = add_dzz_peaks(df,period=10,n_std=5)
 # df = add_dzz_peaks(df,period=10,n_std=5,drop_last=False)
 
 
 
 # df = add_mean_dzz_peaks(df)
 # df = add_plusdelta_dzz_peaks(df)
-df = add_exp_plusdelta_dzz_peaks(df)
+# df = add_exp_plusdelta_dzz_peaks(df)
 # df = add_pattern18_dzz_czd(df)
 # Вычисляем текущий диапазон
 # df = add_stop_loss_p18czd(df)
@@ -54,6 +60,13 @@ if plot:
         plt.subplot(2,1,1)
     plt.grid() 
     draw_hb_chart_fast(df)
+
+    for col in df.columns.to_list():
+        if 'top_' in col:
+            plt.plot(df[col],color='green')
+        if 'bot_' in col:
+            plt.plot(df[col],color='pink')
+    plt.plot(df['sma'])
     # plt.plot(df['upper_channel'])
     # plt.plot(df['ave_up'])
     # plt.plot(df['ave_down'])
@@ -65,12 +78,12 @@ if plot:
     # plt.plot(df['sma'])
     # plt.plot(df['top_mean'])
     # plt.plot(df['bottom_mean'])
-    plt.plot(df['top_pd'])
-    plt.plot(df['bottom_pd'])
+    # plt.plot(df['top_pd'])
+    # plt.plot(df['bottom_pd'])
     # plt.plot(df['stair'])
     # plt.plot(df['hbzz'])
     # plt.plot(df['lbzz'])
-    plt.plot(df['zigzag'])
+    # plt.plot(df['zigzag'])
     # plt.plot(df['lsl'])
     # plt.plot(df['ssl'])
     # plt.plot(df['bzp1'], linestyle=':',color='g')

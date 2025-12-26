@@ -346,25 +346,28 @@ class PTA24_BRIGHTWING(BaseTABitget):
         df = add_slice_df(df,period=self.period)
         return df
     def __call__(self, row, *args, **kwds):
-        if row['oversold']:
-            if row['pattern18'] in ('btc','bui','bottom_range','double_bottom','weak_short','narrowing_up','upthrust','sow'):
-                return 'long_pw'
-            elif self.use_stop and row['close'] < row['lsl']:
-                return 'close_all_pw'
-            else:
-                return 'close_short_pw'
-        if row['overbought']:
-            if row['pattern18'] in ('bti','joc','top_range','double_top','weak_long','narrowing_down','spring','sos'):
-                return 'short_pw'
-            elif self.use_stop and row['close'] < row['ssl']:
-                return 'close_all_pw'
-            else:
-                return 'close_long_pw'
-        if self.use_stop:
-            if row['close'] > row['ssl']:
-                return 'close_short_pw'
-            if row['close'] < row['lsl']:
-                return 'close_long_pw'
+        try:
+            if row['oversold']:
+                if row['pattern18'] in ('btc','bui','bottom_range','double_bottom','weak_short','narrowing_up','upthrust','sow'):
+                    return 'long_pw'
+                elif self.use_stop and row['close'] < row['lsl']:
+                    return 'close_all_pw'
+                else:
+                    return 'close_short_pw'
+            if row['overbought']:
+                if row['pattern18'] in ('bti','joc','top_range','double_top','weak_long','narrowing_down','spring','sos'):
+                    return 'short_pw'
+                elif self.use_stop and row['close'] < row['ssl']:
+                    return 'close_all_pw'
+                else:
+                    return 'close_long_pw'
+            if self.use_stop:
+                if row['close'] > row['ssl']:
+                    return 'close_short_pw'
+                if row['close'] < row['lsl']:
+                    return 'close_long_pw'
+        except:
+            return None
             
 class PTA24_DEATHWING(BaseTABitget):
     '''
@@ -484,13 +487,13 @@ class PTA26_(BaseTABitget):
         df = add_stable_ma_direction(df,self.period,'ema')
         df = add_donchan_channel(df,self.period2)
         df = add_rsi(df,self.period2)
-        # df = add_integrity_index(df,self.period2*2)
+        df = add_integrity_index(df,self.period2*2)
         df = add_enter_price2close(df)
-        df['stair_s'] = df['stair'].rolling(self.period2).mean()
+        # df['stair_s'] = df['stair'].rolling(self.period2).mean()
         df = add_slice_df(df,self.period)
         return df
     def __call__(self, row, *args, **kwds):
-        can_long = row['close'] > row['stair_s']
+        can_long = row['dir_ma'] > 0
         nearest_long = row['high'] - row['close'] > row['close'] - row['low'] 
         if nearest_long and can_long:
             if row['close'] <= row['avarege'] and row['ii'] > self.threshold_ii:

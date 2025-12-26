@@ -53,23 +53,24 @@ class TestingTrader1:
     def trade_bots_moex(self,func):
         for ticker,fut in self.tickers:
             df = download_moex(ticker,1,self.yesterday,board=self.board,market=self.market,engine=self.engine)
-            df = create_df(df)
-            df5 = convert_chart1to5(df.copy())
-            if len(df.index) > 150: #раньше было 400
-                df = df.iloc[-150:]
-            if len(df5.index) > 150:
-                df5 = df5.iloc[-150:]
-            for bot in self.map_bots[1][ticker]:
-                # print(bot)
-                df_c = df.copy()
-                if self.check_time:
-                    start2 = time()
-                func(bot,df_c)
-                if self.check_time:
-                    self.output(time()-start2,bot)
-            for bot in self.map_bots[5][ticker]:
-                df_c = df5.copy()
-                func(bot,df_c)
+            if not df.empty:
+                df = create_df(df)
+                df5 = convert_chart1to5(df.copy())
+                if len(df.index) > 150: #раньше было 400
+                    df = df.iloc[-150:]
+                if len(df5.index) > 150:
+                    df5 = df5.iloc[-150:]
+                for bot in self.map_bots[1][ticker]:
+                    # print(bot)
+                    df_c = df.copy()
+                    if self.check_time:
+                        start2 = time()
+                    func(bot,df_c)
+                    if self.check_time:
+                        self.output(time()-start2,bot)
+                for bot in self.map_bots[5][ticker]:
+                    df_c = df5.copy()
+                    func(bot,df_c)
 
     def trade_bots_bitget(self,func):
         for ticker,fut in self.tickers:
@@ -142,7 +143,7 @@ class TestingTrader1:
                 # self.close_all_pos()
                 break
             except:
-                self.output('Ошибка')
+                self.output(self.spec,'Ошибка')
             if self.check_time2:
                 self.output('Time:',time()-start)
                 self.check_time2 = False

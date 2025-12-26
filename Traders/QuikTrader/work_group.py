@@ -39,22 +39,30 @@ bot_on_ticker = (
             #     'stop_risk':350
 
             # },
-            {
-                'sec_code':'GZH6',
-                'class_code':'SPBFUT',
-                'granularity':'M5',
-                'quantity':1,
-                'stop_risk':250
+            # {
+            #     'sec_code':'IMOEXF',
+            #     'class_code':'SPBFUT',
+            #     'granularity':'M5',
+            #     'quantity':1,
+            #     'stop_risk':350
 
-            },
-            {
-                'sec_code':'GAZPF',
-                'class_code':'SPBFUT',
-                'granularity':'M5',
-                'quantity':1,
-                'stop_risk':250
+            # },
+            # {
+            #     'sec_code':'GZH6',
+            #     'class_code':'SPBFUT',
+            #     'granularity':'M5',
+            #     'quantity':1,
+            #     'stop_risk':250
 
-            },
+            # },
+            # {
+            #     'sec_code':'GAZPF',
+            #     'class_code':'SPBFUT',
+            #     'granularity':'M5',
+            #     'quantity':1,
+            #     'stop_risk':250
+
+            # },
             {
                 'sec_code':'RMH6',
                 'class_code':'SPBFUT',
@@ -71,6 +79,14 @@ bot_on_ticker = (
                 'stop_risk':500
 
             },
+            # {
+            #     'sec_code':'SRH6',
+            #     'class_code':'SPBFUT',
+            #     'granularity':'M5',
+            #     'quantity':1,
+            #     'stop_risk':500
+
+            # },
 
         )
     ),

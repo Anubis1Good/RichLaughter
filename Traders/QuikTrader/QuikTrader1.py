@@ -474,8 +474,8 @@ class QuikTrader3:
         if self.orders_start:
             last_order = get_order_by_trans_id(self.last_order_id)
             if not last_order:
-                print(datetime.now(),self.sec_code, 'not see last order:', self.last_order_id)
                 if not self.first_forgot:
+                    print(datetime.now(),self.sec_code, 'not see last order:', self.last_order_id)
                     self.time_forgot_order = time()
                     self.first_forgot = True
                     return False
@@ -484,7 +484,12 @@ class QuikTrader3:
                     if delta < 1000:
                         return False
                     else:
+                        print(datetime.now(),self.sec_code, 'forgot last order:', self.last_order_id)
                         self.first_forgot = False
+            else:
+                if self.first_forgot:
+                    print(datetime.now(),self.sec_code, 'found last order:', self.last_order_id)
+                    self.first_forgot = False
         return True
     def run(self):
         try:
