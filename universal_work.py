@@ -8,26 +8,26 @@ from utils.work_with_dataframe.load_df import simple_load_df
 # raw_file = 'DataForTests\DataFromMoexForStepTests\IMOEXF_1_1756718219.csv'
 raw_file = 'DataForTests\DataMoexFutP\IMOEXF_1_1766374056.parquet'
 raw_file = 'DataForTests\DataMoexFut5P\_5IMOEXF_1_1766374056.parquet'
-raw_file = 'DataForTests\DataMoexStock5P\_5MTLR_1_1766405408.parquet'
+# raw_file = 'DataForTests\DataMoexStock5P\_5MTLR_1_1766405408.parquet'
 # raw_file = 'DataForTests\DataMoexFut5P\_5GZZ5_1_1766374097.parquet'
 
 # df = bitget_loader(raw_file)
 df = simple_load_df(raw_file)
 
 symbol = "IMOEXF"
-symbol = "MTRL"
+# symbol = "MTRL"
 # symbol = "GZZ5"
 granularity = "5m"
 fee_base = 0.0002
 stop_risk = None
-# stop_risk = 250
+stop_risk = 350
 window = 150
 close_on_time = True
 # close_on_time = False
 normalization=True
-normalization=False
+# normalization=False
 vtb = True
-vtb = False
+# vtb = False
 close_map = ((23,30),(23,30),(23,30),(23,30),(23,30),(17,50),(17,50),)
 params = []
 params = (62,26,11,2.41,0,)

@@ -31,14 +31,14 @@ bot_on_ticker = (
         (MTA_LIGHT,(100,'KING_5_MOEX_FUT')),
         (
             #+
-            {
-                'sec_code':'MMH6',
-                'class_code':'SPBFUT',
-                'granularity':'M5',
-                'quantity':1,
-                'stop_risk':350
+            # {
+            #     'sec_code':'MMH6',
+            #     'class_code':'SPBFUT',
+            #     'granularity':'M5',
+            #     'quantity':1,
+            #     'stop_risk':350
 
-            },
+            # },
             {
                 'sec_code':'GZH6',
                 'class_code':'SPBFUT',

@@ -60,6 +60,7 @@ class CheckWSTrader:
         self.use_tqdm = use_tqdm
         self.df = self.add_time_features(self.df)
         self.stop_risk = -stop_risk if stop_risk is not None else False
+        self.days = 0
 
     def reload_data(self):
         self.trade_data = {
@@ -87,6 +88,7 @@ class CheckWSTrader:
         self.cur_eq = None
         self.first_risk = True
         self.last_c_risk = None
+        self.days = 0
 
     def get_iterator(self,data):
         if self.use_tqdm:
@@ -180,6 +182,8 @@ class CheckWSTrader:
         self.trade_data['unclosed_vtb'].append(self.trade_data['step_eq_vtb'][-1] + self.vtb_fee_func(unclosed_profit,0))
 
     def check_risk(self,weekday,row_name,price,vtb=True):
+        if self.cur_wday != weekday:
+            self.days += 1
         if self.stop_risk:
             eq = self.trade_data['unclosed_vtb'][-1] if vtb else self.trade_data['unclosed_fee'][-1]
             if self.cur_wday != weekday:
@@ -432,6 +436,9 @@ class CheckWSTrader:
             'min_profit': min(td[type_unclosed]),
             'max_dropdown':dropdown,
             'max_dropup':dropup,
+            'days':self.days,
+            'eq_day':td['total'] / self.days,
+            'vtb_day':td['step_eq_vtb'][-1] / self.days
         }
         df_eq = pd.DataFrame({'eq':self.trade_data['equity']})
         mean_eq = 0
@@ -538,8 +545,8 @@ class CheckWSTrader:
         total_wfee = sequity[-1]
         
         # Добавляем подписи для удобства
-        ax1.set_title(f'Chart for {self.symbol}')
-        ax2.set_title('Sequity: ' + str(total_wfee))
+        ax1.set_title(f'Chart for {self.symbol} days {self.days}')
+        ax2.set_title('Sequity: ' + str(total_wfee) + ' MDS: ' + str(total_wfee/self.days))
         risk_lbl = 'Count_risk ' + str(self.stop_risk) + ": " + str(len(self.trade_data['c_risks'])) + '| Count_trades: ' + str(self.trade_data['count']) + '| Mean_profit: ' + str(total_wfee/self.trade_data['count'])
         ax2.set_xlabel(risk_lbl)
         

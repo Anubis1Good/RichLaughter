@@ -5,6 +5,7 @@ from datetime import datetime
 import pandas as pd
 from Traders.QuikTrader.QuikFuncs import get_bars,get_best_glass,get_pos_futures,close_active_order,send_transaction,get_code_orders,smart_close_active_order,get_order_by_trans_id, get_result_futures
 from strategies.work_strategies.BaseTA import BaseTABitget
+from utils.help_trades import funding_map
 
 class QuikTrader1:
     def __init__(self,sec_code,class_code='SPBFUT',granularity='M5',quantity = 1,ws:tuple=(BaseTABitget,(20,)),need_debug=False,smart_reset=True):
@@ -258,7 +259,8 @@ class QuikTrader3:
             close_on_time:bool=True,
             close_map:tuple=((22,30),(22,30),(22,30),(22,30),(22,30),(17,30),(17,30),),
             stop_risk:int|float|None=None,
-            cur_margin:bool=True
+            cur_margin:bool=True,
+            close_ff:bool=True
             ):
         self.sec_code = sec_code
         self.class_code = class_code
@@ -269,6 +271,11 @@ class QuikTrader3:
         self.ws:BaseTABitget = ws[0](sec_code,'1m',"moex_stock",1,*conf)
         self.need_debug = need_debug
         self.smart_reset = smart_reset
+        self.close_ff = close_ff
+        self.funding = False
+        for s in funding_map:
+            if self.sec_code in s:
+                self.funding = True
         folder_error = 'logs/error_logsQT3'
         folder_debug = 'logs/debug_logsQT3'
         if not os.path.exists(folder_error):
@@ -300,7 +307,7 @@ class QuikTrader3:
         self.stop_risk = -stop_risk*self.quantity if stop_risk is not None else False
         self.first_risk = True
         self.time_mode = None
-        print(self.sec_code,self.stop_risk)
+        print(self.sec_code,self.stop_risk,self.funding)
 
     def _check_position(self):
         pos = get_pos_futures(self.sec_code)
@@ -315,6 +322,8 @@ class QuikTrader3:
         chour = now.hour
         cminute = now.minute
         if chour > 8:
+            if chour == 18 and cminute > 20:
+                return -3
             if chour >= self.close_time[0] - 1:
                 if cminute > self.close_time[1]:
                     if chour >= self.close_time[0]:
@@ -500,11 +509,13 @@ class QuikTrader3:
                 if self.close_on_time:
                     if time_mode == -1:
                         action = 'close_all_pw'
-                    if time_mode == -2:
+                    elif time_mode == -2:
                         if action == 'long_pw':
                             action = 'close_short_pw'
                         elif action == 'short_pw':
                             action = 'close_long_pw'
+                    elif time_mode == -3 and self.funding and self.close_ff:
+                        action = 'close_all_pw'
                 if self.stop_risk: #risk_management
                     if not self._check_risk():
                         if self.first_risk:

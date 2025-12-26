@@ -1,16 +1,17 @@
 import traceback
 import os
-from time import time
 from datetime import datetime
 import cv2
 import pandas as pd
 import numpy as np
 import numpy.typing as npt
+from datetime import datetime
 # import pyautogui as pag
 import pydirectinput as pdi
 from Traders.VT.settingsPB import ColorsBtnBGR,TemplateCandle
-from Traders.VT.utils import only_close
+# from Traders.VT.utils import only_close
 from strategies.work_strategies.BaseTA import BaseTABitget
+from utils.help_trades import funding_map
 
 class VT5:
     def __init__(
@@ -20,13 +21,23 @@ class VT5:
             position:tuple,
             name:str,
             ws:tuple=(BaseTABitget,(20,)),
-            close18:bool=False
+            close_on_time:bool=True,
+            close_map:tuple=((22,30),(22,30),(22,30),(22,30),(22,30),(17,30),(17,30),),
+            close_ff:bool=True
             ):
         self.glass_region = glass
         self.chart_region = chart
         self.position_region = position
-        self.close18 = close18
+        self.close_ff = close_ff
+        now = datetime.now()
+        cwd = now.weekday()
+        self.close_on_time = close_on_time
+        self.close_time = close_map[cwd]
         self.name = name
+        self.funding = False
+        for s in funding_map:
+            if name in s:
+                self.funding = True
         self.trader_name = 'VT5'
         conf = ws[1]
         self.ws = ws[0](name,'1m',"moex_stock",1,*conf)
@@ -36,6 +47,7 @@ class VT5:
         self.error_log = os.path.join(folder_error,self.trader_name + '_' + self.name + '.txt')
         self.close_long = False
         self.close_short = False
+        self.time_mode = None
 
     def _color_search(self,img:npt.ArrayLike,color:tuple[int],region:tuple[int]=(None,None,None,None),reverse:bool=False):
         try:
@@ -52,7 +64,27 @@ class VT5:
         except Exception:
             # traceback.print_exc()
             return -1,-1
-
+        
+    def _check_time(self):
+        now = datetime.now()
+        chour = now.hour
+        cminute = now.minute
+        if chour > 8:
+            if chour == 18 and cminute > 20:
+                return -3
+            if chour >= self.close_time[0] - 1:
+                if cminute > self.close_time[1]:
+                    if chour >= self.close_time[0]:
+                        return -1
+                    else:
+                        return -2
+                elif chour == self.close_time[0]:
+                    return -2
+                elif chour > self.close_time[0]:
+                    return -1
+            return 1
+        return 0
+    
     def _check_position(self,img) -> int:
         x,y = self._color_search(img,ColorsBtnBGR.best_bid,self.position_region)
         if x >= 0:
@@ -216,12 +248,25 @@ class VT5:
 
     def run(self,img):
         try:
+            time_mode = self._check_time()
+            if time_mode == 0:
+                return
             df = self._get_df(img)
             row = self.ws.get_test_row(df)
             action = self.ws(row)
-            if self.close18:
-                action = only_close(action,18,5)
-            action = only_close(action,23,5)
+            if self.close_on_time:
+                    if time_mode == -1:
+                        action = 'close_all_pw'
+                    elif time_mode == -2:
+                        if action == 'long_pw':
+                            action = 'close_short_pw'
+                        elif action == 'short_pw':
+                            action = 'close_long_pw'
+                    elif time_mode == -3 and self.funding and self.close_ff:
+                        action = 'close_all_pw'
+            # if self.close18:
+            #     action = only_close(action,18,5)
+            # action = only_close(action,23,5)
             pos = self._check_position(img)
             if pos == -1:
                 self.close_long = False

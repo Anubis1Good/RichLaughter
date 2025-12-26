@@ -18,8 +18,8 @@ else:
     engine: str = "stock"
 ticker = 'MMU5'
 ticker = 'IMOEXF'
-ticker = 'GZU5'
-bot_id = 73
+ticker = 'SRH6'
+bot_id = 198
 # start = str(date.today() - timedelta(days=2))
 # end = None
 
