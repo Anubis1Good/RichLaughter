@@ -1,13 +1,20 @@
-from strategies.work_strategies.GLTA import GLTA_ALPHA,GLTA_BETA,GLTA_GAMMA,GLTA2_ALPHA,GLTA2_BETA,GLTA2_GAMMA
-from Optimiztion.generation_wss.genetics_wss import Evolutionist,Evolutionist2
+def main():
+    raw_file = 'DataForTests\DataMoexFut5P\_5IMOEXF_1_1766374056.parquet'
+    n_save_cores = 1
+    n_individuals = 100
+    step_save = 5
+    init_population_dir=None
+    # init_population_dir='modelML\_nls_models'
+    close_on_time = False
+    kind_test = 1
+    normalization = False
+    new_tf = None
+    vtb = True
+    evo = Evolutionist3(n_individuals,raw_file,NLSTA1_UNION,[],NLSNN1,n_save_cores=n_save_cores,step_save=step_save,init_population_dir=init_population_dir,need_adapt=False,kind_test=kind_test,normalization=normalization,close_on_time=close_on_time,new_tf=new_tf,vtb=vtb)
+    evo.evolution(500)
 
-raw_file = 'DataForTests\DataFromMOEX\MMM5_1_1749581140.csv'
-# raw_file = 'DataForTests/DataFromMoexFast/5MMM5_1_1749581140.csv'
-# raw_file = 'DataForTests\DataFromMoexFast\\5CRM5_1_1749581146.csv'
-# evo = Evolutionist2(50,raw_file,GLTA2_ALPHA,[30,60],step_save=10)
-evo = Evolutionist2(100,raw_file,GLTA2_BETA,[30,15,30],step_save=1,init_policy='modelML\Policies\Q_beta2_001.json')
-# evo = Evolutionist(100,raw_file,GLTA_BETA,[95,35,30],init_policy='TestNewResults\Evolutionist\GLTA_BETA\BP_1751726635.9605374.json')
-# evo = Evolutionist2(100,raw_file,GLTA2_GAMMA,[30,100,30,60,30,50],n_save_cores=2,step_save=10,init_policy='TestNewResults\QLearning\GLTA2_GAMMA\Policies\LP_1752353219.json')
 if __name__ == '__main__':
-    evo.evolution(1000)
-
+    from strategies.work_strategies.NLSTA import NLSTA1_UNION
+    from Optimiztion.models_nn.linear_models import NLSNN1
+    from Optimiztion.generation_wss.Evolutionist3 import Evolutionist3
+    main()

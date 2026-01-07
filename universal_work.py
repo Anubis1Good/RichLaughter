@@ -1,12 +1,13 @@
 from strategies.test_strategies.CheckWSTrader import CheckWSTrader
-from strategies.work_strategies.PTAXX import PTA26_ as WS
+# from strategies.work_strategies.PTAXX import PTA26_ as WS
+from strategies.work_strategies.NLSTA import NLSTA1_UNION as WS
 from utils.work_with_dataframe.load_df import simple_load_df
 # from Loader.BitgetLoader import bitget_loader
 
 
 # raw_file = 'DataForTests\DataFromMoexFast\\5IMOEXF_1_1752761086.csv'
 # raw_file = 'DataForTests\DataFromMoexForStepTests\IMOEXF_1_1756718219.csv'
-raw_file = 'DataForTests\DataMoexFutP\IMOEXF_1_1766374056.parquet'
+# raw_file = 'DataForTests\DataMoexFutP\IMOEXF_1_1766374056.parquet'
 raw_file = 'DataForTests\DataMoexFut5P\_5IMOEXF_1_1766374056.parquet'
 # raw_file = 'DataForTests\DataMoexStock5P\_5MTLR_1_1766405408.parquet'
 # raw_file = 'DataForTests\DataMoexFut5P\_5GZZ5_1_1766374097.parquet'
@@ -30,10 +31,11 @@ vtb = True
 # vtb = False
 close_map = ((23,30),(23,30),(23,30),(23,30),(23,30),(17,50),(17,50),)
 params = []
-params = (62,26,11,2.41,0,)
+# params = (62,26,11,2.41,0,)
 
 print(WS)
-ws = WS(symbol,granularity,'e',1,*params)
+# ws = WS(symbol,granularity,'e',1,*params)
+ws = WS(symbol,granularity,'e',1,policy_model='modelML\_nls_models\model_NLSNN1_64-32_1767803355.pth')
 
 cwt = CheckWSTrader(df,ws,fee_base,symbol,granularity,close_on_time,close_map,True,True,stop_risk)
 
