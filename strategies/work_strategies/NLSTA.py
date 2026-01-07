@@ -2,11 +2,8 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import numpy as np
-from typing import Dict, Optional, Union
-import json
-import os
 from strategies.work_strategies.BaseTA import BaseTABitget
-from ForBots.Indicators.classic_indicators import add_slice_df,add_ema,add_enter_price2close,add_rsi,add_chop,add_rsi_tw,add_cci,add_williams_r,add_mfi,add_ultimate_oscillator,add_cmo,add_adx,add_donchan_channel,add_sma,add_bollinger,add_vodka_channel,add_buffer_add
+from ForBots.Indicators.classic_indicators import add_slice_df,add_enter_price2close
 from Optimiztion.models_nn.linear_models import NLSNN1
 from Optimiztion.models_nn.utils import load_neural_weights
 from ForBots.help_func.help_nlsta1 import nlsta1_settings

@@ -41,7 +41,6 @@ class Evolutionist3:
                  window:int=150,
                  close_on_time:bool=False,
                  new_tf:str|None = '5min'):
-        print('INIT______________________________________________!!!!')
         # Базовые параметры
         self.n_individuals = n_individuals
         self.n_save_cores = n_save_cores
@@ -129,8 +128,6 @@ class Evolutionist3:
     
     def _load_population_from_dir(self, directory, ws_class, param):
         """Загрузка популяции из директории с моделями"""
-
-        print(f"[DEBUG] Создание бота с моделью")
         bots = []
         neural_files = glob.glob(os.path.join(directory, "*.pth"))
         
@@ -269,13 +266,16 @@ class Evolutionist3:
                     data[key].append(result[key])
         
         # Сохраняем ссылки на ботов отдельно
-        bots_dict = {r['name']: r['bot'] for r in results if 'bot' in r}
+        # bots_dict = {r['name']: r['bot'] for r in results if 'bot' in r}
+        bots_dict = {}
+        for i, bot in enumerate(self.population):
+            bots_dict[i] = bot  # ← ВСЕ боты!
         
         # Создаем DataFrame с результатами
         df = pd.DataFrame(data)
         if not df.empty:
             df = pd.concat([old_top, df], axis=0)
-            df = df.drop_duplicates(subset=['name'], keep='first')
+            df = df.drop_duplicates(subset=['total_with_fee', 'count'], keep='first')
             df = df.sort_values('total_with_fee', ascending=False).reset_index(drop=True)
             
             # Отбираем лучших (топ 25%)
@@ -463,47 +463,80 @@ class Evolutionist3:
         self.mutation_scale *= 0.99
     
     def save_files(self, df: pd.DataFrame, bots_dict: Dict):
-        """Сохранение результатов"""
+        """Сохранение результатов - топ-5 моделей"""
         if df.empty:
             print("Нет данных для сохранения")
             return
         
         timestamp = str(int(time()))
         
-        # 1. Сохраняем лучшую нейросеть
-        best_idx = df['name'].iloc[0]
-        if best_idx in bots_dict:
-            best_bot = bots_dict[best_idx]
-            best_model = best_bot.policy_model
+        # Сохраняем топ-5 в подпапке
+        saved_models = []
+        top_n = min(5, len(df))
+        
+        for rank in range(top_n):
+            idx = df['name'].iloc[rank]
+            if idx not in bots_dict:
+                continue
+                
+            bot = bots_dict[idx]
+            model = bot.policy_model
             
-            # Генерируем имя файла с архитектурой
-            arch_str = "-".join(str(x) for x in best_model.hidden_layers)
-            model_filename = f"model_{self.nn_class.__name__}_{arch_str}_{timestamp}.pth"
+            if not hasattr(model, 'state_dict'):
+                print(f"  Пропускаем топ-{rank+1}: нет state_dict")
+                continue
+            
+            # ★ ИСПРАВЛЕННОЕ ИМЯ ФАЙЛА ★
+            score = df['total_with_fee'].iloc[rank]
+            count = df['count'].iloc[rank]
+            
+            # Форматируем: убираем точки, заменяем минусы, добавляем ранг для уникальности
+            score_str = f"{score:+.2f}".replace('.', 'p').replace('-', 'm').replace('+', '')
+            count_str = str(count)
+            
+            model_filename = f"total_{score_str}_count_{count_str}.pth"
             model_path = os.path.join(self.path_models, model_filename)
             
-            # Сохраняем модель
+            # Сохраняем с полной информацией
             torch.save({
-                'state_dict': best_model.state_dict(),
+                'state_dict': model.state_dict(),
+                'rank': rank + 1,
+                'score': score,
+                'generation': self.current_generation,
+                'timestamp': timestamp,
                 'input_dim': self.n_features,
-                'hidden_layers': best_model.hidden_layers,
+                'hidden_layers': self.hidden_archs,
                 'output_dim': 5,
-                'model_class': self.nn_class.__name__
+                'model_class': self.nn_class.__name__,
+                'count_trades': count
             }, model_path)
             
-            # print(f"Лучшая модель сохранена: {model_path}")
+            # Проверяем сохранение
+            if os.path.exists(model_path):
+                file_size = os.path.getsize(model_path) / 1024  # KB
+                saved_models.append({
+                    'rank': rank + 1,
+                    'filename': model_filename,
+                    'score': df['total_with_fee'].iloc[rank],
+                    'file_size_kb': round(file_size, 1)
+                })
+            else:
+                print(f"  ОШИБКА сохранения топ-{rank+1}")
         
-        # 2. Сохраняем DataFrame с результатами
+        
+        # Сохраняем общие результаты (остальное без изменений)
         data_path = os.path.join(self.path_data, f'results_{timestamp}.xlsx')
         with pd.ExcelWriter(data_path, engine='xlsxwriter') as writer:
             df.to_excel(writer, sheet_name='Results', index=False)
-        # print(f"Результаты сохранены: {data_path}")
         
-        # 3. Сохраняем информацию о поколении
+        # Сохраняем информацию о поколении
         gen_info = {
             'generation': self.current_generation,
             'n_individuals': len(self.population),
             'best_score': df['total_with_fee'].iloc[0] if not df.empty else 0,
+            'top5_scores': df['total_with_fee'].head(5).tolist(),
             'timestamp': timestamp,
+            'saved_models': saved_models,
             'parameters': {
                 'mutation_rate': self.mutation_rate,
                 'mutation_scale': self.mutation_scale
@@ -514,7 +547,7 @@ class Evolutionist3:
         with open(info_path, 'w') as f:
             json.dump(gen_info, f, indent=2)
         
-        # print(f"Информация о поколении сохранена: {info_path}")
+        print(f"✓ Результаты поколения {self.current_generation} сохранены")
     
     def save_checkpoint(self, df: pd.DataFrame, bots_dict: Dict):
         """Сохранение полного чекпоинта"""
