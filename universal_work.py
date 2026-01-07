@@ -21,10 +21,10 @@ symbol = "IMOEXF"
 granularity = "5m"
 fee_base = 0.0002
 stop_risk = None
-stop_risk = 350
+# stop_risk = 350
 window = 150
 close_on_time = True
-# close_on_time = False
+close_on_time = False
 normalization=True
 # normalization=False
 vtb = True
@@ -35,7 +35,9 @@ params = []
 
 print(WS)
 # ws = WS(symbol,granularity,'e',1,*params)
-ws = WS(symbol,granularity,'e',1,policy_model='modelML\_nls_models\model_NLSNN1_64-32_1767803355.pth')
+ws = WS(symbol,granularity,'e',1,policy_model='modelML\_nls_models\\total_1784p00_count_378.pth',cparams={
+            'period': 50,
+        })
 
 cwt = CheckWSTrader(df,ws,fee_base,symbol,granularity,close_on_time,close_map,True,True,stop_risk)
 

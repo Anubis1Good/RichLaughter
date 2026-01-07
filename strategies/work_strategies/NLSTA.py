@@ -18,6 +18,7 @@ class NLSTA1_UNION(BaseTABitget):
     """period=20,name_settings:str='first_test',policy_model:str|nn.Module|None=None,cparams:dict={}"""
     def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=20,name_settings:str='first_test',policy_model:str|nn.Module|None=None,cparams:dict={}):
         super().__init__(symbol, granularity, productType, n_parts, period)
+        self.name_settings = name_settings
         settings = nlsta1_settings.get(name_settings,nlsta1_settings['default']).copy()
         self.flags = settings['flags'].copy()
         self.func = settings['func']

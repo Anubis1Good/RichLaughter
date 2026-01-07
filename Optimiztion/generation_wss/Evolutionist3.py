@@ -24,7 +24,7 @@ class Evolutionist3:
                  n_individuals: int, 
                  raw_file: str, 
                  ws_class,  # Класс стратегии (например, NLSTA1_)
-                 param: list,  # Параметры стратегии
+                 param: dict,  # Параметры стратегии
                  nn_class,  # Класс нейросети (например, NLSNN1)
                  ticker:str='IMOEXF',
                  tf:str='5min',
@@ -37,10 +37,12 @@ class Evolutionist3:
                  kind_test:int = 0, #вариант теста 0 - fast, 1 - window, 2 - child
                  normalization:bool = False,
                  vtb:bool = False,
-                 stop_risk:bool = False,
+                 stop_risk:int|float|None = None,
                  window:int=150,
                  close_on_time:bool=False,
-                 new_tf:str|None = '5min'):
+                 new_tf:str|None = '5min',
+                 lower_limit:int|None = None,
+                 upper_limit:int|None = None):
         # Базовые параметры
         self.n_individuals = n_individuals
         self.n_save_cores = n_save_cores
@@ -60,6 +62,8 @@ class Evolutionist3:
         self.new_tf = new_tf
         self.ticker = ticker
         self.tf = tf
+        self.lower_limit = 0 if lower_limit is None else lower_limit
+        self.upper_limit = np.inf if upper_limit is None else upper_limit
 
         # Настройки генетического алгоритма
         self.elite_size = max(1, int(n_individuals * 0.1))
@@ -74,7 +78,7 @@ class Evolutionist3:
         self._load_data(raw_file, param)
         
         # Определение размерности входа
-        sample_bot = ws_class(self.ticker, self.tf, "usdt-futures", 1, *param)
+        sample_bot = ws_class(self.ticker, self.tf, "usdt-futures", 1, **param)
         self.n_features = sample_bot.n_features
         
         # Инициализация популяции
@@ -92,13 +96,13 @@ class Evolutionist3:
         self.df = simple_load_df(raw_file)
         
         # Создаем базовую стратегию для получения данных
-        sample_bot = self.ws_class(self.ticker, self.tf, "usdt-futures", 1, *param)
+        sample_bot = self.ws_class(self.ticker, self.tf, "usdt-futures", 1, **param)
         
         # Сохраняем параметры для создания ботов
         self.param = param
         
         # Получаем имя бота для путей сохранения
-        self.name_bot = str(type(sample_bot)).split('.')[-1][:-2]
+        self.name_bot = str(type(sample_bot)).split('.')[-1][:-2] + '_' + sample_bot.name_settings
         
     def _initialize_population(self, n_individuals, ws_class, param, nn_class, 
                              init_population_dir):
@@ -136,7 +140,7 @@ class Evolutionist3:
                 model,_ = load_neural_weights(model_path,self.nn_class)
                 bot = ws_class(
                     self.ticker, self.tf, "usdt-futures", 1,
-                    *param,
+                    **param,
                     policy_model=model
                 )
                 bots.append(bot)
@@ -164,7 +168,7 @@ class Evolutionist3:
             # Создаем бота с этой моделью
             bot = ws_class(
                 self.ticker, self.tf, "usdt-futures", 1,
-                *param,
+                **param,
                 policy_model=model
             )
             
@@ -204,23 +208,23 @@ class Evolutionist3:
                 cwt.check_strategy_fast(self.vtb)
             
             if cwt.trade_data['count'] != 0:
-
-                if self.vtb:
-                    fee_amount = cwt.trade_data['count'] * 2
-                    total_with_fee = cwt.trade_data['step_eq_vtb'][-1]
-                else:
-                    fee_amount = cwt.trade_data['fees']
-                    total_with_fee = cwt.trade_data['step_eq_fee'][-1]
-                result = {
-                    'name': idx,
-                    'bot': bot,  # Сохраняем самого бота
-                    'total': cwt.trade_data['total'],
-                    'total_with_fee': total_with_fee,
-                    'total_per': cwt.trade_data['total_wfees_per'],
-                    'count': cwt.trade_data['count'],
-                    'fee_amount': fee_amount
-                }
-                return result
+                if self.upper_limit > cwt.trade_data['count'] > self.lower_limit:
+                    if self.vtb:
+                        fee_amount = cwt.trade_data['count'] * 2
+                        total_with_fee = cwt.trade_data['step_eq_vtb'][-1]
+                    else:
+                        fee_amount = cwt.trade_data['fees']
+                        total_with_fee = cwt.trade_data['step_eq_fee'][-1]
+                    result = {
+                        'name': idx,
+                        'bot': bot,  # Сохраняем самого бота
+                        'total': cwt.trade_data['total'],
+                        'total_with_fee': total_with_fee,
+                        'total_per': cwt.trade_data['total_wfees_per'],
+                        'count': cwt.trade_data['count'],
+                        'fee_amount': fee_amount
+                    }
+                    return result
                 
         except Exception as e:
             print(f"Ошибка при оценке бота {idx}: {e}")
@@ -320,7 +324,7 @@ class Evolutionist3:
             # Создаем нового бота
             child_bot = self.ws_class(
                 self.ticker, self.tf, "usdt-futures", 1,
-                *self.param,
+                **self.param,
                 policy_model=child_model
             )
             
@@ -362,7 +366,7 @@ class Evolutionist3:
             
             mutated_bot = self.ws_class(
                 self.ticker, self.tf, "usdt-futures", 1,
-                *self.param,
+                **self.param,
                 policy_model=mutated_model
             )
             
@@ -389,7 +393,7 @@ class Evolutionist3:
         # Создаем нового бота
         copied_bot = self.ws_class(
             self.ticker, self.tf, "usdt-futures", 1,
-            *self.param,
+            **self.param,
             policy_model=copied_model
         )
         
@@ -476,6 +480,10 @@ class Evolutionist3:
         
         for rank in range(top_n):
             idx = df['name'].iloc[rank]
+            score = df['total_with_fee'].iloc[rank]
+            count = df['count'].iloc[rank]
+            if score < 0:
+                continue
             if idx not in bots_dict:
                 continue
                 
@@ -487,14 +495,12 @@ class Evolutionist3:
                 continue
             
             # ★ ИСПРАВЛЕННОЕ ИМЯ ФАЙЛА ★
-            score = df['total_with_fee'].iloc[rank]
-            count = df['count'].iloc[rank]
             
             # Форматируем: убираем точки, заменяем минусы, добавляем ранг для уникальности
             score_str = f"{score:+.2f}".replace('.', 'p').replace('-', 'm').replace('+', '')
             count_str = str(count)
             
-            model_filename = f"total_{score_str}_count_{count_str}.pth"
+            model_filename = f"_total_{score_str}_count_{count_str}.pth"
             model_path = os.path.join(self.path_models, model_filename)
             
             # Сохраняем с полной информацией
