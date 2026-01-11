@@ -1126,3 +1126,23 @@ def add_exp_plusdelta_dzz_peaks(df: pd.DataFrame, period=2, buffer=0.1):
     df['top_pd'] = df['top_pd'] - df['buffer_mean']
     df['bottom_pd'] = df['bottom_pd'] + df['buffer_mean']
     return df
+
+def add_bbi(df:pd.DataFrame,period=20,kind='close',multiplier=2):
+    "add 'bbi' индекс перепроданности по типу RSI"
+    df = df.copy()
+    price = df[kind]
+    df['sma'] = price.rolling(window=period).mean()
+    
+    # Вычисляем стандартное отклонение
+    std_dev = price.rolling(window=period).std()
+    
+    # Вычисляем верхнюю и нижнюю полосы Боллинджера
+    df['bbu'] = df['sma'] + (multiplier * std_dev)
+    df['bbd'] = df['sma'] - (multiplier * std_dev)
+
+    df['buff_bb'] = df['bbu'] - df['bbd']
+    df['top_bb'] = df['bbu'] + df['buff_bb']
+    df['bottom_bb'] = df['bbd'] - df['buff_bb']
+    df['mult_bb'] = (df['top_bb']-df['bottom_bb']) / 100
+    df['bbi'] = (df['close']-df['bottom_bb']) / df['mult_bb']
+    return df

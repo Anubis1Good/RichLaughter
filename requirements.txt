@@ -24,3 +24,5 @@ dropbox
 lightgbm
 optuna
 plotly
+pyarrow
+fastparquet

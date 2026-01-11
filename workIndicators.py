@@ -9,6 +9,7 @@ from ForBots.Indicators.rare_indicators import *
 from ForBots.Indicators.pva_indicators import *
 from ForBots.Indicators.van_indicators import *
 from ForBots.Indicators.ml_indicators import *
+from ForBots.Indicators.mult_indicators import *
 from scipy.stats import linregress
 
 # raw_file = 'DataForTests\DataFromBitget\DOGEUSDT_1m_1739873922.csv'
@@ -22,11 +23,13 @@ df = simple_load_df(raw_file)
 # df = df.iloc[10:510]
 
 
-df = add_sma(df)
 
-for i in range(1,5):
-    df['top_'+str(i)] = df['sma'] + df['close'] * i * 0.002
-    df['bot_'+str(i)] = df['sma'] - df['close'] * i * 0.002
+
+df = add_cdvsai(df)
+df = add_rsi(df,14)
+df = add_crysis_counter(df)
+
+
 
 # df = add_dzz_peaks(df,period=10,n_std=5)
 # df = add_dzz_peaks(df,period=10,n_std=5,drop_last=False)
@@ -53,7 +56,7 @@ print(df.tail(10))
 plot = True
 # plot = False
 use_sublot2 = True
-use_sublot2 = False
+# use_sublot2 = False
 
 if plot:
     if use_sublot2:
@@ -61,59 +64,24 @@ if plot:
     plt.grid() 
     draw_hb_chart_fast(df)
 
-    for col in df.columns.to_list():
-        if 'top_' in col:
-            plt.plot(df[col],color='green')
-        if 'bot_' in col:
-            plt.plot(df[col],color='pink')
-    plt.plot(df['sma'])
-    # plt.plot(df['upper_channel'])
-    # plt.plot(df['ave_up'])
-    # plt.plot(df['ave_down'])
-    # plt.plot(df['max_hb'])
-    # plt.plot(df['min_hb'])
-    # plt.plot(df['stop_up'])
-    # plt.plot(df['stop_down'])
-    # plt.plot(df['lower_channel'])
-    # plt.plot(df['sma'])
-    # plt.plot(df['top_mean'])
-    # plt.plot(df['bottom_mean'])
-    # plt.plot(df['top_pd'])
-    # plt.plot(df['bottom_pd'])
-    # plt.plot(df['stair'])
-    # plt.plot(df['hbzz'])
-    # plt.plot(df['lbzz'])
-    # plt.plot(df['zigzag'])
-    # plt.plot(df['lsl'])
-    # plt.plot(df['ssl'])
-    # plt.plot(df['bzp1'], linestyle=':',color='g')
-    # plt.plot(df['bzp2'], linestyle='-.',color='g')
-    # plt.plot(df['bzp3'], linestyle=':',color='b')
-    # plt.plot(df['bzp4'], linestyle='-.',color='b')
-    # plt.plot(df['zp1'], linestyle=':',color='g')
-    # plt.plot(df['zp2'], linestyle='-.',color='g')
-    # plt.plot(df['zp3'], linestyle=':',color='b')
-    # plt.plot(df['zp4'], linestyle='-.',color='b')
-    # plt.plot(df['target'], linestyle='--',color='r')
-    # plt.plot(df['btarget'], linestyle='--',color='r')
-    # plt.plot(df['mzp'], linestyle='--',color='#ff00ff')
+    # for col in df.columns.to_list():
+    #     if 'top_' in col:
+    #         plt.plot(df[col],color='green')
+    #     if 'bot_' in col:
+    #         plt.plot(df[col],color='pink')
 
-    # plt.plot(df['stair_up'])
-    # df['points'] = np.where((df['zigzag_direction'] != df['zigzag_direction'].shift(1)), df['middle'], np.nan)
 
-    # points = df[~pd.isna(df['points'])]
-    # print(points)
-    # plt.scatter(points.index,points['middle'])
-    # plt.scatter(df.index, df['zigzag_peaks'], color='red', label='Peaks')
-    # for k in ('fractal_up','fractal_down'):
-    # for k in (('max_hb', 'min_hb', 'avarege')):
-    #     plt.plot(df[k])
-    # for k in 'max_hb, min_hb, avarege'.split(', '):
     if use_sublot2:
         ax1 = plt.gca()
         plt.subplot(2,1,2,sharex=ax1)
         plt.grid() 
-    # plt.plot(df['dir_ma'])
+
+    # plt.plot(df['dvsai'])
+    plt.plot(df['cum_dvsai'])
+    # plt.plot(df['ma_cdv1'])
+    # plt.plot(df['ma_cdv2'])
+    plt.plot(df['crysis_index'],color='g')
+    plt.plot(df['rsi'],color='r')
     # plt.plot(df['ii'])
     # plt.plot(df['rsi'])
     # plt.plot(df['top_q'])

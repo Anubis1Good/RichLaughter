@@ -417,7 +417,7 @@ def add_vsai(df,period=20):
     df['vsaima'] = vsai_roll.mean()+vsai_roll.std()
     return df
 
-def add_dvsai(df,period=20,mult=1):
+def add_dvsai(df,period=20,mult=2):
     """add 'dvsai','dvsaima','dvsaiu','dvsaid'"""
     df['hl'] = df['high'] - df['low']
     df['dvsai'] = (df['volume'] / df['hl']) * df['direction']

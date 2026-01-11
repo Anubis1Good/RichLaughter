@@ -184,6 +184,7 @@ class CheckWSTrader:
     def check_risk(self,weekday,row_name,price,vtb=True):
         if self.cur_wday != weekday:
             self.days += 1
+            self.cur_wday = weekday
         if self.stop_risk:
             eq = self.trade_data['unclosed_vtb'][-1] if vtb else self.trade_data['unclosed_fee'][-1]
             if self.cur_wday != weekday:

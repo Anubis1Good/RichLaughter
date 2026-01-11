@@ -35,9 +35,7 @@ params = []
 
 print(WS)
 # ws = WS(symbol,granularity,'e',1,*params)
-ws = WS(symbol,granularity,'e',1,policy_model='modelML\_nls_models\\total_1784p00_count_378.pth',cparams={
-            'period': 50,
-        })
+ws = WS(symbol,granularity,'e',1,policy_model='modelML\_nls_models\_total_5410p00_count_305.pth',name_settings='crysis_small')
 
 cwt = CheckWSTrader(df,ws,fee_base,symbol,granularity,close_on_time,close_map,True,True,stop_risk)
 
