@@ -16,10 +16,11 @@ error_folder = 'logs\error_logs'
 
 class TradeWorker(QThread):
     update_signal = pyqtSignal(str)
-    def __init__(self, sg_key,param_bots):
+    def __init__(self, sg_key,param_bots,file_istxt):
         super().__init__()
         self.sg_key = sg_key  # Сохраняем параметры
         self.param_bots = param_bots
+        self.grid = not file_istxt
         self._active = True  # Дополнительный флаг контроля
         self._lock = QMutex()  # Для thread-safe операций
     def stop(self):
@@ -33,15 +34,29 @@ class TradeWorker(QThread):
             shutil.rmtree(error_folder)
         except Exception as e:
             pass
-        self.work_traders:list[VT5] = []
+        if self.grid:
+            self.work_traders:list[list[VT5]]=[]
+        else:
+            self.work_traders:list[VT5] = []
         sg = stock_groups[self.sg_key]
             
         for s in sg:
-            ws,close18 = init_trader(s)
-            if self.sg_key == 'TS':
-                s = s[:-1]
-            trader = VT5(*self.param_bots,s,ws)
-            self.work_traders.append(trader)
+            if self.grid:
+                traders = []
+                for i in range(len(s)):
+                    ws,close18 = init_trader(s[i])
+                    glass:tuple = self.param_bots[0+3*i]
+                    chart:tuple = self.param_bots[1+3*i]
+                    position:tuple = self.param_bots[2+3*i]
+                    trader = VT5(glass,chart,position,s[i],ws)
+                    traders.append(trader)
+                self.work_traders.append(traders)
+            else:
+                ws,close18 = init_trader(s)
+                if self.sg_key == 'TS':
+                    s = s[:-1]
+                trader = VT5(*self.param_bots,s,ws)
+                self.work_traders.append(trader)
         self.msleep(3000)
         while not self.isInterruptionRequested():
             self._lock.lock()
@@ -66,16 +81,26 @@ class TradeWorker(QThread):
                 return
             # pag.screenshot('Traders\VT\Screen.png')
             # img = cv2.imread('Traders\VT\Screen.png')
+            if self.grid:
+                for _wt in wt:
+                    _wt._reset_draw_chart()
+            else:
+                wt._reset_draw_chart()
             img = np.array(pag.screenshot()) 
             img = cv2.cvtColor(img,cv2.COLOR_RGB2BGR)
             # cv2.imwrite('test.png',img)
-            wt.run(img)
+            if self.grid:
+                for _wt in wt:
+                    _wt.run(img)
+                    pag.moveTo(_wt.glass_region[0]+10,_wt.glass_region[1]+10)
+            else:
+                wt.run(img)
+                pag.moveTo(wt.glass_region[0]+10,wt.glass_region[1]+10)
             if keyboard.is_pressed('Esc'):
                 print("\nyou pressed Esc, so exiting...")
                 self.requestInterruption()  # Устанавливаем флаг прерывания
                 return  # Выходим из цикла
                 # sys.exit(0)
-            pag.moveTo(wt.glass_region[0]+10,wt.glass_region[1]+10)
             keyboard.send('tab') 
             if self.isInterruptionRequested():
                 return

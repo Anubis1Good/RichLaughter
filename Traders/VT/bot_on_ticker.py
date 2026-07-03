@@ -8,6 +8,7 @@ from strategies.work_strategies.OGTA import *
 from strategies.work_strategies.MTA import *
 from strategies.work_strategies.MTA_KING import MTA_KING,MTA_LIGHT
 from strategies.work_strategies.BaseTA import BaseTABitget
+from strategies.work_strategies.HelpTA import TestVTTA
 
 from Optimiztion.Optimizator1 import generate_combinations
 
@@ -26,24 +27,29 @@ from Optimiztion.Optimizator1 import generate_combinations
 #     wss_u.append((PTA4_UNIVERSAL,conf))
 
 bot_on_ticker = (
+    ((TestVTTA,(100,)),
+     ('VTBR','ETLN','MTLR','SGZH','DATA','DELI','IVAT','MVID'),
+     False
+     ),
 
-    ((MTA_LIGHT,(100,'KING_5_MOEX_SPECIAL','u')),
-     ('NVTK2','RUAL2','CHMF2','GAZP2','ALRS2','TRMK2','MTLR2','LSRG2','MAGN2','NMTP2','GMKN2','AFLT2','IRAO2','ROSN2','NLMK2','TATN2','AFKS2','HYDR2','PIKK2','SELG2','UPRO2','YDEX2','TRNFP2','BANEP2','RTKM2','MGNT2','SIBN2','MOEX2','MTSS2','SNGSP2','FESH2','LKOH2','CBOM2','FEES2','SBER2','VTBR2','SNGS2','APTK2','QIWI2','KZOSP2','UWGN2'),
-     False),
+
+    # ((MTA_LIGHT,(100,'KING_5_MOEX_SPECIAL','u')),
+    #  ('NVTK2','RUAL2','CHMF2','GAZP2','ALRS2','TRMK2','MTLR2','LSRG2','MAGN2','NMTP2','GMKN2','AFLT2','IRAO2','ROSN2','NLMK2','TATN2','AFKS2','HYDR2','PIKK2','SELG2','UPRO2','YDEX2','TRNFP2','BANEP2','RTKM2','MGNT2','SIBN2','MOEX2','MTSS2','SNGSP2','FESH2','LKOH2','CBOM2','FEES2','SBER2','VTBR2','SNGS2','APTK2','QIWI2','KZOSP2','UWGN2'),
+    #  False),
     # ((MTA_KING,(100,'KING_5_MOEX_SPECIAL','u')),
     #  ('KZOSP2',),
     #  True),
-    ((MTA_LIGHT,(100,'KING_5_MOEX_STOCK','u')),
-     ('NVTK','RUAL','CHMF','GAZP','ALRS','TRMK','MTLR','LSRG','MAGN','NMTP','GMKN','AFLT','IRAO','ROSN','NLMK','TATN','AFKS','HYDR','PIKK','SELG','UPRO','YDEX','TRNFP','BANEP','RTKM','MGNT','SIBN','MOEX','MTSS','SNGSP','FESH','LKOH','CBOM','FEES','SBER','VTBR','SNGS','APTK','QIWI','KZOSP','UWGN'),
-     False),
+    # ((MTA_LIGHT,(100,'KING_5_MOEX_STOCK','u')),
+    #  ('NVTK','RUAL','CHMF','GAZP','ALRS','TRMK','MTLR','LSRG','MAGN','NMTP','GMKN','AFLT','IRAO','ROSN','NLMK','TATN','AFKS','HYDR','PIKK','SELG','UPRO','YDEX','TRNFP','BANEP','RTKM','MGNT','SIBN','MOEX','MTSS','SNGSP','FESH','LKOH','CBOM','FEES','SBER','VTBR','SNGS','APTK','QIWI','KZOSP','UWGN'),
+    #  False),
     # ((MTA_KING,(100,'KING_5_MOEX_STOCK','u')),
     #  ('KZOSP',),
     #  True),
     # ((MTA_KING,(100,'KING_1_MOEX_STOCK','u')),
     #  ('',)),
-    ((MTA_LIGHT,(100,'KING_1_MOEX_FUT','u')),
-     ('CRU5','MMU5','MXU5','GZU5','SRU5','RIU5','RMU5','SiU5','IMOEXF'),
-     True),
+    # ((MTA_LIGHT,(100,'KING_1_MOEX_FUT','u')),
+    #  ('CRU5','MMU5','MXU5','GZU5','SRU5','RIU5','RMU5','SiU5','IMOEXF'),
+    #  True),
 
 )
 

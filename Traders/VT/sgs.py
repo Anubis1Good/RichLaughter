@@ -21,5 +21,9 @@ stock_groups= {
         'KZOSP2', 
         'QIWI2', 
         'UWGN2'
+    ),
+    'GRID_test': (
+        ['VTBR','ETLN','MTLR','SGZH'],
+        ['DATA','DELI','IVAT','MVID'],
     )
 }

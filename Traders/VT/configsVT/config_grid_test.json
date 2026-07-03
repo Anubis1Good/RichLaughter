@@ -1,0 +1,9 @@
+{
+    "amount_vt":4,
+    "x_first_glass":362,
+    "raw_glass_field_xyxy": [1,58,1917,491],
+    "raw_pos_filed_xyxy":[1,492,1917,516],
+    "raw_chart_field_xyxy":[1,551,1917,997],
+    "direction_chart_grid":"row",
+    "_help_info":"direction_chart_grid = row || column, все зависит от того, как расположенны графики вряд под стаканами или в колону сбоку"
+}

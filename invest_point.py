@@ -11,7 +11,7 @@ from pprint import pprint
 need_charts = True
 need_charts = False
 fut = False
-fut = True
+# fut = True
 today = date.today()
 # start_date = str(today - timedelta(days=720))
 start_date = {

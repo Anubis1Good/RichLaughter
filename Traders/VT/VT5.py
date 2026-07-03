@@ -13,12 +13,15 @@ from Traders.VT.settingsPB import ColorsBtnBGR,TemplateCandle
 from strategies.work_strategies.BaseTA import BaseTABitget
 from utils.help_trades import funding_map
 
+
 class VT5:
     def __init__(
             self,
             glass:tuple,
             chart:tuple,
             position:tuple,
+            # тут надо будет добавить ленту и кластера
+
             name:str,
             ws:tuple=(BaseTABitget,(20,)),
             close_on_time:bool=True,
@@ -48,6 +51,7 @@ class VT5:
         self.close_long = False
         self.close_short = False
         self.time_mode = None
+        self.offset = 0
 
     def _color_search(self,img:npt.ArrayLike,color:tuple[int],region:tuple[int]=(None,None,None,None),reverse:bool=False):
         try:
@@ -129,6 +133,49 @@ class VT5:
         pdi.moveTo(self.glass_region[0]+11,self.glass_region[1]+11)
         pdi.press('f')
 
+    # new_methods
+    def _add_level(self,dx,dy):
+        pdi.moveTo(self.chart_region[0]+69,self.chart_region[1]+10)
+        pdi.click()
+        pdi.moveTo(self.chart_region[0]+dx,self.chart_region[1]+dy)
+        pdi.click()
+
+    def _remove_levels(self):
+        pdi.moveTo(self.glass_region[0]+11,self.glass_region[1]+11)
+        pdi.press('o')
+
+    def _reset_draw_chart(self):
+        pdi.moveTo(self.chart_region[0]+50,self.chart_region[1]+50)
+        pdi.rightClick()
+        pdi.moveTo(self.chart_region[0]+45,self.chart_region[1]+45)
+        pdi.click()
+
+
+    def _send_open_level(self,direction,n=0):
+        ...
+    def _send_open_large1(self,direction,n=0):
+        ...
+    def _send_open_large2(self,direction,n=0):
+        ...
+
+    def _send_close_level(self,direction,n=0):
+        rev_direction = 'long' if direction == 'short' else 'short'
+        pdi.press('z')
+        self._send_open_level(rev_direction,n)
+        pdi.press('z')
+
+    def _send_close_large1(self,direction,n=0):
+        rev_direction = 'long' if direction == 'short' else 'short'
+        pdi.press('z')
+        self._send_open_large1(rev_direction,n)
+        pdi.press('z')
+
+    def _send_close_large2(self,direction,n=0):
+        rev_direction = 'long' if direction == 'short' else 'short'
+        pdi.press('z')
+        self._send_open_large2(rev_direction,n)
+        pdi.press('z')
+
     def _get_chart(self,img,region):
         chart = img[
         region[1]:region[3],
@@ -198,14 +245,14 @@ class VT5:
         dir_df['middle'] = dir_df.apply(lambda row: (row['high'] + row['low'])//2,axis=1)
         dir_df['spred'] = dir_df.apply(lambda row:row['low']-row['high'],axis=1)
         dir_df = dir_df.reset_index(drop=True)
-        offset = dir_df['volume'].max() + 1
+        self.offset = dir_df['volume'].max() + 1
         for k in ('high','low','volume','middle'):
-            dir_df[k] = -dir_df[k] + offset
+            dir_df[k] = -dir_df[k] + self.offset
         # Временное решение вопроса open и close
         dir_df['open'] = dir_df.apply(lambda row: row['middle'] - 1 if row['direction'] > 0 else row['middle'] + 1,axis=1)
         dir_df['close'] = dir_df.apply(lambda row: row['middle'] + 1 if row['direction'] > 0 else row['middle'] - 1,axis=1)
         _,cur_price = self._get_current_price(chart)
-        cur_price = - cur_price +offset
+        cur_price = - cur_price +self.offset
         dir_df.loc[dir_df.index[-1], 'close'] = (
             cur_price + 1 if dir_df['direction'].iloc[-1] > 0 else cur_price - 1
         )
@@ -245,6 +292,15 @@ class VT5:
                 self._send_close('long')
             else:
                 self._reset_req()
+        elif 'test' in action:
+            ...
+            # print(self.glass_region)
+            # print(self.chart_region)
+            # print(self.position_region)
+            # print(self.name)
+            # print(self.ws)
+            # self._remove_levels()
+            # self._add_level(100,100)
 
     def run(self,img):
         try:
@@ -253,6 +309,13 @@ class VT5:
                 return
             df = self._get_df(img)
             row = self.ws.get_test_row(df)
+            # print(row)
+            level_vt_values = row[row.index.str.contains('level_vt')].values
+            if level_vt_values.size != 0:
+                self._remove_levels()
+                # print(level_vt_values)
+                for lvl in level_vt_values:
+                    self._add_level(10,int(-lvl+self.offset))
             action = self.ws(row)
             if self.close_on_time:
                     if time_mode == -1:

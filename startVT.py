@@ -3,9 +3,9 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPainter, QPen, QColor
 from PyQt5.QtWidgets import QApplication,QWidget,QListWidget,QPushButton,QHBoxLayout,QVBoxLayout,QLabel
 
-from Traders.VT.utils import configuration_traiders
+from Traders.VT.utils import configuration_traiders,configuration_traiders_grid
 from Traders.VT.sgs import stock_groups
-from Traders.VT.tradeVTs import main_trade,TradeWorker
+from Traders.VT.tradeVTs import TradeWorker
 
 lines = []
 class Overlay(QWidget):
@@ -147,8 +147,12 @@ class MainWindow(QWidget):
             # self.trader_btn.setStyleSheet('background-color: #006561;')
         else:
             file = os.path.join(self.config_folder, self.cur_config)
-            lines = configuration_traiders(file)
-            self.worker = TradeWorker(self.cur_sg, lines)
+            file_istxt = file.endswith('.txt')
+            if file_istxt:
+                lines = configuration_traiders(file)
+            else:
+                lines = configuration_traiders_grid(file)
+            self.worker = TradeWorker(self.cur_sg, lines,file_istxt)
             self.worker.finished.connect(self.on_worker_finished)
             self.worker.start()
             print('Trading start')
@@ -191,7 +195,10 @@ class MainWindow(QWidget):
 
     def show_overlay(self):
         file = os.path.join(self.config_folder,self.cur_config)
-        lines = configuration_traiders(file)
+        if file.endswith('.txt'):
+            lines = configuration_traiders(file)
+        else:
+            lines = configuration_traiders_grid(file)
             
         if not self.overlay:
             self.draw_btn.setText('StopDraw')

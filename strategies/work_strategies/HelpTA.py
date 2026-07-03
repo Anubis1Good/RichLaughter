@@ -1,5 +1,8 @@
 from strategies.work_strategies.BaseTA import BaseTABitget
 
+from ForBots.Indicators.classic_indicators import add_slice_df,add_enter_price2close,add_dzz_peaks,add_percent_zz_peaks
+from ForBots.Indicators.pva_indicators import add_pattern18_dzz,add_pattern18_dzz_czd,add_stop_loss_p18czd
+
 class CloseTA(BaseTABitget):
     def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=15):
         super().__init__(symbol, granularity, productType, n_parts, period)
@@ -7,6 +10,25 @@ class CloseTA(BaseTABitget):
         return df
     def __call__(self, row, *args, **kwds):
         return 'close_all_pw'
+    
+class TestVTTA(BaseTABitget):
+    def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=20):
+        super().__init__(symbol, granularity, productType, n_parts, period)
+    def preprocessing(self, df):
+        # df = add_dzz_peaks(df,n_std=3,period=50)
+        # df = add_pattern18_dzz_czd(df)
+        # df['level_vt1'] = df['zp1']
+        # df['level_vt2'] = df['zp2']
+        # df['level_vt3'] = df['zp3']
+        # df['level_vt4'] = df['zp4']
+
+        df['level_vt1'] = df['high'].max()
+        df['level_vt2'] = df['low'].min()
+        df['level_vt3'] = df['middle'].median()
+        return df
+    
+    def __call__(self, row, *args, **kwds):
+        return 'test'
 
 def get_rws(original_class):
     # Создаем новое имя класса с префиксом "Rev"
@@ -39,3 +61,4 @@ def get_rws(original_class):
     ReversedClass.__doc__ = original_class.__doc__
     
     return ReversedClass
+
