@@ -197,7 +197,7 @@ class VT5:
         pdi.moveTo(self.chart_region[0]+45,self.chart_region[1]+45)
         pdi.click()
 
-
+    
     def _send_open_level(self,img,direction,n=1,reverse_pos=False,press_f=True):
         pdi.moveTo(self.glass_region[0]+11,self.glass_region[1]+11)
         if press_f:

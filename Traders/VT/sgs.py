@@ -11,7 +11,7 @@ stock_groups= {
     #     'LSRG',
     # ),
     'GRID_test': (
-        ['VTBR','ETLN','MTLR','SGZH'],
-        ['DATA','DELI','IVAT','MVID'],
+        ['VTBR1','ETLN1','MTLR1','SGZH1'],
+        ['DATA1','DELI1','IVAT1','MVID1'],
     )
 }
