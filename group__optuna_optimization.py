@@ -16,16 +16,16 @@ from utils.processing_results.add_vtb_fee_fut import get_func_vtb_fee
 from utils.work_with_dataframe.convert_timeframe import convert_timeframe
 phys_cores = psutil.cpu_count(logical=False) 
 
-save_cores = 3
+save_cores = 1
 close_2330 = True
 new_timeframe = None
 # new_timeframe = '5min'
-new_timeframe = '30min'
+# new_timeframe = '30min'
 reverse_test = False
 # reverse_test = True
 # feature_optimization = 'total_abs_fee'
 # bottom_limit=150
-top_limit=600
+top_limit=1000
 bottom_limit=100
 
 # # Целевая функция для Optuna
