@@ -1,7 +1,10 @@
 import pandas as pd
 
-def bitget_loader(raw_file):
-    df = pd.read_csv(raw_file)
+def bitget_loader(raw_file:str):
+    if raw_file.endswith('.parquet'):
+        df = pd.read_parquet(raw_file)
+    else:
+        df = pd.read_csv(raw_file)
     if not 'middle' in df.columns:
         df['middle'] = df.apply(lambda row: (row['high']+row['low'])/2,axis=1)
     if 'Unnamed: 0' in df.columns:

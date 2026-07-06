@@ -43,6 +43,17 @@ def configuration_traiders_grid(filename:str):
                          raw_pos_field[0]+width_vt*(i+1)-part_pos,
                          raw_pos_field[3])
             fields.append(pos_field) #2
+            tape_field = (raw_glass_field[0]+data['xx_first_tape'][0]+width_vt*i,
+                           raw_glass_field[1],
+                           raw_glass_field[0]+data['xx_first_tape'][1]+width_vt*i,
+                           raw_glass_field[3])
+            fields.append(tape_field) #3
+            cluster_field = (raw_glass_field[0]+data['xx_first_cluster'][0]+width_vt*i,
+                           raw_glass_field[1],
+                           raw_glass_field[0]+data['xx_first_cluster'][1]+width_vt*i,
+                           raw_glass_field[3])
+            fields.append(cluster_field) #4
+            
 
     return fields
 

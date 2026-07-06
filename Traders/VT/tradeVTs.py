@@ -45,10 +45,12 @@ class TradeWorker(QThread):
                 traders = []
                 for i in range(len(s)):
                     ws,close18 = init_trader(s[i])
-                    glass:tuple = self.param_bots[0+3*i]
-                    chart:tuple = self.param_bots[1+3*i]
-                    position:tuple = self.param_bots[2+3*i]
-                    trader = VT5(glass,chart,position,s[i],ws)
+                    glass:tuple = self.param_bots[0+5*i]
+                    chart:tuple = self.param_bots[1+5*i]
+                    position:tuple = self.param_bots[2+5*i]
+                    tape:tuple = self.param_bots[3+5*i]
+                    cluster:tuple = self.param_bots[4+5*i]
+                    trader = VT5(glass,chart,position,tape,cluster,s[i],ws)
                     traders.append(trader)
                 self.work_traders.append(traders)
             else:

@@ -5,12 +5,13 @@ from Loader.ApiMoexLoader import ApiMoexLoader
 from datetime import date,timedelta
 
 today = date.today()
-start_date = str(today - timedelta(days=60))
+start_date = str(today - timedelta(days=30))
 # # start_date = '2025-02-01'
 
 # tickers = ('IMOEXF','MMZ5','RMZ5','SRZ5','GAZPF','SBERF','SVZ5','GZZ5',)
 # folder_save = 'DataForTests\DataMoexFutP'
-tickers = ('ROSN','LSRG','CBOM','TRMK','NMTP','SELG','RUAL','MTLR','VTBR','GMKN','APTK','KZOSP','UWGN')
+# tickers = ('ROSN','LSRG','CBOM','TRMK','NMTP','SELG','RUAL','MTLR','VTBR','GMKN','APTK','KZOSP','UWGN')
+tickers = ('ETLN','MTLR','DELI','IVAT','SGZH','MVID','EUTR','VTBR','RNFT','DATA','RAGR','VSEH')
 folder_save = 'DataForTests\DataMoexStockP'
 for ticker in tickers:
     # loader = ApiMoexLoader(ticker,'RFUD','forts','futures')

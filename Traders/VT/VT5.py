@@ -20,8 +20,8 @@ class VT5:
             glass:tuple,
             chart:tuple,
             position:tuple,
-            # тут надо будет добавить ленту и кластера
-
+            tape:tuple,
+            cluster:tuple,
             name:str,
             ws:tuple=(BaseTABitget,(20,)),
             close_on_time:bool=True,
@@ -31,6 +31,8 @@ class VT5:
         self.glass_region = glass
         self.chart_region = chart
         self.position_region = position
+        self.tape_region = tape
+        self.cluster_region = cluster
         self.close_ff = close_ff
         now = datetime.now()
         cwd = now.weekday()

@@ -1,27 +1,15 @@
 stock_groups= { 
-    'LI':(
-        'IMOEXF',
-        'ROSN',
-        'QIWI',
-        'LSRG',
-        'CBOM',
-        'TRMK',
-        'NMTP',
-        'SELG',
-        'RUAL',
-        'MTLR',
-        'VTBR',
-        'GMKN'
+    'LAPTOP':(
+        ['ETLN','MTLR','DELI','IVAT'],
+        ['SGZH','MVID','EUTR','VTBR'],
+        ['RNFT','DATA','RAGR','VSEH'],
     ),
-    'TS': (
-        'MTLR2',
-        'VTBR2',
-        'APTK2',
-        'RUAL2',
-        'KZOSP2', 
-        'QIWI2', 
-        'UWGN2'
-    ),
+    # 'LAPTOP':(
+    #     'IMOEXF',
+    #     'ROSN',
+    #     'QIWI',
+    #     'LSRG',
+    # ),
     'GRID_test': (
         ['VTBR','ETLN','MTLR','SGZH'],
         ['DATA','DELI','IVAT','MVID'],
