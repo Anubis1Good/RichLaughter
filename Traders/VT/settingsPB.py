@@ -25,6 +25,8 @@ class ColorsBtnBGR:
     ask_level_1 = (114,71,97)
     bid_level_1 = (119,76,102)
 
+    level_shift_1 = (105,62,88)
+
 class TemplateCandle:
     candle_top = np.array([
         [0,0,0],

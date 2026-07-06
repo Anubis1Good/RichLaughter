@@ -22,13 +22,13 @@ class TestVTTA(BaseTABitget):
         # df['level_vt3'] = df['zp3']
         # df['level_vt4'] = df['zp4']
 
-        df['level_vt1'] = df['high'].max()
-        df['level_vt2'] = df['low'].min()
-        df['level_vt3'] = df['middle'].median()
+        # df['level_vt1'] = df['high'].max()
+        # df['level_vt2'] = df['low'].min()
+        # df['level_vt3'] = df['middle'].median()
         return df
     
     def __call__(self, row, *args, **kwds):
-        return 'test'
+        return 'all_level_2'
 
 def get_rws(original_class):
     # Создаем новое имя класса с префиксом "Rev"
