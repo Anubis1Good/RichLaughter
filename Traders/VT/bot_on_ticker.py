@@ -34,51 +34,51 @@ bot_on_ticker = (
      ('VTBR1','ETLN1','MTLR1','SGZH1','DATA1','DELI1','IVAT1','MVID1'),
      False
      ),
-    ((PSTA9_GRAVY,(10,2.81,2,0.28,0.77,1,)),
+    ((PSTA9_GRAVY,(10,2.81,2,0.28,0.77,1,)), #-1
      ('DATA',),
      False
      ),
-    ((VSAT1_VENUS,(60,0.13,0.58,0.32,0.94,0,1,0,)),
+    ((VSAT1_VENUS,(60,0.13,0.58,0.32,0.94,0,1,0,)), #+1
      ('DELI',),
      False
      ),
-    ((PTA24_BRIGHTWING,(22,3,4,0.35,0.24,0.28,7.98,1,)),
+    ((PTA24_BRIGHTWING,(22,3,4,0.35,0.24,0.28,7.98,1,)), #=1
      ('ETLN',),
      False
      ),
-    ((PSTA2_DUCK,(13,15,1,)),
+    ((PSTA2_DUCK,(13,15,1,)), #-1
      ('EUTR',),
      False
      ),
-    ((VSAT1_MERCURY,(45,1.78,0.72,0.33,0.72,0,1,1,)),
+    ((VSAT1_MERCURY,(45,1.78,0.72,0.33,0.72,0,1,1,)), #-1
      ('IVAT',),
      False
      ),
-    ((PSTA2_GOOSE,(54,29,1,)),
+    ((PSTA2_GOOSE,(54,29,1,)), #-1
      ('MTLR',),
      False
      ),
-    ((PSTA6_PIGEON,(16,5,26,9,6,0.12,2.52,0,)),
+    ((PSTA6_PIGEON,(16,5,26,9,6,0.12,2.52,0,)), #+1
      ('MVID',),
      False
      ),
-    ((PSTA9_BIRDWATCHER,(32,1.8,3,0.23,1.44,0,0,)),
+    ((PSTA9_BIRDWATCHER,(32,1.8,3,0.23,1.44,0,0,)), #+1
      ('RAGR',),
      False
      ),
-    ((PTA14_RENEGADE,(57,40,9,5,25,19,)),
+    ((PTA14_RENEGADE,(57,40,9,5,25,19,)), #0
      ('RNFT',),
      False
      ),
-    ((PTA22_BERSERK,(53,9,4,7.74,3,0.72,23,49,58,16,)),
+    ((PTA22_BERSERK,(53,9,4,7.74,3,0.72,23,49,58,16,)), #-1
      ('SGZH',),
      False
      ),
-    ((PTA11_KUSURUKEN,(47,42,25,34,'hl',)),
+    ((PTA11_KUSURUKEN,(47,42,25,34,'hl',)), #-1
      ('VSEH',),
      False
      ),
-    ((PSTA4_PELICAN,(57,16,2,0.05,)),
+    ((PSTA4_PELICAN,(57,16,2,0.05,)), #-1
      ('VTBR',),
      False
      ),
