@@ -2,6 +2,7 @@ from strategies.work_strategies.LTA import *
 from strategies.work_strategies.PTA import *
 from strategies.work_strategies.PTAX import *
 from strategies.work_strategies.PTAXX import *
+from strategies.work_strategies.PTA30_39 import *
 from strategies.work_strategies.STA_ca import *
 from strategies.work_strategies.STA_ml import *
 from strategies.work_strategies.STA_ca import *
@@ -30,7 +31,11 @@ from Optimiztion.Optimizator1 import generate_combinations
 #     wss_u.append((PTA4_UNIVERSAL,conf))
 
 bot_on_ticker = (
-    ((TestVTTA,(100,)),
+    # ((TestVTTA,(100,)),
+    #  ('VTBR1','ETLN1','MTLR1','SGZH1','DATA1','DELI1','IVAT1','MVID1'),
+    #  False
+    #  ),
+    ((PTA30_,(14,)),
      ('VTBR1','ETLN1','MTLR1','SGZH1','DATA1','DELI1','IVAT1','MVID1'),
      False
      ),

@@ -83,11 +83,11 @@ class TradeWorker(QThread):
                 return
             # pag.screenshot('Traders\VT\Screen.png')
             # img = cv2.imread('Traders\VT\Screen.png')
-            if self.grid:
-                for _wt in wt:
-                    _wt._reset_draw_chart()
-            else:
-                wt._reset_draw_chart()
+            # if self.grid:
+            #     for _wt in wt:
+            #         _wt._reset_draw_chart()
+            # else:
+            #     wt._reset_draw_chart()
             img = np.array(pag.screenshot()) 
             img = cv2.cvtColor(img,cv2.COLOR_RGB2BGR)
             # cv2.imwrite('test.png',img)

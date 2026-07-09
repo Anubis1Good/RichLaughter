@@ -5,6 +5,7 @@ def find_colored_regions(image, color_bgr,region_img=None, y_min=None, y_max=Non
 
 
     mask = cv2.inRange(image, color_bgr, color_bgr)
+    cv2.imshow('mask',mask)
     # 2. Находим контуры областей
     contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     # 3. Фильтруем и собираем информацию
@@ -13,14 +14,14 @@ def find_colored_regions(image, color_bgr,region_img=None, y_min=None, y_max=Non
     for contour in contours:
         area = cv2.contourArea(contour)
         # Фильтр по площади
-        if area < 50:
+        if area < 1:
             continue
         # Вычисляем bounding box
         x, y, w, h = cv2.boundingRect(contour)
         # Центр области
         cx = x + w // 2
         cy = y + h // 2
-        if region_img is not None:
+        if region_img is not None and region_img[0] is not None:
             if not region_img[0] < cx < region_img[2]:
                 continue
         if y_max is not None:
@@ -78,15 +79,16 @@ def find_and_highlight_regions(image, color_bgr,region_img=None, y_min=None, y_m
     return result, regions
 
 # Использование
-img = cv2.imread("Screenshot_24.png")
-color = (105,62,88)
+img = cv2.imread(".\logs\debug_VT5\ETLN11783619207555.png")
+color = (135,103,96)
 
 # Найти области с минимальной площадью 50 пикселей
-result_img, regions = find_and_highlight_regions(img, color,region_img=(838,57,957,517),y_min=304,y_max=None,reverse_sort=False)
+# result_img, regions = find_and_highlight_regions(img, color,region_img=(838,57,957,517),y_min=304,y_max=None,reverse_sort=False)
+result_img, regions = find_and_highlight_regions(img, color,region_img=None,y_min=None,y_max=None,reverse_sort=False)
 
 # Вывести информацию
 
 # Показать результат
-cv2.imshow('Found Regions', result_img)
+# cv2.imshow('Found Regions', result_img)
 cv2.waitKey(0)
 cv2.destroyAllWindows()

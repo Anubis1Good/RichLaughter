@@ -12,11 +12,9 @@ from ForBots.Indicators.ml_indicators import *
 from ForBots.Indicators.mult_indicators import *
 from scipy.stats import linregress
 
-# raw_file = 'DataForTests\DataFromBitget\DOGEUSDT_1m_1739873922.csv'
-# raw_file = 'DataForTests\DataFromMOEX\MMM5_1_1749581140.csv'
-# raw_file = 'DataForTests\DataFromMoexFast\\5IMOEXF_1_1752761086.csv'
-raw_file = 'DataForTests\DataMoexFut5P\_5IMOEXF_1_1766374056.parquet'
-# raw_file = 'DataForTests\oldMoex\SiM5_1_1745579847.csv'
+
+raw_file = 'DataForTests\DataMoexStockP\ROSN_1_1783336759.parquet'
+
 period = 10
 df = simple_load_df(raw_file)
 # df = df.iloc[-200:]
@@ -25,9 +23,9 @@ df = simple_load_df(raw_file)
 
 
 
-df = add_cdvsai(df)
-df = add_rsi(df,14)
-df = add_crysis_counter(df)
+df = add_adx(df,30)
+df = add_chop(df,30)
+df = add_macd(df,10,30,10)
 
 
 
@@ -76,12 +74,13 @@ if plot:
         plt.subplot(2,1,2,sharex=ax1)
         plt.grid() 
 
-    # plt.plot(df['dvsai'])
-    plt.plot(df['cum_dvsai'])
+    plt.plot(df['macd'],color='r')
+    plt.plot(df['signal_line'],color='b')
+    # plt.plot(df['cum_dvsai'])
     # plt.plot(df['ma_cdv1'])
     # plt.plot(df['ma_cdv2'])
-    plt.plot(df['crysis_index'],color='g')
-    plt.plot(df['rsi'],color='r')
+    # plt.plot(df['crysis_index'],color='g')
+    # plt.plot(df['rsi'],color='r')
     # plt.plot(df['ii'])
     # plt.plot(df['rsi'])
     # plt.plot(df['top_q'])

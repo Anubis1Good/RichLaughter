@@ -28,7 +28,7 @@ class TestVTTA(BaseTABitget):
         return df
     
     def __call__(self, row, *args, **kwds):
-        return 'all_level_2'
+        return 'spred_long_large12_3'
 
 def get_rws(original_class):
     # Создаем новое имя класса с префиксом "Rev"

@@ -1,6 +1,5 @@
 import numpy as np
 import pandas as pd
-from request_functions.download_bitget import get_df
 from ForBots.Indicators.classic_indicators import add_donchan_channel,add_slice_df,add_big_volume,add_dynamics_ma,add_bollinger,add_over_bb,add_enter_price,add_buffer_add,add_buffer_sub,add_vangerchik,add_simple_dynamics_ma,add_vodka_channel,add_rsi,add_enter_price2close,add_rsi_tw,add_sma,add_ema,add_mfi,add_ultimate_oscillator,add_stochastic,add_fractals
 from ForBots.Indicators.pva_indicators import add_mean_on_fractals,add_smooth_channel
 from utils.help_trades import reverse_action,chep
