@@ -1,5 +1,6 @@
 {
     "amount_vt":4,
+    "price_step":12,
     "x_first_glass":231,
     "xx_first_tape":[84,226],
     "xx_first_cluster":[5,80],

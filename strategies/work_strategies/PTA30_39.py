@@ -15,6 +15,7 @@ class PTA30_LILI(BaseTABitget):
         self.large_open = large_open
         self.large_close = large_close
         self.n_large = n_large
+        self.large_config = 'large_o'+large_open+'_c'+large_close+'_'+n_large
     def preprocessing(self,df):
         df = add_adx(df,self.period)
         df = add_chop(df,self.period_chop)
@@ -26,30 +27,21 @@ class PTA30_LILI(BaseTABitget):
     
     def __call__(self,row, *args, **kwds):
         # range
-        pos = args[0]
+        # pos = args[0]
         # print(self.symbol)
         if row['adx'] < self.thr_adx and row['chop'] > self.thr_chop:
             # print('range')
-            if pos == 0:
-                return 'all_large'+self.large_open+'_'+self.n_large
-            else:
-                return 'all_large'+self.large_close+'_'+self.n_large
+            return 'all_'+self.large_config
         # trend
         else:
             if self.work_trend:
                 # long
                 if row['sma_s'] > row['sma_l']:
                     # print('long')
-                    if pos == 1:
-                        return 'spred_long_large'+self.large_close +'_'+self.n_large
-                    else:
-                        return 'spred_long_large'+self.large_open +'_'+self.n_large
+                    return 'spred_long_'+self.large_config
                 # short
                 else:
                     # print('short')
-                    if pos == -1:
-                        return 'spred_short_large'+self.large_close +'_'+self.n_large
-                    else:
-                        return 'spred_short_large'+self.large_open +'_'+self.n_large
+                    return 'spred_short_'+self.large_config
             else:
                 return 'close_all_pw'

@@ -16,9 +16,10 @@ error_folder = 'logs\error_logs'
 
 class TradeWorker(QThread):
     update_signal = pyqtSignal(str)
-    def __init__(self, sg_key,param_bots,file_istxt):
+    def __init__(self, sg_key,param_bots,file_istxt,price_step):
         super().__init__()
         self.sg_key = sg_key  # Сохраняем параметры
+        self.price_step = price_step
         self.param_bots = param_bots
         self.grid = not file_istxt
         self._active = True  # Дополнительный флаг контроля
@@ -50,7 +51,8 @@ class TradeWorker(QThread):
                     position:tuple = self.param_bots[2+5*i]
                     tape:tuple = self.param_bots[3+5*i]
                     cluster:tuple = self.param_bots[4+5*i]
-                    trader = VT5(glass,chart,position,tape,cluster,s[i],ws)
+                    price_step = self.price_step
+                    trader = VT5(glass,chart,position,tape,cluster,price_step,s[i],ws)
                     traders.append(trader)
                 self.work_traders.append(traders)
             else:

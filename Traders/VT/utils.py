@@ -8,7 +8,7 @@ def configuration_traiders(filename:str):
         for line in lines:
             field = tuple(map(int,line.split(',')))
             fields.append(field)
-    return fields
+    return fields, 12
 
 def configuration_traiders_grid(filename:str):
     fields = []
@@ -21,6 +21,7 @@ def configuration_traiders_grid(filename:str):
         height_chart = raw_chart_field[3]-raw_chart_field[1]
         offset_glass = data['x_first_glass'] - raw_glass_field[0]
         part_pos = width_vt//3
+        price_step = data['price_step']
         for i in range(data['amount_vt']):
             glass_field = (raw_glass_field[0]+offset_glass+width_vt*i,
                            raw_glass_field[1],
@@ -55,7 +56,7 @@ def configuration_traiders_grid(filename:str):
             fields.append(cluster_field) #4
             
 
-    return fields
+    return fields,price_step
 
 def only_close(action,hour,minute):
     now = datetime.now()

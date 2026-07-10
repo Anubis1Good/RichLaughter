@@ -149,10 +149,10 @@ class MainWindow(QWidget):
             file = os.path.join(self.config_folder, self.cur_config)
             file_istxt = file.endswith('.txt')
             if file_istxt:
-                lines = configuration_traiders(file)
+                lines,price_step = configuration_traiders(file)
             else:
-                lines = configuration_traiders_grid(file)
-            self.worker = TradeWorker(self.cur_sg, lines,file_istxt)
+                lines,price_step= configuration_traiders_grid(file)
+            self.worker = TradeWorker(self.cur_sg, lines,file_istxt,price_step)
             self.worker.finished.connect(self.on_worker_finished)
             self.worker.start()
             print('Trading start')
@@ -196,9 +196,9 @@ class MainWindow(QWidget):
     def show_overlay(self):
         file = os.path.join(self.config_folder,self.cur_config)
         if file.endswith('.txt'):
-            lines = configuration_traiders(file)
+            lines,_ = configuration_traiders(file)
         else:
-            lines = configuration_traiders_grid(file)
+            lines,_ = configuration_traiders_grid(file)
             
         if not self.overlay:
             self.draw_btn.setText('StopDraw')
