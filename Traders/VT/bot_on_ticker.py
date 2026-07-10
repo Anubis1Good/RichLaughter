@@ -31,62 +31,66 @@ from Optimiztion.Optimizator1 import generate_combinations
 #     wss_u.append((PTA4_UNIVERSAL,conf))
 
 bot_on_ticker = (
-    # ((TestVTTA,(100,)),
-    #  ('VTBR1','ETLN1','MTLR1','SGZH1','DATA1','DELI1','IVAT1','MVID1'),
-    #  False
-    #  ),
-    ((PTA30_,(14,)),
+    ((TestVTTA,(100,)),
      ('VTBR1','ETLN1','MTLR1','SGZH1','DATA1','DELI1','IVAT1','MVID1'),
      False
      ),
-    ((PSTA9_GRAVY,(10,2.81,2,0.28,0.77,1,)), #-1
-     ('DATA',),
+    # ((PTA30_,(14,)),
+    #  ('VTBR1','ETLN1','MTLR1','SGZH1','DATA1','DELI1','IVAT1','MVID1'),
+    #  False
+    #  ), period=14,period_chop=14,period_sma_l=30,period_sma_s=15,thr_adx=25,thr_chop=40,work_trend=True,large_open='12',large_close='12',n_large='2'
+    ((PTA30_LILI,(14,14,30,15,25,40,True,'2','12','2')),
+     ('DATA','DELI','ETLN','EUTR','IVAT','MTLR','MVID','RAGR','RNFT','SGZH','VSEH','VTBR'),
      False
      ),
-    ((VSAT1_VENUS,(60,0.13,0.58,0.32,0.94,0,1,0,)), #+1
-     ('DELI',),
-     False
-     ),
-    ((PTA24_BRIGHTWING,(22,3,4,0.35,0.24,0.28,7.98,1,)), #=1
-     ('ETLN',),
-     False
-     ),
-    ((PSTA2_DUCK,(13,15,1,)), #-1
-     ('EUTR',),
-     False
-     ),
-    ((VSAT1_MERCURY,(45,1.78,0.72,0.33,0.72,0,1,1,)), #-1
-     ('IVAT',),
-     False
-     ),
-    ((PSTA2_GOOSE,(54,29,1,)), #-1
-     ('MTLR',),
-     False
-     ),
-    ((PSTA6_PIGEON,(16,5,26,9,6,0.12,2.52,0,)), #+1
-     ('MVID',),
-     False
-     ),
-    ((PSTA9_BIRDWATCHER,(32,1.8,3,0.23,1.44,0,0,)), #+1
-     ('RAGR',),
-     False
-     ),
-    ((PTA14_RENEGADE,(57,40,9,5,25,19,)), #0
-     ('RNFT',),
-     False
-     ),
-    ((PTA22_BERSERK,(53,9,4,7.74,3,0.72,23,49,58,16,)), #-1
-     ('SGZH',),
-     False
-     ),
-    ((PTA11_KUSURUKEN,(47,42,25,34,'hl',)), #-1
-     ('VSEH',),
-     False
-     ),
-    ((PSTA4_PELICAN,(57,16,2,0.05,)), #-1
-     ('VTBR',),
-     False
-     ),
+    # ((PSTA9_GRAVY,(10,2.81,2,0.28,0.77,1,)), #-1
+    #  ('DATA',),
+    #  False
+    #  ),
+    # ((VSAT1_VENUS,(60,0.13,0.58,0.32,0.94,0,1,0,)), #+1
+    #  ('DELI',),
+    #  False
+    #  ),
+    # ((PTA24_BRIGHTWING,(22,3,4,0.35,0.24,0.28,7.98,1,)), #=1
+    #  ('ETLN',),
+    #  False
+    #  ),
+    # ((PSTA2_DUCK,(13,15,1,)), #-1
+    #  ('EUTR',),
+    #  False
+    #  ),
+    # ((VSAT1_MERCURY,(45,1.78,0.72,0.33,0.72,0,1,1,)), #-1
+    #  ('IVAT',),
+    #  False
+    #  ),
+    # ((PSTA2_GOOSE,(54,29,1,)), #-1
+    #  ('MTLR',),
+    #  False
+    #  ),
+    # ((PSTA6_PIGEON,(16,5,26,9,6,0.12,2.52,0,)), #+1
+    #  ('MVID',),
+    #  False
+    #  ),
+    # ((PSTA9_BIRDWATCHER,(32,1.8,3,0.23,1.44,0,0,)), #+1
+    #  ('RAGR',),
+    #  False
+    #  ),
+    # ((PTA14_RENEGADE,(57,40,9,5,25,19,)), #0
+    #  ('RNFT',),
+    #  False
+    #  ),
+    # ((PTA22_BERSERK,(53,9,4,7.74,3,0.72,23,49,58,16,)), #-1
+    #  ('SGZH',),
+    #  False
+    #  ),
+    # ((PTA11_KUSURUKEN,(47,42,25,34,'hl',)), #-1
+    #  ('VSEH',),
+    #  False
+    #  ),
+    # ((PSTA4_PELICAN,(57,16,2,0.05,)), #-1
+    #  ('VTBR',),
+    #  False
+    #  ),
 
 
     # ((MTA_LIGHT,(100,'KING_5_MOEX_SPECIAL','u')),

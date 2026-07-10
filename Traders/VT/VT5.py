@@ -147,7 +147,7 @@ class VT5:
         now = datetime.now()
         chour = now.hour
         cminute = now.minute
-        if chour > 8:
+        if chour >= 7:
             if chour == 18 and cminute > 20:
                 return -3
             if chour >= self.close_time[0] - 1:
