@@ -40,7 +40,7 @@ bot_on_ticker = (
     #  False
     #  ), period=14,period_chop=14,period_sma_l=30,period_sma_s=15,thr_adx=25,thr_chop=40,work_trend=True,large_open='12',large_close='12',n_large='2'
     ((PTA30_LILI,(14,14,30,15,25,40,True,'2','12','2')),
-     ('DATA','DELI','ETLN','EUTR','IVAT','MTLR','MVID','RAGR','RNFT','SGZH','VSEH','VTBR'),
+     ('DATA','DELI','ETLN','EUTR','IVAT','MTLR','MVID','RAGR','RNFT','SGZH','VSEH','VTBR','ELMT','GECO','SPBE','MAGN'),
      False
      ),
     # ((PSTA9_GRAVY,(10,2.81,2,0.28,0.77,1,)), #-1

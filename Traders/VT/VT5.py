@@ -495,6 +495,7 @@ class VT5:
 
     def _work_large_action(self,action,pos,img):
         n,large_open,large_close = self._large_init(action)
+        # print(self.name,n,large_open,large_close)
         if n is not None:
             use_z = False if 'danger' in action else True
             if 'close' in action:
@@ -572,7 +573,7 @@ class VT5:
             print(self.name,pos,action)
 
     def _work_action(self,action,pos,img):
-        # print(self.name,pos)
+        # print(self.name,pos,action)
         if 'large' in action:
             self._work_large_action(action,pos,img)
         elif 'level' in action:

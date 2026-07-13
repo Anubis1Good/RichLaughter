@@ -20,13 +20,10 @@ df = simple_load_df(raw_file)
 # df = df.iloc[-200:]
 # df = df.iloc[10:510]
 
-
-
-
-df = add_adx(df,30)
-df = add_chop(df,30)
-df = add_macd(df,10,30,10)
-
+df['spred'] = df['high'] - df['low']
+df['impuls'] = df['spred'].rolling(20).mean()
+df['flow'] = (df['impuls']*df['direction']).rolling(20).sum()
+df.info()
 
 
 # df = add_dzz_peaks(df,period=10,n_std=5)
@@ -74,8 +71,9 @@ if plot:
         plt.subplot(2,1,2,sharex=ax1)
         plt.grid() 
 
-    plt.plot(df['macd'],color='r')
-    plt.plot(df['signal_line'],color='b')
+    plt.plot(df['flow'],color='r')
+    # plt.hl
+    # plt.plot(df['signal_line'],color='b')
     # plt.plot(df['cum_dvsai'])
     # plt.plot(df['ma_cdv1'])
     # plt.plot(df['ma_cdv2'])
