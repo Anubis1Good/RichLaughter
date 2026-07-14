@@ -4,7 +4,7 @@ import pandas as pd
 import numpy as np
 import psutil
 import random
-import simplejson as json
+import json
 import torch
 import torch.nn as nn
 from time import time
@@ -494,8 +494,6 @@ class Evolutionist3:
                 print(f"  Пропускаем топ-{rank+1}: нет state_dict")
                 continue
             
-            # ★ ИСПРАВЛЕННОЕ ИМЯ ФАЙЛА ★
-            
             # Форматируем: убираем точки, заменяем минусы, добавляем ранг для уникальности
             score_str = f"{score:+.2f}".replace('.', 'p').replace('-', 'm').replace('+', '')
             count_str = str(count)
@@ -507,14 +505,14 @@ class Evolutionist3:
             torch.save({
                 'state_dict': model.state_dict(),
                 'rank': rank + 1,
-                'score': score,
+                'score': float(score),  # <- ЯВНО КОНВЕРТИРУЕМ
                 'generation': self.current_generation,
                 'timestamp': timestamp,
                 'input_dim': self.n_features,
                 'hidden_layers': self.hidden_archs,
                 'output_dim': 5,
                 'model_class': self.nn_class.__name__,
-                'count_trades': count
+                'count_trades': int(count)  # <- И ЭТО ТОЖЕ
             }, model_path)
             
             # Проверяем сохранение
@@ -523,8 +521,8 @@ class Evolutionist3:
                 saved_models.append({
                     'rank': rank + 1,
                     'filename': model_filename,
-                    'score': df['total_with_fee'].iloc[rank],
-                    'file_size_kb': round(file_size, 1)
+                    'score': float(df['total_with_fee'].iloc[rank]),  # <- КОНВЕРТИРУЕМ
+                    'file_size_kb': round(float(file_size), 1)  # <- И ЭТО
                 })
             else:
                 print(f"  ОШИБКА сохранения топ-{rank+1}")
@@ -539,13 +537,13 @@ class Evolutionist3:
         gen_info = {
             'generation': self.current_generation,
             'n_individuals': len(self.population),
-            'best_score': df['total_with_fee'].iloc[0] if not df.empty else 0,
-            'top5_scores': df['total_with_fee'].head(5).tolist(),
+            'best_score': float(df['total_with_fee'].iloc[0]) if not df.empty else 0.0,  # <- КОНВЕРТИРУЕМ
+            'top5_scores': [float(x) for x in df['total_with_fee'].head(5).tolist()],  # <- КОНВЕРТИРУЕМ ВСЕ
             'timestamp': timestamp,
             'saved_models': saved_models,
             'parameters': {
-                'mutation_rate': self.mutation_rate,
-                'mutation_scale': self.mutation_scale
+                'mutation_rate': float(self.mutation_rate),  # <- И ЭТО
+                'mutation_scale': float(self.mutation_scale)  # <- И ЭТО
             }
         }
         
