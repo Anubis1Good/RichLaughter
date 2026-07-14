@@ -15,6 +15,7 @@ from tqdm import tqdm
 from strategies.test_strategies.CheckWSTrader import CheckWSTrader
 from utils.work_with_dataframe.load_df import simple_load_df
 from Optimiztion.models_nn.utils import load_neural_weights
+from utils.processing_results.fix_problems_data import make_serializable
 
 phys_cores = psutil.cpu_count(logical=False)
 
@@ -546,7 +547,7 @@ class Evolutionist3:
                 'mutation_scale': float(self.mutation_scale)  # <- И ЭТО
             }
         }
-        
+        gen_info = make_serializable(gen_info)
         info_path = os.path.join(self.path_g, f'generation_{timestamp}.json')
         with open(info_path, 'w') as f:
             json.dump(gen_info, f, indent=2)
@@ -586,7 +587,8 @@ class Evolutionist3:
                 population_info.append({'index': i, 'error': 'cannot_get_info'})
         
         checkpoint['population_info'] = population_info
-        
+            # === ОДНА СТРОЧКА РЕШАЕТ ВСЁ ===
+        checkpoint = make_serializable(checkpoint)
         timestamp = str(int(time()))
         checkpoint_path = os.path.join(self.path_checkpoints, f'checkpoint_{timestamp}.json')
         
