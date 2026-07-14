@@ -79,8 +79,8 @@ def find_and_highlight_regions(image, color_bgr,region_img=None, y_min=None, y_m
     return result, regions
 
 # Использование
-img = cv2.imread(".\logs\debug_VT5\ETLN11783619207555.png")
-color = (135,103,96)
+img = cv2.imread("DataForTests\ImgCs\loss,profit.png")
+color = (103,74,50)
 
 # Найти области с минимальной площадью 50 пикселей
 # result_img, regions = find_and_highlight_regions(img, color,region_img=(838,57,957,517),y_min=304,y_max=None,reverse_sort=False)

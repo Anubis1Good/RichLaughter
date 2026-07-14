@@ -174,27 +174,7 @@ class VT5:
             return -1
         return 0
     
-    def _get_best_ask(self,img):
-        _,y_max = self._color_search(img,ColorsBtnBGR.best_ask,self.glass_region,reverse=True)
-        _,y_max_level = self._color_search(img,ColorsBtnBGR.best_ask_level,self.glass_region,reverse=True)
-        _,y_test = self._color_search(img,ColorsBtnBGR.ask,self.glass_region,reverse=True)
-        if y_max_level >= 0:
-            return y_max_level
-        if y_max >= 0:
-            if y_max > y_test:
-                return y_max
-        return y_test
-            
-    def _get_best_bid(self,img):
-        _,y_min = self._color_search(img,ColorsBtnBGR.best_bid,self.glass_region)
-        _,y_min_level = self._color_search(img,ColorsBtnBGR.best_bid_level,self.glass_region)
-        _,y_test = self._color_search(img,ColorsBtnBGR.bid,self.glass_region)
-        if y_min_level >= 0:
-            return y_min_level
-        if y_min >= 0:
-            if y_min < y_test:
-                return y_min
-        return y_test
+
     
     def _send_open(self,direction):
         pdi.moveTo(self.glass_region[0]+11,self.glass_region[1]+11)
@@ -474,6 +454,38 @@ class VT5:
         )
         return dir_df
     
+    def _get_profit(self,img):
+        _,p_max = self._color_search(img,ColorsBtnBGR.profit_glass,self.glass_region,reverse=True)
+        _,p_min = self._color_search(img,ColorsBtnBGR.profit_glass,self.glass_region,reverse=False)
+        return p_max,p_min
+    
+    def _get_loss(self,img):
+        _,l_max = self._color_search(img,ColorsBtnBGR.loss_glass,self.glass_region,reverse=True)
+        _,l_min = self._color_search(img,ColorsBtnBGR.loss_glass,self.glass_region,reverse=False)
+        return l_max,l_min
+    
+    def _get_best_ask(self,img):
+        _,y_max = self._color_search(img,ColorsBtnBGR.best_ask,self.glass_region,reverse=True)
+        _,y_max_level = self._color_search(img,ColorsBtnBGR.best_ask_level,self.glass_region,reverse=True)
+        _,y_test = self._color_search(img,ColorsBtnBGR.ask,self.glass_region,reverse=True)
+        if y_max_level >= 0:
+            return y_max_level
+        if y_max >= 0:
+            if y_max > y_test:
+                return y_max
+        return y_test
+            
+    def _get_best_bid(self,img):
+        _,y_min = self._color_search(img,ColorsBtnBGR.best_bid,self.glass_region)
+        _,y_min_level = self._color_search(img,ColorsBtnBGR.best_bid_level,self.glass_region)
+        _,y_test = self._color_search(img,ColorsBtnBGR.bid,self.glass_region)
+        if y_min_level >= 0:
+            return y_min_level
+        if y_min >= 0:
+            if y_min < y_test:
+                return y_min
+        return y_test
+    
     def _large_init(self,action:str):
         # sample 'all_spred_large_o2_c12_2'
         n = action.split('_')[-1]
@@ -622,6 +634,26 @@ class VT5:
             # self._add_level(100,100)
         # else:
         #     print('None work')
+    def _get_params_for_ws(self,img,pos):
+        params = {}
+        if hasattr(self.ws, 'VT_need'):
+            if 'pos' in self.ws.VT_need:
+                params['pos'] = pos
+            if 'ybests' in self.ws.VT_need:
+                params['y_bbid'] = self._get_best_bid(img)
+                params['y_bask'] = self._get_best_ask(img)
+            if 'profit' in self.ws.VT_need:
+                p_max,p_min = self._get_profit(img)
+                params['p_max'] = p_max
+                params['p_min'] = p_min
+            if 'loss' in self.ws.VT_need:
+                l_max,l_min = self._get_loss(img)
+                params['l_max'] = l_max
+                params['l_min'] = l_min
+            if 'price_step' in self.ws.VT_need:
+                params['price_step'] = self.price_step
+        return params
+
 
     def run(self,img):
         try:
@@ -638,7 +670,8 @@ class VT5:
                 # print(level_vt_values)
                 for lvl in level_vt_values:
                     self._add_level(10,int(-lvl+self.offset))
-            action = self.ws(row,pos)
+            params = self._get_params_for_ws(img,pos)
+            action = self.ws(row,params)
             # print(action)
             if self.close_on_time:
                     if time_mode == -1:

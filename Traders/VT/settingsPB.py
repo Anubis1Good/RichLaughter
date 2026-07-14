@@ -33,6 +33,7 @@ class ColorsBtnBGR:
 
     loss_glass = (45,45,186)
     profit_glass = (85,112,30)
+    pos_price = (103,74,50)
 
 
 class TemplateCandle:
