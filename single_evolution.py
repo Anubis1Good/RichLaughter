@@ -1,12 +1,12 @@
 def main():
-    raw_file = 'DataForTests\DataMoexFut5P\_5IMOEXF_1_1766374056.parquet'
+    raw_file = 'DataForTests\DataMoexStock5P\_5MTLR_1_1784035449.parquet'
     n_save_cores = 1
     n_individuals = 100
     step_save = 5
     init_population_dir=None
     # init_population_dir='modelML\_nls_models'
     stop_risk = False
-    close_on_time = False
+    close_on_time = True
     kind_test = 0
     normalization = False
     new_tf = None

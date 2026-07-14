@@ -26,3 +26,4 @@ optuna
 plotly
 pyarrow
 fastparquet
+simplejson

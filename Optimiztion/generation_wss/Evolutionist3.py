@@ -4,7 +4,7 @@ import pandas as pd
 import numpy as np
 import psutil
 import random
-import json
+import simplejson as json
 import torch
 import torch.nn as nn
 from time import time
@@ -40,7 +40,7 @@ class Evolutionist3:
                  stop_risk:int|float|None = None,
                  window:int=60,
                  close_on_time:bool=False,
-                 new_tf:str|None = '5min',
+                 new_tf:str|None = None,
                  lower_limit:int|None = None,
                  upper_limit:int|None = None):
         # Базовые параметры
