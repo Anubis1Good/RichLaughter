@@ -10,8 +10,8 @@ def main():
     kind_test = 0
     normalization = False
     new_tf = None
-    vtb = True
-    fee = 0.0001
+    vtb = False
+    fee = 0.001
     lower_limit = 100
     upper_limit = 600
     # lower_limit = None

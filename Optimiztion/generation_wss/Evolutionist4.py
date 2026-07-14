@@ -10,7 +10,7 @@ import torch.nn as nn
 from time import time
 from multiprocessing import Pool
 from collections import defaultdict
-from typing import Dict, List
+from typing import Dict, List, Optional, Union, Any
 from tqdm import tqdm
 from strategies.test_strategies.CheckWSTrader import CheckWSTrader
 from utils.work_with_dataframe.load_df import simple_load_df
@@ -18,31 +18,40 @@ from Optimiztion.models_nn.utils import load_neural_weights
 
 phys_cores = psutil.cpu_count(logical=False)
 
-class Evolutionist3:
+
+class Evolutionist4:
     """Эволюционный алгоритм для оптимизации нейросетевых стратегий"""
+    
     def __init__(self, 
                  n_individuals: int, 
                  raw_file: str, 
                  ws_class,  # Класс стратегии (например, NLSTA1_)
                  param: dict,  # Параметры стратегии
                  nn_class,  # Класс нейросети (например, NLSNN1)
-                 ticker:str='IMOEXF',
-                 tf:str='5min',
+                 ticker: str = 'IMOEXF',
+                 tf: str = '5min',
                  hidden_archs: List[int] = [64, 32],  # Архитектуры для тестирования
-                 fee: float = 0.001,
+                 # LSTM параметры
+                 lstm_hidden_dim: int = 64,
+                 lstm_num_layers: int = 2,
+                 lstm_sequence_length: int = 20,
+                 lstm_use_attention: bool = True,
+                 lstm_bidirectional: bool = False,
+                 fee: float = 0.0002,
                  n_save_cores: int = 2,
                  step_save: int = 5,
                  init_population_dir: str = None,  # Директория с готовыми моделями
-                 need_adapt:bool=False,
-                 kind_test:int = 0, #вариант теста 0 - fast, 1 - window, 2 - child
-                 normalization:bool = False,
-                 vtb:bool = False,
-                 stop_risk:int|float|None = None,
-                 window:int=60,
-                 close_on_time:bool=False,
-                 new_tf:str|None = '5min',
-                 lower_limit:int|None = None,
-                 upper_limit:int|None = None):
+                 need_adapt: bool = False,
+                 kind_test: int = 0,  # вариант теста 0 - fast, 1 - window, 2 - child
+                 normalization: bool = False,
+                 vtb: bool = False,
+                 stop_risk: int | float | None = None,
+                 window: int = 150,
+                 close_on_time: bool = False,
+                 new_tf: str | None = '5min',
+                 lower_limit: int | None = None,
+                 upper_limit: int | None = None):
+        
         # Базовые параметры
         self.n_individuals = n_individuals
         self.n_save_cores = n_save_cores
@@ -52,7 +61,15 @@ class Evolutionist3:
         self.nn_class = nn_class
         self.hidden_archs = hidden_archs
         self.need_adapt = need_adapt
-        #Параметры теста
+        
+        # LSTM параметры
+        self.lstm_hidden_dim = lstm_hidden_dim
+        self.lstm_num_layers = lstm_num_layers
+        self.lstm_sequence_length = lstm_sequence_length
+        self.lstm_use_attention = lstm_use_attention
+        self.lstm_bidirectional = lstm_bidirectional
+        
+        # Параметры теста
         self.kind_test = kind_test
         self.normalization = normalization
         self.vtb = vtb
@@ -89,9 +106,8 @@ class Evolutionist3:
         
         # Настройка путей сохранения
         self._setup_paths()
-        
-        
-    def _load_data(self, raw_file: str, param: list):
+    
+    def _load_data(self, raw_file: str, param: dict):
         """Загрузка и подготовка данных"""
         self.df = simple_load_df(raw_file)
         
@@ -103,7 +119,18 @@ class Evolutionist3:
         
         # Получаем имя бота для путей сохранения
         self.name_bot = str(type(sample_bot)).split('.')[-1][:-2] + '_' + sample_bot.name_settings
+    
+    def _setup_paths(self):
+        """Настройка путей для сохранения результатов"""
+        self.path = f'TestNewResults/Evolutionist3/{self.name_bot}'
+        self.path_g = os.path.join(self.path, 'generations')
+        self.path_models = os.path.join(self.path, 'models')  # Для сохранения нейросетей
+        self.path_data = os.path.join(self.path, 'data')
+        self.path_checkpoints = os.path.join(self.path, 'checkpoints')
         
+        for p in [self.path, self.path_g, self.path_models, self.path_data, self.path_checkpoints]:
+            os.makedirs(p, exist_ok=True)
+    
     def _initialize_population(self, n_individuals, ws_class, param, nn_class, 
                              init_population_dir):
         """Инициализация популяции нейросетей"""
@@ -118,7 +145,6 @@ class Evolutionist3:
         # Добираем случайными моделями если нужно
         remaining = n_individuals - len(population)
         if remaining > 0:
-            # print(f"Создаем {remaining} случайных моделей...")
             new_bots = self._create_random_bots(
                 remaining, ws_class, param, nn_class
             )
@@ -137,7 +163,7 @@ class Evolutionist3:
         
         for i, model_path in enumerate(neural_files[:self.n_individuals]):
             try:
-                model,_ = load_neural_weights(model_path,self.nn_class)
+                model, _ = load_neural_weights(model_path, self.nn_class)
                 bot = ws_class(
                     self.ticker, self.tf, "usdt-futures", 1,
                     **param,
@@ -150,44 +176,106 @@ class Evolutionist3:
         
         return bots
     
+    def _is_lstm_model(self, model_class) -> bool:
+        """Проверяет, является ли класс LSTM/GRU моделью"""
+        class_name = model_class.__name__
+        return 'LSTM' in class_name or 'GRU' in class_name
+    
     def _create_random_bots(self, n, ws_class, param, nn_class):
-        """Создание случайных нейросетей"""
+        """Создание случайных нейросетей с поддержкой LSTM"""
         bots = []
+        is_lstm = self._is_lstm_model(nn_class)
         
         for i in range(n):
-
-            # Создаем нейросеть
-            model = nn_class(
-                input_dim=self.n_features,
-                hidden_layers=self.hidden_archs,
-                output_dim=5
-            )
-            
-            # Сохраняем во временный файл
-            
-            # Создаем бота с этой моделью
-            bot = ws_class(
-                self.ticker, self.tf, "usdt-futures", 1,
-                **param,
-                policy_model=model
-            )
-            
-            bots.append(bot)
+            try:
+                if is_lstm:
+                    # Создаем LSTM модель
+                    model = nn_class(
+                        input_dim=self.n_features,
+                        hidden_layers=self.hidden_archs,  # Для совместимости
+                        hidden_dim=self.lstm_hidden_dim,
+                        num_layers=self.lstm_num_layers,
+                        sequence_length=self.lstm_sequence_length,
+                        output_dim=5,
+                        use_attention=self.lstm_use_attention,
+                        bidirectional=self.lstm_bidirectional
+                    )
+                else:
+                    # Обычная MLP модель
+                    model = nn_class(
+                        input_dim=self.n_features,
+                        hidden_layers=self.hidden_archs,
+                        output_dim=5
+                    )
+                
+                # Создаем бота
+                bot = ws_class(
+                    self.ticker, self.tf, "usdt-futures", 1,
+                    **param,
+                    policy_model=model
+                )
+                bots.append(bot)
+                
+            except Exception as e:
+                print(f"Ошибка создания бота {i}: {e}")
+                # Создаем бота без модели
+                bot = ws_class(
+                    self.ticker, self.tf, "usdt-futures", 1,
+                    **param,
+                    policy_model=None
+                )
+                bots.append(bot)
         
         return bots
     
-    def _setup_paths(self):
-        """Настройка путей для сохранения результатов"""
-        self.path = f'TestNewResults/Evolutionist3/{self.name_bot}'
-        self.path_g = os.path.join(self.path, 'generations')
-        self.path_models = os.path.join(self.path, 'models')  # Для сохранения нейросетей
-        self.path_data = os.path.join(self.path, 'data')
-        self.path_checkpoints = os.path.join(self.path, 'checkpoints')
-        
-        for p in [self.path, self.path_g, self.path_models, self.path_data, self.path_checkpoints]:
-            os.makedirs(p, exist_ok=True)
-        
-        # print(f"Пути сохранения настроены: {self.path}")
+    def _copy_bot(self, bot):
+        """Создание глубокой копии бота с поддержкой LSTM"""
+        try:
+            model = bot.policy_model
+            
+            # Если модель None, создаем новую
+            if model is None:
+                return self._create_random_bots(1, self.ws_class, self.param, self.nn_class)[0]
+            
+            # Проверяем тип модели
+            is_lstm = self._is_lstm_model(model.__class__)
+            
+            if is_lstm:
+                # Копируем LSTM модель
+                copied_model = self.nn_class(
+                    input_dim=model.input_dim,
+                    hidden_layers=self.hidden_archs,
+                    hidden_dim=model.hidden_dim,
+                    num_layers=model.num_layers,
+                    sequence_length=model.sequence_length,
+                    output_dim=model.output_dim,
+                    use_attention=getattr(model, 'use_attention', True),
+                    bidirectional=getattr(model, 'bidirectional', False)
+                )
+            else:
+                # Копируем обычную модель
+                copied_model = self.nn_class(
+                    input_dim=self.n_features,
+                    hidden_layers=self.hidden_archs,
+                    output_dim=5
+                )
+            
+            # Копируем веса
+            copied_model.load_state_dict(model.state_dict().copy())
+            
+            # Создаем нового бота
+            copied_bot = self.ws_class(
+                self.ticker, self.tf, "usdt-futures", 1,
+                **self.param,
+                policy_model=copied_model
+            )
+            
+            return copied_bot
+            
+        except Exception as e:
+            print(f"Ошибка копирования бота: {e}")
+            # Возвращаем случайного бота
+            return self._create_random_bots(1, self.ws_class, self.param, self.nn_class)[0]
     
     def process_test(self, args):
         """Оценка одной нейросетевой стратегии"""
@@ -198,12 +286,17 @@ class Evolutionist3:
         
         try:
             # Используем стандартную функцию проверки
-            cwt = CheckWSTrader(self.df,bot,self.fee,self.ticker,self.tf,self.close_on_time,measure_time=False,use_tqdm=False,stop_risk=self.stop_risk)
+            cwt = CheckWSTrader(
+                self.df, bot, self.fee, self.ticker, self.tf, 
+                self.close_on_time, measure_time=False, use_tqdm=False, 
+                stop_risk=self.stop_risk
+            )
             cwt.reload_data()
+            
             if self.kind_test == 1:
-                cwt.check_strategy_window(window=self.window,normalization=self.normalization,vtb=self.vtb)
+                cwt.check_strategy_window(window=self.window, normalization=self.normalization, vtb=self.vtb)
             elif self.kind_test == 2:
-                cwt.check_strategy_child(window=self.window,normalization=self.normalization,vtb=self.vtb)
+                cwt.check_strategy_child(window=self.window, normalization=self.normalization, vtb=self.vtb)
             else:
                 cwt.check_strategy_fast(self.vtb)
             
@@ -215,9 +308,10 @@ class Evolutionist3:
                     else:
                         fee_amount = cwt.trade_data['fees']
                         total_with_fee = cwt.trade_data['step_eq_fee'][-1]
+                    
                     result = {
                         'name': idx,
-                        'bot': bot,  # Сохраняем самого бота
+                        'bot': bot,
                         'total': cwt.trade_data['total'],
                         'total_with_fee': total_with_fee,
                         'total_per': cwt.trade_data['total_wfees_per'],
@@ -233,10 +327,8 @@ class Evolutionist3:
     
     def calculate_fitness(self, result: Dict) -> float:
         """Расчет fitness-функции"""
-        # Простейшая фитнес-функция - прибыль после комиссий
         return result['total_with_fee']
-
-        
+    
     def make_step(self, old_top: pd.DataFrame = pd.DataFrame()):
         """Оценка поколения"""
         data = defaultdict(list)
@@ -252,8 +344,6 @@ class Evolutionist3:
             len(self.population)
         )
         
-        # print(f'Используем {num_processes} ядер для оценки')
-        
         with Pool(processes=num_processes) as pool:
             results = []
             with tqdm(total=len(args), desc=f"Поколение {self.current_generation}") as pbar:
@@ -266,14 +356,13 @@ class Evolutionist3:
         # Обработка результатов
         for result in results:
             for key in result:
-                if key != 'bot':  # Не сохраняем объект бота в DataFrame
+                if key != 'bot':
                     data[key].append(result[key])
         
-        # Сохраняем ссылки на ботов отдельно
-        # bots_dict = {r['name']: r['bot'] for r in results if 'bot' in r}
+        # Сохраняем ссылки на ботов
         bots_dict = {}
         for i, bot in enumerate(self.population):
-            bots_dict[i] = bot  # ← ВСЕ боты!
+            bots_dict[i] = bot
         
         # Создаем DataFrame с результатами
         df = pd.DataFrame(data)
@@ -292,18 +381,37 @@ class Evolutionist3:
             return np.array([]), pd.DataFrame(), {}
     
     def crossover_neuro(self, bot1, bot2):
-        """Скрещивание двух нейросетей"""
+        """Скрещивание двух нейросетей с поддержкой LSTM"""
         try:
-            # Получаем модели из ботов
             model1 = bot1.policy_model
             model2 = bot2.policy_model
             
-            # Создаем новую модель
-            child_model = self.nn_class(
-                input_dim=self.n_features,
-                hidden_layers=model1.hidden_layers,  # Берем архитектуру от первого родителя
-                output_dim=5
-            )
+            # Если модели None, создаем новые
+            if model1 is None or model2 is None:
+                return self._create_random_bots(1, self.ws_class, self.param, self.nn_class)[0]
+            
+            # Проверяем тип модели
+            is_lstm = self._is_lstm_model(model1.__class__)
+            
+            if is_lstm:
+                # Скрещивание LSTM
+                child_model = self.nn_class(
+                    input_dim=model1.input_dim,
+                    hidden_layers=self.hidden_archs,
+                    hidden_dim=model1.hidden_dim,
+                    num_layers=model1.num_layers,
+                    sequence_length=model1.sequence_length,
+                    output_dim=model1.output_dim,
+                    use_attention=getattr(model1, 'use_attention', True),
+                    bidirectional=getattr(model1, 'bidirectional', False)
+                )
+            else:
+                # Скрещивание обычной модели
+                child_model = self.nn_class(
+                    input_dim=self.n_features,
+                    hidden_layers=self.hidden_archs,
+                    output_dim=5
+                )
             
             # Uniform crossover весов
             child_state_dict = child_model.state_dict()
@@ -312,14 +420,12 @@ class Evolutionist3:
             
             for key in child_state_dict:
                 if key in state_dict1 and key in state_dict2:
-                    # Случайно выбираем веса от одного из родителей
                     mask = torch.rand_like(child_state_dict[key]) > 0.5
                     child_state_dict[key] = torch.where(
                         mask, state_dict1[key], state_dict2[key]
                     )
             
             child_model.load_state_dict(child_state_dict)
-            
             
             # Создаем нового бота
             child_bot = self.ws_class(
@@ -332,11 +438,10 @@ class Evolutionist3:
             
         except Exception as e:
             print(f"Ошибка при скрещивании: {e}")
-            # В случае ошибки возвращаем копию первого бота
             return self._copy_bot(bot1)
-        
+    
     def mutate_neuro(self, bot, mutation_rate=None, mutation_scale=None):
-        """Быстрая мутация на CPU"""
+        """Быстрая мутация с поддержкой LSTM"""
         if mutation_rate is None:
             mutation_rate = self.mutation_rate
         if mutation_scale is None:
@@ -345,21 +450,38 @@ class Evolutionist3:
         try:
             model = bot.policy_model
             
-            # Создаем новую модель
-            mutated_model = self.nn_class(
-                input_dim=self.n_features,
-                hidden_layers=self.hidden_archs,  # Используем общую архитектуру
-                output_dim=5
-            )
+            # Если модель None, создаем новую
+            if model is None:
+                return self._create_random_bots(1, self.ws_class, self.param, self.nn_class)[0]
             
-            # Копируем веса и сразу мутируем
+            # Проверяем тип модели
+            is_lstm = self._is_lstm_model(model.__class__)
+            
+            if is_lstm:
+                # Мутация LSTM модели
+                mutated_model = self.nn_class(
+                    input_dim=model.input_dim,
+                    hidden_layers=self.hidden_archs,
+                    hidden_dim=model.hidden_dim,
+                    num_layers=model.num_layers,
+                    sequence_length=model.sequence_length,
+                    output_dim=model.output_dim,
+                    use_attention=getattr(model, 'use_attention', True),
+                    bidirectional=getattr(model, 'bidirectional', False)
+                )
+            else:
+                # Мутация обычной модели
+                mutated_model = self.nn_class(
+                    input_dim=self.n_features,
+                    hidden_layers=self.hidden_archs,
+                    output_dim=5
+                )
+            
+            # Копируем веса и мутируем
             with torch.no_grad():
                 for param, new_param in zip(model.parameters(), mutated_model.parameters()):
-                    # Копируем веса
                     new_param.data.copy_(param.data)
-                    
-                    # Применяем мутацию
-                    if param.requires_grad:  # Мутируем только обучаемые параметры
+                    if param.requires_grad:
                         mask = torch.rand_like(param.data) < mutation_rate
                         noise = torch.randn_like(param.data) * mutation_scale
                         new_param.data[mask] += noise[mask]
@@ -376,29 +498,6 @@ class Evolutionist3:
             print(f"Ошибка при быстрой мутации: {e}")
             return self._copy_bot(bot)
     
-    def _copy_bot(self, bot):
-        """Создание глубокой копии бота"""
-        model = bot.policy_model
-        
-        # Создаем новую модель с теми же весами
-        copied_model = self.nn_class(
-            input_dim=self.n_features,
-            hidden_layers=self.hidden_archs,
-            output_dim=5
-        )
-        
-        # Копируем веса
-        copied_model.load_state_dict(model.state_dict().copy())
-        
-        # Создаем нового бота
-        copied_bot = self.ws_class(
-            self.ticker, self.tf, "usdt-futures", 1,
-            **self.param,
-            policy_model=copied_model
-        )
-        
-        return copied_bot
-    
     def update_generation(self, best_indices: np.ndarray, bots_dict: Dict):
         """Обновление поколения на основе лучших особей"""
         if len(best_indices) == 0:
@@ -412,15 +511,12 @@ class Evolutionist3:
             print("Не удалось получить лучших ботов")
             return
         
-        # print(f"Отобрано {len(best_bots)} лучших особей")
-        
         # Стратегия обновления поколения
         new_population = []
         
         # 1. Элитизм - сохраняем лучших без изменений
         elite_size = min(len(best_bots), self.elite_size)
         new_population.extend(best_bots[:elite_size])
-        # print(f"Элита: {elite_size} особей")
         
         # 2. Скрещивание лучших между собой
         crossover_count = min(len(best_bots), self.n_individuals // 3)
@@ -429,7 +525,6 @@ class Evolutionist3:
             parent2 = random.choice(best_bots)
             child = self.crossover_neuro(parent1, parent2)
             new_population.append(child)
-        # print(f"Скрещивание: {crossover_count} особей")
         
         # 3. Мутация лучших
         mutate_count = min(len(best_bots), self.n_individuals // 3)
@@ -437,12 +532,10 @@ class Evolutionist3:
             parent = random.choice(best_bots)
             mutated = self.mutate_neuro(parent)
             new_population.append(mutated)
-        # print(f"Мутация: {mutate_count} особей")
         
         # 4. Добавляем случайные новые особи если нужно
         remaining = self.n_individuals - len(new_population)
         if remaining > 0:
-            # print(f"Добавляем {remaining} случайных особей")
             random_bots = self._create_random_bots(
                 remaining, self.ws_class, self.param, 
                 self.nn_class
@@ -459,10 +552,6 @@ class Evolutionist3:
     
     def _adapt_parameters(self):
         """Адаптация параметров алгоритма"""
-        # Уменьшаем скорость мутации со временем
-        # progress = self.current_generation / self.total_generations
-        # self.mutation_rate = max(0.05, 0.2 * (1 - progress))
-        # self.mutation_scale = max(0.01, 0.1 * (1 - progress))
         self.mutation_rate *= 0.99
         self.mutation_scale *= 0.99
     
@@ -494,9 +583,7 @@ class Evolutionist3:
                 print(f"  Пропускаем топ-{rank+1}: нет state_dict")
                 continue
             
-            # ★ ИСПРАВЛЕННОЕ ИМЯ ФАЙЛА ★
-            
-            # Форматируем: убираем точки, заменяем минусы, добавляем ранг для уникальности
+            # Форматируем имя файла
             score_str = f"{score:+.2f}".replace('.', 'p').replace('-', 'm').replace('+', '')
             count_str = str(count)
             
@@ -519,18 +606,15 @@ class Evolutionist3:
             
             # Проверяем сохранение
             if os.path.exists(model_path):
-                file_size = os.path.getsize(model_path) / 1024  # KB
+                file_size = os.path.getsize(model_path) / 1024
                 saved_models.append({
                     'rank': rank + 1,
                     'filename': model_filename,
                     'score': df['total_with_fee'].iloc[rank],
                     'file_size_kb': round(file_size, 1)
                 })
-            else:
-                print(f"  ОШИБКА сохранения топ-{rank+1}")
         
-        
-        # Сохраняем общие результаты (остальное без изменений)
+        # Сохраняем общие результаты
         data_path = os.path.join(self.path_data, f'results_{timestamp}.xlsx')
         with pd.ExcelWriter(data_path, engine='xlsxwriter') as writer:
             df.to_excel(writer, sheet_name='Results', index=False)
@@ -573,17 +657,20 @@ class Evolutionist3:
             }
         }
         
-        # Сохраняем информацию о популяции (только пути к моделям)
+        # Сохраняем информацию о популяции
         population_info = []
         for i, bot in enumerate(self.population):
             try:
-                model = bot.model if hasattr(bot, 'model') else bot.policy_model
-                arch_str = "-".join(str(x) for x in model.hidden_layers)
-                population_info.append({
-                    'index': i,
-                    'architecture': arch_str,
-                    'hidden_layers': model.hidden_layers
-                })
+                model = bot.policy_model if hasattr(bot, 'policy_model') else bot.model
+                if model is not None and hasattr(model, 'hidden_layers'):
+                    arch_str = "-".join(str(x) for x in model.hidden_layers)
+                    population_info.append({
+                        'index': i,
+                        'architecture': arch_str,
+                        'hidden_layers': model.hidden_layers
+                    })
+                else:
+                    population_info.append({'index': i, 'error': 'cannot_get_info'})
             except:
                 population_info.append({'index': i, 'error': 'cannot_get_info'})
         
@@ -594,11 +681,6 @@ class Evolutionist3:
         
         with open(checkpoint_path, 'w') as f:
             json.dump(checkpoint, f, indent=2)
-        
-        # print(f"Чекпоинт сохранен: {checkpoint_path}")
-        
-        # Также сохраняем текущие результаты
-        self.save_files(df, bots_dict)
     
     def evolution(self, epochs: int = 50):
         """Основной цикл эволюции с улучшенным логированием"""
@@ -634,7 +716,6 @@ class Evolutionist3:
                     self.save_checkpoint(df, bots_dict)
                 
                 # Обновление поколения
-                # print("Обновление поколения...")
                 self.update_generation(best_indices, bots_dict)
                 
                 # Логирование
@@ -650,12 +731,12 @@ class Evolutionist3:
             print("\nЭволюция прервана пользователем!")
             print("Сохранение текущего состояния...")
             if not df.empty:
-                self.save_files(df, bots_dict if 'bots_dict' in locals() else {})
+                self.save_files(df, locals().get('bots_dict', {}))
         
         # Финальное сохранение
         print("\nФинальное сохранение...")
         if not df.empty:
-            self.save_files(df, bots_dict if 'bots_dict' in locals() else {})
+            self.save_files(df, locals().get('bots_dict', {}))
         
         # Статистика
         total_time = (time() - start_time) / 3600

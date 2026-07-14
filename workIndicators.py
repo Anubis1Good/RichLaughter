@@ -20,9 +20,9 @@ df = simple_load_df(raw_file)
 # df = df.iloc[-200:]
 # df = df.iloc[10:510]
 
-df['spred'] = df['high'] - df['low']
-df['impuls'] = df['spred'].rolling(20).mean()
-df['flow'] = (df['impuls']*df['direction']).rolling(20).sum()
+# df['spred'] = df['high'] - df['low']
+# df['impuls'] = df['spred'].rolling(20).mean()
+# df['flow'] = (df['impuls']*df['direction']).rolling(20).sum()
 df.info()
 
 
@@ -71,7 +71,7 @@ if plot:
         plt.subplot(2,1,2,sharex=ax1)
         plt.grid() 
 
-    plt.plot(df['flow'],color='r')
+    # plt.plot(df['flow'],color='r')
     # plt.hl
     # plt.plot(df['signal_line'],color='b')
     # plt.plot(df['cum_dvsai'])
