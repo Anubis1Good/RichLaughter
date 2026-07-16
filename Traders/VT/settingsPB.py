@@ -46,6 +46,18 @@ class TemplateCandle:
         [0,255,0],
         [0,0,0]
     ],dtype=np.uint8)
+    
+    candle_close = np.array([
+        [0,0],
+        [255,0],
+        [0,0],
+    ],dtype=np.uint8)
+
+    candle_open = np.array([
+        [0,0],
+        [0,255],
+        [0,0],
+    ],dtype=np.uint8)
 
     volume_top = np.array([
         [0,0,0,0],
