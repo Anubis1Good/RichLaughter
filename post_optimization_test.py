@@ -49,7 +49,7 @@ timeframe = '5min'
 
 # test_folder = 'DataForTests\DataMoexFutP'
 test_folder = 'DataForTests\DataMoexStock5P'
-test_folder = 'DataForTests\DataMoexStockP'
+# test_folder = 'DataForTests\DataMoexStockP'
 
 list_dir = os.listdir(test_folder)
 
