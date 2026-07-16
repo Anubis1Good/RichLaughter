@@ -60,7 +60,7 @@ class PTA30_RAYNOR(BaseTABitget):
         self.large_close = large_close
         self.n_large = n_large
         self.large_config = 'large_o'+large_open+'_c'+large_close+'_'+n_large
-        self.VT_need = ('pos','ybests','profit','loss')
+        self.VT_need = ('pos','ybests','profit','loss','price_step')
         self.min_profit = min_profit
         self.max_loss = max_loss
     def preprocessing(self,df):
@@ -95,9 +95,11 @@ class PTA30_RAYNOR(BaseTABitget):
                     delta2 = params['l_max'] - params['y_bbid']
                     l_points = max(delta1,delta2)/ ps
             if self.min_profit is not None:
+                # print(self.symbol,p_points)
                 if p_points >= self.min_profit:
                     return 'close_all_pw'
             if self.max_loss is not None:
+                # print(self.symbol,l_points)
                 if l_points >= self.max_loss:
                     return 'close_all_pw'
         return None

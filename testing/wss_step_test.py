@@ -6,7 +6,7 @@ from strategies.work_strategies.OGTA import *
 
 from strategies.work_strategies.LTA import *
 from strategies.work_strategies.LTA2 import *
-from strategies.work_strategies.GLTA import *
+# from strategies.work_strategies.GLTA import *
 from strategies.work_strategies.PSTA0 import *
 from strategies.work_strategies.STA_ml2 import *
 from strategies.work_strategies.VSAT import *

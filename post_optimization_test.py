@@ -10,34 +10,46 @@ from functools import partial
 from strategies.test_strategies.CheckWSTrader import CheckWSTrader
 from utils.work_with_dataframe.load_df import simple_load_df
 from testing.risk_map import risk_map_fut_vtb
-from Traders.TestingTrader.wss_groups import wssMoexFut5 as wss
+# from Traders.TestingTrader.wss_groups import wssMoexFut5 as wss
 # from Traders.TestingTrader.wss_groups import wssMoexStocks5 as wss
-map_wss = {
-    'IMOEXF_1':wss[14:],
-    'default':wss,
-}
-# from testing.wss_step_test import map_wss
+# map_wss = {
+#     'IMOEXF_1':wss[14:],
+#     'default':wss,
+# }
+from testing.wss_step_test import map_wss
 phys_cores = psutil.cpu_count(logical=False) 
 
-main_folder = 'TestNewResults/ChildTest2'
+type_test = 0 # window
+# type_test = 1 # child
+# type_test = 69 #fast
+
+if type_test == 0:
+    main_folder = 'TestNewResults/WindowTest'
+elif type_test == 1:
+    main_folder = 'TestNewResults/ChildTest'
+else:
+    main_folder = 'TestNewResults/FastTest'
 if not os.path.exists(main_folder):
     os.makedirs(main_folder)
-save_cores = 3
-fee_base = 0.0002
-window = 150
+
+save_cores = 1
+fee_base = 0.001
+window = 60
+# window = 200
 close_on_time = True
 # close_on_time = False
 normalization=True
-normalization=False
-vtb = True
-# vtb = False
+# normalization=False
+# vtb = True
+vtb = False
+use_risk = False
 close_map = ((23,30),(23,30),(23,30),(23,30),(23,30),(17,50),(17,50),)
 need_plot = True
 timeframe = '5min'
 
 # test_folder = 'DataForTests\DataMoexFutP'
-test_folder = 'DataForTests\DataMoexFutTemp'
-# test_folder = 'DataForTests\DataMoexStockP'
+test_folder = 'DataForTests\DataMoexStock5P'
+test_folder = 'DataForTests\DataMoexStockP'
 
 list_dir = os.listdir(test_folder)
 
@@ -58,9 +70,17 @@ def process_ws(variant_name,image_folder, xls_folder, clear_df,ws):
         
         # Создаем стратегию и проверяем ее
         strategy = ws[0](variant_name, '5', "1", 1, *ws[1])
-        stop_risk = risk_map_fut_vtb.get(variant_name[:-2],None)
+        if use_risk:
+            stop_risk = risk_map_fut_vtb.get(variant_name[:-2],None)
+        else:
+            stop_risk = False
         cwt = CheckWSTrader(clear_df,strategy,fee_base,variant_name,timeframe,close_on_time,close_map,False,False,stop_risk)
-        cwt.check_strategy_child(timeframe,window,normalization,vtb)
+        if type_test == 0:
+            cwt.check_strategy_window(window,normalization,vtb)
+        elif type_test == 1:
+            cwt.check_strategy_child(timeframe,window,normalization,vtb)
+        else:
+            cwt.check_strategy_fast(vtb)
         print(name_file)
         # Сохраняем график если нужно
         if need_plot:

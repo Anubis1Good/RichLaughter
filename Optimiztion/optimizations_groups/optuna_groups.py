@@ -6,7 +6,7 @@ from strategies.work_strategies.OGTA import *
 
 from strategies.work_strategies.LTA import *
 from strategies.work_strategies.LTA2 import *
-from strategies.work_strategies.GLTA import *
+# from strategies.work_strategies.GLTA import *
 from strategies.work_strategies.PSTA0 import *
 from strategies.work_strategies.VSAT import *
 # from strategies.work_strategies.HelpTA import get_rws
@@ -39,24 +39,6 @@ group = (
         (1,),
         (1,),
     ]),
-    # (PTA2_DDCrWork,[
-    #     (5,10,top_limit),
-    # ]),
-    # (PTA2_DDCrVG,[
-    #     (5,10,top_limit),
-    # ]),
-    # (PTA2_DVCr,[
-    #     (5,10,top_limit),
-    # ]),
-    # (PTA2_LISICA,[
-    #     (5,10,top_limit),
-    #     (0.5,1,1.4,2),
-    # ]),
-    # (PTA2_VOLCHARA,[
-    #     (5,10,top_limit),
-    #     (0.5,1,1.4,2),
-    # ]), 
-
     (PTA10_WIZARD,[
         (5,10,top_limit),
         (5,10,top_limit),
@@ -102,13 +84,6 @@ group = (
         (21,40,50,60),
         (11,30,40),
     ]),
-    # (PTA14_ANGER,[
-    #     (2,7,top_limit),
-    #     (2,7,top_limit),
-    #     (5,10,15,20,30),
-    #     (21,40,50,60),
-    #     (11,30,40),
-    # ]),
 
     (PTA15_VALLA,[
         (2,7,top_limit),

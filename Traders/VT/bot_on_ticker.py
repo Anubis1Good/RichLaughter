@@ -31,7 +31,7 @@ from Optimiztion.Optimizator1 import generate_combinations
 #     wss_u.append((PTA4_UNIVERSAL,conf))
 
 bot_on_ticker = (
-    ((TestVTTA,(100,)),
+    ((PTA30_RAYNOR,(14,14,30,15,25,40,True,'12','12','2',5,10)),
      ('VTBR1','ETLN1','MTLR1','SGZH1','DATA1','DELI1','IVAT1','MVID1'),
      False
      ),
