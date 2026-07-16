@@ -378,17 +378,6 @@ class VT6:
         region[0]:region[2]]
         return chart
     
-    # def _get_current_price(self,chart):
-    #     x,y = self._color_search(chart,ColorsBtnBGR.cur_price_1,reverse=True)
-    #     if y > 0:
-    #         x,y2 = self._color_search(chart,ColorsBtnBGR.cur_price_1,reverse=False)
-    #         return (x,(y+y2)//2)
-    #     x,y = self._color_search(chart,ColorsBtnBGR.cur_price_2,reverse=True)
-    #     if y > 0:
-    #         x,y2 = self._color_search(chart,ColorsBtnBGR.cur_price_2,reverse=False)
-    #         return (x,(y+y2)//2)
-    #     return None,None    
-    
     def _get_mask(self,chart:npt.ArrayLike,color) -> npt.ArrayLike:
         mask = cv2.inRange(chart,color,color)
         return mask
@@ -408,6 +397,9 @@ class VT6:
         return mask
     
     def _get_filtred_x(self,mask):
+        mask = mask.copy()
+        kernel = np.ones((3, 1), np.uint8)
+        mask = cv2.erode(mask, kernel, iterations=1)
         res_top = cv2.matchTemplate(mask,TemplateCandle.candle_top,cv2.TM_CCOEFF_NORMED)
         res_top = np.argwhere(res_top >= 0.9)
         res_bot = cv2.matchTemplate(mask,TemplateCandle.candle_bottom,cv2.TM_CCOEFF_NORMED)
@@ -417,24 +409,23 @@ class VT6:
         unique_x = np.sort(unique_x)
         distances = np.diff(unique_x)
         step = int(np.median(distances))
-        good_start = None
-        for i in range(len(unique_x) - 1):
-            if abs(unique_x[i+1] - unique_x[i]) == step:
-                good_start = unique_x[i]
-                break
-        good_end = None
-        for i in range(len(unique_x) - 1, 0, -1):
-            if abs(unique_x[i] - unique_x[i-1]) == step:
-                good_end = unique_x[i]
-                break
-        if good_start is None:
-            good_start = unique_x[0]
-        if good_end is None:
-            good_end = unique_x[-1]
-        filtered_x = np.arange(good_start, good_end + 1, step) + 1
-        return filtered_x
-    
+        mask = np.concatenate([[True], distances >= step / 2])
+        filtered_x = unique_x[mask]
+        full_x = []
+        for i in range(len(filtered_x) - 1):
+            full_x.append(filtered_x[i])
+            gap = filtered_x[i + 1] - filtered_x[i]
+            if gap > step * 1.5:
+                # Добавляем промежуточные бары
+                num_missing = int(np.round(gap / step)) - 1
+                for j in range(1, num_missing + 1):
+                    full_x.append(int(np.round(filtered_x[i] + j * step)))
+        full_x.append(filtered_x[-1])
+        filtered_x = np.array(full_x)
+        return filtered_x, int(step)
+       
     def _clear_bars(self,bars:pd.DataFrame):
+        bars = bars.astype(float)
         bars['middle'] = (bars['low'] +bars['high']) // 2
         bars['open'] = bars['open'].fillna(bars['close'].shift(1))
         bars['close'] = bars['close'].fillna(bars['open'].shift(-1))
@@ -442,7 +433,10 @@ class VT6:
         bars['open'] = bars['open'].fillna(bars['middle'])
         bars['close'] = bars['close'].fillna(bars['middle'])
         bars['direction'] = np.where(bars['open'] >= bars['close'],1,-1)
-
+        bars['high'] = np.where(bars['high'] > bars['open'],bars['open'],bars['high'])
+        bars['high'] = np.where(bars['high'] > bars['close'],bars['close'],bars['high'])
+        bars['low'] = np.where(bars['low'] < bars['open'],bars['open'],bars['low'])
+        bars['low'] = np.where(bars['low'] < bars['close'],bars['close'],bars['low'])
         numeric_cols = bars.select_dtypes(include=['float', 'int']).columns
         bars[numeric_cols] = bars[numeric_cols].astype(int)
         self.offset = bars['volume'].max() + 1
@@ -456,25 +450,31 @@ class VT6:
         volume_cords = np.argwhere(volume_mask == 255)
         candle_mask = self._get_candle_mask(chart)
         candle_cords = np.argwhere(candle_mask == 255)
-        filtered_x = self._get_filtred_x(candle_mask)
+        filtered_x, step = self._get_filtred_x(candle_mask)
         bars = []
+        radius = int(step * 0.45)
         for x in filtered_x:
-            vertical_line = candle_cords[np.where(candle_cords[:,1] == x)]
-            if vertical_line.size == 0:
-                continue
-            high_bar = vertical_line[:,0].min()
-            low_bar = vertical_line[:,0].max()
-            volume = volume_cords[np.where(volume_cords[:,1] == x)]
-            if volume.size > 0:
-                volume_bar = volume[:,0].min()
-            else:
-                volume_bar = None
-            close_line = candle_cords[np.where(candle_cords[:,1] == x+1)]
+            mask = (candle_cords[:, 1] >= x - radius) & (candle_cords[:, 1] <= x + radius)
+            points = candle_cords[mask]
+            if len(points) > 0:
+                unique_x, counts = np.unique(points[:, 1], return_counts=True)
+                real_x = unique_x[np.argmax(counts)]
+                best_line = points[points[:, 1] == real_x]
+                high_bar = best_line[:, 0].min()
+                low_bar = best_line[:, 0].max()
+            volume = volume_cords[np.where(volume_cords[:,1] == real_x)]
+            volume_bar = volume[:,0].min()
+            # Если это поставить, то не будет вылетать при отставшем графике!
+            # if volume.size > 0:
+            #     volume_bar = volume[:,0].min()
+            # else:
+            #     volume_bar = None
+            close_line = candle_cords[np.where(candle_cords[:,1] == real_x+1)]
             if close_line.size == 0:
                 close_bar = None
             else:
                 close_bar = close_line[:,0].max()
-            open_line = candle_cords[np.where(candle_cords[:,1] == x-1)]
+            open_line = candle_cords[np.where(candle_cords[:,1] == real_x-1)]
             if open_line.size == 0:
                 open_bar = None
             else:
