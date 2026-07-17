@@ -13,6 +13,6 @@ stock_groups= {
     # ),
     'GRID_test': (
         ['VTBR1','ETLN1','MTLR1','SGZH1'],
-        ['DATA1','DELI1','IVAT1','MVID1'],
+        ['FIXR1','VSEH1','PRMD1','MRKC1'],
     )
 }

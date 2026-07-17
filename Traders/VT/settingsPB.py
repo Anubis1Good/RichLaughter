@@ -35,6 +35,8 @@ class ColorsBtnBGR:
     profit_glass = (85,112,30)
     pos_price = (103,74,50)
 
+    z_tape = (118,118,118)
+
 
 class TemplateCandle:
     candle_top = np.array([

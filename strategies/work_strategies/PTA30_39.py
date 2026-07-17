@@ -1,6 +1,7 @@
 import pandas as pd
 from ForBots.Indicators.classic_indicators import add_slice_df,add_enter_price2close, add_adx, add_chop, add_macd
 from strategies.work_strategies.BaseTA import BaseTABitget
+from ForBots.help_func.action_middleware import check_close_by_delta
 
 class PTA30_LILI(BaseTABitget):
     """period=14,period_chop=14,period_sma_l=30,period_sma_s=15,thr_adx=25,thr_chop=40,work_trend=True,large_open='12',large_close='12',n_large='2'"""
@@ -72,41 +73,9 @@ class PTA30_RAYNOR(BaseTABitget):
         df = add_slice_df(df,period=self.period)
         return df
     
-    def check_close(self,params):
-        ps = params['price_step']
-        if params['pos'] != 0:
-            p_points,l_points = 0, 0
-            if params['pos'] == 1:
-                if params['p_max'] != -1:
-                    delta1 = params['p_max'] - params['p_min']
-                    delta2 = params['p_max'] - params['y_bask']
-                    p_points = max(delta1,delta2)/ ps
-                if params['l_max'] != -1:
-                    delta1 = params['l_max'] - params['l_min']
-                    delta2 = params['l_max'] - params['y_bask']
-                    l_points = max(delta1,delta2)/ ps
-            elif params['pos'] == -1:
-                if params['p_max'] != -1:
-                    delta1 = params['p_max'] - params['p_min']
-                    delta2 = params['p_max'] - params['y_bbid']
-                    p_points = max(delta1,delta2)/ ps
-                if params['l_max'] != -1:
-                    delta1 = params['l_max'] - params['l_min']
-                    delta2 = params['l_max'] - params['y_bbid']
-                    l_points = max(delta1,delta2)/ ps
-            if self.min_profit is not None:
-                # print(self.symbol,p_points)
-                if p_points >= self.min_profit:
-                    return 'close_all_pw'
-            if self.max_loss is not None:
-                # print(self.symbol,l_points)
-                if l_points >= self.max_loss:
-                    return 'close_all_pw'
-        return None
-
     def __call__(self,row, *args, **kwds):
         params = args[0]
-        need_close = self.check_close(params)
+        need_close = check_close_by_delta(params,self.min_profit,self.max_loss)
         if need_close is not None:
             return need_close
         # range

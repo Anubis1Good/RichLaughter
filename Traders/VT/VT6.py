@@ -76,30 +76,14 @@ class VT6:
             return -1,-1
         
     def _colorarea_search(self,img:npt.ArrayLike, color:tuple[int],region:tuple[int]=(None,None,None,None), y_min=None, y_max=None, reverse_sort=False, skip_m1=True):
-        NEED_DEBUG = False
         if skip_m1:
             if y_min == -1 or y_max == -1:
                 return []
         mask = cv2.inRange(img, color, color)
-        # if NEED_DEBUG:
-        #     cv2.imwrite(f'./logs/debug_VT5/{self.name}_{int(time()*1000)}_MASK.png', mask)
-        # 2. Находим контуры областей
         contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
         # 3. Фильтруем и собираем информацию
         regions_f = []
         used_y_positions = []
-        if NEED_DEBUG:
-            os.makedirs('./logs/debug_VT5/', exist_ok=True)
-            debug_img = img.copy()
-            cv2.drawContours(debug_img, contours, -1, (0, 255, 0), 2)
-            if y_max is not None and y_max != -1:
-                cv2.line(debug_img, (0, y_max), (img.shape[1], y_max), (0, 0, 255), 2)
-            if y_min is not None and y_min != -1:
-                cv2.line(debug_img, (0, y_min), (img.shape[1], y_min), (255, 0, 0), 2)
-            if region is not None and region[0] is not None:
-                x1, y1, x2, y2 = region
-                pts = np.array([[x1, y1], [x2, y1], [x2, y2], [x1, y2]], np.int32)
-                cv2.polylines(debug_img, [pts], True, (0, 255, 255), 2)
         for contour in contours:
             area = cv2.contourArea(contour)
             # Фильтр по площади
@@ -133,14 +117,6 @@ class VT6:
                 'cx': cx,
                 'cy': cy,
             })
-            if NEED_DEBUG:
-                cv2.circle(debug_img,(cx,cy),10,(255,0,255))
-        if NEED_DEBUG:
-            cv2.putText(debug_img, f'{self.name}: lenFR:{len(regions_f)} lenC:{len(contours)}', (100, 100),
-                       cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1)
-            filename = './logs/debug_VT6/'+self.name+str(int(time()*1000))+'.png'
-            cv2.imwrite(filename,debug_img)
-            print(self.name,'save',filename)
         # 4. Сортируем
         regions_f.sort(key=lambda r: r['cy'],reverse=reverse_sort)
         return regions_f
@@ -174,6 +150,18 @@ class VT6:
             return -1
         return 0
     
+    def _check_z_tape(self,img):
+        tape_img = self._get_region(img, region=self.tape_region).copy()
+        # x,y = self._color_search(img,ColorsBtnBGR.z_tape,self.tape_region)
+        mask = cv2.inRange(tape_img, ColorsBtnBGR.z_tape, ColorsBtnBGR.z_tape)
+        contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        for contour in contours:
+            area = cv2.contourArea(contour)
+            # Фильтр по площади
+            if area > 100:
+                pdi.moveTo(self.glass_region[0]+11,self.glass_region[1]+11)
+                pdi.press('z')
+                break
 
     
     def _send_open(self,direction):
@@ -314,6 +302,24 @@ class VT6:
         regions_close.sort(key=lambda r: r['cy'],reverse=reverse_sort)
         return regions_open,regions_close,y_min,y_max
 
+    def _enter_large(self,direction,y_min,y_max,cx,cy):
+        if direction == 'short':
+            if y_min - cy > self.price_step*2:
+                cy += self.price_step
+                pdi.rightClick(cx,cy)
+                # print(self.name,'mouse')
+            else:
+                pdi.press('s')
+                # print(self.name,'btn')
+        else:
+            if cy - y_max > self.price_step*2:
+                cy -= self.price_step
+                # print(self.name,'mouse')
+                pdi.click(cx,cy)
+            else:
+                pdi.press('a')
+                # print(self.name,'btn')
+
     def _send_open_large(self,img,direction,n=1,reverse_pos=False,press_f=True,large_open='',large_close='',main_large_open=True):
         pdi.moveTo(self.glass_region[0]+11,self.glass_region[1]+11)
         if press_f:
@@ -328,31 +334,13 @@ class VT6:
         if reverse_pos:
             cx,cy = regions_close[0]['cx'],regions_close[0]['cy']
             pdi.press('z')
-            if direction == 'short':
-                pdi.rightClick(cx,cy)
-            else:
-                pdi.click(cx,cy)
+            self._enter_large(direction,y_min,y_max,cx,cy)
             pdi.press('z')
         # print(self.name,regions,y_max,y_min)
         for i in range(n_req):
             try:
                 cx,cy = main_region[i]['cx'],main_region[i]['cy']
-                if direction == 'short':
-                    if y_min - cy > self.price_step*2:
-                        cy += self.price_step
-                    elif cy > y_min:
-                        cy = y_max - self.price_step//2
-                    else:
-                        cy -= self.price_step//2
-                    pdi.rightClick(cx,cy)
-                else:
-                    if cy - y_max > self.price_step*2:
-                        cy -= self.price_step
-                    elif cy < y_max:
-                        cy = y_min + self.price_step//2
-                    else:
-                        cy += self.price_step//2
-                    pdi.click(cx,cy)
+                self._enter_large(direction,y_min,y_max,cx,cy)
             except Exception as err:
                 traceback.print_exc()
                 pass
@@ -372,7 +360,7 @@ class VT6:
             self._send_open_large(img,rev_direction,n,large_open=large_open,large_close=large_close,main_large_open=False)
 
 
-    def _get_chart(self,img,region):
+    def _get_region(self,img,region):
         chart = img[
         region[1]:region[3],
         region[0]:region[2]]
@@ -445,7 +433,7 @@ class VT6:
         return bars
     
     def _get_df(self,img) -> pd.DataFrame:
-        chart = self._get_chart(img,self.chart_region)
+        chart = self._get_region(img,self.chart_region)
         volume_mask = self._get_volume_mask(chart)
         volume_cords = np.argwhere(volume_mask == 255)
         candle_mask = self._get_candle_mask(chart)
@@ -622,34 +610,28 @@ class VT6:
             self._work_level_action(action,pos,img)
         elif 'close_long' in action:
             if pos == 1:
-                self.close_long = True
                 self._send_close('long')
             else:
                 self._reset_req()
         elif 'close_short' in action:
             if pos == -1:
-                self.close_short = True
                 self._send_close('short')
             else:
                 self._reset_req()
         elif 'long' in action:
             if pos == -1:
-                self.close_short = True
                 self._reverse_pos('long')
             if pos == 0:
                 self._send_open('long')
         elif 'short' in action:
             if pos == 1:
-                self.close_long = True
                 self._reverse_pos('short')
             if pos == 0:
                 self._send_open('short')
         elif 'close_all' in action:
             if pos == -1:
-                self.close_short = True
                 self._send_close('short')
             elif pos == 1:
-                self.close_long = True
                 self._send_close('long')
             else:
                 self._reset_req()
@@ -690,6 +672,7 @@ class VT6:
             time_mode = self._check_time()
             if time_mode == 0:
                 return
+            self._check_z_tape(img)
             df = self._get_df(img)
             row = self.ws.get_test_row(df)
             pos = self._check_position(img)
@@ -702,7 +685,7 @@ class VT6:
                     self._add_level(10,int(-lvl+self.offset))
             params = self._get_params_for_ws(img,pos)
             action = self.ws(row,params)
-            # print(action)
+            # print(self.name,action)
             if self.close_on_time:
                     if time_mode == -1:
                         action = 'close_all_pw'
@@ -713,21 +696,7 @@ class VT6:
                             action = 'close_long_pw'
                     elif time_mode == -3 and self.funding and self.close_ff:
                         action = 'close_all_pw'
-            # if self.close18:
-            #     action = only_close(action,18,5)
-            # action = only_close(action,23,5)
-            if pos == -1:
-                self.close_long = False
-            elif pos == 1:
-                self.close_short = False
-            else:
-                self.close_short = False
-                self.close_long = False
-            if self.close_long:
-                self._send_close('long')
-            elif self.close_short:
-                self._send_close('short')
-            elif action:
+            if action:
                 self._work_action(action,pos,img)
             else:
                 self._reset_req()

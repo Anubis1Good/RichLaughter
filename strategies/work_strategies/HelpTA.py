@@ -14,6 +14,7 @@ class CloseTA(BaseTABitget):
 class TestVTTA(BaseTABitget):
     def __init__(self, symbol="BTCUSDT", granularity="1m", productType="usdt-futures", n_parts=1, period=20):
         super().__init__(symbol, granularity, productType, n_parts, period)
+        self.VT_need = ('pos','ybests','profit','loss','price_step')
     def preprocessing(self, df):
         # df = add_dzz_peaks(df,n_std=3,period=50)
         # df = add_pattern18_dzz_czd(df)
@@ -26,9 +27,43 @@ class TestVTTA(BaseTABitget):
         # df['level_vt2'] = df['low'].min()
         # df['level_vt3'] = df['middle'].median()
         return df
-    
+    def check_close(self,params):
+        ps = params['price_step']
+        if params['pos'] == 1: #long
+            if params['y_bask'] > 0:
+                if params['p_max'] != -1:
+                    enter_price = params['p_max']
+                elif params['l_min'] != -1:
+                    enter_price = params['l_min']
+                else:
+                    return None
+                delta_p = (enter_price - params['y_bask']) // ps
+            else:
+                return None
+        elif params['pos'] == -1: #short
+            if params['y_bbid'] > 0:
+                if params['p_min'] != -1:
+                    enter_price = params['p_min']
+                elif params['l_max'] != -1:
+                    enter_price = params['l_max']
+                else:
+                    return None
+                delta_p = (params['y_bbid'] - enter_price) // ps
+            else:
+                return None
+        else:
+            return None
+        print(self.symbol,delta_p)
+        if delta_p < -5 or delta_p > 2:
+            print('work')
+            return 'close_all_pw'
+        
     def __call__(self, row, *args, **kwds):
-        return 'all_large_o2_c12_2'
+        params = args[0]
+        # self.check_close(params)
+        # print(self.symbol,(params['y_bbid'] - params['y_bask']))
+        # return 'all_large_o2_c12_2'
+        return self.check_close(params)
 
 def get_rws(original_class):
     # Создаем новое имя класса с префиксом "Rev"
