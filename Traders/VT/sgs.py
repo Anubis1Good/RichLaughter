@@ -3,6 +3,7 @@ stock_groups= {
         ['ETLN','MTLR','DELI','IVAT'],
         ['SGZH','MVID','EUTR','VTBR'],
         ['RNFT','DATA','RAGR','VSEH'],
+        ['ELMT','GECO','SPBE','MAGN'],
     ),
     # 'LAPTOP':(
     #     'IMOEXF',

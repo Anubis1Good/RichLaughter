@@ -1,17 +1,18 @@
 import shutil
-import os
-import sys
+# import os
+# import sys
 import keyboard
 import cv2
 import pyautogui as pag
 import numpy as np
-from time import sleep
+# from time import sleep
 from PyQt5.QtCore import QThread, pyqtSignal,QMutex
-from Traders.VT.VT5 import VT5
+# from Traders.VT.VT5 import VT5
+from Traders.VT.VT6 import VT6 as VT
 from Traders.VT.bot_on_ticker import init_trader
 from Traders.VT.sgs import stock_groups
 
-error_folder = 'logs\error_logs'
+error_folder = 'logs\error_logsVT'
 
 
 class TradeWorker(QThread):
@@ -36,9 +37,9 @@ class TradeWorker(QThread):
         except Exception as e:
             pass
         if self.grid:
-            self.work_traders:list[list[VT5]]=[]
+            self.work_traders:list[list[VT]]=[]
         else:
-            self.work_traders:list[VT5] = []
+            self.work_traders:list[VT] = []
         sg = stock_groups[self.sg_key]
             
         for s in sg:
@@ -52,14 +53,14 @@ class TradeWorker(QThread):
                     tape:tuple = self.param_bots[3+5*i]
                     cluster:tuple = self.param_bots[4+5*i]
                     price_step = self.price_step
-                    trader = VT5(glass,chart,position,tape,cluster,price_step,s[i],ws)
+                    trader = VT(glass,chart,position,tape,cluster,price_step,s[i],ws)
                     traders.append(trader)
                 self.work_traders.append(traders)
             else:
                 ws,close18 = init_trader(s)
-                if self.sg_key == 'TS':
-                    s = s[:-1]
-                trader = VT5(*self.param_bots,s,ws)
+                # if self.sg_key == 'TS':
+                #     s = s[:-1]
+                trader = VT(*self.param_bots,s,ws)
                 self.work_traders.append(trader)
         self.msleep(3000)
         while not self.isInterruptionRequested():
@@ -110,30 +111,30 @@ class TradeWorker(QThread):
                 return
 
 
-def main_trade(sg_key,param_bots):
-    try:
-        shutil.rmtree(error_folder)
-    except Exception as e:
-        pass
-    work_traders:list[VT5] = []
-    sg = stock_groups[sg_key]
-    for s in sg:
-        ws = init_trader(s)
-        trader = VT5(*param_bots,s,ws)
-        work_traders.append(trader)
+# def main_trade(sg_key,param_bots):
+#     try:
+#         shutil.rmtree(error_folder)
+#     except Exception as e:
+#         pass
+#     work_traders:list[VT] = []
+#     sg = stock_groups[sg_key]
+#     for s in sg:
+#         ws = init_trader(s)
+#         trader = VT(*param_bots,s,ws)
+#         work_traders.append(trader)
     
-    # for wt in work_traders:
-    #     print(wt.name,wt.ws)
-    sleep(3)
-    while True:
-        for wt in work_traders:
-            sleep(2)
-            keyboard.send('shift')
-            pag.screenshot('Traders\VT\Screen.png')
-            img = cv2.imread('Traders\VT\Screen.png')
-            wt.run(img)
-            if keyboard.is_pressed('Esc'):
-                print("\nyou pressed Esc, so exiting...")
-                sys.exit(0)
-            # pag.moveTo(wt.glass[0]+10,wt.glass[1]+10)
-            keyboard.send('tab') 
+#     # for wt in work_traders:
+#     #     print(wt.name,wt.ws)
+#     sleep(3)
+#     while True:
+#         for wt in work_traders:
+#             sleep(2)
+#             keyboard.send('shift')
+#             pag.screenshot('Traders\VT\Screen.png')
+#             img = cv2.imread('Traders\VT\Screen.png')
+#             wt.run(img)
+#             if keyboard.is_pressed('Esc'):
+#                 print("\nyou pressed Esc, so exiting...")
+#                 sys.exit(0)
+#             # pag.moveTo(wt.glass[0]+10,wt.glass[1]+10)
+#             keyboard.send('tab') 

@@ -13,13 +13,14 @@ stock_groups= {
     )
 }
 file_config = 'Traders\VT\configsVT\config_grid_test.json'
+file_config = 'Traders\VT\configsVT\config_grid_laptop.json'
 
-file_img = 'DataForTests\ImgCs\Screenshot_41.png'
+file_img = 'DataForTests\ImgCs\laptop0.jpg'
 img = cv2.imread(file_img)
 
 lines,price_step = configuration_traiders_grid(file_config)
 
-work_traders:list[list[VT5]]=[]
+work_traders:list[list[VT6]]=[]
 
 for s in stock_groups['GRID_test']:
     traders = []

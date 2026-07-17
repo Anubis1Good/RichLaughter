@@ -9,8 +9,8 @@ from strategies.work_strategies.STA_ca import *
 from strategies.work_strategies.OGTA import *
 from strategies.work_strategies.PSTA0 import *
 from strategies.work_strategies.VSAT import *
-from strategies.work_strategies.MTA import *
-from strategies.work_strategies.MTA_KING import MTA_KING,MTA_LIGHT
+# from strategies.work_strategies.MTA import *
+# from strategies.work_strategies.MTA_KING import MTA_KING,MTA_LIGHT
 from strategies.work_strategies.BaseTA import BaseTABitget
 from strategies.work_strategies.HelpTA import TestVTTA
 
@@ -35,12 +35,19 @@ bot_on_ticker = (
      ('VTBR1','ETLN1','MTLR1','SGZH1','DATA1','DELI1','IVAT1','MVID1'),
      False
      ),
-    # ((PTA30_,(14,)),
-    #  ('VTBR1','ETLN1','MTLR1','SGZH1','DATA1','DELI1','IVAT1','MVID1'),
-    #  False
-    #  ), period=14,period_chop=14,period_sma_l=30,period_sma_s=15,thr_adx=25,thr_chop=40,work_trend=True,large_open='12',large_close='12',n_large='2'
-    ((PTA30_LILI,(14,14,30,15,25,40,True,'2','12','2')),
-     ('DATA','DELI','ETLN','EUTR','IVAT','MTLR','MVID','RAGR','RNFT','SGZH','VSEH','VTBR','ELMT','GECO','SPBE','MAGN'),
+
+    ((PTA30_RAYNOR,(14,14,30,15,25,40,True,'2','12','2',1,5)),
+     ('DELI','ETLN','MVID','GECO'),
+     False
+     ),
+
+    ((PTA30_RAYNOR,(14,14,30,15,25,40,True,'2','12','2',3,10)),
+     ('DATA','RAGR','ELMT','MAGN'),
+     False
+     ),
+
+    ((PTA30_RAYNOR,(14,14,30,15,25,40,True,'2','12','2',5,10)),
+     ('VSEH',),
      False
      ),
     # ((PSTA9_GRAVY,(10,2.81,2,0.28,0.77,1,)), #-1
@@ -55,18 +62,18 @@ bot_on_ticker = (
     #  ('ETLN',),
     #  False
     #  ),
-    # ((PSTA2_DUCK,(13,15,1,)), #-1
-    #  ('EUTR',),
-    #  False
-    #  ),
-    # ((VSAT1_MERCURY,(45,1.78,0.72,0.33,0.72,0,1,1,)), #-1
-    #  ('IVAT',),
-    #  False
-    #  ),
-    # ((PSTA2_GOOSE,(54,29,1,)), #-1
-    #  ('MTLR',),
-    #  False
-    #  ),
+    ((PSTA2_DUCK,(29,13,1,)),
+     ('EUTR',),
+     False
+     ),
+    ((PTA4_UNIVERSAL,(45,16,12,32,'WC','mfi',1,1,)),
+     ('IVAT',),
+     False
+     ),
+    ((OGTA7_PARADOX,(8,2.04,)),
+     ('MTLR',),
+     False
+     ),
     # ((PSTA6_PIGEON,(16,5,26,9,6,0.12,2.52,0,)), #+1
     #  ('MVID',),
     #  False
@@ -75,38 +82,25 @@ bot_on_ticker = (
     #  ('RAGR',),
     #  False
     #  ),
-    # ((PTA14_RENEGADE,(57,40,9,5,25,19,)), #0
-    #  ('RNFT',),
-    #  False
-    #  ),
-    # ((PTA22_BERSERK,(53,9,4,7.74,3,0.72,23,49,58,16,)), #-1
-    #  ('SGZH',),
-    #  False
-    #  ),
-    # ((PTA11_KUSURUKEN,(47,42,25,34,'hl',)), #-1
-    #  ('VSEH',),
-    #  False
-    #  ),
+    ((PTA11_KUSURUKEN,(58,41,16,11,'c',)), 
+     ('RNFT',),
+     False
+     ),
+    ((PTA11_KUSURUKEN,(36,31,16,16,'c',)),
+     ('SGZH',),
+     False
+     ),
+    ((PTA4_UNIVERSAL,(7,4,17,38,'DC','rsi_tw',1,1,)),
+     ('SPBE',),
+     False
+     ),
     # ((PSTA4_PELICAN,(57,16,2,0.05,)), #-1
     #  ('VTBR',),
     #  False
     #  ),
 
 
-    # ((MTA_LIGHT,(100,'KING_5_MOEX_SPECIAL','u')),
-    #  ('NVTK2','RUAL2','CHMF2','GAZP2','ALRS2','TRMK2','MTLR2','LSRG2','MAGN2','NMTP2','GMKN2','AFLT2','IRAO2','ROSN2','NLMK2','TATN2','AFKS2','HYDR2','PIKK2','SELG2','UPRO2','YDEX2','TRNFP2','BANEP2','RTKM2','MGNT2','SIBN2','MOEX2','MTSS2','SNGSP2','FESH2','LKOH2','CBOM2','FEES2','SBER2','VTBR2','SNGS2','APTK2','QIWI2','KZOSP2','UWGN2'),
-    #  False),
-    # ((MTA_KING,(100,'KING_5_MOEX_SPECIAL','u')),
-    #  ('KZOSP2',),
-    #  True),
-    # ((MTA_LIGHT,(100,'KING_5_MOEX_STOCK','u')),
-    #  ('NVTK','RUAL','CHMF','GAZP','ALRS','TRMK','MTLR','LSRG','MAGN','NMTP','GMKN','AFLT','IRAO','ROSN','NLMK','TATN','AFKS','HYDR','PIKK','SELG','UPRO','YDEX','TRNFP','BANEP','RTKM','MGNT','SIBN','MOEX','MTSS','SNGSP','FESH','LKOH','CBOM','FEES','SBER','VTBR','SNGS','APTK','QIWI','KZOSP','UWGN'),
-    #  False),
-    # ((MTA_KING,(100,'KING_5_MOEX_STOCK','u')),
-    #  ('KZOSP',),
-    #  True),
-    # ((MTA_KING,(100,'KING_1_MOEX_STOCK','u')),
-    #  ('',)),
+
     # ((MTA_LIGHT,(100,'KING_1_MOEX_FUT','u')),
     #  ('CRU5','MMU5','MXU5','GZU5','SRU5','RIU5','RMU5','SiU5','IMOEXF'),
     #  True),
