@@ -11,7 +11,7 @@ start_date = str(today - timedelta(days=30))
 # tickers = ('IMOEXF','MMZ5','RMZ5','SRZ5','GAZPF','SBERF','SVZ5','GZZ5',)
 # folder_save = 'DataForTests\DataMoexFutP'
 # tickers = ('ROSN','LSRG','CBOM','TRMK','NMTP','SELG','RUAL','MTLR','VTBR','GMKN','APTK','KZOSP','UWGN')
-tickers = ('ETLN','MTLR','DELI','IVAT','SGZH','MVID','EUTR','VTBR','RNFT','DATA','RAGR','VSEH','ELMT','GECO','SPBE','MAGN')
+tickers = ('MTLR','IVAT','SGZH','EUTR','VTBR','RNFT','DATA','RAGR','SPBE','MAGN','VKCO','ASTR','ALRS','RUAL','IRAO','SMLT','T','ENPG','SBER','HYDR','SBERP','SELG','AQUA','AFLT','SFIN','ROSN')
 folder_save = 'DataForTests\DataMoexStockP'
 for ticker in tickers:
     # loader = ApiMoexLoader(ticker,'RFUD','forts','futures')

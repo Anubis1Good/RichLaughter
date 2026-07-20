@@ -31,26 +31,26 @@ from Optimiztion.Optimizator1 import generate_combinations
 #     wss_u.append((PTA4_UNIVERSAL,conf))
 
 bot_on_ticker = (
-    # ((TestVTTA,(14,)),
-    #  ('VTBR1','ETLN1','MTLR1','SGZH1','FIXR1','VSEH1','PRMD1','MRKC1'),
-    #  False
-    #  ),
-    ((PTA30_RAYNOR,(14,14,30,15,25,40,True,'12','12','2',3,10)),
-     ('ETLN1','SGZH1','DATA1','DELI1','IVAT1','MVID1','FIXR1','VSEH1','PRMD1','MRKC1'),
+    ((TestVTTA,(14,)),
+     ('VTBR1','ETLN1','MTLR1','SGZH1','FIXR1','VSEH1','PRMD1','MRKC1'),
      False
      ),
+    # ((PTA30_RAYNOR,(14,14,30,15,25,40,True,'12','12','2',3,10)),
+    #  ('ETLN1','SGZH1','DATA1','DELI1','IVAT1','MVID1','FIXR1','VSEH1','PRMD1','MRKC1'),
+    #  False
+    #  ),
 
-    ((PTA30_RAYNOR,(14,14,30,15,25,40,True,'2','12','2',1,5)),
+    ((PTA30_RAYNOR,(14,14,30,15,25,40,True,'2','12','2',1,5)), # +3 -1
      ('DELI','ETLN','MVID','GECO'),
      False
      ),
 
-    ((PTA30_RAYNOR,(14,14,30,15,25,40,True,'2','12','2',3,10)),
+    ((PTA30_RAYNOR,(14,14,30,15,25,40,True,'2','12','2',3,10)), # +1 -3
      ('DATA','RAGR','ELMT','MAGN'),
      False
      ),
 
-    ((PTA30_RAYNOR,(14,14,30,15,25,40,True,'2','12','2',5,10)),
+    ((PTA30_RAYNOR,(14,14,30,15,25,40,True,'2','12','2',5,10)), # -1
      ('VSEH',),
      False
      ),
@@ -66,15 +66,15 @@ bot_on_ticker = (
     #  ('ETLN',),
     #  False
     #  ),
-    ((PSTA2_DUCK,(29,13,1,)),
+    ((PSTA2_DUCK,(29,13,1,)), #+1
      ('EUTR',),
      False
      ),
-    ((PTA4_UNIVERSAL,(45,16,12,32,'WC','mfi',1,1,)),
+    ((PTA4_UNIVERSAL,(45,16,12,32,'WC','mfi',1,1,)), #+1
      ('IVAT',),
      False
      ),
-    ((OGTA7_PARADOX,(8,2.04,)),
+    ((OGTA7_PARADOX,(8,2.04,)), #-1
      ('MTLR',),
      False
      ),
@@ -86,15 +86,15 @@ bot_on_ticker = (
     #  ('RAGR',),
     #  False
     #  ),
-    ((PTA11_KUSURUKEN,(58,41,16,11,'c',)), 
+    ((PTA11_KUSURUKEN,(58,41,16,11,'c',)), #+1
      ('RNFT',),
      False
      ),
-    ((PTA11_KUSURUKEN,(36,31,16,16,'c',)),
+    ((PTA11_KUSURUKEN,(36,31,16,16,'c',)), #+1
      ('SGZH',),
      False
      ),
-    ((PTA4_UNIVERSAL,(7,4,17,38,'DC','rsi_tw',1,1,)),
+    ((PTA4_UNIVERSAL,(7,4,17,38,'DC','rsi_tw',1,1,)), #+1
      ('SPBE',),
      False
      ),
