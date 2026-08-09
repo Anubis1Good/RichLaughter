@@ -185,6 +185,7 @@ def get_change_attached_bb(row,df:pd.DataFrame):
         if row['bbd_attached'] != prev['bbd_attached']:
             attached_change = True
     return attached_change
+
 def add_attached_bb(df:pd.DataFrame):
     """add bbu_attached, bbd_attached, attached_change"""
     points = df.apply(lambda row: get_attached_bb(row,df),axis=1)
