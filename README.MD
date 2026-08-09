@@ -1,1 +1,2 @@
 This is probably the last commit. The project has almost completely moved to RL2 and RL3. It is unlikely that RL1 will ever be launched again. It's a sad moment of saying goodbye. Thanks for everything!
+25.12.2024 - 09.08.2026
