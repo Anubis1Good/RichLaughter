@@ -637,9 +637,6 @@ class PTA16_ARTANIS(BaseTABitget):
     def __call__(self, row, *args, **kwds):
         best_l = 'bl_EDCr'
         best_s = 'bs_EDCr'
-        kind_l = 'min_hb'
-        kind_s = 'max_hb'
-        nearest_long = row['high'] - row['close'] > row['close'] - row['low'] 
         if not np.isnan(row['end_up']):
             if row[best_s] > 0:
                 return 'short_pw'

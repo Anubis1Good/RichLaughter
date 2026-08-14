@@ -1,20 +1,77 @@
 import numpy as np
 import pandas as pd
-from ForBots.Indicators.help_pva_indicators import add_touch_signals,calculate_changes,calculate_cumulative_changes
 
-def add_benefit(df,all_starts,all_ends,id,period=60):
-    """add bl_+id,bs+id"""
-    df = add_touch_signals(df,all_starts,all_ends,id)
-    df = calculate_changes(df,id)
-    df = calculate_cumulative_changes(df,id)
-    df['bl_'+id] = df['cum_long_'+id].diff().rolling(period).mean()
-    df['bs_'+id] = df['cum_short_'+id].diff().rolling(period).mean()
-    df['bl_'+id] = df['bl_'+id].fillna(0)
-    df['bs_'+id] = df['bs_'+id].fillna(0)
-    drops = []
-    for c in ('touch_','change_long_','change_short_','cum_long_','cum_short_'):
-        drops.append(c+id)
-    df = df.drop(drops,axis=1)
+def add_benefit(df, all_starts, all_ends, id, period=60):
+    """
+    Максимально быстрая версия без создания промежуточных колонок.
+    """
+    # Конвертируем в numpy
+    if not isinstance(all_starts, np.ndarray):
+        all_starts = np.array(all_starts)
+    if not isinstance(all_ends, np.ndarray):
+        all_ends = np.array(all_ends)
+    
+    prices = df['close'].values
+    n = len(df)
+    
+    # Создаем сигналы
+    signals = np.full(n, np.nan)
+    signals[~np.isnan(all_starts)] = 1
+    signals[~np.isnan(all_ends)] = -1
+    
+    # Фильтруем чередование
+    signal_idx = np.where(~np.isnan(signals))[0]
+    
+    if len(signal_idx) < 2:
+        df[f'bl_{id}'] = 0
+        df[f'bs_{id}'] = 0
+        return df
+    
+    sig_values = signals[signal_idx]
+    mask = np.concatenate([[True], sig_values[1:] != sig_values[:-1]])
+    signal_idx = signal_idx[mask]
+    sig_values = sig_values[mask]
+    
+    # Расчет изменений
+    long_changes = np.zeros(n)
+    short_changes = np.zeros(n)
+    
+    entries = signal_idx[::2]
+    exits = signal_idx[1::2]
+    min_len = min(len(entries), len(exits))
+    
+    if min_len > 0:
+        entries = entries[:min_len]
+        exits = exits[:min_len]
+        entry_signals = sig_values[::2][:min_len]
+        
+        # LONG
+        long_mask = entry_signals == 1
+        if np.any(long_mask):
+            le = entries[long_mask]
+            lx = exits[long_mask]
+            long_changes[lx] = prices[lx] - prices[le]
+        
+        # SHORT
+        short_mask = entry_signals == -1
+        if np.any(short_mask):
+            se = entries[short_mask]
+            sx = exits[short_mask]
+            short_changes[sx] = prices[se] - prices[sx]
+        
+        # Незакрытые позиции
+        if len(signal_idx) % 2 == 1:
+            last_idx = signal_idx[-1]
+            last_signal = sig_values[-1]
+            if last_signal == 1:
+                long_changes[-1] = prices[-1] - prices[last_idx]
+            elif last_signal == -1:
+                short_changes[-1] = prices[last_idx] - prices[-1]
+    
+    # Рассчитываем скользящее среднее
+    df[f'bl_{id}'] = pd.Series(long_changes).rolling(period, min_periods=1).mean().fillna(0).values
+    df[f'bs_{id}'] = pd.Series(short_changes).rolling(period, min_periods=1).mean().fillna(0).values
+    
     return df
 
 def add_velcro_indicator(df,period_check=10):

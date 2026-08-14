@@ -137,10 +137,9 @@ class PTA2_DDCrWork(BaseTABitget):
         return df
     def __call__(self, row, *args, **kwds):
         nearest_long = row['high'] - row['close'] > row['close'] - row['low'] 
-        if row['low'] <= row['min_hb']:
-            if nearest_long:
-                return 'long_pw'
-        if row['high'] >= row['max_hb']:
+        if row['low'] <= row['min_hb'] and nearest_long:
+            return 'long_pw'
+        if row['high'] >= row['max_hb'] and not nearest_long:
             return 'short_pw'
         
 class PTA2_SDDCr(BaseTABitget):
